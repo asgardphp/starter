@@ -1,0 +1,6 @@
+arpa_preferences:
+  - { id: 1, name: '', email: '', adresse: '', telephone: '', head_script: '' }
+arpa_value:
+  - { id: 1, key: name, value: Arpa, created_at: 0, updated_at: 0 }
+  - { id: 2, key: email, value: leyou.m@gmail.com, created_at: 0, updated_at: 0 }
+  - { id: 3, key: head_script, value: null, created_at: 0, updated_at: 0 }

@@ -1,0 +1,2 @@
+arpa_preferences:
+  - { id: 1, email: null, adresse: null, telephone: null, head_script: null }
