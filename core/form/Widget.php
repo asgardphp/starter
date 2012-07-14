@@ -1,7 +1,6 @@
 <?php
 class Widget extends WidgetHelper {
 	private $parent;
-	public $value;
 
 	function __construct($params=array()) {
 		$this->params = $params;
@@ -94,9 +93,11 @@ class Widget extends WidgetHelper {
 		if(!is_array($value))
 			$value = HTML::sanitize($value);
 			
-			//~ if($multiple)
-			//~ d($this->value);
-		//~ d($value, $multiple);
+		if($multiple && !is_array($value))
+			if(!$value)
+				$value = array();
+			else
+				$value = array($value);
 			
 		if($multiple) {
 			$params = array(
@@ -123,9 +124,7 @@ class Widget extends WidgetHelper {
 		$res = HTMLHelper::tag('select', $params)."\n";
 		if(!$choices && isset($widget['choices']))
 			$choices = $widget['choices'];
-		//~ d($choices);
-		//~ if(!is_array($value))
-		//~ d($value, $this->value, $this->name);
+
 		foreach($choices as $k=>$v) {
 			if(is_array($v)){
 				$res .= HTMLHelper::tag('optgroup', array('label'	=>	$k))."\n";

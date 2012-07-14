@@ -162,6 +162,7 @@ class Tools {
 		return $result;
 	}
 	
+	#todo move to i18n
 	static $countries = array(
 		'AF' => 'AFGHANISTAN',
 		'AX' => 'ÅLAND ISLANDS',

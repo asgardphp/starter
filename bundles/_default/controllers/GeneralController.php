@@ -50,13 +50,11 @@ class GeneralController extends Controller {
 	*/
 	public function startAction() {
 		Coxis::set('layout', array('General', 'layout'));
-	}	
-	
-	public function sidebarAction($request) {
-		
 	}
 	
 	public function layoutAction($content) {
+		if(access(Router::getRequest(), 'format') != 'html')
+			return $content;
 		$this->content = $content;
 		$this->view = 'layout.php';
 	}

@@ -10,6 +10,16 @@ class HTML {
 	private static $description = '';
 	private static $keywords = '';
 	
+	static public function getTitle() {
+		return static::$title;
+	}
+	static public function getDescription() {
+		return static::$description;
+	}
+	static public function getKeywords() {
+		return static::$keywords;
+	}
+	
 	static public function setTitle($title) {
 		static::$title = $title;
 	}

@@ -2,18 +2,19 @@
 class ModelDecorator {
 	private $_model = null;
 
+	public function __construct($model, $values=array()) {
+		$this->_model = $model;
+		$this->set($values);
+		
+		return $this->_model;
+	}
+
 	public function _getModel() {
 		return $this->_model;
 	}
 	
 	public function raw($name) {
 		return $this->_model->$name;
-	}
-
-	public function __construct($model) {
-		$this->_model = $model;
-		
-		return $this->_model;
 	}
 
 	public function __set($name, $value) {
@@ -72,7 +73,7 @@ class ModelDecorator {
 	//~ }
 	
 	public function __toString() {
-		return $this->_model->__toString();
+		return (string)$this->_model->__toString();
 	}
 	
 	public function set($vars) {

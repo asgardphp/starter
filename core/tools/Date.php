@@ -53,8 +53,12 @@ class Date {
 	}
 	
 	public static function toTimestamp($value) {
-		list($d, $m, $y) = explode('/', $value);
-		return mktime(0, 0, 0, $m, $d, $y);
+		try {
+			list($d, $m, $y) = explode('/', $value);
+			return mktime(0, 0, 0, $m, $d, $y);
+		} catch(Exception $e) {
+			return 0;
+		}
 	}
 	
 	public static function toDate($value) {

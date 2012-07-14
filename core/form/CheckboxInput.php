@@ -19,7 +19,7 @@ class CheckboxInput extends SingleInput {
 			'name'	=>	$this->dad->getName().'[]',
 			'value'	=>	$this->key,
 		);
-		//~ d($this->key);
+
 		if(in_array($this->key, $values))
 			$params['checked'] = 'checked';
 		if(isset($widget['view']['class']))

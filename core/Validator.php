@@ -8,9 +8,6 @@ class Validator {
 	}
 	
 	public function setConstrains($constrains) {
-	//~ d(Choeur::getProperties());
-	//~ d($constrains);
-	//~ d(1);
 		$cp = $constrains;
 		//todo check this part below have prioritize constrains..
 		if(isset($constrains['required'])) {
@@ -27,7 +24,7 @@ class Validator {
 					else
 						$cp[$property][$constrain] = array('condition' => $value);
 		$this->constrains = $cp;
-		//~ d($this->constrains);
+
 		return $this;
 	}
 	
@@ -42,8 +39,10 @@ class Validator {
 	}
 
 	var $default_messages = array(
+		'max'		=>	'Le champ "%s" doit être inféreieur ou égal à %s.',
+		'min'		=>	'Le champ "%s" doit être supérieur ou égal à %s.',
 		'required'		=>	'Le champ "%s" est obligatoire.',
-		'file_required'	=>	'The file "%s" is mandatory.',
+		'file_required'	=>	'Le fichier "%s" est obligatoire.',
 		'length'			=>	'Le champ "%s" doit faire moins de %s caractères.',
 		'type'				=>	array(
 			'integer'	=>	'Le champ "%s" doit être un nombre.',
@@ -72,6 +71,14 @@ class Validator {
 				break;
 			case 'eq':
 				if($var !== $condition)
+					return false;
+				break;
+			case 'max':
+				if((int)$var>$condition)
+					return false;
+				break;
+			case 'min':
+				if((int)$var<$condition)
 					return false;
 				break;
 			case 'length':

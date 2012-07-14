@@ -21,9 +21,10 @@ class Database {
 		else
 			$sql .= implode($fields, ', ').' ';
 		$sql .= 'FROM ';
-		$i=1;
+		
 		if(!is_array($tables))
 			$tables = array($tables);
+		$i=1;
 		foreach($tables as $key => $table) {
 			if(is_int($key))
 				$sql .= '`'.Config::get('database', 'prefix').$table.'`';
@@ -75,17 +76,20 @@ class Database {
 		return $this->query($sql, array_values($values));
 	}
 
-	public function delete($model, $conditions) {
+	public function delete($model, $conditions=array()) {
 		$args = array();
 
-		$sql = 'DELETE FROM `'.Config::get('database', 'prefix').$model.'` WHERE ';
+		$sql = 'DELETE FROM `'.Config::get('database', 'prefix').$model.'`';
+		if(sizeof($conditions) > 0) {
+			$sql .= ' WHERE ';
 
-		$arr = array();
-		foreach($conditions as $key=>$value) {
-			$arr[] = '`'.$key.'`=?';
-			$args[] = $value;
+			$arr = array();
+			foreach($conditions as $key=>$value) {
+				$arr[] = '`'.$key.'`=?';
+				$args[] = $value;
+			}
+			$sql .= implode(' AND ', $arr);
 		}
-		$sql .= implode(' AND ', $arr);
 
 		return $this->query($sql, $args);
 	}
@@ -156,8 +160,10 @@ class Database {
 
 class Query {
 	private $res;
+	private $db;
 
 	public function __construct($db, $sql) {
+		$this->db = $db;
 		$res = mysql_query($sql, $db);
 		
 		if(!$res)
@@ -166,7 +172,7 @@ class Query {
 	}
 
 	public function affected_rows() {
-		return mysql_affected_rows();
+		return mysql_affected_rows($this->db);
 	}
 
 	public function num() {

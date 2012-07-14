@@ -23,14 +23,6 @@ class Paginator {
 		return array($models, $paginator);
 	}
 	
-	//~ public function getFirst() {
-		//~ return ($this->page-1)*$this->per_page;
-	//~ }
-	
-	//~ public function getLast() {
-		//~ return ($this->page-1)*$this->per_page;
-	//~ }
-	
 	public function getStart() {
 		return ($this->page-1)*$this->per_page;
 	}
@@ -87,7 +79,7 @@ class Paginator {
 		return $url.'?'.http_build_query(array_merge($_GET, array('page'=>$this->page+1)));
 	}
 	
-	public function display($url) {
+	/*public function display($url) {
 		if($this->getPages() == 1)
 			return;
 		$url = $url.'?page=';
@@ -109,5 +101,5 @@ class Paginator {
 			<?php endif ?>
 		</ul>
 		<?php
-	}
+	}*/
 }

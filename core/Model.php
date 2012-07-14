@@ -91,7 +91,7 @@ abstract class Model {
 
     public function getRelation($name, $params=array()) {
 		$relationships = static::$relationships;
-		//~ d($name, $relationships);
+		
 		if(!isset($relationships[$name]['type']) || !isset($relationships[$name]['model']))
 			throw new Exception('Relation '.$name.' does not exists or is not set properly.');
 			
@@ -101,6 +101,7 @@ abstract class Model {
 		$pre_conditions = $params;
 		
 		switch($relation_type) {
+			case 'hasOne':
 			case 'belongsTo':
 				if($this->isNew())
 					return null;
@@ -108,7 +109,7 @@ abstract class Model {
 				if(isset($relationships[$name]['link']))
 					$field_id = $relationships[$name]['link'];
 				else
-					$id_field = strtolower($model).'_id';
+					$id_field = strtolower($name).'_id';
 			
 				if(isset($this->$model) && is_object($this->$model) && get_parent_class($this->$model)=='Model'
 					&& isset($this->$model->id) && $this->$model->id == $this->$id_field) //if relationshp is already set and id is the same as the relationship id
@@ -118,6 +119,7 @@ abstract class Model {
 			case 'hasMany':
 				if($this->isNew())
 					return array();
+					
 				$model = $relationships[$name]['model'];
 					
 				if(isset($relationships[$name]['link']))
@@ -135,12 +137,13 @@ abstract class Model {
 				$conditions = array(
 					'conditions'	=>	array($field_id." = ?" => array($this->id))
 				);
-				$conditions = array_merge(array('order_by'	=>	$model::$order_by), $pre_conditions, $conditions);
-					
+				$conditions = array_merge_recursive(array('order_by'	=>	$model::$order_by), $pre_conditions, $conditions);
+
 				return $model::find($conditions);
 			case 'HMABT':
 				if($this->isNew())
 					return array();
+					
 				$model = $relationships[$name]['model'];
 				if(strtolower(static::getModelName()) <= strtolower($model))
 					$join_table = strtolower(static::getModelName()).'_'.strtolower($model);
@@ -156,7 +159,7 @@ abstract class Model {
 						)
 					);
 					if($name == 'projects')
-				$conditions = array_merge(array('order_by'	=>	'a.'.$model::$order_by), $pre_conditions, $conditions);
+				$conditions = array_merge_recursive(array('order_by'	=>	'a.'.$model::$order_by), $pre_conditions, $conditions);
 				
 				return $model::select(
 					array(
@@ -275,19 +278,6 @@ abstract class Model {
 		return $result['total'];
 	}
 	
-	public static function paginate($page, $params, $per_page=10) {
-		$total = static::count($params);
-		
-		$params['offset'] = ($page-1)*$per_page;
-		$params['limit'] = $per_page;
-		
-		$models = static::find($params);
-		
-		$paginator = new Paginator($per_page, $total, $page);
-		
-		return array($models, $paginator);
-	}
-	
 	public static function query($sql, $args=array()) {
 		$db = Database::getInstance();
 		$tableName = strtolower(static::getModelName());
@@ -298,7 +288,6 @@ abstract class Model {
 		
 		$models = array();
 		foreach($results as $result)
-			//~ $models[] = new static($result);
 			$models[] = static::create($result);
 		
 		return $models;
@@ -389,6 +378,7 @@ abstract class Model {
 			else
 				$this->$col = $value;
 		}
+		
 		return $this;
 	}
 	
@@ -411,13 +401,12 @@ abstract class Model {
 		
 		$validator = new Validator();
 		$constrains = static::$_properties[$modelName];
-		//~ d(Choeur::getProperties());
-		//~ d($constrains);
+		
 		foreach($constrains as $property=>$property_constrains)
 			foreach($property_constrains as $k=>$constrain)
 				if(strtolower($k)=='validation')
 					$constrains[$property][$k] = array($this, $constrain);
-		//~ d(1,$constrains);
+		
 		$validator->setConstrains($constrains);
 
 		return $validator;
@@ -505,26 +494,29 @@ abstract class Model {
 				if(isset($params['multiple']) && $params['multiple']) {
 					static::addProperty('filename_'.$file, array('type' => 'array', 'defaultvalue'=>array(), 'editable'=>false));
 					
-					$modelName = static::getModelName();
-					$admin_controller = strtolower(CoxisAdmin::getAdminControllerFor($modelName));
-					$index = CoxisAdmin::getIndexFor($modelName);
-					
-					//~ d('coxis_'.$modelName.'_files_add');
-
-					#todo should handle this in bundles/_admin/ ..
-					#todo be sure not to create multiple times the same hook
-					Coxis::$controller_hooks[$admin_controller][] = array(
-								'route'			=>	$index.'/:id/:file/add',
-								'name'			=>	'coxis_'.$modelName.'_files_add',
-								'controller'	=>	'Multifile',
-								'action'			=>	'add'
-							);
-					Coxis::$controller_hooks[$admin_controller][] = array(
-								'route'			=>	$index.'/:id/:file/delete/:pos',
-								'name'			=>	'coxis_'.$modelName.'_files_delete',
-								'controller'	=>	'Multifile',
-								'action'			=>	'delete'
-							);
+					#if the coxisadmin controller exists
+					try {
+						$modelName = static::getModelName();
+						$admin_controller = strtolower(CoxisAdmin::getAdminControllerFor($modelName));
+						$index = CoxisAdmin::getIndexFor($modelName);
+	
+						#todo should handle this in bundles/_admin/ ..
+						#todo be sure not to create multiple times the same hook
+						Coxis::$controller_hooks[$admin_controller][] = array(
+									'route'			=>	$index.'/:id/:file/add',
+									'name'			=>	'coxis_'.$modelName.'_files_add',
+									'controller'	=>	'Multifile',
+									'action'			=>	'add'
+								);
+						Coxis::$controller_hooks[$admin_controller][] = array(
+									'route'			=>	$index.'/:id/:file/delete/:pos',
+									'name'			=>	'coxis_'.$modelName.'_files_delete',
+									'controller'	=>	'Multifile',
+									'action'			=>	'delete'
+								);
+					}
+					catch(Exception $e) {
+					}
 				}
 				#single
 				else
@@ -579,6 +571,8 @@ abstract class Model {
 	public function save($params=null, $force=false) {
 		$this->pre_save($params);
 		$this->_save($params, $force);
+
+		return $this;
 	}
 	
 	public function _save($params=null, $force=false) {
@@ -606,7 +600,6 @@ abstract class Model {
 				if(Model::$_properties[$model][$col]['type']=='array')
 					$vars[$col] = serialize($var);
 				elseif(Model::$_properties[$model][$col]['type']=='date')
-					//~ $vars[$col] = Date::toTimestamp($var);
 					$vars[$col] = $var->datetime();
 			}
 		}
@@ -617,20 +610,36 @@ abstract class Model {
 			$this->id = Database::getInstance()->id();
 		}
 		//existing
-		elseif(sizeof($vars) > 0)
-			Database::getInstance()->update($this->getTableName(), array('id' => $this->id), $vars);
+		elseif(sizeof($vars) > 0) {
+			#todo should update, see if working, then insert if no affected rows?
+			if(Database::getInstance()->select($this->getTableName(), array('id' => $this->id))->num())
+				Database::getInstance()->update($this->getTableName(), array('id' => $this->id), $vars);
+			else
+				Database::getInstance()->insert($this->getTableName(), array_merge(array('id' => $this->id), $vars));
+		}
 	
 		//Persist relationships
 		$relationships = static::$relationships;
 		if(is_array($relationships)) {
 			foreach($relationships as $relationship => $params) {
-				//~ if($params['type'] == 'belongsTo' || $params['type'] == 'hasOne') {
-					//~ $id_field = $relationship.'_id';
-					//~ $vars[$id_field] = $this->$id_field;
-				//~ }
 				if($params['type'] == 'hasOne') {
+					//todo find a better way to link two hasOne models..
+					$relation_model = $params['model'];
+					$rels = $relation_model::$relationships;
+					//~ d($rels);
+					
 					$id_field = $relationship.'_id';
-					$model_id_field = strtolower($model).'_id';
+					//~ $model_id_field = strtolower($model).'_id';
+					$model_id_field = false;
+					
+					foreach($rels as $name=>$rel) {
+						if($rel['type'] == 'hasOne' && strtolower($rel['model']) == $this->getModelName()) {
+							$model_id_field = strtolower($name).'_id';
+						}
+					}
+					if(!$model_id_field)//no reverse hasOne relation
+						continue;
+				
 					Database::getInstance()->update(
 						$params['model'],
 						array($model_id_field => $this->id),
@@ -682,7 +691,6 @@ abstract class Model {
 		#validator
 		$validator = $this->getValidator();
 		if(static::$messages)
-			//~ d(static::$messages);
 			$validator->setMessages(static::$messages);
 		$file_validator = $this->getFileValidator();
 		

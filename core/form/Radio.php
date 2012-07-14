@@ -1,5 +1,5 @@
 <?php
-class Radio extends WidgetHelper {
+class Radio extends WidgetHelper implements ArrayAccess {
 	private $pos=0;
 	
 	function __construct($dad, $name, $params, $value) {
@@ -26,5 +26,24 @@ class Radio extends WidgetHelper {
 		}
 		else
 			return false;
+	}
+	
+	public function offsetSet($offset, $value) {
+		if(is_null($offset))
+			$this->params[] = $value;
+		else
+			$this->params[$offset] = $value;
+	}
+
+	public function offsetExists($offset) {
+		return isset($this->params['choices'][$offset]);
+	}
+
+	public function offsetUnset($offset) {
+		unset($this->params['choices'][$offset]);
+	}
+
+	public function offsetGet($offset) {
+		return isset($this->params['choices'][$offset]) ? new RadioInput($this, $this->params['choices'][$offset]) : null;
 	}
 }

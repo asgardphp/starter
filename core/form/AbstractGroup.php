@@ -6,6 +6,10 @@ abstract class AbstractGroup implements ArrayAccess, Iterator {
 	public $files = array();
 	protected $widgets = array();
 	
+	public function getWidgets() {
+		return $this->widgets;
+	}
+	
 	public function getParents() {
 		$parents = array();
 		
@@ -49,7 +53,7 @@ abstract class AbstractGroup implements ArrayAccess, Iterator {
 					//~ return new Group($widgets, $this, $name);
 			}
 			elseif(is_object($widgets) && is_subclass_of($widgets, 'WidgetHelper')) {
-				if(in_array($name, array('groupName', 'dad', 'data', 'widgets', 'params', 'files')))
+				if(in_array($name, array('groupName', 'dad', 'data', 'widgets', 'params', 'files'), true))
 					throw new Exception('Can\'t use keyword "'.$name.'" for form widget');
 				$widget = $widgets;
 				$widget->setName($name);

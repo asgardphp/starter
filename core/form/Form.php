@@ -4,6 +4,7 @@ class Form extends AbstractGroup {
 		'method'	=>	'post',
 		'action'	=>	'',
 	);
+	private $callbacks = array();
 
 	function __construct($param1=null, $param2=array(), $param3=array()) {
 		static::generateTokens();
@@ -44,6 +45,19 @@ class Form extends AbstractGroup {
 			)),
 			'_csrf_token'
 		);
+	}
+	
+	public function setCallback($name, $cb) {
+		$this->callbacks[$name] = $cb;
+	}
+	
+	public function callback($name, $args=array()) {
+		if(isset($this->callbacks[$name])) {
+			$args = array_merge(array($this), $args);
+			return call_user_func_array($this->callbacks[$name], $args);
+		}
+		else
+			return null;
 	}
 	
 	private static function generateTokens() {	

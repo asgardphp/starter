@@ -1,7 +1,7 @@
 <?php
 require_once('core/form/WidgetHelper.php');
 
-class Checkboxes extends WidgetHelper {
+class Checkboxes extends WidgetHelper implements ArrayAccess {
 	private $pos=0;
 	
 	function __construct($dad, $name, $params, $value) {
@@ -32,4 +32,23 @@ class Checkboxes extends WidgetHelper {
 	
 	//todo foreach($checkboxes as $box) ..
 	//todo be able to print label directly : echo $box->label;
+	
+	public function offsetSet($offset, $value) {
+		if(is_null($offset))
+			$this->params[] = $value;
+		else
+			$this->params[$offset] = $value;
+	}
+
+	public function offsetExists($offset) {
+		return isset($this->params['choices'][$offset]);
+	}
+
+	public function offsetUnset($offset) {
+		unset($this->params['choices'][$offset]);
+	}
+
+	public function offsetGet($offset) {
+		return isset($this->params['choices'][$offset]) ? new CheckboxInput($this, $this->params['choices'][$offset]) : null;
+	}
 }

@@ -41,10 +41,4 @@ class User {
 		unset($_SESSION['role']);
 		static::$role = null;
 	}
-	
-	public static function unauthorized() {
-		Response::setCode(401)
-			->setHeader('Location', "/myproject/login")//TODO
-			->send();
-	}
 }

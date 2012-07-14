@@ -293,8 +293,8 @@ class AdminModelForm extends ModelForm {
 			$submits = static::$BOTH;
 		echo '<hr />
 						<p>'.
-							($submits!=static::$SAVE ? '<input name="send" type="submit" class="submit long" value="Save and back to list" /> ':'').
-							($submits!=static::$SEND ? '<input name="stay" type="submit" class="submit long" value="Save" /> ':'').
+							($submits!=static::$SAVE ? '<input name="send" type="submit" class="submit long" value="Sauvegarder & Retour" /> ':'').
+							($submits!=static::$SEND ? '<input name="stay" type="submit" class="submit long" value="Sauvegarder & Rester" /> ':'').
 						'</p>';
 		parent::end();
 		

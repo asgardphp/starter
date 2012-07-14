@@ -8,13 +8,14 @@ class ModelForm extends Form {
 	) {
 		$this->model = $model;
 	
-	//~ d($model->getProperties());
-	
 		$widgets = array();
 		foreach($model->getProperties() as $name=>$properties) {
+			if(isset($params['only']))
+				if(!in_array($name, $params['only']))
+					continue;
+		
 			$widget_params = array();
-			//~ if($name=='filename_logo')
-				//~ d($properties, $model->getProperties());
+
 			if(isset($properties['editable']) && !$properties['editable'])
 				continue;
 			if(!$model->isNew())
@@ -31,37 +32,47 @@ class ModelForm extends Form {
 			$widgets[$name] = new Widget($widget_params);
 		}
 		
-		//~ echo ModelDecorator::$files;
-		//~ $model::getStatic('files');
-		//~ echo ModelDecorator::$files;
 		$modelName = $model->getModelName();
 		
 		foreach($modelName::$files as $name=>$file) {
+			if(isset($params['only']))
+				if(!in_array($name, $params['only']))
+					continue;
+					
 			$widget_params = array('type'=>'file');
 			//~ $widget_params = array('type'=>'text');
 			$widgets[$name] = new Widget($widget_params);
 		}
 		
 		foreach($modelName::$relationships as $name=>$relation) {
+			if(isset($params['only']))
+				if(!in_array($name, $params['only']))
+					continue;
+					
 			$property_name = $name.'_id';
+			#todo why using _id instead of name?!
 			
 			$ids = array();
 			foreach($relation['model']::find() as $v)
-				$ids[] = $v->id;
+				$ids[$v->id] = $v;
 					
 			if($relation['type'] == 'hasOne' || $relation['type'] == 'belongsTo') {
 				$widget_params = array(
 					'type'	=>	'integer',
-					'in'		=>	$ids,
+					'choices'		=>	$ids,
 					'default'	=>	$model->$property_name,
 				);
 				$widgets[$property_name] = new Widget($widget_params);
 			}
-			elseif($relation['type'] == 'HMABT' || $relation['type'] == 'hasMany') {
+			#todo hasMany?
+			elseif($relation['type'] == 'HMABT') {
+				$defaults = array();
+				foreach($this->model->getRelation($name) as $r)
+					$defaults[] = $r->id;
 				$widget_params = array(
 					//~ 'type'	=>	'integer',
-					'in'		=>	$ids,
-					'default'	=>	array(2,3),//todo ...
+					'choices'		=>	$ids,
+					'default'	=>	$defaults,
 				);
 				$widgets[$property_name] = new Widget($widget_params);
 			}
@@ -100,8 +111,17 @@ class ModelForm extends Form {
 		return $errors;
 	}
 	
+	public function getModel() {
+		return $this->model;
+	}
+	
 	public function my_errors() {
-		$this->model->set($this->getData());
+		$data = $this->getData();
+		$res = $this->callback('pre_set', array($data));
+		if($res)
+			$data = $res;
+		
+		$this->model->set($data);
 		$this->model->setFiles($this->files);
 		$this->model->pre_save();
 		
@@ -109,12 +129,13 @@ class ModelForm extends Form {
 	}
 	
 	public function save() {
-		//~ d($this->style_musical);
 		if($errors = $this->errors()) {
 			$e = new FormException;
 			$e->errors = $errors;
 			throw $e;
 		}
+	
+		$this->callback('pre_save');
 	
 		return $this->_save();
 	}
@@ -129,10 +150,6 @@ class ModelForm extends Form {
 		if(is_subclass_of($group, 'AbstractGroup'))
 			foreach($group->widgets as $name=>$widget)
 				if(is_subclass_of($widget, 'AbstractGroup'))
-					$widget->_save($widget);
-	}
-	
-	public function getModel() {
-		return $this->model;
+					$this->_save($widget);
 	}
 }
