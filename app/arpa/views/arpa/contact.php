@@ -63,5 +63,5 @@
 						<iframe width="360" height="165" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://maps.google.com/maps?f=q&amp;source=s_q&amp;hl=en&amp;geocode=&amp;q=Atelier+R%C3%A9gional+des+Pratiques+Musicales+Amateur&amp;aq=&amp;sll=43.611673,1.345847&amp;sspn=0.008436,0.021136&amp;ie=UTF8&amp;hq=Atelier+R%C3%A9gional+des+Pratiques+Musicales+Amateur&amp;hnear=&amp;t=m&amp;cid=15215375135387016808&amp;ll=43.611222,1.345997&amp;spn=0.010254,0.030813&amp;z=14&amp;iwloc=A&amp;output=embed"></iframe><br /><small><a href="https://maps.google.com/maps?f=q&amp;source=embed&amp;hl=en&amp;geocode=&amp;q=Atelier+R%C3%A9gional+des+Pratiques+Musicales+Amateur&amp;aq=&amp;sll=43.611673,1.345847&amp;sspn=0.008436,0.021136&amp;ie=UTF8&amp;hq=Atelier+R%C3%A9gional+des+Pratiques+Musicales+Amateur&amp;hnear=&amp;t=m&amp;cid=15215375135387016808&amp;ll=43.611222,1.345997&amp;spn=0.010254,0.030813&amp;z=14&amp;iwloc=A" style="color:#4d4d4f;text-align:left; font-size:12px;">Agrandir le plan</a></small>
 					</div>
 				</div>
-				<?php $this->component('general', 'sidebar') ?>
+				<?php $this->component('default', 'sidebar') ?>
 			</div>

@@ -58,5 +58,5 @@
 					<input type="image" src="images/annonces/valider.png" style="margin:20px 0 0 120px;"/>
 					</form>
 				</div>
-				<?php echo $this->component('general', 'sidebar') ?>
+				<?php echo $this->component('default', 'sidebar') ?>
 			</div>

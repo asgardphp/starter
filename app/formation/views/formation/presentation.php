@@ -31,5 +31,5 @@ Le coût de la formation peut-être pris en charge en partie selon chaque dépar
 Pour bénéficier de ces 3 types de formations vous devez faire une demande par écrit avant le 30 novembre de chaque année auprès de votre relais départemental. Les interventions se dérouleront dans la mesure du possible dans le courant du 1er semestre de l’année civile suivante. Vous devez également acquitter "l’adhésion chorale" de 60€ à l’ARPA qui assurera la gestion administrative et sociale des intervenants. </p>
 					</div>
 				</div>
-				<?php $this->component('general', 'sidebar') ?>
+				<?php $this->component('default', 'sidebar') ?>
 			</div>

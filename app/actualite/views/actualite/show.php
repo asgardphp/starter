@@ -15,5 +15,5 @@
 						</div>
 					</div>
 				</div>
-				<?php $this->component('general', 'sidebar') ?>
+				<?php $this->component('default', 'sidebar') ?>
 			</div>

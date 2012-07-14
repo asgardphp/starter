@@ -5,7 +5,7 @@
 	<title><?php echo Config::get('website', 'name') ?> &#9679; Login</title>
 	<base href="<?php echo URL::to('admin/') ?>" />
     <style type="text/css" media="all">
-		@import url("<?php echo URL::to('bundles/_admin/css/admin.css') ?>");
+		@import url("<?php echo URL::to('bundles/admin/css/admin.css') ?>");
     </style>
 	<!--[if lt IE 8]><style type="text/css" media="all">@import url("<?php echo URL::to('css/ie.css') ?>");</style><![endif]-->
 </head>

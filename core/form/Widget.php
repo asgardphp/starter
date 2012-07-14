@@ -250,9 +250,9 @@ class Widget extends WidgetHelper {
 		//]]>
 		</script>
 		<?php
-		HTML::include_js('bundles/_ckeditor/ckeditor/ckeditor.js');
-		HTML::include_js('bundles/_ckeditor/ckeditor/_samples/sample.js');
-		HTML::include_css('bundles/_ckeditor/ckeditor/_samples/sample.css');
+		HTML::include_js('bundles/ckeditor/ckeditor/ckeditor.js');
+		HTML::include_js('bundles/ckeditor/ckeditor/_samples/sample.js');
+		HTML::include_css('bundles/ckeditor/ckeditor/_samples/sample.css');
 		
 		return $this;
 	}

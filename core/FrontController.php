@@ -84,8 +84,8 @@ class FrontController extends Controller {
 		exit();
 	}
 
+	#todo remove and replace with "coxis publish"
 	public function getResource() {
-
 		#WEB RESOURCES
 		if(isset($_SERVER['REDIRECT_URL']) || isset($_SERVER['PATH_INFO'])) {
 			if(isset($_SERVER['PATH_INFO']))
@@ -103,10 +103,16 @@ class FrontController extends Controller {
 					$bundle = $dirs[1];
 					$path = implode('/', array_slice($dirs, 2));
 					
-					if(file_exists('bundles/'.$bundle.'/web/'.$path) && is_file('bundles/'.$bundle.'/web/'.$path))
-						$this->send_file('bundles/'.$bundle.'/web/'.$path);
-					elseif($dirs['2'] == 'web' && file_exists('bundles/'.$bundle.'/'.$path) && is_file('bundles/'.$bundle.'/'.$path))
-						$this->send_file('bundles/'.$bundle.'/'.$path);
+					foreach(BundlesManager::$directories as $dir)
+						if(file_exists($dir.'/'.$bundle.'/web/'.$path) && is_file($dir.'/'.$bundle.'/web/'.$path)) {
+							$this->send_file($dir.'/'.$bundle.'/web/'.$path);
+							return;
+						}
+					foreach(BundlesManager::$directories as $dir)
+						if($dirs['2'] == 'web' && file_exists($dir.'/'.$bundle.'/'.$path) && is_file($dir.'/'.$bundle.'/'.$path)) {
+							$this->send_file($dir.'/'.$bundle.'/'.$path);
+							return;
+						}
 				}
 			}
 		}

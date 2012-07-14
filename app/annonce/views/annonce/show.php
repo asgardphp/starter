@@ -32,5 +32,5 @@
 					<br/><br/>
 					<span class="note">Annonce posté le <?php echo date('d', $annonce->created_at) ?> <?php echo strtolower(Tools::$months[date('F', $annonce->created_at)]) ?> <?php echo date('Y', $annonce->created_at) ?></span>
 				</div>
-				<?php echo $this->component('general', 'sidebar') ?>
+				<?php echo $this->component('default', 'sidebar') ?>
 			</div>

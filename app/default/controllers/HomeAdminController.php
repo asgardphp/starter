@@ -35,7 +35,5 @@ class HomeAdminController extends AdminParentController {
 			catch(ModelException $e) {
 				Messenger::getInstance()->addError($e->errors);
 			}
-		
-		//~ $this->view = 'serviceform.php';
 	}
 }

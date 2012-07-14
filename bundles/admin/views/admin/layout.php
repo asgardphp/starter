@@ -6,13 +6,13 @@
 	<title><?php echo Value::val('name') ?> &#9679; Administration</title>
 	<base href="<?php echo URL::to('admin/') ?>" />
 	<style type="text/css" media="all">
-		@import url("../bundles/_admin/css/admin.css");
-		@import url("../bundles/_admin/css/jquery.wysiwyg.css");
-		@import url("../bundles/_admin/css/facebox.css");
-		@import url("../bundles/_admin/css/visualize.css");
-		@import url("../bundles/_admin/css/date_input.css");
+		@import url("../bundles/admin/css/admin.css");
+		@import url("../bundles/admin/css/jquery.wysiwyg.css");
+		@import url("../bundles/admin/css/facebox.css");
+		@import url("../bundles/admin/css/visualize.css");
+		@import url("../bundles/admin/css/date_input.css");
 	</style>
-	<!--[if lt IE 8]><style type="text/css" media="all">@import url("../bundles/_admin/css/ie.css");</style><![endif]-->
+	<!--[if lt IE 8]><style type="text/css" media="all">@import url("../bundles/admin/css/ie.css");</style><![endif]-->
 	<script type="text/javascript" src="../js/jquery.js"></script>
 </head>
 <body>
@@ -57,30 +57,30 @@
 		</div>			
 	</div>	
 
-	<!--[if IE]><script type="text/javascript" src="../bundles/_admin/js/excanvas.js"></script><![endif]-->	
-	<script type="text/javascript" src="../bundles/_admin/js/jquery.img.preload.js"></script>
-	<script type="text/javascript" src="../bundles/_admin/js/jquery.filestyle.mini.js"></script>
-	<script type="text/javascript" src="../bundles/_admin/js/jquery.wysiwyg.js"></script>
-	<script type="text/javascript" src="../bundles/_admin/js/jquery.date_input.pack.js"></script>
-	<script type="text/javascript" src="../bundles/_admin/js/facebox.js"></script>
-	<script type="text/javascript" src="../bundles/_admin/js/jquery.visualize.js"></script>
-	<script type="text/javascript" src="../bundles/_admin/js/jquery.visualize.tooltip.js"></script>
-	<script type="text/javascript" src="../bundles/_admin/js/jquery.select_skin.js"></script>
-	<script type="text/javascript" src="../bundles/_admin/js/jquery.tablesorter.min.js"></script>
-	<script type="text/javascript" src="../bundles/_admin/js/ajaxupload.js"></script>
-	<script type="text/javascript" src="../bundles/_admin/js/jquery.pngfix.js"></script>
-	<script type="text/javascript" src="../bundles/_admin/js/custom.js"></script>
+	<!--[if IE]><script type="text/javascript" src="../bundles/admin/js/excanvas.js"></script><![endif]-->	
+	<script type="text/javascript" src="../bundles/admin/js/jquery.img.preload.js"></script>
+	<script type="text/javascript" src="../bundles/admin/js/jquery.filestyle.mini.js"></script>
+	<script type="text/javascript" src="../bundles/admin/js/jquery.wysiwyg.js"></script>
+	<script type="text/javascript" src="../bundles/admin/js/jquery.date_input.pack.js"></script>
+	<script type="text/javascript" src="../bundles/admin/js/facebox.js"></script>
+	<script type="text/javascript" src="../bundles/admin/js/jquery.visualize.js"></script>
+	<script type="text/javascript" src="../bundles/admin/js/jquery.visualize.tooltip.js"></script>
+	<script type="text/javascript" src="../bundles/admin/js/jquery.select_skin.js"></script>
+	<script type="text/javascript" src="../bundles/admin/js/jquery.tablesorter.min.js"></script>
+	<script type="text/javascript" src="../bundles/admin/js/ajaxupload.js"></script>
+	<script type="text/javascript" src="../bundles/admin/js/jquery.pngfix.js"></script>
+	<script type="text/javascript" src="../bundles/admin/js/custom.js"></script>
 	
-	<script type="text/javascript" src="../bundles/_admin/uploadify/swfobject.js"></script>
-	<script type="text/javascript" src="../bundles/_admin/uploadify/jquery.uploadify.v2.1.4.min.js"></script>
+	<script type="text/javascript" src="../bundles/admin/uploadify/swfobject.js"></script>
+	<script type="text/javascript" src="../bundles/admin/uploadify/jquery.uploadify.v2.1.4.min.js"></script>
 	<script type="text/javascript">
 	// <![CDATA[
 	function multiple_upload(el, url) {
 		elID = '#'+el;
 	  $('#'+el+'-filesupload').uploadify({
-		'uploader'  : '../bundles/_admin/uploadify/uploadify.swf',
+		'uploader'  : '../bundles/admin/uploadify/uploadify.swf',
 		'script'    : url,
-		'cancelImg' : '../bundles/_admin/uploadify/cancel.png',
+		'cancelImg' : '../bundles/admin/uploadify/cancel.png',
 		'auto'      : true,
 		'multi'           : true,
 		'scriptData'  : {'PHPSESSID':'<?php echo session_id() ?>'},

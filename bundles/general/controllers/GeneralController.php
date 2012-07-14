@@ -49,17 +49,7 @@ class GeneralController extends Controller {
 	@Priority(-10)
 	*/
 	public function startAction() {
-		Coxis::set('layout', array('General', 'layout'));
-	}
-	
-	public function layoutAction($content) {
-		if(access(Router::getRequest(), 'format') != 'html')
-			return $content;
-		$this->content = $content;
-		$this->view = 'layout.php';
-	}
-	
-	public function sidebarAction($request) {
+		Coxis::set('layout', array('Default', 'layout'));
 	}
 	
 	/**

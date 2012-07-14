@@ -1,14 +1,14 @@
 <?php
 class Error {
-	private static $policy = false;
+	private static $display = false;
 
 	public static function except($e=null) { 
 		Response::setCode(500)->send();
 	}
 	
-	public static function policy($policy=E_ALL) {
-		static::$policy = $policy;
-		ini_set('display_errors', $policy);
+	public static function display($display=E_ALL) {
+		static::$display = $display;
+		ini_set('display_errors', $display);
 	}
 	
 	
@@ -21,7 +21,7 @@ class Error {
 		
 		Response::setCode(500);
 		
-		if(static::$policy) {
+		if(static::$display) {
 			ob_start();
 			
 			if($msg) {

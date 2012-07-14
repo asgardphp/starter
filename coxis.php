@@ -1,12 +1,11 @@
 <?php
 if(version_compare(PHP_VERSION, '5.3.0') < 0)
-	die('You need PHP > 5.3');
+	die('You need PHP ≥ 5.3');
 
 /* ENV */
 ini_set('error_reporting', E_ALL);
 chdir(dirname(__FILE__));
 define('_WEB_DIR_', 'web');#todo: remove..
-	
 if(!defined('_ENV_'))
 	if(isset($_SERVER['HTTP_HOST']) && ($_SERVER['HTTP_HOST'] == '127.0.0.1' || $_SERVER['HTTP_HOST'] == 'localhost') || php_sapi_name() == 'cli')
 		define('_ENV_', 'dev');
@@ -18,17 +17,14 @@ function d() {
 	if(ob_get_length() > 0)
 		ob_end_clean();
 		
-	if(php_sapi_name() == 'cli')
+	if(php_sapi_name() != 'cli')
 		echo '<pre>';
-		
 	foreach(func_get_args() as $arg)
 		var_dump($arg);
-		
-	if(php_sapi_name() == 'cli')
+	if(php_sapi_name() != 'cli')
 		echo '</pre>';
 	
 	Error::print_backtrace('', debug_backtrace());
-		
 	exit();
 }
 function access() {	
@@ -44,7 +40,6 @@ function access() {
 }
 function send($result) {
 	Response::sendHeaders($result->headers);
-	
 	echo $result->content;
 	exit();
 }
@@ -57,17 +52,24 @@ spl_autoload_register(array('Coxis', 'loadClass'));
 Coxis::preLoadClasses('core');
 
 /* ERRORS/EXCEPTIONS */
-class PHPErrorException extends Exception {}
-function errorHandler($errno, $errstr, $errfile, $errline) {
-	throw new PHPErrorException("($errno) $errstr<br>
-	$errfile ($errline)");
-	//todo add file and line to stack & death loop exceptions
+class PHPErrorException extends Exception {
+	public $errno, $errstr, $errfile, $errline;
 }
-function exceptionHandler($e) {
+set_error_handler(function ($errno, $errstr, $errfile, $errline) {
+	$e = new PHPErrorException();
+	$e->errno = $errno;
+	$e->errstr = $errstr;
+	$e->errfile = $errfile;
+	$e->errline = $errline;
+	throw $e;
+});
+set_exception_handler(function ($e) {
 	if(is_a($e, 'EndException'))
 		$result = $e->result;
-	elseif(is_a($e, 'PHPErrorException'))
-		$result = Error::report($e->getMessage(), $e->getTrace());
+	elseif(is_a($e, 'PHPErrorException')) {
+		$msg = '('.$e->errno.') '.$e->errstr.'<br>'.$e->errfile.' ('.$e->errline.')';
+		$result = Error::report($msg, $e->getTrace());
+	}
 	else {
 		$first_trace = array(array(
 			'file'	=>	$e->getFile(),
@@ -75,24 +77,18 @@ function exceptionHandler($e) {
 		));
 		$result = Error::report($e->getMessage(), array_merge($first_trace, $e->getTrace()));
 	}
-	
 	send($result);
-}
-//todo cannot handle multiple requests with this thing
-function shutdown() {
+});
+register_shutdown_function(function () {
 	chdir(dirname(__FILE__));//wtf?
-
 	if($e=error_get_last()) {
 		$result = Error::report("($e[type]) $e[message]<br>
 			$e[file] ($e[line])", array(array('file'=>$e['file'], 'line'=>$e['line'])));
 		send($result);
 	}
-}
-set_error_handler('errorHandler');
-set_exception_handler('exceptionHandler');
-register_shutdown_function('shutdown');
+});
 
 /* CONFIG */
-Config::loadConfigFile('config.php');
+Config::loadConfigDir('config');
 if(Config::get('error_display'))
-	Error::policy(true);
+	Error::display(true);

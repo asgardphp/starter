@@ -9,12 +9,12 @@ CKEDITOR.editorConfig = function( config )
 	// config.language = 'fr';
 	// config.uiColor = '#AADC6E';
 	
-	config.filebrowserBrowseUrl = 'bundles/_ckeditor/kcfinder/browse.php?type=files';
-	config.filebrowserImageBrowseUrl = 'bundles/_ckeditor/kcfinder/browse.php?type=images';
-	config.filebrowserFlashBrowseUrl = 'bundles/_ckeditor/kcfinder/browse.php?type=flash';
-	config.filebrowserUploadUrl = 'bundles/_ckeditor/kcfinder/upload.php?type=files';
-	config.filebrowserImageUploadUrl = 'bundles/_ckeditor/kcfinder/upload.php?type=images';
-	config.filebrowserFlashUploadUrl = 'bundles/_ckeditor/kcfinder/upload.php?type=flash';
+	config.filebrowserBrowseUrl = 'bundles/ckeditor/kcfinder/browse.php?type=files';
+	config.filebrowserImageBrowseUrl = 'bundles/ckeditor/kcfinder/browse.php?type=images';
+	config.filebrowserFlashBrowseUrl = 'bundles/ckeditor/kcfinder/browse.php?type=flash';
+	config.filebrowserUploadUrl = 'bundles/ckeditor/kcfinder/upload.php?type=files';
+	config.filebrowserImageUploadUrl = 'bundles/ckeditor/kcfinder/upload.php?type=images';
+	config.filebrowserFlashUploadUrl = 'bundles/ckeditor/kcfinder/upload.php?type=flash';
 
 	CKEDITOR.config.toolbar_Full = [
 		{ name: 'document', items : [ 'Source','-','Save','NewPage'

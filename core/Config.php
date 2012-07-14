@@ -3,6 +3,11 @@
 class Config {
 	private static $config = array();
 	
+	public static function loadConfigDir($dir) {
+		foreach(glob($dir.'/*.php') as $filename)
+			static::loadConfigFile($filename);
+	}
+	
 	public static function loadConfigFile($filename) {
 		require($filename);
 		if(isset($config['all']))

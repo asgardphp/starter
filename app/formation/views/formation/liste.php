@@ -30,5 +30,5 @@
 					</ul>
 					<?php $paginator->display('formations/liste') ?>
 				</div>
-				<?php $this->component('general', 'sidebar') ?>
+				<?php $this->component('default', 'sidebar') ?>
 			</div>

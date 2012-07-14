@@ -145,7 +145,7 @@ $(function () {
 	
 	// Style file input
 	$("input[type=file].file").filestyle({ 
-	    image: "../bundles/_admin/img/upload.gif",
+	    image: "../bundles/admin/img/upload.gif",
 	    imageheight : 30,
 	    imagewidth : 80,
 	    width : 250

@@ -9,12 +9,12 @@ CKEDITOR.editorConfig = function( config )
 	// config.language = 'fr';
 	// config.uiColor = '#AADC6E';
 	
-	config.filebrowserBrowseUrl = '<?php echo URL::to('bundles/_ckeditor/kcfinder/browse.php?type=files') ?>';
-	config.filebrowserImageBrowseUrl = '<?php echo URL::to('bbundles/_ckeditor/kcfinder/browse.php?type=images') ?>';
-	config.filebrowserFlashBrowseUrl = '<?php echo URL::to('bbundles/_ckeditor/kcfinder/browse.php?type=flash') ?>';
-	config.filebrowserUploadUrl = '<?php echo URL::to('bbundles/_ckeditor/kcfinder/upload.php?type=files') ?>';
-	config.filebrowserImageUploadUrl = '<?php echo URL::to('bbundles/_ckeditor/kcfinder/upload.php?type=images') ?>';
-	config.filebrowserFlashUploadUrl = '<?php echo URL::to('bbundles/_ckeditor/kcfinder/upload.php?type=flash') ?>';
+	config.filebrowserBrowseUrl = '<?php echo URL::to('bundles/ckeditor/kcfinder/browse.php?type=files') ?>';
+	config.filebrowserImageBrowseUrl = '<?php echo URL::to('bundles/ckeditor/kcfinder/browse.php?type=images') ?>';
+	config.filebrowserFlashBrowseUrl = '<?php echo URL::to('bundles/ckeditor/kcfinder/browse.php?type=flash') ?>';
+	config.filebrowserUploadUrl = '<?php echo URL::to('bundles/ckeditor/kcfinder/upload.php?type=files') ?>';
+	config.filebrowserImageUploadUrl = '<?php echo URL::to('bundles/ckeditor/kcfinder/upload.php?type=images') ?>';
+	config.filebrowserFlashUploadUrl = '<?php echo URL::to('bundles/ckeditor/kcfinder/upload.php?type=flash') ?>';
 
 	CKEDITOR.config.toolbar_Full = [
 		{ name: 'document', items : [ 'Source','-','Save','NewPage'
