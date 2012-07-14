@@ -60,7 +60,7 @@ CREATE TABLE `arpa_administrator` (
   `username` varchar(100) NOT NULL,
   `password` varchar(100) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -69,6 +69,7 @@ CREATE TABLE `arpa_administrator` (
 
 LOCK TABLES `arpa_administrator` WRITE;
 /*!40000 ALTER TABLE `arpa_administrator` DISABLE KEYS */;
+INSERT INTO `arpa_administrator` VALUES (1,'admin','aa9760ca2f0d59de8fd6eabebd61c4cf1b8ad972');
 /*!40000 ALTER TABLE `arpa_administrator` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -386,4 +387,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2012-07-14 15:42:54
+-- Dump completed on 2012-07-14 16:29:37

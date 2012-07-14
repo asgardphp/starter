@@ -25,13 +25,14 @@ class BundlesManager {
 	public static $bundles_routes = array();
 	public static $filters_table = array();
 	public static $routes = array();
+	public static $directories = array('bundles');
 	
 	public static function loadBundle($bundle) {
-		if(file_exists('bundles/'.$bundle.'/bundle.php'))
-			include('bundles/'.$bundle.'/bundle.php');
+		if(file_exists($bundle.'/bundle.php'))
+			include($bundle.'/bundle.php');
 	
-		if(file_exists('bundles/'.$bundle.'/controllers/'))
-			foreach(glob('bundles/'.$bundle.'/controllers/*.php') as $filename) {
+		if(file_exists($bundle.'/controllers/'))
+			foreach(glob($bundle.'/controllers/*.php') as $filename) {
 				include_once($filename);
 				$classname = static::classname($filename);
 				$reflection = new ReflectionAnnotatedClass($classname);
@@ -76,8 +77,8 @@ class BundlesManager {
 				}
 			}
 		
-		if(file_exists('bundles/'.$bundle.'/models/'))
-			foreach(glob('bundles/'.$bundle.'/models/*.php') as $filename) {
+		if(file_exists($bundle.'/models/'))
+			foreach(glob($bundle.'/models/*.php') as $filename) {
 				include_once($filename);
 				$model_name = strtolower(static::classname($filename));
 				$_properties = array();
@@ -111,10 +112,15 @@ class BundlesManager {
 	}
 	
 	public static function loadBundleLibs($bundle) {
-		Coxis::preLoadClasses('bundles/'.$bundle.'/libs/');
+		Coxis::preLoadClasses($bundle.'/libs/');
 	}
 	
 	public static function loadBundles() {
+		foreach(static::$directories as $dir)
+			static::loadBundlesDir($dir);
+	}
+	
+	public static function loadBundlesDir($dir) {
 		//TODO: either set all routes or simply give specific routes
 		//TODO: Takes routes from CONFIG
 		$routes = Config::get('routes');
@@ -130,8 +136,8 @@ class BundlesManager {
 		if(isset($inclusion_bundles_list) && sizeof($inclusion_bundles_list)>0)
 			$bundles = $inclusion_bundles_list;
 		else {
-			$bundles = glob('bundles/*');
-			$bundles = str_replace('bundles/', '', $bundles);
+			$bundles = glob($dir.'/*');
+			$bundles = str_replace($dir.'/', '', $bundles);
 		}
 
 		foreach($bundles as $k=>$bundle) {
@@ -140,9 +146,9 @@ class BundlesManager {
 		}
 
 		foreach($bundles as $bundle)
-			static::loadBundleLibs($bundle);
+			static::loadBundleLibs($dir.'/'.$bundle);
 		foreach($bundles as $bundle)
-			static::loadBundle($bundle);
+			static::loadBundle($dir.'/'.$bundle);
 
 		foreach(Coxis::$hooks_table as $k=>$v)
 			ksort(Coxis::$hooks_table[$k]);

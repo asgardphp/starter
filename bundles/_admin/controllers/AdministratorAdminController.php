@@ -17,12 +17,8 @@ class AdministratorAdminController extends MultiAdminController {
 	);
 	
 	public function formConfigure($model) {
-		$form = new AdminForm($model);
+		$form = new AdminModelForm($model);
 		$form->password->params['view']['value'] = '';
-		//todo add Editable to model attributes
-		//todo validator check if var === '' || var === null
-		//todo modelform, do not set if input was not displayed (but should still alert if input is required..)
-		//todo need the right value when accessing a widget
 		
 		return $form;
 	}

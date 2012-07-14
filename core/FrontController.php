@@ -15,8 +15,7 @@ class FrontController extends Controller {
 			}
 		}
 
-		if(!static::$loaded)
-			$this->load();
+		$this->load();
 		
 		Router::parseRoutes(BundlesManager::$routes);
 
@@ -32,7 +31,16 @@ class FrontController extends Controller {
 	}
 	
 	public function load() {
+		if(static::$loaded)
+			return;
+		
+		BundlesManager::$directories[] = 'app';
 		BundlesManager::loadBundles();
+		//~ BundlesManager::loadBundles('bundles');
+		//~ BundlesManager::loadBundles('app');
+		#todo should load libs first in all bundles
+		#
+		
 		//~ d(BundlesManager::$bundles_routes);
 		//~ d(Model::$_properties);
 	
