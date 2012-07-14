@@ -9,7 +9,7 @@ class PreferencesAdminController extends AdminParentController {
 	
 	static $_model = 'preferences';
 	static $_messages = array(
-		'modified'			=>	'Préférences mis à jour avec succès.',
+		'modified'			=>	'Préférences mises à jour avec succès.',
 	);
 	
 	public function formConfigure() {

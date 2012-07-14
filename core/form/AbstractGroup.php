@@ -194,7 +194,7 @@ abstract class AbstractGroup implements ArrayAccess, Iterator {
 		$validator = new Validator();
 		$constrains = array();
 		$messages = array();
-		//~ d($this->widgets['value']->params);
+		
 		foreach($this->widgets as $name=>$widget)
 			if(!is_subclass_of($widget, 'AbstractGroup')) {
 				if(isset($widget->params['rules']))
@@ -206,14 +206,11 @@ abstract class AbstractGroup implements ArrayAccess, Iterator {
 				//todo all constrains type.. or a better system?
 			}
 			
-		//~ d($this);
 		//~ d($this->widgets);
+
 		$validator->setConstrains($constrains);
 		$validator->setMessages($messages);
-		
-		//~ if($this->groupName == 'name')
-		//~ d($constrains, $this->data, $validator->validate($this->data, $this->files));
-		
+
 		return $validator->validate($this->data, $this->files);
 	}
 	

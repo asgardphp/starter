@@ -21,10 +21,10 @@ class TimestampsBehaviorController extends Controller {
 	**/
 	public function behaviors_presave_timestampsAction($model) {
 		if($model->isNew()) {
-			$model->created_at = new Date(time());
-			$model->updated_at = new Date(time());
+			$model->created_at = new Date();
+			$model->updated_at = new Date();
 		}
 		elseif(!$model->isNew())
-			$model->updated_at = new Date(time());
+			$model->updated_at = new Date();
 	}
 }

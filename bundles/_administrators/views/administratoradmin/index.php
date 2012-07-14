@@ -33,7 +33,7 @@
 							<thead>
 								<tr>
 									<th width="10"><input type="checkbox" class="check_all" /></th>
-									<th>Username</th>
+									<th>Utilisateur</th>
 									<td>&nbsp;</td>
 								</tr>
 							</thead>
@@ -46,7 +46,7 @@
 										<td><a href="administrators/<?php echo $administrator->id ?>/edit"><?php echo $administrator ?></a></td>
 											<td class="actions">
 													<?php $this->trigger_show('coxis_administrator_actions', $administrator) ?>
-													<a class="delete" href="administrators/<?php echo $administrator->id ?>/delete">Delete</a>
+													<a class="delete" href="administrators/<?php echo $administrator->id ?>/delete">Supprimer</a>
 												</td>
 									</tr>
 								<?php } ?>
@@ -57,10 +57,10 @@
 						<div class="tableactions">
 							<select name="action">
 								<option>Actions</option>
-								<option value="1">Delete</option>
+								<option value="delete">Supprimer</option>
 							</select>
 							
-							<input type="submit" class="submit tiny" value="Apply" />
+							<input type="submit" class="submit tiny" value="Appliquer" />
 						</div>		<!-- .tableactions ends -->
 						
 						<?php

@@ -2,7 +2,9 @@
 class Date {
 	public $timestamp = 0;
 
-	public function __construct($t) {
+	public function __construct($t=null) {
+		if(!$t)
+			$t = time();
 		$this->timestamp = $t;
 	}
 	

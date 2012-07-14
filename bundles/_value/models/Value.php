@@ -17,4 +17,16 @@ class Value extends Model {
 			
 		return $value;
 	}
+
+	public static function val($name) {
+		return static::get($name)->value;
+	}
+
+	public static function raw($name) {
+		return static::get($name)->raw('value');
+	}
+	
+	public static function __callStatic($name, $args) {
+		throw new Exception('not implemented');
+	}
 }

@@ -381,7 +381,7 @@ abstract class Model {
 					//~ d($this->$col, $col);
 				}
 				elseif(Model::$_properties[$model][$col]['type']=='date') {
-					$this->$col = Date::fromDatetime($value);
+					$this->$col = Date::fromDatetime($value);//todo with Date class
 				}
 				else
 					$this->$col = $value;
