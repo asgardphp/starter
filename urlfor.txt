@@ -1,0 +1,22 @@
+ClubController
+	index
+		return the route
+	show
+		$club: id, slug
+		return $this->url_for('show', {club_id: $club->id, club_slug: $club->slug})
+		
+ClubActualitesController
+	index
+		$club: id, slug
+		return $this->url_for('index', {club_id: $club->id, club_slug: $club->slug})
+	show
+		$club: id, slug
+		$actualite: id, slug
+		
+		url_for({'Actualite', 'show'}, {actualite: $actualite})
+		url_for('actualite_show', {actualite: $actualite})
+		Actualite::urlForShow($args) {
+			$actualite = $args['actualite'];
+			$club = $actualite->getClub();
+			return $this->url_for('show', {club_id: $club->id, club_slug: $club->slug, id: $actualite->id, slug: $actualite->slug})
+		}

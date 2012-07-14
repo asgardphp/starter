@@ -6,14 +6,7 @@ class InscritController extends Controller {
 	public function widgetAction($request) {
 		$inscrit = Inscrit::create();
 		$this->form = new ModelForm($inscrit);
-	}
-
-	/**
-	@Route('submit')
-	*/
-	public function submitAction($request) {
-		$inscrit = Inscrit::create();
-		$this->form = new ModelForm($inscrit);
+		
 		if($this->form->isSent()) {
 			try {
 				$this->form->save();

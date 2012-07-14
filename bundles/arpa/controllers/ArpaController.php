@@ -84,16 +84,9 @@ class ArpaController extends Controller {
 	*/
 	public function contactAction($request) {
 		$this->configForm();
-	}
-
-	/**
-	@Route('contact/submit')
-	*/
-	public function contactsubmitAction($request) {
-		$this->configForm();
+		
 		if($this->form->isSent()) {
 			if(!($errors = $this->form->errors())) {
-				//~ d($this->form->getData());
 				$data = $this->form->getData();
 				$text = 'Souhaite : '.implode(', ', $data['souhaitez'])."\n".
 				'Nom : '.$data['nom']."\n".
@@ -101,15 +94,16 @@ class ArpaController extends Controller {
 				'Téléphone : '.$data['telephone']."\n".
 				'E-mail : '.$data['email']."\n".
 				'Question : '.$data['question']."\n";
-				//~ d($text);
+				
 				Email::generate(MySettings::get('email'), 'Arpa : Contact', $data['email'], $text)->send();
 				
 				Response::setCode(200)->send();
 			}
 			else {
+				Response::setCode(500)->sendHeaders();
 				foreach($errors as $err)
 					echo $err."\n";
-				Response::setCode(500)->send();
+				Response::send();
 			}
 		}
 	}

@@ -17,7 +17,7 @@ class FrontController extends Controller {
 
 		if(!static::$loaded)
 			$this->load();
-				
+		
 		Router::parseRoutes(BundlesManager::$routes);
 
 		$this->trigger('start');

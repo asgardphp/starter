@@ -1,57 +1,97 @@
+-clubdesport avis : relation parent + relation reponses ?
+-why was cds asking for required booleans fields?
+-ModelForm : relation_id thing instead of relation..
+-voir clubdesport/clubmanagecontroller, c'est le foutoir
+-boolean type should not be required!
+-probleme quand push sur cds?
+
 generator
 	-(string)cast
+	-coxisgenerator creates a field for relation_id...
+	
+#next
+-git
+	creer un projet coxis
+		branches pour les evolutions
+	et clone/pull pour l'utilisation dans d'autres projets
+-sync differences between projects (amarante, cds, arpa)
+-verifier les modifs avec le exception handler et le retour de reponse, notamment en test
+	
+#bug
+-le generateur d'imagecache deconne, voir amarante..
+-double slashes in coxis login (//admin)
 
-del-" test" * 50 dans le wysiwyg, met des espaces insecables..
+#better improve this
+-mieux gerer les exceptions
+-model: annotations -> arrays
+-fixup static_trigger/correct_filter
+-refaire access() en object?
+	take($obj)->get(5, 4, 2)
+-publish assets, don't keep stuff in bundle/web/ (then they should not contain coxis php)
+-revoir coxisadmin urls
+-validator: message according to error (e.g. required : file required - or - file does not exists)
+	& refaire tout validator..
+
+#useful
+-logging
+-implementer namespace
+-implementer i18n
+-partial model form?
+	pass an array with the attributes
+-be able to create link with slug only by providing the id
+-convert to array autotically when using only one "?" in sql queries (see sports/views/sport/index.php)
+-a way to attach models to modelform when model is new ? see http://127.0.0.1/clubdesport/coxis/admin/sports/new
+-controller/action for specific format (see SportController.php)
+-routage sur callable et pas seulement controller/action
+	-lambda functions (for exemple in comparator, controller hooks, and see what else)
+-make HMABT required or not (done?)
+-revoir gestion des erreurs pour Form et Messages pour ModelForm, Form, ..
+-refaire tous les anciens form avec Form (et Form GET)
+-Domain Canonicalization
+-cascade delete on models relationships
+-do something like this to separate categories..?
+	http://www.playbac-editions-speciales.fr/administrator/equipe.php
+-migrations
+
+#?
+-reflechir au fait que dans ModelForm, les tests se font a partir du model et non des contraintes du formulaire. Du coup par exemple, le label n'affiche pas d'* quand requis
+-be able to put hasmany to a model without having belongsto in the other one.. for coxisgenerator
+-autoset metas (et canonical?)
 -pourquoi ckeditor ajoute une ligne en top ?
+del-" test" * 50 dans le wysiwyg, met des espaces insecables..
+
+ok-revoir in, multiple, array pour model properties
+ok-reorganiser coxis js, et scripts de base : form, modal, slideshow, ...
 ok-voir historique de euripiedes et arpa pour reduire les bugs
 ok-a better adminform, e.g. arpa/newsletteradmin/
--revoir gestion des erreurs pour Form et Messages pour ModelForm, Form, ..
-ok-handle http methods in routing, e.g. arpa/annuairecontroller depot submit..
--revoir in, multiple, array pour model properties
+ok-fonction pour creer url au lieu de <?php echo Router::getAddress() ?> devant chaque url...
+ok?-voir pour simplifier metas
+	Metas::set?
+ok-systeme d'url : http://laravel.com/docs/urls
+ok-differencier contenu interne et pages avec metas
+	value
+ok-free fields (like in wordpress, and for example amarante > services > publication (should not belong to preferences))
 ok-annotation: in, utiliser du code php ? pour i18n, etc. e.g. arpa/admin/choeurs/style_musical
 	Model::configure()
 ok?-revoir gestion des parametres widget dans le form, notamment multiple (e.g. arpa/admin/choeurs/style_musical)
 ok-adminform not extending modelform
 ok-refaire date type (init an object which can then be used to format the date.. and date type in database)
 ok-voir amarante > services > page pour custom form (c'est d'la bombe !)
--reflechir au fait que dans ModelForm, les tests se font a partir du model et non des contraintes du formulaire. Du coup par exemple, le label n'affiche pas d'* quand requis
-ok-differencier contenu interne et pages avec metas
-	value
-ok-free fields (like in wordpress, and for example amarante > services > publication (should not belong to preferences))
-ok?-voir pour simplifier metas
-	Metas::set?
-ok-systeme d'url : http://laravel.com/docs/urls
--reorganiser coxis js, et scripts de base : form, modal, slideshow, ...
--be able to put hasmany to a model without having belongsto in the other one.. for coxisgenerator
-ok-fonction pour creer url au lieu de <?php echo Router::getAddress() ?> devant chaque url...
--double slashes in coxis login (//admin)
--controller/action for specific format (see SportController.php)
--convert to array autotically when using only one "?" in sql queries (see sports/views/sport/index.php)
--coxisgenerator creates a field for relation_id...
--autoset metas (et canonical?)
--a way to attach models to modelform when model is new ? see http://127.0.0.1/clubdesport/coxis/admin/sports/new
+ok-handle http methods in routing, e.g. arpa/annuairecontroller depot submit..
 
--mieux gerer les exceptions
--refaire tous les anciens form avec Form (et Form GET)
--revoir coxisadmin urls
--faire un systeme a la wordpress pour les champs de preferences
+
+-prefix et suffix dans le form admin ?
+
+ok-faire un systeme a la wordpress pour les champs de preferences
 ok-model::behavior() in plural
 ok-SoC : separate model behaviors
--validator: message according to error (e.g. required : file required - or - file does not exists)
+ok-cascade delete on files
 ok-check php5.3
 ok-mettre ckfinder medias dans web/
 ok-add files to form
 ok-add ->default() to form widget & exceptions if wrong type
--lambda functions (for exemple in comparator, controller hooks, and see what else)
--Domain Canonicalization
 ok-speed up execution..? http://euripides.hognerud.net est assez long...
 ok-ne plus prendre les routes plus longues que necessaires : e.g. /speakers17 pour /speakers
--cascade delete on models relationships
-ok-cascade delete on files
--be able to create link with slug only by providing the id
--do something like this to separate categories..?
-	http://www.playbac-editions-speciales.fr/administrator/equipe.php
--prefix et suffix dans le form admin ?
 
 #BUGS/ISSUES
 ok-htmlentities les index de l'admin (voir http://127.0.0.1/poissy/php/web/admin)
@@ -82,8 +122,6 @@ ok-probleme avec filterform->relationship (doit passer un model?)
 	-Filter cancelled
 ok-model attribute date type (with filters & validator) + use automatically use calendar in admin
 
--make HMABT required or not
-
 #GENERATOR
 	select
 	unique coxis admin
@@ -91,10 +129,10 @@ ok-model attribute date type (with filters & validator) + use automatically use 
 	
 #TO THINK ABOUT
 -controller hooks with lambda functions?
--apply behavior automatically on find() for example
+ok-apply behavior automatically on find() for example
 	like publish behavior, only get active elements
 	but should still be able to get all in admin
--un meilleur moyen pour gerer l'actif d'un menu?
+ok-un meilleur moyen pour gerer l'actif d'un menu?
 -revoir la gestion des lien du coxis admin menu via les bundles..
 	not very intuitive
 	output is a bit messed up

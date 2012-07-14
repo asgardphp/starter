@@ -31,7 +31,7 @@
 					}
 					</style>
 					<div style="float:left; width:280px;">
-					<?php $form->start('contact/submit', 'post') ?>
+					<?php $form->start('contact', 'post') ?>
 					Vous souhaitez* :<br/>
 					<?php
 					$boxes = $form->souhaitez->checkboxes();
