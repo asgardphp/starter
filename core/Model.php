@@ -565,7 +565,9 @@ abstract class Model {
 		$model_behaviors = static::$behaviors;
 		foreach($model_behaviors as $behavior => $params)
 			if($params)
-				Controller::static_trigger('behaviors_presave_'.$behavior, $this);
+				Controller::static_trigger('behaviors_presave_'.$behavior, $this);	
+		
+		Controller::static_trigger('presave_'.$this->getModelName(), $this);
 	}
 	
 	public function save($params=null, $force=false) {

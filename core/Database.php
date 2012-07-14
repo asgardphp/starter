@@ -190,7 +190,7 @@ class Query {
 		$results = array();
 		while($c = mysql_fetch_assoc($this->res)) {
 			foreach($c as $k=>$v)
-				if(is_numeric($v))
+				if(is_int($v))
 					$c[$k] = intval($v);
 			$results[] = $c;
 		}

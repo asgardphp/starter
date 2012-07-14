@@ -35,7 +35,11 @@ class Controller {
 		
 		if(isset($filters_table[$filterName]))
 			foreach($filters_table[$filterName] as $filter)
-				$p = Router::run($filter['controller'], $filter['action'], array($p, $args));
+				#should not only check is_array
+				if(is_array($filter))
+					$p = Router::run($filter['controller'], $filter['action'], array($p, $args));
+				elseif(is_callable($filter))
+					call_user_func_array($filter, array($p, $args));
 			
 		return $p;
 	}
@@ -45,7 +49,11 @@ class Controller {
 		
 		if(isset($filters_table[$filterName]))
 			foreach($filters_table[$filterName] as $filter)
-				$p = Router::run($filter['controller'], $filter['action'], array($p, $args), $this);
+				#should not only check is_array
+				if(is_array($filter))
+					$p = Router::run($filter['controller'], $filter['action'], array($p, $args), $this);
+				elseif(is_callable($filter))
+					call_user_func_array($filter, array($p, $args));
 			
 		return $p;
 	}
@@ -53,13 +61,21 @@ class Controller {
 	public static function static_trigger($hookName, $args=null) {
 		if(isset(Coxis::$hooks_table[$hookName]))
 			foreach(Coxis::$hooks_table[$hookName] as $hook)
-				Router::run($hook['controller'], $hook['action'], $args, null, false);
+				#should not only check is_array
+				if(is_array($hook))
+					Router::run($hook['controller'], $hook['action'], $args, null, false);
+				elseif(is_callable($hook))
+					call_user_func_array($hook, array($args));
 	}
 
 	public function trigger($hookName, $args=null) {
 		if(isset(Coxis::$hooks_table[$hookName]))
 			foreach(Coxis::$hooks_table[$hookName] as $hook)
-				Router::run($hook['controller'], $hook['action'], $args, $this, false);
+				#should not only check is_array
+				if(is_array($hook))
+					Router::run($hook['controller'], $hook['action'], $args, $this, false);
+				elseif(is_callable($hook))
+					call_user_func_array($hook, array($args));
 	}
 	
 	public function render($view, $args) {
