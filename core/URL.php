@@ -12,8 +12,7 @@ class URL {
 				$request = $_SERVER['REDIRECT_URL'];
 			else
 				$request = '';
-			if($request=='/')
-				$request = '';
+			$request = preg_replace('/^\//', '', $request);
 				
 			static::$url = $request;
 		}

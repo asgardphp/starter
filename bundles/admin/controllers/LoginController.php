@@ -28,7 +28,6 @@ class LoginController extends Controller {
 			}
 			if(isset($_SESSION['redirect_to'])) {
 				Response::redirect($_SESSION['redirect_to'], false)->send();
-				unset($_SESSION['redirect_to']);
 			}
 			else
 				Response::redirect('admin')->send();
