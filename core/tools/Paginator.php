@@ -52,7 +52,7 @@ class Paginator {
 	}
 	
 	public function show() {
-		$url = Router::current();
+		$url = URL::current();
 		if($this->page > 1)
 			echo '<a href="'.$url.'?'.http_build_query(array_merge($_GET, array('page'=>$this->page-1))).'">«</a>';
 		for($i=1; $i<=$this->getPages(); $i++)
@@ -79,7 +79,7 @@ class Paginator {
 		return $url.'?'.http_build_query(array_merge($_GET, array('page'=>$this->page+1)));
 	}
 	
-	/*public function display($url) {
+	public function display($url) {
 		if($this->getPages() == 1)
 			return;
 		$url = $url.'?page=';
@@ -101,5 +101,5 @@ class Paginator {
 			<?php endif ?>
 		</ul>
 		<?php
-	}*/
+	}
 }

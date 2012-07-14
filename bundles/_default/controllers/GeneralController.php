@@ -59,6 +59,9 @@ class GeneralController extends Controller {
 		$this->view = 'layout.php';
 	}
 	
+	public function sidebarAction($request) {
+	}
+	
 	/**
 	@Filter('output')
 	*/

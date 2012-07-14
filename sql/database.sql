@@ -373,7 +373,7 @@ CREATE TABLE `arpa_value` (
 
 LOCK TABLES `arpa_value` WRITE;
 /*!40000 ALTER TABLE `arpa_value` DISABLE KEYS */;
-INSERT INTO `arpa_value` VALUES (1,'name','ARPA','1968-07-00 00:00:00','2012-06-02 22:20:02'),(2,'email','leyou.m@gmail.com','1968-07-00 00:00:00','2012-06-02 22:20:02'),(3,'head_script','sdfgh','1968-07-00 00:00:00','2012-06-02 22:20:02');
+INSERT INTO `arpa_value` VALUES (1,'name','ARPA','1968-06-00 00:00:00','2012-07-04 13:38:04'),(2,'email','leyou.m@gmail.com','1968-06-00 00:00:00','2012-07-04 13:38:04'),(3,'head_script','sdfgh','1968-06-00 00:00:00','2012-07-04 13:38:04');
 /*!40000 ALTER TABLE `arpa_value` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -386,4 +386,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2012-07-14 15:31:55
+-- Dump completed on 2012-07-14 15:42:54

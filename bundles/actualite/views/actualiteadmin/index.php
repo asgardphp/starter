@@ -40,8 +40,7 @@
 									</thead>
 									
 									<tbody>
-										<?php
-										foreach($actualites as $actualite) { ?>								
+										<?php foreach($actualites as $actualite): ?>								
 											<tr>
 												<td><input type="checkbox" name="id[]" value="<?php echo $actualite->id ?>" /></td>
 												<td><?php echo $actualite->created_at ?></td>
@@ -51,7 +50,7 @@
 													<a class="delete" href="<?php echo $this->url_for('delete', array('id'=>$actualite->id)) ?>">Supprimer</a>
 												</td>
 											</tr>
-										<?php } ?>
+										<?php endforeach ?>
 									</tbody>
 									
 								</table>

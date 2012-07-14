@@ -37,7 +37,8 @@ abstract class MultiAdminController extends AdminParentController {
 					$conditions['and']["`$key` LIKE ?"] = array('%'.$value.'%');
 		}
 		
-		list($this->$_models, $this->paginator) = $_model::paginate(
+		list($this->$_models, $this->paginator) = Paginator::paginate(
+			$_model,
 			isset($request['page']) ? $request['page']:1,
 			array(
 				'conditions'	=>	$conditions,
@@ -54,8 +55,6 @@ abstract class MultiAdminController extends AdminParentController {
 		
 		if(!($this->$_model = $_model::load($request['id'])))
 			$this->forward404();
-			
-		//~ d($this->$_model);
 	
 		$this->form = $this->formConfigure($this->$_model);
 	

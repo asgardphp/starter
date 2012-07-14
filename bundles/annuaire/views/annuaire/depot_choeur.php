@@ -21,7 +21,7 @@
 					<hr class="small"/>
 					
 					<br/>
-					<form class="cols" method="post" action="annuaire/depot-choeur/submit">
+					<form class="cols" method="post" action="annuaire/depot-choeur">
 					<?php $form->_csrf_token->hidden() ?>
 					<div style="float:left; width:340px; position:relative;">
 						<div class="list">
