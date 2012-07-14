@@ -95,7 +95,7 @@ class ArpaController extends Controller {
 				'E-mail : '.$data['email']."\n".
 				'Question : '.$data['question']."\n";
 				
-				Email::generate(MySettings::get('email'), 'Arpa : Contact', $data['email'], $text)->send();
+				Email::generate(Value::val('email'), 'Arpa : Contact', $data['email'], $text)->send();
 				
 				Response::setCode(200)->send();
 			}

@@ -3,7 +3,7 @@
 <head>
 	<meta http-equiv="X-UA-Compatible" content="IE=7" />
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<title><?php echo MySettings::get('name') ?> &#9679; Administration</title>
+	<title><?php echo Value::val('name') ?> &#9679; Administration</title>
 	<base href="<?php echo URL::to('admin/') ?>" />
 	<style type="text/css" media="all">
 		@import url("../bundles/_admin/css/admin.css");
@@ -21,7 +21,7 @@
 			<div id="header">
 				<div class="hdrl"></div>
 				<div class="hdrr"></div>
-				<h1><a href=".."><?php echo MySettings::get('name') ?></a></h1>
+				<h1><a href=".."><?php echo Value::val('name') ?></a></h1>
 				
 				
 				<ul id="nav">

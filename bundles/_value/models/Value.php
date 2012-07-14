@@ -26,7 +26,7 @@ class Value extends Model {
 		return static::get($name)->raw('value');
 	}
 	
-	public static function __callStatic($name, $args) {
-		throw new Exception('not implemented');
-	}
+	//~ public static function __callStatic($name, $args) {
+		//~ throw new Exception('not implemented');
+	//~ }
 }

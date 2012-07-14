@@ -84,7 +84,7 @@ class GeneralController extends Controller {
 	@Hook('start')
 	*/
 	public function initAction($params) {
-		HTML::setTitle(MySettings::get('name'));
+		HTML::setTitle(Value::val('name'));
 		//~ HTML::setDescription('');
 		//~ HTML::setKeywords('');
 	}
