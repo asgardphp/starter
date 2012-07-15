@@ -20,7 +20,7 @@ class Value extends Model {
 	public static function get($name) {
 		$value = static::loadByKey($name);
 		if(!$value)
-			$value = Value::create()->save(array('key'=>$name));
+			$value = Value::create(array('key'=>$name));
 			
 		return $value;
 	}

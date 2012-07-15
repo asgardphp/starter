@@ -4,7 +4,6 @@ class ModelException extends Exception {
 }
 
 abstract class Model {
-	//~ public static $_properties;
 	protected $data = array();
 	
 	public static $order_by = 'id DESC';
@@ -27,8 +26,7 @@ abstract class Model {
 			$this->loadDefault();
 	}
 	
-	final public static function init() {}#autoload function
-	
+	/* MAGIC METHODS */
 	public function __set($name, $value) {
 		$this->data[$name] = $value;
 	}
@@ -49,63 +47,6 @@ abstract class Model {
 	
 	public function __unset($name) {
 		unset($this->data[$name]);
-	}
-	
-	public function set($vars) {
-		foreach($vars as $k=>$v)
-				$this->$k = $v;
-				
-		return $this;
-	}
-
-	private static function post_configure() {
-		foreach(static::getProperties() as $property=>$params) {
-			if(isset($params['multiple']))
-				//~ Model::$_properties[$this->getModelName()][$property]['type'] = 'array';
-				static::$properties[$property]['type'] = 'array';
-			if(!isset($params['type']))
-				static::$properties[$property]['type'] = 'text';
-			if(!isset($params['required']))
-				static::$properties[$property]['required'] = true;
-		}
-	}
-
-	public function loadDefault() {
-		foreach(static::getProperties() as $property=>$params)
-			if(isset($params['defaultvalue']))
-				$this->$property = $params['defaultvalue'];
-			elseif($params['type'] == 'array')
-				$this->$property = array();
-			else
-				$this->$property = '';
-	}
-	
-	public static function create($values=array()) {
-	#todo create and save
-		//~ return new ModelDecorator(new static($values));
-		return new static($values);
-	}
-	
-	public function raw($name) {
-		return $this->data[$name];
-	}
-	
-	public static function __callStatic($name, $arguments) {
-		if(strpos($name, 'loadBy') === 0) {
-			preg_match('/^loadBy(.*)/', $name, $matches);
-			$property = $matches[1];
-			$val = $arguments[0];
-			try {
-				return static::findOne(array(
-					'conditions'=> array('`'.$property.'`=?' => array($val))
-				));
-			}
-			catch(Exception $e) {
-				if(is_a($e, 'DBException'))
-					throw $e;
-				return null;
-			}
-		}
 	}
 
 	public function __call($name, $arguments) {
@@ -131,8 +72,144 @@ abstract class Model {
 				return $this->getRelation($what);
 		}
     }
+	
+	public static function __callStatic($name, $arguments) {
+		if(strpos($name, 'loadBy') === 0) {
+			preg_match('/^loadBy(.*)/', $name, $matches);
+			$property = $matches[1];
+			$val = $arguments[0];
+			try {
+				return static::findOne(array(
+					'conditions'=> array('`'.$property.'`=?' => array($val))
+				));
+			}
+			catch(Exception $e) {
+				if(is_a($e, 'DBException'))
+					throw $e;
+				return null;
+			}
+		}
+	}
+	
+	/* INIT AND MODEL CONFIGURATION */
+	final public static function init() {}#autoload function
+	
+	protected static function configure() {}
 
-    public function getRelation($name, $params=array()) {
+	private static function post_configure() {
+		foreach(static::getProperties() as $property=>$params) {
+			if(isset($params['multiple']))
+				static::$properties[$property]['type'] = 'array';
+			if(!isset($params['type']))
+				static::$properties[$property]['type'] = 'text';
+			if(!isset($params['required']))
+				static::$properties[$property]['required'] = true;
+		}
+	}
+
+	public function loadDefault() {
+		foreach(static::getProperties() as $property=>$params)
+			if(isset($params['defaultvalue']))
+				$this->$property = $params['defaultvalue'];
+			elseif($params['type'] == 'array')
+				$this->$property = array();
+			else
+				$this->$property = '';
+	}
+	
+	public static function loadModel() {
+		$properties = static::$properties;
+		foreach($properties as $k=>$v)
+			if(is_int($k)) {
+				$properties[$v] = array();
+				unset($properties[$k]);
+			}
+		static::$properties = $properties;
+		
+		static::loadBehaviors();
+		static::loadRelationships();
+		static::loadFiles();
+		static::configure();
+		static::post_configure();
+	}
+	
+	public static function loadBehaviors() {
+		Event::trigger('behaviors_pre_load', static::getModelName());
+	//~ try {
+		//~ d(page::$behaviors);
+		//~ }
+		//~ catch(Exception $e) {
+		//~ }
+		
+		//~ Controller::static_trigger('behaviors_load');
+		//~ d(static::$behaviors);
+	
+		$model_behaviors = static::$behaviors;
+		//~ d(static::getModelName(), $model_behaviors);
+		foreach($model_behaviors as $behavior => $params)
+			if($params)
+				Event::trigger('behaviors_load_'.$behavior, static::getModelName());
+	}
+	//todo add properties on the fly when saving?
+	
+	public static function loadFiles() {
+		$model_files = static::$files;
+		
+		if(is_array($model_files))
+			foreach($model_files as $file => $params)
+				#multiple
+				if(isset($params['multiple']) && $params['multiple']) {
+					static::addProperty('filename_'.$file, array('type' => 'array', 'defaultvalue'=>array(), 'editable'=>false, 'required'=>false));
+					
+					#if the coxisadmin controller exists
+					try {
+						$modelName = static::getModelName();
+						$admin_controller = strtolower(CoxisAdmin::getAdminControllerFor($modelName));
+						$index = CoxisAdmin::getIndexFor($modelName);
+	
+						#todo should handle this in bundles/_admin/ ..
+						#todo be sure not to create multiple times the same hook
+						Coxis::$controller_hooks[$admin_controller][] = array(
+									'route'			=>	$index.'/:id/:file/add',
+									'name'			=>	'coxis_'.$modelName.'_files_add',
+									'controller'	=>	'Multifile',
+									'action'			=>	'add'
+								);
+						Coxis::$controller_hooks[$admin_controller][] = array(
+									'route'			=>	$index.'/:id/:file/delete/:pos',
+									'name'			=>	'coxis_'.$modelName.'_files_delete',
+									'controller'	=>	'Multifile',
+									'action'			=>	'delete'
+								);
+					} catch(Exception $e) {}
+				}
+				#single
+				else
+					static::addProperty('filename_'.$file, array('type' => 'text', 'editable'=>false, 'required'=>false));
+	}
+	
+	public static function loadRelationships() {
+		$model_relationships = static::$relationships;
+		
+		if(is_array($model_relationships))
+			foreach($model_relationships as $relationship => $params)
+				if($params['type'] == 'belongsTo' || $params['type'] == 'hasOne')
+					static::addProperty($relationship.'_id', array('type' => 'integer', 'required' => (isset($params['required']) && $params['required']), 'editable'=>false));
+	}
+	
+	/* MISC */
+	public function set($vars) {
+		foreach($vars as $k=>$v)
+				$this->$k = $v;
+				
+		return $this;
+	}
+	
+	public function raw($name) {
+		return $this->data[$name];
+	}
+
+	public function getRelation($name, $params=array()) {
 		$relationships = static::$relationships;
 		
 		if(!isset($relationships[$name]['type']) || !isset($relationships[$name]['model']))
@@ -214,143 +291,22 @@ abstract class Model {
 			default:	
 				throw new Exception('Relation '.$name.' has no correct type.');
 		}
-    }
-	
-	public static function select($tables, $conditions, $fields=null) {
-		$results = Database::getInstance()->select($tables, $conditions, $fields)->fetchAll();
-		
-		$models = array();
-		foreach($results as $result)
-			//~ $models[] = new static($result);
-			$models[] = static::create($result);
-		
-		return $models;
 	}
 	
-	//todo
-	public function newCollection($array) {
-		return new Collection($this, $array);
+	public function getTableName() {
+		return strtolower(get_class($this));
 	}
-	
 	public static function getModelName() {
 		return strtolower(get_called_class());
 	}
 	
-	public static function findOne($params=array()) {
-		$params['limit'] = 1;
-		$results = static::find($params);
-		if(!isset($results[0]))
-			throw new Exception('no result');
-			
-		return $results[0];
-	}
-	
-	public static function find($params=array()) {
-		$conditions = '';
-		$order_by = '';
-		$limit = '';
-		
-		if(isset($params['conditions'])) {
-			$conditions = Database::formatConditions('AND', $params['conditions']);
-			if($conditions && $conditions != '()')
-				$conditions = ' WHERE '.$conditions;
-			else
-				$conditions = '';
-		}
-		
-		if(!$order_by)
-			if(isset($params['order_by']) && $params['order_by'])
-				$order_by = ' ORDER BY '.$params['order_by'];
-		
-		if(!$order_by)
-			$order_by = Event::filter('find_model', $order_by, static::getModelName());
-		
-		if(!$order_by)
-				$order_by = ' ORDER BY '.static::$order_by;
-		
-		if(isset($params['limit'])) {
-			if(isset($params['offset']))
-				$limit = ' LIMIT '.$params['offset'].', '.$params['limit'];
-			else
-				$limit = ' LIMIT '.$params['limit'];
-		}
-			
-		$sql = 'SELECT * FROM %table%';
-		$sql .= $conditions;
-		$sql .= $order_by;
-		$sql .= $limit;
-		
-		return static::query($sql);
-	}
-	
-	public static function count($params) {
-		$conditions = '';
-		$order_by = '';
-		$limit = '';
-		
-		if(isset($params['conditions'])) {
-			$conditions = Database::formatConditions('AND', $params['conditions']);
-			if($conditions && $conditions != '()')
-				$conditions = ' WHERE '.$conditions;
-			else
-				$conditions = '';
-		}
-		
-		if(isset($params['order_by']))
-			$order_by = ' ORDER BY '.$params['order_by'];
-		else
-			$order_by = ' ORDER BY '.static::$order_by;
-		
-		if(isset($params['limit']))
-			if(isset($params['offset']))
-				$limit = ' LIMIT '.$params['offset'].', '.$params['limit'];
-			else
-				$limit = ' LIMIT '.$params['limit'];
-			
-		$sql = 'SELECT count(*) as total FROM `'.Config::get('database', 'prefix').strtolower(static::getModelName()).'`';
-		$sql .= $conditions;
-		$sql .= $order_by;
-		$sql .= $limit;
-		
-		$result = Database::getInstance()->query($sql)->fetchOne();
-		return $result['total'];
-	}
-	
-	public static function query($sql, $args=array()) {
-		$db = Database::getInstance();
-		$tableName = strtolower(static::getModelName());
-		
-		$sql = str_replace('%table%', '`'.Config::get('database', 'prefix').$tableName.'`', $sql);
-		
-		$results = $db->query($sql, $args)->fetchAll();
-		
-		$models = array();
-		foreach($results as $result)
-			$models[] = static::create($result);
-		
-		return $models;
-	}
 	
 	public function isNew() {
 		return !isset($this->id);
 	}
-
-	public static function getProperty($prop) {
-		return access(static::getProperties(), $prop);
-	}
-
-	public static function getProperties() {
-		return static::$properties;
-	}
-	
-	public static function getAttributes() {
-		return array_keys(static::$properties);
-	}
-	
-	public function setFiles($files) {
-		$this->_files = $files;
-				
-		return $this;
+	public static function create($values=array()) {
+		$m = new static($values);
+		return $m->save();
 	}
 	
 	public static function load($id) {
@@ -365,16 +321,6 @@ abstract class Model {
 				throw $e;
 			return null;
 		}
-	}
-	
-	public static function destroyOne($id) {
-		if($model = static::load($id))
-			return $model->destroy();
-		return false;
-	}
-	
-	public function getTableName() {
-		return strtolower(get_class($this));
 	}
 	
 	public function loadFromID($id) {
@@ -417,6 +363,26 @@ abstract class Model {
 		
 		return $this;
 	}
+
+
+	
+	public static function addProperty($property, $params) {
+		//~ $modelName = static::getModelName();
+		//~ Model::$_properties[$modelName][$property] = $params;
+		static::$properties[$property] = $params;
+	}
+	
+	public static function getProperty($prop) {
+		return access(static::getProperties(), $prop);
+	}
+
+	public static function getProperties() {
+		return static::$properties;
+	}
+	
+	public static function getAttributes() {
+		return array_keys(static::$properties);
+	}
 	
 	public function getVars() {
 		$attrs = $this->getAttributes();
@@ -431,7 +397,17 @@ abstract class Model {
 		
 		return $vars;
 	}
+	public static function findOne($params=array()) {
+		$params['limit'] = 1;
+		$results = static::find($params);
+		if(!isset($results[0]))
+			throw new Exception('no result');
+			
+		return $results[0];
+	}
+
 	
+	/* VALIDATION */
 	public function getValidator() {
 		$modelName = static::getModelName();
 		
@@ -469,137 +445,40 @@ abstract class Model {
 		return $file_validator;
 	}
 	
-	public function slugify($src=null) {	
-		if(!$src)
-			$src = $this;
-		if($this->isNew())
-			$this->slug = Tools::slugify($src);
-		else {
-			$inc = 1;
-			do {
-				$this->slug = Tools::slugify($src).($inc < 2 ? '':'-'.$inc);
-				$inc++;
-			}
-			while(static::query('SELECT * FROM %table% WHERE id!=? AND slug=?', array($this->id, $this->slug)));
-		}
+	public function isValid($file) {
+		$file_validator = $this->getFileValidator();
+		
+		return !$file_validator->validate($this->getFiles());
+	}
+	
+	public function errors() {
+		#validator
+		$validator = $this->getValidator();
+		if(static::$messages)
+			$validator->setMessages(static::$messages);
+		$file_validator = $this->getFileValidator();
+		
+		if(static::$file_messages)
+			$file_validator->setMessages(static::$file_messages);
+			
+		$vars = $this->getVars();
+		
+		return array_merge(
+			$validator->validate($vars), 
+			$file_validator->validate($this->getFiles())
+		);
 	}
 	
 	//~ public static function getStatic($model, $attr) {
 		//~ return $model::$attr;
 	//~ }
 	
-	public static function loadModel() {
-		$properties = static::$properties;
-		foreach($properties as $k=>$v)
-			if(is_int($k)) {
-				$properties[$v] = array();
-				unset($properties[$k]);
-			}
-		static::$properties = $properties;
-		
-		static::loadBehaviors();
-		static::loadRelationships();
-		static::loadFiles();
-		static::configure();
-		static::post_configure();
-	}
-	
-	public static function loadBehaviors() {
-		Event::trigger('behaviors_pre_load', static::getModelName());
-	//~ try {
-		//~ d(page::$behaviors);
-		//~ }
-		//~ catch(Exception $e) {
-		//~ }
-		
-		//~ Controller::static_trigger('behaviors_load');
-		//~ d(static::$behaviors);
-	
-		$model_behaviors = static::$behaviors;
-		//~ d(static::getModelName(), $model_behaviors);
-		foreach($model_behaviors as $behavior => $params)
-			if($params)
-				Event::trigger('behaviors_load_'.$behavior, static::getModelName());
-	}
-	//todo add properties on the fly when saving?
-	
-	public static function loadRelationships() {
-		$model_relationships = static::$relationships;
-		
-		if(is_array($model_relationships))
-			foreach($model_relationships as $relationship => $params)
-				if($params['type'] == 'belongsTo' || $params['type'] == 'hasOne')
-					static::addProperty($relationship.'_id', array('type' => 'integer', 'required' => (isset($params['required']) && $params['required']), 'editable'=>false));
-	}
-	
-	public static function loadFiles() {
-		$model_files = static::$files;
-		
-		if(is_array($model_files))
-			foreach($model_files as $file => $params)
-				#multiple
-				if(isset($params['multiple']) && $params['multiple']) {
-					static::addProperty('filename_'.$file, array('type' => 'array', 'defaultvalue'=>array(), 'editable'=>false));
-					
-					#if the coxisadmin controller exists
-					try {
-						$modelName = static::getModelName();
-						$admin_controller = strtolower(CoxisAdmin::getAdminControllerFor($modelName));
-						$index = CoxisAdmin::getIndexFor($modelName);
-	
-						#todo should handle this in bundles/_admin/ ..
-						#todo be sure not to create multiple times the same hook
-						Coxis::$controller_hooks[$admin_controller][] = array(
-									'route'			=>	$index.'/:id/:file/add',
-									'name'			=>	'coxis_'.$modelName.'_files_add',
-									'controller'	=>	'Multifile',
-									'action'			=>	'add'
-								);
-						Coxis::$controller_hooks[$admin_controller][] = array(
-									'route'			=>	$index.'/:id/:file/delete/:pos',
-									'name'			=>	'coxis_'.$modelName.'_files_delete',
-									'controller'	=>	'Multifile',
-									'action'			=>	'delete'
-								);
-					} catch(Exception $e) {}
-				}
-				#single
-				else
-					static::addProperty('filename_'.$file, array('type' => 'text', 'editable'=>false));
-	}
-	
-	public static function addProperty($property, $params) {
-		//~ $modelName = static::getModelName();
-		//~ Model::$_properties[$modelName][$property] = $params;
-		static::$properties[$property] = $params;
-	}
-	
-	public function getFiles() {
-		$results = array();
-		$existing_files = static::$files;
-		foreach($existing_files as $name => $file) {
-			$path = $this->getFilePath($name);
-			if(is_array($path)) {
-				foreach($path as $k=>$one_path)
-					$path[$k] = _WEB_DIR_.'/'.$one_path;
-				$results[$name] = $path;	
-			}
-			elseif($this->getFilePath($name))
-				$results[$name] = _WEB_DIR_.'/'.$this->getFilePath($name);
-			else
-				$results[$name] = null;
-		}
-		
-		if(isset($this->_files)) {
-			$new_files = $this->_files;
-			if(isset($new_files))
-				foreach($new_files as $name => $file)
-					if(isset($file['error']) && $file['error'] == 0)
-						if(isset($file['tmp_name']) && !empty($file['tmp_name']))
-							$results[$name] = $file['tmp_name'];
-		}
-		
-		return $results;
+	/* PERSISTENCE */
+	public function save($params=null, $force=false) {
+		$this->pre_save($params);
+		$this->_save($params, $force);
+
+		return $this;
 	}
 	
 	public function pre_save($params=null) {
@@ -614,13 +493,6 @@ abstract class Model {
 				Event::trigger('behaviors_presave_'.$behavior, $this);	
 		
 		Event::trigger('presave_'.$this->getModelName(), $this);
-	}
-	
-	public function save($params=null, $force=false) {
-		$this->pre_save($params);
-		$this->_save($params, $force);
-
-		return $this;
 	}
 	
 	public function _save($params=null, $force=false) {
@@ -729,30 +601,125 @@ abstract class Model {
 		}
 	}
 	
-	public function isValid($file) {
-		$file_validator = $this->getFileValidator();
+	public function destroy() {
+		foreach(static::$files as $name=>$v) {
+			$path = $this->getFilePath($name);
+			if(is_array($path))
+				foreach($path as $file)
+					FileManager::unlink($file);
+			else
+				FileManager::unlink($path);
+		}
 		
-		return !$file_validator->validate($this->getFiles());
+		//todo delete all cascade models and files
+		return Database::getInstance()->delete($this->getTableName(), array('id' => $this->id))->affected_rows();
 	}
 	
-	public function errors() {
-		#validator
-		$validator = $this->getValidator();
-		if(static::$messages)
-			$validator->setMessages(static::$messages);
-		$file_validator = $this->getFileValidator();
+	public static function destroyOne($id) {
+		if($model = static::load($id))
+			return $model->destroy();
+		return false;
+	}
+	
+	/* DB */
+	public static function select($tables, $conditions, $fields=null) {
+		$results = Database::getInstance()->select($tables, $conditions, $fields)->fetchAll();
 		
-		if(static::$file_messages)
-			$file_validator->setMessages(static::$file_messages);
+		$models = array();
+		foreach($results as $result)
+			//~ $models[] = new static($result);
+			$models[] = new static($result);
+		
+		return $models;
+	}
+	
+	public static function find($params=array()) {
+		$conditions = '';
+		$order_by = '';
+		$limit = '';
+		
+		if(isset($params['conditions'])) {
+			$conditions = Database::formatConditions('AND', $params['conditions']);
+			if($conditions && $conditions != '()')
+				$conditions = ' WHERE '.$conditions;
+			else
+				$conditions = '';
+		}
+		
+		if(!$order_by)
+			if(isset($params['order_by']) && $params['order_by'])
+				$order_by = ' ORDER BY '.$params['order_by'];
+		
+		if(!$order_by)
+			$order_by = Event::filter('find_model', $order_by, static::getModelName());
+		
+		if(!$order_by)
+				$order_by = ' ORDER BY '.static::$order_by;
+		
+		if(isset($params['limit'])) {
+			if(isset($params['offset']))
+				$limit = ' LIMIT '.$params['offset'].', '.$params['limit'];
+			else
+				$limit = ' LIMIT '.$params['limit'];
+		}
 			
-		$vars = $this->getVars();
+		$sql = 'SELECT * FROM %table%';
+		$sql .= $conditions;
+		$sql .= $order_by;
+		$sql .= $limit;
 		
-		return array_merge(
-			$validator->validate($vars), 
-			$file_validator->validate($this->getFiles())
-		);
+		return static::query($sql);
 	}
 	
+	public static function count($params) {
+		$conditions = '';
+		$order_by = '';
+		$limit = '';
+		
+		if(isset($params['conditions'])) {
+			$conditions = Database::formatConditions('AND', $params['conditions']);
+			if($conditions && $conditions != '()')
+				$conditions = ' WHERE '.$conditions;
+			else
+				$conditions = '';
+		}
+		
+		if(isset($params['order_by']))
+			$order_by = ' ORDER BY '.$params['order_by'];
+		else
+			$order_by = ' ORDER BY '.static::$order_by;
+		
+		if(isset($params['limit']))
+			if(isset($params['offset']))
+				$limit = ' LIMIT '.$params['offset'].', '.$params['limit'];
+			else
+				$limit = ' LIMIT '.$params['limit'];
+			
+		$sql = 'SELECT count(*) as total FROM `'.Config::get('database', 'prefix').strtolower(static::getModelName()).'`';
+		$sql .= $conditions;
+		$sql .= $order_by;
+		$sql .= $limit;
+		
+		$result = Database::getInstance()->query($sql)->fetchOne();
+		return $result['total'];
+	}
+	
+	public static function query($sql, $args=array()) {
+		$db = Database::getInstance();
+		$tableName = strtolower(static::getModelName());
+		
+		$sql = str_replace('%table%', '`'.Config::get('database', 'prefix').$tableName.'`', $sql);
+		
+		$results = $db->query($sql, $args)->fetchAll();
+		
+		$models = array();
+		foreach($results as $result)
+			$models[] = new static($result);
+		
+		return $models;
+	}
+	
+	/* FILES */
 	public function deleteFile($file) {
 		$params = $this->getFile($file);
 		if(isset($params['multiple']) && $params['multiple'])
@@ -819,18 +786,46 @@ abstract class Model {
 				}
 	}
 	
-	public function destroy() {
-		foreach(static::$files as $name=>$v) {
+	public function setFiles($files) {
+		$this->_files = $files;
+				
+		return $this;
+	}
+	
+	public function setRawFilePath($file, $paths) {
+		$file_infos = $this->getFile($file);
+		$filename_property = 'filename_'.$file;
+		$this->$filename_property = $paths;
+		
+		return $this;
+	}
+	
+	public function getFiles() {
+		$results = array();
+		$existing_files = static::$files;
+		foreach($existing_files as $name => $file) {
 			$path = $this->getFilePath($name);
-			if(is_array($path))
-				foreach($path as $file)
-					FileManager::unlink($file);
+			if(is_array($path)) {
+				foreach($path as $k=>$one_path)
+					$path[$k] = _WEB_DIR_.'/'.$one_path;
+				$results[$name] = $path;	
+			}
+			elseif($this->getFilePath($name))
+				$results[$name] = _WEB_DIR_.'/'.$this->getFilePath($name);
 			else
-				FileManager::unlink($path);
+				$results[$name] = null;
 		}
 		
-		//todo delete all cascade models and files
-		return Database::getInstance()->delete($this->getTableName(), array('id' => $this->id))->affected_rows();
+		if(isset($this->_files)) {
+			$new_files = $this->_files;
+			if(isset($new_files))
+				foreach($new_files as $name => $file)
+					if(isset($file['error']) && $file['error'] == 0)
+						if(isset($file['tmp_name']) && !empty($file['tmp_name']))
+							$results[$name] = $file['tmp_name'];
+		}
+		
+		return $results;
 	}
 	
 	public function getFile($file) {
@@ -869,6 +864,12 @@ abstract class Model {
 			return null;
 	}
 	
+	public function getRawFilePath($file) {
+		$file_infos = $this->getFile($file);
+		$filename_property = 'filename_'.$file;
+		return $this->$filename_property;
+	}
+	
 	public function hasFile($file) {
 		$files = static::$files;
 		return array_key_exists($file, $files);
@@ -880,19 +881,11 @@ abstract class Model {
 		return isset($this->$filename_property);
 	}
 	
-	public function getRawFilePath($file) {
-		$file_infos = $this->getFile($file);
-		$filename_property = 'filename_'.$file;
-		return $this->$filename_property;
+	
+	/* STUBS */
+	//todo
+	public function newCollection($array) {
+		return new Collection($this, $array);
 	}
 	
-	public function setRawFilePath($file, $paths) {
-		$file_infos = $this->getFile($file);
-		$filename_property = 'filename_'.$file;
-		$this->$filename_property = $paths;
-		
-		return $this;
-	}
-	
-	protected static function configure() {}
 }

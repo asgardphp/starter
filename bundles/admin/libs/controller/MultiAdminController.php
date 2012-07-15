@@ -77,7 +77,7 @@ abstract class MultiAdminController extends AdminParentController {
 	public function newAction($request) {
 		$_model = static::$_model;
 		
-		$this->$_model = $_model::create();
+		$this->$_model = new $_model;
 	
 		$this->form = $this->formConfigure($this->$_model);
 	
