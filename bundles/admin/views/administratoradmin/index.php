@@ -45,7 +45,7 @@
 										<td><input type="checkbox" name="id[]" value="<?php echo $administrator->id ?>" /></td>
 										<td><a href="administrators/<?php echo $administrator->id ?>/edit"><?php echo $administrator ?></a></td>
 											<td class="actions">
-													<?php $this->trigger_show('coxis_administrator_actions', $administrator) ?>
+													<?php Event::trigger_show('coxis_administrator_actions', $administrator) ?>
 													<a class="delete" href="administrators/<?php echo $administrator->id ?>/delete">Supprimer</a>
 												</td>
 									</tr>

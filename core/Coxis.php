@@ -1,7 +1,7 @@
 <?php
 class Coxis {
-	public static $controller_hooks = array();
-	public static $hooks_table = array();
+	//~ public static $controller_hooks = array();
+	//~ public static $hooks_table = array();
 	public static $libs = array();
 
 	private static $arrs = array();

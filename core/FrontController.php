@@ -19,12 +19,12 @@ class FrontController extends Controller {
 		
 		Router::parseRoutes(BundlesManager::$routes);
 
-		$this->trigger('start');
+		Event::trigger('start');
 			
 		//Dispatch to target controller
 		$output = Router::dispatch($this);
 		
-		$output = $this->filter('output', $output);
+		$output = Event::filter('output', $output);
 
 		//Send the response
 		Response::setContent($output)->send();

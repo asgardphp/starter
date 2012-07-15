@@ -266,7 +266,7 @@ abstract class Model {
 				$order_by = ' ORDER BY '.$params['order_by'];
 		
 		if(!$order_by)
-			$order_by = Controller::static_filter('find_model', $order_by, static::getModelName());
+			$order_by = Event::filter('find_model', $order_by, static::getModelName());
 		
 		if(!$order_by)
 				$order_by = ' ORDER BY '.static::$order_by;
@@ -511,7 +511,7 @@ abstract class Model {
 	}
 	
 	public static function loadBehaviors() {
-		Controller::static_trigger('behaviors_pre_load', static::getModelName());
+		Event::trigger('behaviors_pre_load', static::getModelName());
 	//~ try {
 		//~ d(page::$behaviors);
 		//~ }
@@ -525,7 +525,7 @@ abstract class Model {
 		//~ d(static::getModelName(), $model_behaviors);
 		foreach($model_behaviors as $behavior => $params)
 			if($params)
-				Controller::static_trigger('behaviors_load_'.$behavior, static::getModelName());
+				Event::trigger('behaviors_load_'.$behavior, static::getModelName());
 	}
 	//todo add properties on the fly when saving?
 	
@@ -619,9 +619,9 @@ abstract class Model {
 		$model_behaviors = static::$behaviors;
 		foreach($model_behaviors as $behavior => $params)
 			if($params)
-				Controller::static_trigger('behaviors_presave_'.$behavior, $this);	
+				Event::trigger('behaviors_presave_'.$behavior, $this);	
 		
-		Controller::static_trigger('presave_'.$this->getModelName(), $this);
+		Event::trigger('presave_'.$this->getModelName(), $this);
 	}
 	
 	public function save($params=null, $force=false) {
@@ -648,18 +648,13 @@ abstract class Model {
 		#apply filters before saving
 		foreach($vars as $col => $var) {
 			$model = static::getModelName();
-			//~ if(isset(Model::$_properties[$model][$col]['filter'])) {
 			if(isset(static::$properties[$col]['filter'])) {
-				//~ $filter = Model::$_properties[$model][$col]['filter']['to'];
 				$filter = static::$properties[$col]['filter']['to'];
 				$vars[$col] = $model::$filter($var);
 			}
-			//~ elseif(isset(Model::$_properties[$model][$col]['type'])) {
 			elseif(isset(static::$properties[$col]['type'])) {
-				//~ if(Model::$_properties[$model][$col]['type']=='array')
 				if(static::$properties[$col]['type']=='array')
 					$vars[$col] = serialize($var);
-				//~ elseif(Model::$_properties[$model][$col]['type']=='date')
 				elseif(static::$properties[$col]['type']=='date')
 					$vars[$col] = $var->datetime();
 			}

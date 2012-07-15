@@ -62,12 +62,10 @@ class GeneralController extends Controller {
 			
 			if($type != 'text/html')
 				return $content;
-		}
-		catch(Exception $e) {
-		}
+		} catch(Exception $e) {}
 			
 		if(is_array(Coxis::get('layout'))
-			&& sizeof(Coxis::get('layout'))>=2 && $content!==null)
+			&& sizeof(Coxis::get('layout')) >= 2 && $content !== null)
 			return Router::run(Coxis::get('layout', 0), Coxis::get('layout', 1), $content, $this);
 		else
 			return $content;

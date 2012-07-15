@@ -17,7 +17,7 @@ class URL {
 			static::$url = $request;
 		}
 		
-		$request = Controller::static_filter('path_filter', static::$url);
+		$request = Event::filter('path_filter', static::$url);
 		
 		return $request;
 	}

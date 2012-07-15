@@ -15,20 +15,20 @@ class Router {
 		$controller = new $controllerClassName();
 		
 		static::runAction($controller, 'configure', $params, $src, false);
-		$controller->trigger('beforeDispatchAction');
+		Event::trigger('beforeDispatchAction');
 		return static::runAction($controller, $actionName, $params, $src);
 	}
 	
 	private static function runAction($controller, $actionName, $params=array(), $src=null, $showView=true) {
 		$actionName = strtolower($actionName);
 		
-		if($src!=null)
+		if($src != null)
 			foreach($src as $k=>$v)
 				$controller->$k = $v;
 		
 		$result = $controller->run($actionName, $params, $showView);
 		
-		if($src!=null)
+		if($src != null)
 			foreach($controller as $k=>$v)
 				$src->$k = $v;
 		

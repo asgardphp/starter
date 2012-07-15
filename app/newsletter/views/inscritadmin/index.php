@@ -47,7 +47,7 @@
 												<td><?php echo date('d/m/Y H:i:s', $inscrit->created_at) ?></td>
 												<td><a href="<?php echo $this->url_for('edit', array('id'=>$inscrit->id)) ?>"><?php echo $inscrit ?></a></td>
 												<td class="actions">
-													<?php $this->trigger_show('coxis_inscrit_actions', $inscrit) ?>
+													<?php Event::trigger_show('coxis_inscrit_actions', $inscrit) ?>
 													<a class="delete" href="<?php echo $this->url_for('delete', array('id'=>$inscrit->id)) ?>">Supprimer</a>
 												</td>
 											</tr>

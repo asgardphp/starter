@@ -67,9 +67,9 @@ class BundlesManager {
 						else
 							$priority = 0;
 						$priority *= 1000;
-						while(isset(Coxis::$hooks_table[$hook][$priority]))
+						while(isset(Event::$hooks_table[$hook][$priority]))
 							$priority += 1;
-						Coxis::$hooks_table[$hook][$priority] = array('controller'=>static::formatControllerName($classname), 'action'=>static::formatActionName($method));
+						Event::$hooks_table[$hook][$priority] = array('controller'=>static::formatControllerName($classname), 'action'=>static::formatActionName($method));
 					}
 					if($method_reflection->getAnnotation('Filter')) {
 						$filter = $method_reflection->getAnnotation('Filter')->value;
@@ -151,31 +151,23 @@ class BundlesManager {
 		foreach($bundles as $bundle)
 			static::loadBundle($dir.'/'.$bundle);
 
-		foreach(Coxis::$hooks_table as $k=>$v)
-			ksort(Coxis::$hooks_table[$k]);
+		foreach(Event::$hooks_table as $k=>$v)
+			ksort(Event::$hooks_table[$k]);
 
-		Coxis::set('filters_table', static::$filters_table); //todo what's that for ?!
-
-		#TODO
-		//~ -comment une action _hook peut retrouver le model correspondant ?
-			//~ -
-		//~ -matcher la route avec le prefix du controlleur ?
-		//~ -retrouver le controlleur correspondant au model ?
-		#/
-
-		//~ d(Coxis::$controller_hooks);
-		foreach(Coxis::$controller_hooks as $controller=>$hooks) {
-			foreach($hooks as $hook) {
-				static::$bundles_routes[] = array(//$index.
-					'route'	=>	$hook['route'],
-					'controller'	=>	$controller,
-					'action'	=>	'_hook',
-					'requirements'	=>	isset($hook['requirements']) ? $hook['requirements']:null,
-					'method'	=>	isset($hook['method']) ? $hook['method']:null,
-					'name'	=>	isset($hook['name']) ? $hook['name']:null,
-				);
-			}
-		}
+		Event::$filters_table = static::$filters_table;
+		
+		//~ foreach(Coxis::$controller_hooks as $controller=>$hooks) {
+			//~ foreach($hooks as $hook) {
+				//~ static::$bundles_routes[] = array(//$index.
+					//~ 'route'	=>	$hook['route'],
+					//~ 'controller'	=>	$controller,
+					//~ 'action'	=>	'_hook',
+					//~ 'requirements'	=>	isset($hook['requirements']) ? $hook['requirements']:null,
+					//~ 'method'	=>	isset($hook['method']) ? $hook['method']:null,
+					//~ 'name'	=>	isset($hook['name']) ? $hook['name']:null,
+				//~ );
+			//~ }
+		//~ }
 		
 		$all_routes = array_merge(static::$bundles_routes, $routes);
 		

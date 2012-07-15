@@ -82,8 +82,8 @@ class Response {
 	}
 
 	public static function send() {
-		Controller::static_trigger('output_'.static::$code);
-		Controller::static_trigger('output');
+		Event::trigger('output_'.static::$code);
+		Event::trigger('output');
 		
 		$headers = array();
 		if(array_key_exists(static::$code, static::$codes))

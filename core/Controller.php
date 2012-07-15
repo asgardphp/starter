@@ -30,53 +30,53 @@ class Controller {
 			HTML::code('<link rel="canonical" href="'.$canonical.'">');
 	}
 
-	public static function static_filter($filterName, $p, $args=array()) {
-		$filters_table = Coxis::get('filters_table');
+	//~ public static function static_filter($filterName, $p, $args=array()) {
+		//~ $filters_table = Coxis::get('filters_table');
 		
-		if(isset($filters_table[$filterName]))
-			foreach($filters_table[$filterName] as $filter)
-				#should not only check is_array
-				if(is_array($filter))
-					$p = Router::run($filter['controller'], $filter['action'], array($p, $args));
-				elseif(is_callable($filter))
-					call_user_func_array($filter, array($p, $args));
+		//~ if(isset($filters_table[$filterName]))
+			//~ foreach($filters_table[$filterName] as $filter)
+				//~ #should not only check is_array
+				//~ if(is_array($filter))
+					//~ $p = Router::run($filter['controller'], $filter['action'], array($p, $args));
+				//~ elseif(is_callable($filter))
+					//~ call_user_func_array($filter, array($p, $args));
 			
-		return $p;
-	}
+		//~ return $p;
+	//~ }
 
-	public function filter($filterName, $p, $args=array()) {
-		$filters_table = Coxis::get('filters_table');
+	//~ public function filter($filterName, $p, $args=array()) {
+		//~ $filters_table = Coxis::get('filters_table');
 		
-		if(isset($filters_table[$filterName]))
-			foreach($filters_table[$filterName] as $filter)
-				#should not only check is_array
-				if(is_array($filter))
-					$p = Router::run($filter['controller'], $filter['action'], array($p, $args), $this);
-				elseif(is_callable($filter))
-					call_user_func_array($filter, array($p, $args));
+		//~ if(isset($filters_table[$filterName]))
+			//~ foreach($filters_table[$filterName] as $filter)
+				//~ #should not only check is_array
+				//~ if(is_array($filter))
+					//~ $p = Router::run($filter['controller'], $filter['action'], array($p, $args), $this);
+				//~ elseif(is_callable($filter))
+					//~ call_user_func_array($filter, array($p, $args));
 			
-		return $p;
-	}
+		//~ return $p;
+	//~ }
 
-	public static function static_trigger($hookName, $args=null) {
-		if(isset(Coxis::$hooks_table[$hookName]))
-			foreach(Coxis::$hooks_table[$hookName] as $hook)
-				#should not only check is_array
-				if(is_array($hook))
-					Router::run($hook['controller'], $hook['action'], $args, null, false);
-				elseif(is_callable($hook))
-					call_user_func_array($hook, array($args));
-	}
+	//~ public static function static_trigger($hookName, $args=null) {
+		//~ if(isset(Coxis::$hooks_table[$hookName]))
+			//~ foreach(Coxis::$hooks_table[$hookName] as $hook)
+				//~ #should not only check is_array
+				//~ if(is_array($hook))
+					//~ Router::run($hook['controller'], $hook['action'], $args, null, false);
+				//~ elseif(is_callable($hook))
+					//~ call_user_func_array($hook, array($args));
+	//~ }
 
-	public function trigger($hookName, $args=null) {
-		if(isset(Coxis::$hooks_table[$hookName]))
-			foreach(Coxis::$hooks_table[$hookName] as $hook)
-				#should not only check is_array
-				if(is_array($hook))
-					Router::run($hook['controller'], $hook['action'], $args, $this, false);
-				elseif(is_callable($hook))
-					call_user_func_array($hook, array($args));
-	}
+	//~ public function trigger($hookName, $args=null) {
+		//~ if(isset(Coxis::$hooks_table[$hookName]))
+			//~ foreach(Coxis::$hooks_table[$hookName] as $hook)
+				//~ #should not only check is_array
+				//~ if(is_array($hook))
+					//~ Router::run($hook['controller'], $hook['action'], $args, $this, false);
+				//~ elseif(is_callable($hook))
+					//~ call_user_func_array($hook, array($args));
+	//~ }
 	
 	public function render($view, $args) {
 		return $this->showView($view, $args);
@@ -114,12 +114,6 @@ class Controller {
 		//TODO: check if component exists. If not, throw exception!
 		//TODO: only throw 404 if request is wrong..
 		echo Router::run($controller, $action, $args, $this);
-	}
-	
-	private function trigger_show($hookName, $args=null) {
-		if(isset(Coxis::$hooks_table[$hookName]))
-			foreach(Coxis::$hooks_table[$hookName] as $hook)
-				echo Router::run($hook['controller'], $hook['action'], $args, $this);
 	}
 		
 	private function showView($view, $_args) {
