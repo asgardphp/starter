@@ -3,20 +3,19 @@ class Router {
 	public static $request;
 
 	public static function dispatch($src=null) {
-		if(method_exists(static::$request['controller'].'Controller', static::$request['action'].'Action'))
-			return static::runDispatch(static::$request['controller'], static::$request['action'], static::$request, $src);
+		if(method_exists(static::$request['controller'].'Controller', static::$request['action'].'Action')) {
+			$controllerName = ucfirst(strtolower(static::$request['controller']));
+			$controllerClassName = $controllerName.'Controller';
+			$controller = new $controllerClassName();
+			$actionName = static::$request['action'];
+			$params = static::$request;
+			
+			static::runAction($controller, 'configure', $params, $src, false);
+			Event::trigger('beforeDispatchAction');
+			return static::runAction($controller, $actionName, $params, $src);
+		}
 		else
 			Response::setCode(404)->send();
-	}
-	
-	public static function runDispatch($controllerName, $actionName, $params=array(), $src=null) {
-		$controllerName = ucfirst(strtolower($controllerName));
-		$controllerClassName = $controllerName.'Controller';
-		$controller = new $controllerClassName();
-		
-		static::runAction($controller, 'configure', $params, $src, false);
-		Event::trigger('beforeDispatchAction');
-		return static::runAction($controller, $actionName, $params, $src);
 	}
 	
 	private static function runAction($controller, $actionName, $params=array(), $src=null, $showView=true) {

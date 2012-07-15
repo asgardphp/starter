@@ -7,6 +7,7 @@ class ActualiteController extends Controller {
 	@Route('')
 	*/
 	public function indexAction($request) {
+	echo $ad;
 		$page = isset($request['page']) ? $request['page']:1;
 		list($this->actualites, $this->paginator) = Paginator::paginate('actualite', $page, array());
 		//~ d($this->actualites);

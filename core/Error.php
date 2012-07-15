@@ -20,26 +20,23 @@ class Error {
 			ob_end_clean();
 		
 		Response::setCode(500);
+				
+		ob_start();
 		
-		if(static::$display) {
-			ob_start();
-			
-			if($msg) {
-				echo '<b>Message</b><br/>'."\n";
-				echo $msg."<br/>\n<br/>\n";
-			}
-			static::print_backtrace($msg, $backtrace);
-		
-			$result = ob_get_contents();
-			ob_end_clean();
-			
-			//~ die($result);
-			//~ throw new EndException(new Result(array(), $result));
-			return new Result(array(), $result);
+		if($msg) {
+			echo '<b>Message</b><br/>'."\n";
+			echo $msg."<br/>\n<br/>\n";
 		}
+		static::print_backtrace($msg, $backtrace);
+	
+		$result = ob_get_contents();
+		ob_end_clean();
+		
+		Log::add('errors/log.html', $result);
+		
+		if(static::$display)
+			return new Result(array(), $result);
 		else
-			//~ die('<h1>Error</h1>Oops, something went wrong. Please report it to the administrator.');
-			//~ throw new EndException(new Result(array(), '<h1>Error</h1>Oops, something went wrong. Please report it to the administrator.'));
 			return new Result(array(), '<h1>Error</h1>Oops, something went wrong. Please report it to the administrator.');
 	}
 	

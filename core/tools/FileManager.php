@@ -1,6 +1,6 @@
 <?php
 class FileManager {
-	public static function move_uploaded($src, $output) {	
+	public static function getNewFileName($output) {
 		$fileexts = explode('.', $output);
 		$filename = implode('.', array_slice($fileexts, 0, -1));
 		$ext = $fileexts[sizeof($fileexts)-1];
@@ -9,6 +9,12 @@ class FileManager {
 		$i=1;
 		while(file_exists($output))
 			$output = $filename.'_'.($i++).'.'.$ext;
+			
+		return $output;
+	}
+
+	public static function move_uploaded($src, $output) {	
+		$output = static::getNewFileName($output);
 			
 		static::mkdir(dirname($output));
 			
