@@ -1,4 +1,6 @@
 <?php
+class DBException extends Exception {}
+
 class Database {
 	private $db;
 	private static $instance;
@@ -167,7 +169,7 @@ class Query {
 		$res = mysql_query($sql, $db);
 		
 		if(!$res)
-			throw new Exception(mysql_error().'<br/>'."\n".'SQL: '.$sql);
+			throw new DBException(mysql_error().'<br/>'."\n".'SQL: '.$sql);
 		$this->res = $res;
 	}
 

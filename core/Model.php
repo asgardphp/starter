@@ -101,6 +101,8 @@ abstract class Model {
 				));
 			}
 			catch(Exception $e) {
+				if(is_a($e, 'DBException'))
+					throw $e;
 				return null;
 			}
 		}
@@ -236,12 +238,7 @@ abstract class Model {
 	
 	public static function findOne($params=array()) {
 		$params['limit'] = 1;
-		//~ try {
 		$results = static::find($params);
-		//~ }
-		//~ catch(Exception $e) {//todo
-			//~ d($e);
-		//~ }
 		if(!isset($results[0]))
 			throw new Exception('no result');
 			
@@ -343,12 +340,10 @@ abstract class Model {
 	}
 
 	public static function getProperties() {
-		//~ return Model::$_properties[static::getModelName()];
 		return static::$properties;
 	}
 	
 	public static function getAttributes() {
-		//~ return array_keys(Model::$_properties[static::getModelName()]);
 		return array_keys(static::$properties);
 	}
 	
@@ -359,18 +354,17 @@ abstract class Model {
 	}
 	
 	public static function load($id) {
-		$model = static::create();
+		$model = new static;
 		
 		try {
 			$model->loadFromID($id);
 			$model->configure();
 			return $model;
-		}
-		catch(Exception $e) {
+		} catch(Exception $e) {
+			if(is_a($e, 'DBException'))
+				throw $e;
 			return null;
 		}
-	
-		//~ #todo do not catch mysql connect exception
 	}
 	
 	public static function destroyOne($id) {
@@ -567,9 +561,7 @@ abstract class Model {
 									'controller'	=>	'Multifile',
 									'action'			=>	'delete'
 								);
-					}
-					catch(Exception $e) {
-					}
+					} catch(Exception $e) {}
 				}
 				#single
 				else
@@ -858,8 +850,7 @@ abstract class Model {
 					foreach($this->$filename_property as $filename) {
 						$result[] = $dir.$filename;
 					}
-				}
-				catch(Exception $e) {
+				} catch(Exception $e) {
 					d($filename_property, $this->$filename_property);
 				}
 				return $result;

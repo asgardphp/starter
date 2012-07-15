@@ -43,8 +43,7 @@ class PreferencesAdminController extends AdminParentController {
 				Messenger::getInstance()->addSuccess(static::$_messages['modified']);
 				if(isset($_POST['send']))
 					$this->redirect('admin/'.static::$_index, true)->send();
-			}
-			catch(FormException $e) {
+			} catch(FormException $e) {
 				Messenger::getInstance()->addError($e->errors);
 			}
 		

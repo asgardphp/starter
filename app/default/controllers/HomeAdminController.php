@@ -32,7 +32,7 @@ class HomeAdminController extends AdminParentController {
 				$this->form->save();
 				Messenger::getInstance()->addSuccess(static::$_messages['modified']);
 			}
-			catch(ModelException $e) {
+			catch(FormException $e) {
 				Messenger::getInstance()->addError($e->errors);
 			}
 	}

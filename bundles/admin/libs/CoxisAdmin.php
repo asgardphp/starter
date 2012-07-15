@@ -12,8 +12,7 @@ class CoxisAdmin {
 		try {
 			$reflection = new ReflectionAnnotatedClass($controller.'Controller');
 			return '/'.$reflection->getAnnotation('Prefix')->value;
-		}
-		catch(Exception $e) {
+		} catch(PHPErrorException $e) {
 			throw new Exception('Admin Controller does not exist for model '.$controller);
 		}
 	}
@@ -25,8 +24,7 @@ class CoxisAdmin {
 	public static function getShowFor($model, $id) {
 		try {
 			return url_for(array(static::getAdminControllerFor($model), 'edit'), array('id'=>$id));
-		}
-		catch(Exception $e) {
+		} catch(PHPErrorException $e) {
 			return url_for(array(static::getAdminControllerFor($model), 'index'));
 		}
 	}

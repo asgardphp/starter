@@ -64,8 +64,7 @@ class Response {
 			
 		try {
 			while(ob_end_clean()){}
-		}
-		catch(Exception $e) {}
+		} catch(Exception $e) {}
 	
 		if(!$headers) {
 			$headers = array();

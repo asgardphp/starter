@@ -33,15 +33,12 @@ class GeneralController extends Controller {
 		$request = Router::getRequest();
 		
 		if($request['format']=='html') {
-			$output = Router::run('General', '_404');
-			$output = $this->filter('output', $output);
+			$output = Router::run('default', '_404');
+			$output = Event::filter('output', $output);
 			Response::setContent($output);
 		}
 		
 		Response::send();
-	}
-	
-	public function _404Action() {
 	}
 
 	/**

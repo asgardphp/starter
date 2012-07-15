@@ -6,8 +6,7 @@ class Browser {
 		ob_start();
 		try {
 			Router::run('Front', 'main');
-		}
-		catch(EndException $e) {
+		} catch(EndException $e) {
 			ob_end_clean();
 			return $e->result;
 		}

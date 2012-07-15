@@ -41,8 +41,7 @@ class ImageCacheController extends Controller {
 		else {
 			try {
 				$img = ImageManager::load(_WEB_DIR_.'/'.$request['src']);
-			}
-			catch(Exception $e) {
+			} catch(Exception $e) {
 				Response::setCode(500)->send();
 			}
 			$this->apply($img, $request['preset']);

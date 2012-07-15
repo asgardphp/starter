@@ -20,8 +20,7 @@ class MultifileController extends Controller {
 				'deleteurl' => url_for('coxis_'.$model->getModelName().'_files_delete', array('id' => $model->id, 'pos' => sizeof($final_paths)+1, 'file' => $request['file'])),
 			);
 			Response::setCode(200)->setContent(json_encode($response))->send();
-		}
-		catch(Exception $e) {
+		} catch(Exception $e) {
 			Response::setCode(500)->setContent('Erreur lors de l\'envoi.')->send();
 		}
 	}
@@ -48,15 +47,13 @@ class MultifileController extends Controller {
 			$model->setRawFilePath($request['file'], $rawpaths)->save(null, true);
 			Messenger::addSuccess('Fichier supprimé avec succès.');
 			FileManager::unlink(_WEB_DIR_.'/'.$path);
-		}
-		catch(Exception $e) {
+		} catch(Exception $e) {
 			Messenger::addError('Il y a eu une erreur avec l\'élément');
 		}
 		
 		try {
 			Response::redirect(url_for(array($request['_controller'], 'edit'), array('id' => $model->id)))->send();
-		}
-		catch(Exception $e) {
+		} catch(Exception $e) {
 			Response::redirect(url_for(array($request['_controller'], 'index')))->send();
 		}
 	}

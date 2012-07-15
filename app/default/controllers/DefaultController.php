@@ -16,4 +16,7 @@ class DefaultController extends Controller {
 	
 	public function sidebarAction($request) {
 	}
+	
+	public function _404Action() {
+	}
 }

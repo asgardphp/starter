@@ -64,8 +64,7 @@ abstract class MultiAdminController extends AdminParentController {
 				Messenger::getInstance()->addSuccess(static::$_messages['modified']);
 				if(isset($_POST['send']))
 					Response::redirect('admin/'.static::$_index)->send();
-			}
-			catch(FormException $e) {
+			} catch(FormException $e) {
 				Messenger::getInstance()->addError($e->errors);
 			}
 		
@@ -90,8 +89,7 @@ abstract class MultiAdminController extends AdminParentController {
 					Response::redirect('admin/'.static::$_index)->send();
 				else
 					Response::redirect('admin/'.static::$_index.'/'.$this->$_model->id.'/edit')->send();
-			}
-			catch(FormException $e) {
+			} catch(FormException $e) {
 				Messenger::getInstance()->addError($e->errors);
 			}
 		
