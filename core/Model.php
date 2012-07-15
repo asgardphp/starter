@@ -4,12 +4,19 @@ class ModelException extends Exception {
 }
 
 abstract class Model {
-	public static $_properties;
+	//~ public static $_properties;
+	protected $data = array();
+	
 	public static $order_by = 'id DESC';
 	
+	public static $properties = array();
+	public static $files = array();
+	public static $relationships = array();
+	public static $behaviors = array();
+	public static $file_messages = array();
+	public static $messages = array();
+	
 	public function __construct($param='') {
-		$this->configure();
-		$this->post_configure();
 		if(is_array($param)) {
 			$this->loadDefault();
 			$this->loadFromArray($param);
@@ -20,19 +27,47 @@ abstract class Model {
 			$this->loadDefault();
 	}
 	
-	//~ public static function files() { return array(); }
-	//~ public static function relationships() { return array(); }
-	//~ public static function behaviors() { return array(); }
-	public static $files = array();
-	public static $relationships = array();
-	public static $behaviors = array();
-	public static $file_messages = array();
-	public static $messages = array();
+	final public static function init() {}#autoload function
+	
+	public function __set($name, $value) {
+		$this->data[$name] = $value;
+	}
+	
+	public function __get($name) {
+		if(Coxis::get('in_view'))
+			if(is_string($this->data[$name]))
+				return HTML::sanitize($this->data[$name]);
+			else
+				return $this->data[$name];
+		else
+			return $this->data[$name];
+	}
+	
+	public function __isset($name) {
+		return isset($this->data[$name]);
+	}
+	
+	public function __unset($name) {
+		unset($this->data[$name]);
+	}
+	
+	public function set($vars) {
+		foreach($vars as $k=>$v)
+				$this->$k = $v;
+				
+		return $this;
+	}
 
-	public function post_configure() {
-		foreach(static::getProperties() as $property=>$params)
+	private static function post_configure() {
+		foreach(static::getProperties() as $property=>$params) {
 			if(isset($params['multiple']))
-				Model::$_properties[$this->getModelName()][$property]['type'] = 'array';
+				//~ Model::$_properties[$this->getModelName()][$property]['type'] = 'array';
+				static::$properties[$property]['type'] = 'array';
+			if(!isset($params['type']))
+				static::$properties[$property]['type'] = 'text';
+			if(!isset($params['required']))
+				static::$properties[$property]['required'] = true;
+		}
 	}
 
 	public function loadDefault() {
@@ -46,7 +81,13 @@ abstract class Model {
 	}
 	
 	public static function create($values=array()) {
-		return new ModelDecorator(new static($values));
+	#todo create and save
+		//~ return new ModelDecorator(new static($values));
+		return new static($values);
+	}
+	
+	public function raw($name) {
+		return $this->data[$name];
 	}
 	
 	public static function __callStatic($name, $arguments) {
@@ -65,7 +106,7 @@ abstract class Model {
 		}
 	}
 
-    public function __call($name, $arguments) {
+	public function __call($name, $arguments) {
 		//called when setting or getting a related model
 		$todo = substr($name, 0, 3);
 		$what = strtolower(substr($name, 3));
@@ -195,12 +236,12 @@ abstract class Model {
 	
 	public static function findOne($params=array()) {
 		$params['limit'] = 1;
-		try {
+		//~ try {
 		$results = static::find($params);
-		}
-		catch(Exception $e) {//todo
-			d($e);
-		}
+		//~ }
+		//~ catch(Exception $e) {//todo
+			//~ d($e);
+		//~ }
 		if(!isset($results[0]))
 			throw new Exception('no result');
 			
@@ -302,11 +343,13 @@ abstract class Model {
 	}
 
 	public static function getProperties() {
-		return Model::$_properties[static::getModelName()];
+		//~ return Model::$_properties[static::getModelName()];
+		return static::$properties;
 	}
 	
 	public static function getAttributes() {
-		return array_keys(Model::$_properties[static::getModelName()]);
+		//~ return array_keys(Model::$_properties[static::getModelName()]);
+		return array_keys(static::$properties);
 	}
 	
 	public function setFiles($files) {
@@ -353,23 +396,22 @@ abstract class Model {
 	public function loadFromArray($cols) {
 		$model = static::getModelName();
 		foreach($cols as $col=>$value) {
-			if(isset(Model::$_properties[$model][$col]['filter'])) {
-				$filter = Model::$_properties[$model][$col]['filter']['from'];
+			if(isset(static::$properties[$col]['filter'])) {
+				//~ $filter = Model::$_properties[$model][$col]['filter']['from'];
+				$filter = static::$properties[$col]['filter']['from'];
 				$this->$col = $model::$filter($value);
 			}
-			elseif(isset(Model::$_properties[$model][$col]['type'])) {
-				if(Model::$_properties[$model][$col]['type'] == 'array') {
+			elseif(isset(static::$properties[$col]['type'])) {
+				if(static::$properties[$col]['type'] === 'array') {#php, seriously.. == 'array'
 					try {
 						$this->$col = unserialize($value);
-					}
-					catch(PHPErrorException $e) {
+					} catch(PHPErrorException $e) {
 						$this->$col = array($value);
 					}
 					if(!is_array($this->$col))
 						$this->$col = array();
-					//~ d($this->$col, $col);
 				}
-				elseif(Model::$_properties[$model][$col]['type']=='date') {
+				elseif(static::$properties[$col]['type'] === 'date') {
 					$this->$col = Date::fromDatetime($value);//todo with Date class
 				}
 				else
@@ -400,7 +442,8 @@ abstract class Model {
 		$modelName = static::getModelName();
 		
 		$validator = new Validator();
-		$constrains = static::$_properties[$modelName];
+		//~ $constrains = static::$_properties[$modelName];
+		$constrains = static::$properties;
 		
 		foreach($constrains as $property=>$property_constrains)
 			foreach($property_constrains as $k=>$constrain)
@@ -452,9 +495,19 @@ abstract class Model {
 	//~ }
 	
 	public static function loadModel() {
+		$properties = static::$properties;
+		foreach($properties as $k=>$v)
+			if(is_int($k)) {
+				$properties[$v] = array();
+				unset($properties[$k]);
+			}
+		static::$properties = $properties;
+		
 		static::loadBehaviors();
 		static::loadRelationships();
 		static::loadFiles();
+		static::configure();
+		static::post_configure();
 	}
 	
 	public static function loadBehaviors() {
@@ -524,8 +577,9 @@ abstract class Model {
 	}
 	
 	public static function addProperty($property, $params) {
-		$modelName = static::getModelName();
-		Model::$_properties[$modelName][$property] = $params;
+		//~ $modelName = static::getModelName();
+		//~ Model::$_properties[$modelName][$property] = $params;
+		static::$properties[$property] = $params;
 	}
 	
 	public function getFiles() {
@@ -594,14 +648,19 @@ abstract class Model {
 		#apply filters before saving
 		foreach($vars as $col => $var) {
 			$model = static::getModelName();
-			if(isset(Model::$_properties[$model][$col]['filter'])) {
-				$filter = Model::$_properties[$model][$col]['filter']['to'];
+			//~ if(isset(Model::$_properties[$model][$col]['filter'])) {
+			if(isset(static::$properties[$col]['filter'])) {
+				//~ $filter = Model::$_properties[$model][$col]['filter']['to'];
+				$filter = static::$properties[$col]['filter']['to'];
 				$vars[$col] = $model::$filter($var);
 			}
-			elseif(isset(Model::$_properties[$model][$col]['type'])) {
-				if(Model::$_properties[$model][$col]['type']=='array')
+			//~ elseif(isset(Model::$_properties[$model][$col]['type'])) {
+			elseif(isset(static::$properties[$col]['type'])) {
+				//~ if(Model::$_properties[$model][$col]['type']=='array')
+				if(static::$properties[$col]['type']=='array')
 					$vars[$col] = serialize($var);
-				elseif(Model::$_properties[$model][$col]['type']=='date')
+				//~ elseif(Model::$_properties[$model][$col]['type']=='date')
+				elseif(static::$properties[$col]['type']=='date')
 					$vars[$col] = $var->datetime();
 			}
 		}
@@ -849,5 +908,5 @@ abstract class Model {
 		return $this;
 	}
 	
-	protected function configure() {}
+	protected static function configure() {}
 }

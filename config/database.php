@@ -18,7 +18,6 @@ $config = array(
 			'database'	=>	'hognerudeur',
 			'prefix'		=>	'arpa_',
 		),
-		'error_display' => true,
-		//~ 'error_display' => false,
+		'error_display' => false,
 	),
 );

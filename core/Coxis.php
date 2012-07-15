@@ -38,13 +38,17 @@ class Coxis {
 				static::preLoadClasses($sub_file);
 		else {
 			list($class) = explode('.', basename($file));
-			static::$libs[$class] = $file;
+			static::$libs[strtolower($class)] = $file;
 		}
 	}
 	
 	public static function loadClass($class) {
-		if(isset(static::$libs[$class]))
+		$class = strtolower($class);
+		if(isset(static::$libs[$class])) {
 			include_once(static::$libs[$class]);
+			if(is_subclass_of($class, 'Model'))
+				$class::loadModel();
+		}
 		elseif(function_exists('__autoload'))
 				__autoload($class);
 		else

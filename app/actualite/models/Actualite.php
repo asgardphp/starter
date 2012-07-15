@@ -1,37 +1,35 @@
 <?php
 class Actualite extends Model {
-			public $titre;
-			
-			/**
-			@Required(false)
-			*/
-			public $date;
+	public static $properties = array(
+		'titre',
+		'date'    =>    array(
+			'required'    =>    false,
+		),
+		'lieu'    =>    array(
+			'required'    =>    false,
+		),
+		'introduction',
+		'contenu',
+	);
 	
-			/**
-			@Required(false)
-			*/
-			public $lieu;
+	public static $files = array(	
+		'image' => array(
+		'dir'	=>	'actualite/',
+			'type'	=>	'image',
+			'required'	=>	true,
+		),
+	);
 	
-			public $introduction;
-			public $contenu;
+	public static $relationships = array(
+	);
 	
-		#General
+	public static $behaviors = array(
+		'slugify' => true,
+		'sortable' => true,
+	);
+		
+	#General
 	public function __toString() {
 		return (string)$this->titre;
-	}	
-		public static $files = array(	
-			'image' => array(
-			'dir'	=>	'actualite/',
-						'type'	=>	'image',
-						'required'	=>	true,
-					),
-		);
-	
-	public static $relationships = array(	
-		);
-	
-	public static $behaviors = array(	
-			'slugify' => true,
-			'sortable' => true,
-		);
+	}
 }

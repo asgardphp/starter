@@ -5,27 +5,23 @@ class SortableBehaviorController extends Controller {
 	**/
 	public function behaviors_load_sortableAction($modelName) {
 		$modelName::addProperty('position', array('type' => 'integer', 'required' => true, 'editable' => false));
-		#todo controller name
-		//~ $modelNameName = static::getModelName();
-		$admin_controller = strtolower(CoxisAdmin::getAdminControllerFor($modelName));
+		$admin_controller = strtolower(CoxisAdmin::getAdminControllerFor($modelName)).'Controller';
 		try {
-			$index = CoxisAdmin::getIndexFor($modelName);
-			Coxis::$controller_hooks[$admin_controller][] = array(
-						'route'			=>	$index.'/:id/promote',
-						'name'			=>	'coxis_'.$modelName.'_promote',
-						'controller'	=>	'SortableBehavior',
-						'action'			=>	'promote'
-					);
-			Coxis::$controller_hooks[$admin_controller][] = array(
-						'route'			=>	$index.'/:id/demote',
-						'name'			=>	'coxis_'.$modelName.'_demote',
-						'controller'	=>	'SortableBehavior',
-						'action'			=>	'demote'
-					);
+			$admin_controller::addHook(array(
+				'route'			=>	':id/promote',
+				'name'			=>	'coxis_'.$modelName.'_promote',
+				'controller'	=>	'SortableBehavior',
+				'action'			=>	'promote'
+			));
+			$admin_controller::addHook(array(
+				'route'			=>	':id/demote',
+				'name'			=>	'coxis_'.$modelName.'_demote',
+				'controller'	=>	'SortableBehavior',
+				'action'			=>	'demote'
+			));
+		
 			Coxis::$hooks_table['coxis_'.$modelName.'_actions'][] = array('controller' => 'SortableBehavior', 'action' => 'sortableactions');
-		}
-		catch(Exception $e) {
-		}
+		} catch(Exception $e) {}#if the admincontroller does not exist for this model
 	}
 	
 	/**
@@ -36,8 +32,7 @@ class SortableBehaviorController extends Controller {
 			try {
 				$last = Database::getInstance()->query('SELECT position FROM `'.Config::get('database', 'prefix').$model::getModelName().'` ORDER BY position ASC LIMIT 1')->fetchOne();
 				$model->position = $last['position']+1;
-			}
-			catch(Exception $e) {
+			} catch(Exception $e) {
 				$model->position = 0;
 			}
 		}
@@ -61,9 +56,7 @@ class SortableBehaviorController extends Controller {
 
 	public function promoteAction($request) {
 		$modelName = CoxisAdmin::getModelNameFor($request['_controller']);
-		
 		$model = $modelName::load($request['id']);
-		
 		static::reset($modelName);
 		
 		try {
@@ -73,7 +66,6 @@ class SortableBehaviorController extends Controller {
 				),
 				'order_by'	=>	'position DESC'
 			));
-			//~ d($over_models);
 			
 			$old = $model->position;
 			$model->position = $over_model->position;
@@ -81,18 +73,14 @@ class SortableBehaviorController extends Controller {
 			$model->save(null, true);
 			$over_model->save(null, true);
 			Messenger::addSuccess('Ordre modifié avec succès.');
-		}
-		catch(Exception $e) {
-		}
+		} catch(Exception $e) {}
 		
 		Response::redirect(url_for(array($request['_controller'], 'index')))->send();
 	}
 	
 	public function demoteAction($request) {
 		$modelName = CoxisAdmin::getModelNameFor($request['_controller']);
-		
 		$model = $modelName::load($request['id']);
-		
 		static::reset($modelName);
 		
 		try {
@@ -102,7 +90,6 @@ class SortableBehaviorController extends Controller {
 				),
 				'order_by'	=>	'position ASC'
 			));
-			//~ d($over_models);
 			
 			$old = $model->position;
 			$model->position = $below_model->position;
@@ -110,16 +97,14 @@ class SortableBehaviorController extends Controller {
 			$model->save(null, true);
 			$below_model->save(null, true);
 			Messenger::addSuccess('Ordre modifié avec succès.');
-		}
-		catch(Exception $e) {
-		}
+		} catch(Exception $e) {}
 		
 		Response::redirect(url_for(array($request['_controller'], 'index')))->send();
 	}
 	
 	public static function reset($modelName) {
 		$all = $modelName::find(array(
-			//~ 'order_by'	=>	'position ASC'
+			'order_by'	=>	'position ASC'
 		));
 		
 		#reset positions

@@ -1,1 +1,0 @@
-<h1><?php echo $annonce ?></h1>

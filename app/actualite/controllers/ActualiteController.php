@@ -9,6 +9,7 @@ class ActualiteController extends Controller {
 	public function indexAction($request) {
 		$page = isset($request['page']) ? $request['page']:1;
 		list($this->actualites, $this->paginator) = Paginator::paginate('actualite', $page, array());
+		//~ d($this->actualites);
 		//~ $this->actualites = Actualite::find();
 	}
 

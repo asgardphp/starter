@@ -36,13 +36,8 @@ class FrontController extends Controller {
 		
 		BundlesManager::$directories[] = 'app';
 		BundlesManager::loadBundles();
-		//~ BundlesManager::loadBundles('bundles');
-		//~ BundlesManager::loadBundles('app');
 		#todo should load libs first in all bundles
 		#
-		
-		//~ d(BundlesManager::$bundles_routes);
-		//~ d(Model::$_properties);
 	
 		//User Session
 		User::start();

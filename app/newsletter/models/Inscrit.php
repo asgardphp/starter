@@ -1,9 +1,15 @@
 <?php
 class Inscrit extends Model {
-			/**
-			@Type('email')
-			*/
-			public $email;
+			//~ /**
+			//~ @Type('email')
+			//~ */
+			//~ public $email;
+	
+	public static $properties = array(
+		'email'    =>    array(
+			'type'    =>    'email',
+		),
+	);
 	
 		#General
 	public function __toString() {

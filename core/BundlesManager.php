@@ -9,17 +9,18 @@ class Route extends Annotation {
 class Hook extends Annotation {}
 class Prefix extends Annotation {}
 class Priority extends Annotation {}
-/* Models */
-class Type extends Annotation {}
-class Length extends Annotation {}
-class Required extends Annotation {}
-class DefaultValue extends Annotation {}
 class Filter extends Annotation {}
-class Validation extends Annotation {}
-class In extends Annotation {}
-class Multiple extends Annotation {}
-class SetFilter extends Annotation {}
-class Editable extends Annotation {}
+/* Models */
+//~ class Type extends Annotation {}
+//~ class Length extends Annotation {}
+//~ class Required extends Annotation {}
+//~ class DefaultValue extends Annotation {}
+//~ class Filter extends Annotation {}
+//~ class Validation extends Annotation {}
+//~ class In extends Annotation {}
+//~ class Multiple extends Annotation {}
+//~ class SetFilter extends Annotation {}
+//~ class Editable extends Annotation {}
 	
 class BundlesManager {
 	public static $bundles_routes = array();
@@ -77,42 +78,42 @@ class BundlesManager {
 				}
 			}
 		
+		#TODO should not load all models ahead...
+		/*
 		if(file_exists($bundle.'/models/'))
 			foreach(glob($bundle.'/models/*.php') as $filename) {
 				include_once($filename);
 				$model_name = strtolower(static::classname($filename));
-				$_properties = array();
+				//~ $_properties = array();
 				
-				$properties = array();
-				$a = new ReflectionClass($model_name);
-				$props = $a->getProperties();
+				//~ $properties = array();
+				//~ $a = new ReflectionClass($model_name);
+				//~ $props = $a->getProperties();
 				
-				foreach($props as $prop) {
-					if($prop->isStatic())
-						continue;
+				//~ foreach($props as $prop) {
+					//~ if($prop->isStatic())
+						//~ continue;
 						
-					$property = $prop->getName();
-					$property_reflection = new ReflectionAnnotatedProperty($model_name, $property);
+					//~ $property = $prop->getName();
+					//~ $property_reflection = new ReflectionAnnotatedProperty($model_name, $property);
 						
-					$_properties[$property] = array();		
-					$annotations = $property_reflection->getAnnotations();
-					$_properties[strtolower($property)]['type'] = 'text';
-					$_properties[strtolower($property)]['required'] = true;
-					//~ if($property=='password')
-						//~ d($annotations);
-					foreach($annotations as $annotation)
-						$_properties[strtolower($property)][strtolower(get_class($annotation))] = $annotation->value;
-				}
+					//~ $_properties[$property] = array();		
+					//~ $annotations = $property_reflection->getAnnotations();
+					//~ $_properties[strtolower($property)]['type'] = 'text';
+					//~ $_properties[strtolower($property)]['required'] = true;
+					
+					//~ foreach($annotations as $annotation)
+						//~ $_properties[strtolower($property)][strtolower(get_class($annotation))] = $annotation->value;
+				//~ }
 				
-				Model::$_properties[$model_name] = $_properties;
 				$model_name::loadModel();
-				//~ $model_name::loadBehaviors();
-				//~ $model_name::loadFiles();
-			}
+			}*/
+			Coxis::preLoadClasses($bundle.'/models');
 	}
 	
 	public static function loadBundleLibs($bundle) {
-		Coxis::preLoadClasses($bundle.'/libs/');
+		Coxis::preLoadClasses($bundle.'/libs');
+		//~ Coxis::preLoadClasses($bundle.'/models/');
 	}
 	
 	public static function loadBundles() {

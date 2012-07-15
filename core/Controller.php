@@ -8,7 +8,7 @@ class Controller {
 		return url_for(array($this->getControllerName(), $action), $params, $relative);
 	}
 	
-	public function getControllerName() {
+	public static function getControllerName() {
 		return preg_replace('/Controller$/', '', get_called_class());
 	}
 	
@@ -144,6 +144,7 @@ class Controller {
 		//~ Response::redirect($url)->send();
 	//~ }
 	
+	#todo deprecated
 	public function _hookAction($request) {
 		$controller = strtolower(str_replace('Controller', '', get_class($this)));
 		
