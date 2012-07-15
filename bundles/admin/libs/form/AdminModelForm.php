@@ -194,7 +194,7 @@ class AdminModelForm extends ModelForm {
 				$uid = Tools::randstr(10);
 				HTML::code_js("
 					$(function(){
-						multiple_upload('$uid', '".url_for('coxis_'.$this->model->getModelName().'_files_add', array('id' => $this->model->id, 'file' => $widget))."');
+						multiple_upload('$uid', '".url_for(array(CoxisAdmin::getAdminControllerFor($this->model->getModelName()), 'addFile'), array('id' => $this->model->id, 'file' => $widget), false)."');
 					});");
 				?>
 				<div class="block">
@@ -223,7 +223,7 @@ class AdminModelForm extends ModelForm {
 								<img src="<?php echo URL::to('imagecache/admin_thumb/'.$one_path) ?>" alt=""/>
 								<ul>
 									<li class="view"><a href="<?php echo URL::to($one_path) ?>" rel="facebox">Voir</a></li>
-									<li class="delete"><a href="<?php echo url_for('coxis_'.$this->model->getModelName().'_files_delete', array('id' => $this->model->id, 'pos' => $i, 'file' => $widget)) ?>">Suppr.</a></li>
+									<li class="delete"><a href="<?php echo url_for(array(CoxisAdmin::getAdminControllerFor($this->model->getModelName()), 'deleteFile'), array('id' => $this->model->id, 'pos' => $i, 'file' => $widget), false) ?>">Suppr.</a></li>
 								</ul>
 							</li>
 							<?php

@@ -94,7 +94,8 @@ class Response {
 		
 		//~ d(static::$content);
 		//~ d();
-		throw new EndException(new Result($headers, static::$content));
+		//~ throw new EndException(new Result($headers, static::$content));
+		send(new Result($headers, static::$content));
 		//~ throw new Exception();
 	}
 	

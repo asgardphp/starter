@@ -162,26 +162,26 @@ abstract class Model {
 					static::addProperty('filename_'.$file, array('type' => 'array', 'defaultvalue'=>array(), 'editable'=>false, 'required'=>false));
 					
 					#if the coxisadmin controller exists
-					try {
-						$modelName = static::getModelName();
-						$admin_controller = strtolower(CoxisAdmin::getAdminControllerFor($modelName));
-						$index = CoxisAdmin::getIndexFor($modelName);
+					//~ try {
+						//~ $modelName = static::getModelName();
+						//~ $admin_controller = strtolower(CoxisAdmin::getAdminControllerFor($modelName));
+						//~ $index = CoxisAdmin::getIndexFor($modelName);
 	
-						#todo should handle this in bundles/_admin/ ..
-						#todo be sure not to create multiple times the same hook
-						Coxis::$controller_hooks[$admin_controller][] = array(
-									'route'			=>	$index.'/:id/:file/add',
-									'name'			=>	'coxis_'.$modelName.'_files_add',
-									'controller'	=>	'Multifile',
-									'action'			=>	'add'
-								);
-						Coxis::$controller_hooks[$admin_controller][] = array(
-									'route'			=>	$index.'/:id/:file/delete/:pos',
-									'name'			=>	'coxis_'.$modelName.'_files_delete',
-									'controller'	=>	'Multifile',
-									'action'			=>	'delete'
-								);
-					} catch(Exception $e) {}
+						//~ #todo should handle this in bundles/_admin/ ..
+						//~ #todo be sure not to create multiple times the same hook
+						//~ Coxis::$controller_hooks[$admin_controller][] = array(
+									//~ 'route'			=>	$index.'/:id/:file/add',
+									//~ 'name'			=>	'coxis_'.$modelName.'_files_add',
+									//~ 'controller'	=>	'Multifile',
+									//~ 'action'			=>	'add'
+								//~ );
+						//~ Coxis::$controller_hooks[$admin_controller][] = array(
+									//~ 'route'			=>	$index.'/:id/:file/delete/:pos',
+									//~ 'name'			=>	'coxis_'.$modelName.'_files_delete',
+									//~ 'controller'	=>	'Multifile',
+									//~ 'action'			=>	'delete'
+								//~ );
+					//~ } catch(Exception $e) {}
 				}
 				#single
 				else
@@ -412,7 +412,6 @@ abstract class Model {
 		$modelName = static::getModelName();
 		
 		$validator = new Validator();
-		//~ $constrains = static::$_properties[$modelName];
 		$constrains = static::$properties;
 		
 		foreach($constrains as $property=>$property_constrains)
@@ -748,7 +747,7 @@ abstract class Model {
 							$path = _WEB_DIR_.'/upload/'.trim($model_files[$file]['dir'], '/').'/'.$filename;
 							$filename = ImageManager::load($arr['tmp_name'])->save($path, $model_files[$file]['format']);
 							$file_property = 'filename_'.$file;
-							array_push($this->$file_property, $filename);
+							array_push($this->data[$file_property], $filename);
 						}
 						else
 							#todo change filename if already existing

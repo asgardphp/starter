@@ -60,7 +60,7 @@ class Validator {
 					return false;
 				break;
 			case 'required':
-				if(is_array($var) && sizeof($var) == 0)
+				if($condition && is_array($var) && sizeof($var) == 0)
 					return false;
 				elseif($condition && ($var===null || $var===''))
 					return false;

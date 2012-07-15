@@ -64,9 +64,10 @@ set_error_handler(function ($errno, $errstr, $errfile, $errline) {
 	throw $e;
 });
 set_exception_handler(function ($e) {
-	if(is_a($e, 'EndException'))
-		$result = $e->result;
-	elseif(is_a($e, 'PHPErrorException')) {
+	//~ if(is_a($e, 'EndException'))
+		//~ $result = $e->result;
+	//~ else
+	if(is_a($e, 'PHPErrorException')) {
 		$msg = '('.$e->errno.') '.$e->errstr.'<br>'.$e->errfile.' ('.$e->errline.')';
 		$result = Error::report($msg, $e->getTrace());
 	}

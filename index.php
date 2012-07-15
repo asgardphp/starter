@@ -1,5 +1,5 @@
 <?php
-//~ define('_ENV_', 'dev');
+define('_ENV_', 'dev');
 
 /* INIT */
 require('coxis.php');

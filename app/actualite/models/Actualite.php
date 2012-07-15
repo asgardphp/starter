@@ -14,9 +14,10 @@ class Actualite extends Model {
 	
 	public static $files = array(	
 		'image' => array(
-		'dir'	=>	'actualite/',
+			'dir'	=>	'actualite/',
 			'type'	=>	'image',
 			'required'	=>	true,
+			//~ 'multiple'	=>	true,
 		),
 	);
 	

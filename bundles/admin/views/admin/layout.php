@@ -94,8 +94,8 @@
 			$('.imglist').append('<li>\
 							<img src="../imagecache/admin_thumb/'+result.url+'" alt=""/>\
 							<ul>\
-								<li class="view"><a href="../'+result.url+'" rel="facebox">See</a></li>\
-								<li class="delete"><a href="'+result.deleteurl+'">Delete</a></li>\
+								<li class="view"><a href="../'+result.url+'" rel="facebox">Voir</a></li>\
+								<li class="delete"><a href="'+result.deleteurl+'">Supprimer</a></li>\
 							</ul>\
 						</li>');
 			$('a[rel*=facebox]').facebox()
