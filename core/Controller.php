@@ -25,18 +25,6 @@ class Controller {
 		else
 			HTML::code('<link rel="canonical" href="'.$canonical.'">');
 	}
-	
-	public function render($view, $args) {
-		return $this->showView($view, $args);
-	}
-	
-	public function setView($view) {
-		$this->view = $view;
-	}
-	
-	public function getView() {
-		return $this->view;
-	}
 
 	public function run($action, $params, $showView=false) {
 		$this->view = $action.'.php';
@@ -61,6 +49,14 @@ class Controller {
 	private function component($controller, $action, $args=array()) {
 		echo Router::run($controller, $action, $args, $this);
 	}
+	
+	public function setView($view) {
+		$this->view = $view;
+	}
+	
+	public function getView() {
+		return $this->view;
+	}
 		
 	private function showView($view, $_args) {
 		$reflection = new ReflectionObject($this);
@@ -78,6 +74,10 @@ class Controller {
 		include($_viewfile);
 		Coxis::set('in_view', false);
 		return ob_get_clean();
+	}
+	
+	public function render($view, $args) {
+		return $this->showView($view, $args);
 	}
 	
 	#todo deprecated
