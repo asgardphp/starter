@@ -1,4 +1,6 @@
 <?php
+namespace Coxis\Bundles\Admin\Models;
+
 class Administrator extends Model {
 	//~ /**
 	//~ @Length(100)

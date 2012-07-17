@@ -1,4 +1,6 @@
 <?php
+namespace Coxis\Core;
+
 //todo separate constrains and file definition.. e.g. path should not be in constrains..
 
 class FileValidator {

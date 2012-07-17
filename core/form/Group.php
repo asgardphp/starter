@@ -1,4 +1,6 @@
 <?php
+namespace Coxis\Core\Form;
+
 class Group extends AbstractGroup {
 	function __construct($widgets, $dad=null, $name=null, $data=null, $files=null) {	
 		$this->dad = $dad;

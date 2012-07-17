@@ -47,9 +47,9 @@ function send($result) {
 ob_start();
 
 /* CORE/LIBS */
-require_once('core/Coxis.php');
-spl_autoload_register(array('Coxis', 'loadClass'));
-Coxis::preLoadClasses('core');
+require_once 'core/Autoloader.php';
+spl_autoload_register(array('Coxis\Core\Autoloader', 'loadClass'));
+Autoloader::preloadDir('core');
 
 /* ERRORS/EXCEPTIONS */
 class PHPErrorException extends Exception {
@@ -64,9 +64,6 @@ set_error_handler(function ($errno, $errstr, $errfile, $errline) {
 	throw $e;
 });
 set_exception_handler(function ($e) {
-	//~ if(is_a($e, 'EndException'))
-		//~ $result = $e->result;
-	//~ else
 	if(is_a($e, 'PHPErrorException')) {
 		$msg = '('.$e->errno.') '.$e->errstr.'<br>'.$e->errfile.' ('.$e->errline.')';
 		$result = Error::report($msg, $e->getTrace());

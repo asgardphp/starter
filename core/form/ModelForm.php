@@ -1,4 +1,6 @@
 <?php
+namespace Coxis\Core\Form;
+
 class ModelForm extends Form {
 	protected $model;
 
@@ -32,7 +34,7 @@ class ModelForm extends Form {
 			$widgets[$name] = new Widget($widget_params);
 		}
 		
-		$modelName = $model->getModelName();
+		$modelName = $model->getClassName();
 		
 		foreach($modelName::$files as $name=>$file) {
 			if(isset($params['only']))

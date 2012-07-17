@@ -1,4 +1,6 @@
 <?php
+namespace Coxis\Core;
+
 class URL {
 	public static $url = null;
 
@@ -91,6 +93,6 @@ class URL {
 						return static::to(Router::buildRoute($route, $params));
 			}
 					
-		throw new Exception('Route not found.');
+		throw new \Exception('Route not found.');
 	}
 }

@@ -1,4 +1,6 @@
 <?php
+namespace Coxis\Core;
+
 class HTML {
 	private static $include_js = array();
 	private static $include_css = array();

@@ -1,4 +1,6 @@
 <?php
+namespace Coxis\Core;
+
 class Tools {
 	static $months = array(
 		'January'	=>	'Janvier',

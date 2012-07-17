@@ -1,5 +1,7 @@
 <?php
-class DBException extends Exception {}
+namespace Coxis\Core;
+
+class DBException extends \Exception {}
 
 class Database {
 	private $db;
@@ -184,7 +186,7 @@ class Query {
 	public function fetchOne() {
 		$res = mysql_fetch_assoc($this->res);
 		if(!$res)
-			throw new Exception('no result found');
+			throw new \Exception('no result found');
 		return $res;
 	}
 

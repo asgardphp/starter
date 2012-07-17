@@ -1,4 +1,6 @@
 <?php
+namespace Coxis\Bundles\Admin\Libs\Form;
+
 class AdminForm extends Form {
 	public static function h3($title) {
 		echo '<h3>'.$title.'</h3>';

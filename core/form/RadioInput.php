@@ -1,4 +1,6 @@
 <?php
+namespace Coxis\Core\Form;
+
 class RadioInput extends SingleInput {
 	public function input($options=array()) {
 		$widget = $this->dad->params;

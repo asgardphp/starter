@@ -1,4 +1,6 @@
 <?php
+namespace Coxis\Core;
+
 class Result {
 	public $headers = array();
 	public $content = '';

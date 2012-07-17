@@ -1,4 +1,6 @@
 <?php
+namespace Coxis\Core;
+
 class Paginator {
 	public $per_page;
 	public $total;

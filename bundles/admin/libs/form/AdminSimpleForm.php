@@ -1,4 +1,6 @@
 <?php
+namespace Coxis\Bundles\Admin\Libs\Form;
+
 class AdminSimpleForm extends Form {
 	public function prepareLabel($widget, $options) {
 		if(!isset($options['label']))

@@ -1,4 +1,6 @@
 <?php
+namespace Coxis\Core;
+
 class Cookie {
 	public static function exist($what) {
 		return isset($_COOKIE[$what]);

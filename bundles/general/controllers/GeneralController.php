@@ -1,4 +1,6 @@
 <?php
+namespace Coxis\Bundles\General\Controller;
+
 class GeneralController extends Controller {
 	static $called404 = false;
 
@@ -46,7 +48,7 @@ class GeneralController extends Controller {
 	@Priority(-10)
 	*/
 	public function startAction() {
-		Coxis::set('layout', array('Default', 'layout'));
+		\Coxis\Core\Coxis::set('layout', array('Default', 'layout'));
 	}
 	
 	/**
@@ -59,7 +61,7 @@ class GeneralController extends Controller {
 			
 			if($type != 'text/html')
 				return $content;
-		} catch(Exception $e) {}
+		} catch(\Exception $e) {}
 			
 		if(is_array(Coxis::get('layout'))
 			&& sizeof(Coxis::get('layout')) >= 2 && $content !== null)

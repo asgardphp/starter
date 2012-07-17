@@ -1,4 +1,6 @@
 <?php
+namespace Coxis\Core\Form;
+
 class HTMLHelper {
 	public static function tag($tag, $attrs) {
 		$attrs_str = '';

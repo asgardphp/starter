@@ -1,5 +1,7 @@
 <?php
-class Value extends Model {
+namespace Coxis\Bundles\Value\Models;
+
+class Value extends \Coxis\Core\Model {
 	//~ public $key;
 	//~ /**
 	//~ @Required(false)

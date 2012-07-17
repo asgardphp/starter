@@ -1,4 +1,6 @@
 <?php
+namespace Coxis\Bundles\Ckeditor\Controllers;
+
 class CkeditorController extends Controller {
 	/**
 	@Route('bundles/ckeditor/ckeditor/config.js')

@@ -1,4 +1,6 @@
 <?php
+namespace Coxis\Bundles\Admin\Libs\Controller;
+
 abstract class AdminParentController extends Controller {
 	static $_model = null;#todo model variable name or model name ?
 	static $_models = null;
@@ -64,7 +66,7 @@ abstract class AdminParentController extends Controller {
 				return Router::run($hook['controller'], $hook['action'], $request, $this);
 			}
 		}
-		throw new Exception('Controller hook does not exist!');
+		throw new \Exception('Controller hook does not exist!');
 	}
 	
 	/**
@@ -105,7 +107,7 @@ abstract class AdminParentController extends Controller {
 				'deleteurl' => $this->url_for('deleteFile', array('id' => $model->id, 'pos' => sizeof($final_paths)+1, 'file' => $request['file'])),
 			);
 			Response::setCode(200)->setContent(json_encode($response))->send();
-		} catch(Exception $e) {
+		} catch(\Exception $e) {
 			Response::setCode(500)->setContent('Erreur lors de l\'envoi.')->send();
 		}
 	}
@@ -136,13 +138,13 @@ abstract class AdminParentController extends Controller {
 			$model->setRawFilePath($request['file'], $rawpaths)->save(null, true);
 			Messenger::addSuccess('Fichier supprimé avec succès.');
 			FileManager::unlink(_WEB_DIR_.'/'.$path);
-		} catch(Exception $e) {
+		} catch(\Exception $e) {
 			Messenger::addError('Il y a eu une erreur avec le fichier');
 		}
 		
 		try {
 			Response::redirect($this->url_for('edit', array('id' => $model->id)), false)->send();
-		} catch(Exception $e) {
+		} catch(\Exception $e) {
 			Response::redirect($this->url_for('index'), false)->send();
 		}
 	}

@@ -1,5 +1,5 @@
 <?php
-class Inscrit extends Model {
+class Inscrit extends \Coxis\Core\Model {
 			//~ /**
 			//~ @Type('email')
 			//~ */

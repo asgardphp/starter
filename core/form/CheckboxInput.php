@@ -1,5 +1,5 @@
 <?php
-require_once('core/form/SingleInput.php');
+namespace Coxis\Core\Form;
 
 class CheckboxInput extends SingleInput {
 	public function input($options=array()) {

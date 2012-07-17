@@ -1,4 +1,6 @@
 <?php
+namespace Coxis\Core;
+
 class Error {
 	private static $display = false;
 

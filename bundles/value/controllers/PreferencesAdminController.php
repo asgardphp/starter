@@ -1,4 +1,6 @@
 <?php
+namespace Coxis\Bundles\Value\Controllers;
+
 /**
 @Prefix('admin/preferences')
 */

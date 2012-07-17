@@ -1,4 +1,6 @@
 <?php
+namespace Coxis\Core;
+
 class FileManager {
 	public static function getNewFileName($output) {
 		$fileexts = explode('.', $output);

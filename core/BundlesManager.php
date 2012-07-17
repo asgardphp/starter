@@ -1,26 +1,21 @@
 <?php
-require_once('vendors/addendum/annotations.php');
-class Route extends Annotation {
-	public $name;
-	public $requirements;
-	public $method;
+namespace {
+	require_once('vendors/addendum/annotations.php');
+	
+	/* Controllers */
+	class Hook extends Annotation {}
+	class Prefix extends Annotation {}
+	class Priority extends Annotation {}
+	class Filter extends Annotation {}
+	class Route extends Annotation {
+		public $name;
+		public $requirements;
+		public $method;
+	}
 }
-/* Controllers */
-class Hook extends Annotation {}
-class Prefix extends Annotation {}
-class Priority extends Annotation {}
-class Filter extends Annotation {}
-/* Models */
-//~ class Type extends Annotation {}
-//~ class Length extends Annotation {}
-//~ class Required extends Annotation {}
-//~ class DefaultValue extends Annotation {}
-//~ class Filter extends Annotation {}
-//~ class Validation extends Annotation {}
-//~ class In extends Annotation {}
-//~ class Multiple extends Annotation {}
-//~ class SetFilter extends Annotation {}
-//~ class Editable extends Annotation {}
+
+namespace Coxis\Core {
+
 	
 class BundlesManager {
 	public static $bundles_routes = array();
@@ -31,12 +26,14 @@ class BundlesManager {
 	public static function loadBundle($bundle) {
 		if(file_exists($bundle.'/bundle.php'))
 			include($bundle.'/bundle.php');
+
+		Autoloader::preloadDir($bundle.'/models');
 	
 		if(file_exists($bundle.'/controllers/'))
 			foreach(glob($bundle.'/controllers/*.php') as $filename) {
-				include_once($filename);
-				$classname = static::classname($filename);
-				$reflection = new ReflectionAnnotatedClass($classname);
+				$classname = Importer::loadClassFile($filename);
+				
+				$reflection = new \ReflectionAnnotatedClass($classname);
 				
 				if($reflection->getAnnotation('Prefix'))
 					$prefix = Router::formatRoute($reflection->getAnnotation('Prefix')->value);
@@ -47,9 +44,9 @@ class BundlesManager {
 				foreach($methods as $method) {
 					if(!preg_match('/Action$/i', $method))
 						continue;
-					$method_reflection = new ReflectionAnnotatedMethod($classname, $method);
+					$method_reflection = new \ReflectionAnnotatedMethod($classname, $method);
 				
-					if($method_reflection->getAnnotation('Route')) {		
+					if($method_reflection->getAnnotation('Route')) {
 						$route = Router::formatRoute($prefix.'/'.$method_reflection->getAnnotation('Route')->value);
 						static::$bundles_routes[] = array(
 							'route'	=>	$route,
@@ -77,43 +74,10 @@ class BundlesManager {
 					}
 				}
 			}
-		
-		#TODO should not load all models ahead...
-		/*
-		if(file_exists($bundle.'/models/'))
-			foreach(glob($bundle.'/models/*.php') as $filename) {
-				include_once($filename);
-				$model_name = strtolower(static::classname($filename));
-				//~ $_properties = array();
-				
-				//~ $properties = array();
-				//~ $a = new ReflectionClass($model_name);
-				//~ $props = $a->getProperties();
-				
-				//~ foreach($props as $prop) {
-					//~ if($prop->isStatic())
-						//~ continue;
-						
-					//~ $property = $prop->getName();
-					//~ $property_reflection = new ReflectionAnnotatedProperty($model_name, $property);
-						
-					//~ $_properties[$property] = array();		
-					//~ $annotations = $property_reflection->getAnnotations();
-					//~ $_properties[strtolower($property)]['type'] = 'text';
-					//~ $_properties[strtolower($property)]['required'] = true;
-					
-					//~ foreach($annotations as $annotation)
-						//~ $_properties[strtolower($property)][strtolower(get_class($annotation))] = $annotation->value;
-				//~ }
-				
-				$model_name::loadModel();
-			}*/
-			Coxis::preLoadClasses($bundle.'/models');
 	}
 	
 	public static function loadBundleLibs($bundle) {
-		Coxis::preLoadClasses($bundle.'/libs');
-		//~ Coxis::preLoadClasses($bundle.'/models/');
+		Autoloader::preloadDir($bundle.'/libs');
 	}
 	
 	public static function loadBundles() {
@@ -155,19 +119,6 @@ class BundlesManager {
 			ksort(Event::$hooks_table[$k]);
 
 		Event::$filters_table = static::$filters_table;
-		
-		//~ foreach(Coxis::$controller_hooks as $controller=>$hooks) {
-			//~ foreach($hooks as $hook) {
-				//~ static::$bundles_routes[] = array(//$index.
-					//~ 'route'	=>	$hook['route'],
-					//~ 'controller'	=>	$controller,
-					//~ 'action'	=>	'_hook',
-					//~ 'requirements'	=>	isset($hook['requirements']) ? $hook['requirements']:null,
-					//~ 'method'	=>	isset($hook['method']) ? $hook['method']:null,
-					//~ 'name'	=>	isset($hook['name']) ? $hook['name']:null,
-				//~ );
-			//~ }
-		//~ }
 		
 		$all_routes = array_merge(static::$bundles_routes, $routes);
 		
@@ -240,4 +191,5 @@ class BundlesManager {
 		}
 		return -1;
 	}
+}
 }

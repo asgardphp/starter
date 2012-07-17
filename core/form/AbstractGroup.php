@@ -1,5 +1,7 @@
 <?php
-abstract class AbstractGroup implements ArrayAccess, Iterator {
+namespace Coxis\Core\Form;
+
+abstract class AbstractGroup implements \ArrayAccess, \Iterator {
 	protected $groupName = null;
 	protected $dad;
 	public $data = array();
@@ -54,7 +56,7 @@ abstract class AbstractGroup implements ArrayAccess, Iterator {
 			}
 			elseif(is_object($widgets) && is_subclass_of($widgets, 'WidgetHelper')) {
 				if(in_array($name, array('groupName', 'dad', 'data', 'widgets', 'params', 'files'), true))
-					throw new Exception('Can\'t use keyword "'.$name.'" for form widget');
+					throw new \Exception('Can\'t use keyword "'.$name.'" for form widget');
 				$widget = $widgets;
 				$widget->setName($name);
 				$widget->setDad($this);
@@ -104,7 +106,7 @@ abstract class AbstractGroup implements ArrayAccess, Iterator {
 	
 	public function addWidget($widget, $name=null) {
 		if(in_array($name, array('groupName', 'dad', 'data', 'widgets', 'params')))
-			throw new Exception('Can\'t use keyword '.$name.' for form widget');
+			throw new \Exception('Can\'t use keyword '.$name.' for form widget');
 		$this->widgets[$name] = $this->parseWidgets($widget, $name);
 		
 		return $this;

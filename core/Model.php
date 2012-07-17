@@ -1,5 +1,7 @@
 <?php
-class ModelException extends Exception {
+namespace Coxis\Core;
+
+class ModelException extends \Exception {
 	public $errors = array();
 }
 
@@ -83,7 +85,7 @@ abstract class Model {
 					'conditions'=> array('`'.$property.'`=?' => array($val))
 				));
 			}
-			catch(Exception $e) {
+			catch(\Exception $e) {
 				if(is_a($e, 'DBException'))
 					throw $e;
 				return null;
@@ -92,7 +94,12 @@ abstract class Model {
 	}
 	
 	/* INIT AND MODEL CONFIGURATION */
-	final public static function init() {}#autoload function
+	#autoload function
+	final public static function _autoload() {
+		if(static::getClassName() == 'Coxis\Core\Model')
+			return;
+		static::loadModel();
+	}
 	
 	protected static function configure() {}
 
@@ -134,7 +141,7 @@ abstract class Model {
 	}
 	
 	public static function loadBehaviors() {
-		Event::trigger('behaviors_pre_load', static::getModelName());
+		Event::trigger('behaviors_pre_load', static::getClassName());
 	//~ try {
 		//~ d(page::$behaviors);
 		//~ }
@@ -148,7 +155,9 @@ abstract class Model {
 		//~ d(static::getModelName(), $model_behaviors);
 		foreach($model_behaviors as $behavior => $params)
 			if($params)
-				Event::trigger('behaviors_load_'.$behavior, static::getModelName());
+				Event::trigger('behaviors_load_'.$behavior, static::getClassName());
+				//~ if(static::getClassName() != "Coxis\\bundles\\value\\models\\Value")
+				//~ d(static::getClassName());
 	}
 	//todo add properties on the fly when saving?
 	
@@ -213,7 +222,7 @@ abstract class Model {
 		$relationships = static::$relationships;
 		
 		if(!isset($relationships[$name]['type']) || !isset($relationships[$name]['model']))
-			throw new Exception('Relation '.$name.' does not exists or is not set properly.');
+			throw new \Exception('Relation '.$name.' does not exists or is not set properly.');
 			
 		$relation_type = $relationships[$name]['type'];
 		$model = $relationships[$name]['model'];
@@ -289,17 +298,27 @@ abstract class Model {
 					$conditions
 				);
 			default:	
-				throw new Exception('Relation '.$name.' has no correct type.');
+				throw new \Exception('Relation '.$name.' has no correct type.');
 		}
 	}
 	
 	public function getTableName() {
-		return strtolower(get_class($this));
+		return static::getModelName();
 	}
-	public static function getModelName() {
+	
+	public static function getClassName() {
 		return strtolower(get_called_class());
 	}
 	
+	public static function getModelName() {
+	//~ if(!in_array(strtolower(get_called_class()), array("coxis\\core\\model")))
+	//~ if(!in_array(strtolower(get_called_class()), 'model'))
+	//~ d(strtolower(get_called_class()));
+	//~ d(basename(get_called_class()), get_called_class());
+	//~ d(strtolower(basename(get_called_class())));
+		//~ return strtolower(get_called_class());
+		return basename(static::getClassName());
+	}
 	
 	public function isNew() {
 		return !isset($this->id);
@@ -316,7 +335,7 @@ abstract class Model {
 			$model->loadFromID($id);
 			$model->configure();
 			return $model;
-		} catch(Exception $e) {
+		} catch(\Exception $e) {
 			if(is_a($e, 'DBException'))
 				throw $e;
 			return null;
@@ -334,7 +353,7 @@ abstract class Model {
 	}
 	
 	public function loadFromArray($cols) {
-		$model = static::getModelName();
+		//~ $model = static::getModelName();
 		foreach($cols as $col=>$value) {
 			if(isset(static::$properties[$col]['filter'])) {
 				//~ $filter = Model::$_properties[$model][$col]['filter']['from'];
@@ -401,7 +420,7 @@ abstract class Model {
 		$params['limit'] = 1;
 		$results = static::find($params);
 		if(!isset($results[0]))
-			throw new Exception('no result');
+			throw new \Exception('no result');
 			
 		return $results[0];
 	}
@@ -409,7 +428,7 @@ abstract class Model {
 	
 	/* VALIDATION */
 	public function getValidator() {
-		$modelName = static::getModelName();
+		//~ $modelName = static::getModelName();
 		
 		$validator = new Validator();
 		$constrains = static::$properties;
@@ -491,7 +510,7 @@ abstract class Model {
 			if($params)
 				Event::trigger('behaviors_presave_'.$behavior, $this);	
 		
-		Event::trigger('presave_'.$this->getModelName(), $this);
+		Event::trigger('presave_'.$this->getClassName(), $this);
 	}
 	
 	public function _save($params=null, $force=false) {
@@ -510,10 +529,10 @@ abstract class Model {
 		
 		#apply filters before saving
 		foreach($vars as $col => $var) {
-			$model = static::getModelName();
+			//~ $model = static::getModelName();
 			if(isset(static::$properties[$col]['filter'])) {
 				$filter = static::$properties[$col]['filter']['to'];
-				$vars[$col] = $model::$filter($var);
+				$vars[$col] = static::$filter($var);
 			}
 			elseif(isset(static::$properties[$col]['type'])) {
 				if(static::$properties[$col]['type']=='array')
@@ -844,7 +863,7 @@ abstract class Model {
 					foreach($this->$filename_property as $filename) {
 						$result[] = $dir.$filename;
 					}
-				} catch(Exception $e) {
+				} catch(\Exception $e) {
 					d($filename_property, $this->$filename_property);
 				}
 				return $result;

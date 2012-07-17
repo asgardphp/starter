@@ -1,4 +1,6 @@
 <?php
+namespace Coxis\Bundles\Behaviors\Controllers;
+
 class MetasBehaviorController extends Controller {
 	/**
 	@Hook('behaviors_load_metas')

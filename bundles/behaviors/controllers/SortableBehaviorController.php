@@ -1,4 +1,6 @@
 <?php
+namespace Coxis\Bundles\Behaviors\Controllers;
+
 class SortableBehaviorController extends Controller {
 	/**
 	@Hook('behaviors_load_sortable')
@@ -21,7 +23,7 @@ class SortableBehaviorController extends Controller {
 			));
 		
 			Event::$hooks_table['coxis_'.$modelName.'_actions'][] = array('controller' => 'SortableBehavior', 'action' => 'sortableactions');
-		} catch(Exception $e) {}#if the admincontroller does not exist for this model
+		} catch(\Exception $e) {}#if the admincontroller does not exist for this model
 	}
 	
 	/**
@@ -32,7 +34,7 @@ class SortableBehaviorController extends Controller {
 			try {
 				$last = Database::getInstance()->query('SELECT position FROM `'.Config::get('database', 'prefix').$model::getModelName().'` ORDER BY position ASC LIMIT 1')->fetchOne();
 				$model->position = $last['position']+1;
-			} catch(Exception $e) {
+			} catch(\Exception $e) {
 				$model->position = 0;
 			}
 		}
@@ -51,7 +53,7 @@ class SortableBehaviorController extends Controller {
 	}
 	
 	public function sortableactionsAction($model) {
-		return '<a href="'.url_for('coxis_'.$model->getModelName().'_promote', array('id' => $model->id), false).'">Monter</a> | <a href="'.url_for('coxis_'.$model->getModelName().'_demote', array('id' => $model->id), false).'">Descendre</a> | ';
+		return '<a href="'.url_for('coxis_'.$model->getClassName().'_promote', array('id' => $model->id), false).'">Monter</a> | <a href="'.url_for('coxis_'.$model->getClassName().'_demote', array('id' => $model->id), false).'">Descendre</a> | ';
 	}
 
 	public function promoteAction($request) {
@@ -73,7 +75,7 @@ class SortableBehaviorController extends Controller {
 			$model->save(null, true);
 			$over_model->save(null, true);
 			Messenger::addSuccess('Ordre modifié avec succès.');
-		} catch(Exception $e) {}
+		} catch(\Exception $e) {}
 		
 		Response::redirect(url_for(array($request['_controller'], 'index')))->send();
 	}
@@ -97,7 +99,7 @@ class SortableBehaviorController extends Controller {
 			$model->save(null, true);
 			$below_model->save(null, true);
 			Messenger::addSuccess('Ordre modifié avec succès.');
-		} catch(Exception $e) {}
+		} catch(\Exception $e) {}
 		
 		Response::redirect(url_for(array($request['_controller'], 'index')))->send();
 	}

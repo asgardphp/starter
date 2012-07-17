@@ -1,4 +1,6 @@
 <?php
-class FormException extends Exception {
+namespace Coxis\Core\Form;
+
+class FormException extends \Exception {
 	public $errors = array();
 }

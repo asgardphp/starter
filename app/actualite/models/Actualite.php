@@ -1,5 +1,5 @@
 <?php
-class Actualite extends Model {
+class Actualite extends \Coxis\Core\Model {
 	public static $properties = array(
 		'titre',
 		'date'    =>    array(

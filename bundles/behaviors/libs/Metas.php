@@ -1,4 +1,6 @@
 <?php
+namespace Coxis\Bundles\Behaviors\Libs;
+
 class Metas {
 	public static function set($model) {
 		HTML::setTitle($model->meta_title!='' ? $model->meta_title:$model);

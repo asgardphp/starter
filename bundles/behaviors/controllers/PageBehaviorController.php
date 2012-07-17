@@ -1,4 +1,6 @@
 <?php
+namespace Coxis\Bundles\Behaviors\Controllers;
+
 class PageBehaviorController extends Controller {
 	/**
 	@Hook('behaviors_pre_load')

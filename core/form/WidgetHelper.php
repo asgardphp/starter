@@ -1,4 +1,6 @@
 <?php
+namespace Coxis\Core\Form;
+
 abstract class WidgetHelper {
 	public $name;
 	public $value = null;

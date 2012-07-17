@@ -1,4 +1,6 @@
 <?php
+namespace Coxis\Core;
+
 class Controller {
 	public function forward404() {
 		Response::setCode(404)->send();
@@ -59,9 +61,9 @@ class Controller {
 	}
 		
 	private function showView($view, $_args) {
-		$reflection = new ReflectionObject($this);
+		$reflection = new \ReflectionObject($this);
 		$dir = dirname($reflection->getFileName());
-		$_viewfile = $dir.'/../views/'.strtolower(preg_replace('/Controller$/i', '', get_class($this))).'/'.$view;
+		$_viewfile = $dir.'/../views/'.strtolower(preg_replace('/Controller$/i', '', basename(get_class($this)))).'/'.$view;
 		
 		unset($dir);
 		unset($reflection);
@@ -92,7 +94,7 @@ class Controller {
 					return Router::run($hook['controller'], $hook['action'], $request, $this);
 				}
 			}
-		throw new Exception('Controller hook does not exist!');
+		throw new \Exception('Controller hook does not exist!');
 	}
 	
 	//OVERRIDE

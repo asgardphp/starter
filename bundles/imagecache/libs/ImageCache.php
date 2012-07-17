@@ -1,4 +1,6 @@
 <?php
+namespace Coxis\Bundles\Imagecache\Libs;
+
 class ImageCache {
 	private static $presets = array();
 

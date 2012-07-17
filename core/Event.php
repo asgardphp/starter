@@ -1,4 +1,6 @@
 <?php
+namespace Coxis\Core;
+
 class Event {
 	static $filters_table = array();
 	static $hooks_table = array();

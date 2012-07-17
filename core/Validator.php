@@ -1,4 +1,6 @@
 <?php
+namespace Coxis\Core;
+
 class Validator {
 	public $constrains = array();
 	public $vars = array();

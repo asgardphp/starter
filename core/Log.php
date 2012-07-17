@@ -1,4 +1,6 @@
 <?php
+namespace Coxis\Core;
+
 class Log {
 	public static function add($filename, $msg) {
 		FileManager::mkdir(dirname('logs/'.$filename));

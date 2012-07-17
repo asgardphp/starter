@@ -1,20 +1,24 @@
 <?php
+#to define url_for in global namespace
+namespace {
+	function _frontcontrollerGlobal() {
+		function url_for($what, $params=array(), $relative=true) {
+			return URL::url_for($what, $params, $relative);
+		}
+	}
+}
+
+namespace Coxis\Core {
+
 class FrontController extends Controller {
 	public static $loaded = false;
 
 	public function mainAction() {
-		Response::init();
-		
 		/* WEB RESOURCES */
 		$this->getResource();
 		
 		/* BUNDLES */
-		if(!function_exists('url_for')) {
-			function url_for($what, $params=array(), $relative=true) {
-				return URL::url_for($what, $params, $relative);
-			}
-		}
-
+		_frontcontrollerGlobal();
 		$this->load();
 		
 		Router::parseRoutes(BundlesManager::$routes);
@@ -112,4 +116,5 @@ class FrontController extends Controller {
 			}
 		}
 	}
+}
 }

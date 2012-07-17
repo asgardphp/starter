@@ -1,4 +1,6 @@
 <?php
+namespace Coxis\Bundles\Admin\Controllers;
+
 class LoginController extends Controller {
 	public function configure($request) {
 		Coxis::set('layout', false);

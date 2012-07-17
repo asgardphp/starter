@@ -1,4 +1,6 @@
 <?php
+namespace Coxis\Core;
+
 class Collection implements Iterator
 {
     private $elements = array();

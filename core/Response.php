@@ -1,4 +1,6 @@
 <?php
+namespace Coxis\Core;
+
 class Response {
 	//~ public static $die = true;
 	//~ public static $isSent = false;
@@ -64,7 +66,7 @@ class Response {
 			
 		try {
 			while(ob_end_clean()){}
-		} catch(Exception $e) {}
+		} catch(\Exception $e) {}
 	
 		if(!$headers) {
 			$headers = array();

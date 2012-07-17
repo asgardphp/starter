@@ -1,4 +1,6 @@
 <?php
+namespace Coxis\Core;
+
 class Email {
 	var $to;
 	var $subject;

@@ -1,7 +1,7 @@
 <?php
-require_once('core/form/WidgetHelper.php');
+namespace Coxis\Core\Form;
 
-class Checkboxes extends WidgetHelper implements ArrayAccess {
+class Checkboxes extends WidgetHelper implements \ArrayAccess {
 	private $pos=0;
 	
 	function __construct($dad, $name, $params, $value) {

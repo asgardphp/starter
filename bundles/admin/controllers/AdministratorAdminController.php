@@ -1,4 +1,6 @@
 <?php
+namespace Coxis\Bundles\Admin\Controllers;
+
 /**
 @Prefix('admin/administrators')
 */

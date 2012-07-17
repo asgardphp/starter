@@ -1,4 +1,6 @@
 <?php
+namespace Coxis\Core;
+
 class Messenger {
 	private static $messages = array('success' => array(), 'error' => array());
 	private static $instance;

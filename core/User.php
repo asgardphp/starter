@@ -1,4 +1,6 @@
 <?php
+namespace Coxis\Core;
+
 class User {
 	private static $id = null;
 	private static $role = null;

@@ -1,4 +1,6 @@
 <?php
+namespace Coxis\Core\Form;
+
 class Widget extends WidgetHelper {
 	private $parent;
 

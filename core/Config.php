@@ -1,4 +1,6 @@
 <?php
+namespace Coxis\Core;
+
 //todo merge with coxis?
 class Config {
 	private static $config = array();

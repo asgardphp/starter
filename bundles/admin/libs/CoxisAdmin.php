@@ -1,4 +1,6 @@
 <?php
+namespace Coxis\Bundles\Admin\Libs;
+
 class CoxisAdmin {
 	public static function getModelNameFor($controller) {
 		$controller_class = $controller.'Controller';
@@ -10,10 +12,10 @@ class CoxisAdmin {
 	public static function getIndexForController($controller) {
 		#todo should get address to indexAction instead of controller prefix..
 		try {
-			$reflection = new ReflectionAnnotatedClass($controller.'Controller');
+			$reflection = new \ReflectionAnnotatedClass($controller.'Controller');
 			return '/'.$reflection->getAnnotation('Prefix')->value;
 		} catch(PHPErrorException $e) {
-			throw new Exception('Admin Controller does not exist for model '.$controller);
+			throw new \Exception('Admin Controller does not exist for model '.$controller);
 		}
 	}
 	

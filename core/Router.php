@@ -1,4 +1,6 @@
 <?php
+namespace Coxis\Core;
+
 class Router {
 	public static $request;
 
@@ -169,7 +171,7 @@ class Router {
 		}
 			
 		if(preg_match('/:([a-zA-Z0-9_]+)/', $route))
-			throw new Exception('Missing parameter for route: '.$route);
+			throw new \Exception('Missing parameter for route: '.$route);
 			
 		return trim($route, '/');
 	}

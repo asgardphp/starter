@@ -1,4 +1,6 @@
 <?php
+namespace Coxis\Core\Form;
+
 class Form extends AbstractGroup {
 	public $params = array(
 		'method'	=>	'post',

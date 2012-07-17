@@ -1,4 +1,6 @@
 <?php
+namespace Coxis\Bundles\Admin\Libs\Form;
+
 class AdminModelForm extends ModelForm {
 	static $SEND = 0;
 	static $SAVE = 1;
@@ -7,7 +9,7 @@ class AdminModelForm extends ModelForm {
 	public function def($widget, $options=array()) {
 		$properties = $this->model->getProperty($widget);
 		
-		$modelName = $this->model->getModelName();
+		$modelName = $this->model->getClassName();
 		
 		if(isset($properties['in']))
 			$this->select($widget, $options);
@@ -36,7 +38,7 @@ class AdminModelForm extends ModelForm {
 		if(!isset($options['label']))
 			$options['label'] = ucfirst(str_replace('_', ' ', $relation));
 	
-		$modelName = $this->model->getModelName();
+		$modelName = $this->model->getClassName();
 	
 		$relationship = access($modelName::$relationships, $relation);
 		$relation_model = $relationship['model'];
@@ -183,7 +185,7 @@ class AdminModelForm extends ModelForm {
 		$label = $this->prepareLabel($widget, $options);
 			
 		if($this->$widget->params['type'] != 'file')
-			throw new Exception($widget.' should be a file.');
+			throw new \Exception($widget.' should be a file.');
 		
 		$specific_file = $this->model->getFile($widget);
 		$path = $this->model->getFilePath($widget);
@@ -194,7 +196,7 @@ class AdminModelForm extends ModelForm {
 				$uid = Tools::randstr(10);
 				HTML::code_js("
 					$(function(){
-						multiple_upload('$uid', '".url_for(array(CoxisAdmin::getAdminControllerFor($this->model->getModelName()), 'addFile'), array('id' => $this->model->id, 'file' => $widget), false)."');
+						multiple_upload('$uid', '".url_for(array(CoxisAdmin::getAdminControllerFor($this->model->getClassName()), 'addFile'), array('id' => $this->model->id, 'file' => $widget), false)."');
 					});");
 				?>
 				<div class="block">
@@ -223,7 +225,7 @@ class AdminModelForm extends ModelForm {
 								<img src="<?php echo URL::to('imagecache/admin_thumb/'.$one_path) ?>" alt=""/>
 								<ul>
 									<li class="view"><a href="<?php echo URL::to($one_path) ?>" rel="facebox">Voir</a></li>
-									<li class="delete"><a href="<?php echo url_for(array(CoxisAdmin::getAdminControllerFor($this->model->getModelName()), 'deleteFile'), array('id' => $this->model->id, 'pos' => $i, 'file' => $widget), false) ?>">Suppr.</a></li>
+									<li class="delete"><a href="<?php echo url_for(array(CoxisAdmin::getAdminControllerFor($this->model->getClassName()), 'deleteFile'), array('id' => $this->model->id, 'pos' => $i, 'file' => $widget), false) ?>">Suppr.</a></li>
 								</ul>
 							</li>
 							<?php
@@ -267,7 +269,7 @@ class AdminModelForm extends ModelForm {
 				if($optional && !$this->model->isNew()):
 					//~ d(CoxisAdmin::url_for_model($this->model->getModelName(), 'deleteFile', array('file'=>$file, 'id'=>$this->model->id)));
 					?>
-					<a href="<?php echo CoxisAdmin::url_for_model($this->model->getModelName(), 'deleteFile', array('file'=>$widget, 'id'=>$this->model->id), false) ?>">Delete</a><br/><br/>
+					<a href="<?php echo CoxisAdmin::url_for_model($this->model->getClassName(), 'deleteFile', array('file'=>$widget, 'id'=>$this->model->id), false) ?>">Delete</a><br/><br/>
 					<?php
 				endif;
 			}

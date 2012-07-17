@@ -1,4 +1,6 @@
 <?php
+namespace Coxis\Bundles\Admin\Libs\Controller;
+
 abstract class MultiAdminController extends AdminParentController {
 	static $_orderby = null;
 	

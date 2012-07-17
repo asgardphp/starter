@@ -1,4 +1,6 @@
 <?php
+namespace Coxis\Core;
+
 class Date {
 	public $timestamp = 0;
 

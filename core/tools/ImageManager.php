@@ -1,4 +1,6 @@
 <?php
+namespace Coxis\Core;
+
 class ImageManager {
 	var $src;
 	var $rsc;
