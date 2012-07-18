@@ -24,7 +24,7 @@ function d() {
 	if(php_sapi_name() != 'cli')
 		echo '</pre>';
 	
-	Error::print_backtrace('', debug_backtrace());
+	\Coxis\Core\Error::print_backtrace('', debug_backtrace());
 	exit();
 }
 function access() {	
@@ -50,6 +50,12 @@ ob_start();
 require_once 'core/Autoloader.php';
 spl_autoload_register(array('Coxis\Core\Autoloader', 'loadClass'));
 Autoloader::preloadDir('core');
+
+//~ require_once 'core/Importer.php';
+//~ import('Coxis\Core\Error');
+//~ Error::report('test');
+//~ d();
+//~ die('end');
 
 /* ERRORS/EXCEPTIONS */
 class PHPErrorException extends Exception {
@@ -88,6 +94,6 @@ register_shutdown_function(function () {
 
 /* CONFIG */
 import('Coxis\Core\Config');
-Config::loadConfigDir('config');
-if(Config::get('error_display'))
+\Coxis\Core\Config::loadConfigDir('config');
+if(\Coxis\Core\Config::get('error_display'))
 	\Coxis\Core\Error::display(true);

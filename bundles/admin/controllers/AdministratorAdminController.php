@@ -1,6 +1,8 @@
 <?php
 namespace Coxis\Bundles\Admin\Controllers;
 
+import('Coxis\Bundles\Admin\Libs\Controller\MultiAdminController', __NAMESPACE__);
+
 /**
 @Prefix('admin/administrators')
 */

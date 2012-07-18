@@ -1,17 +1,17 @@
 <?php
 namespace Coxis\Core;
 
-import('Coxis\Core\Tools\FileManager');
+//~ import('Coxis\Core\Tools\FileManager', __NAMESPACE__);
 
 class Log {
 	public static function add($filename, $msg) {
-		FileManager::mkdir(dirname('logs/'.$filename));
-		$filename = FileManager::getNewFileName('logs/'.$filename);
+		\Coxis\Core\Tools\FileManager::mkdir(dirname('logs/'.$filename));
+		$filename = \Coxis\Core\Tools\FileManager::getNewFileName('logs/'.$filename);
 		file_put_contents($filename, $msg);
 	}
 	
 	public static function write($filename, $msg) {
-		FileManager::mkdir(dirname('logs/'.$filename));
+		\Coxis\Core\Tools\FileManager::mkdir(dirname('logs/'.$filename));
 		file_put_contents('logs/'.$filename, $msg, FILE_APPEND);
 	}
 }

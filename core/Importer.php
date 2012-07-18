@@ -1,22 +1,31 @@
 <?php
 namespace {
 	function from($from='') {
-		return new Importer($from);
+		return new \Coxis\Core\Importer($from);
 	}
-	function import($what) {
-		return from()->import($what);
+	function import($what, $into='') {
+	//~ d();
+		return from()->import($what, $into);
+		//~ return from()->preimport($what, $into);
 	}
 }
 
 namespace Coxis\Core {
 	class Importer {
 		public $from = '';
+		public static $preimported = array(
+			//~ array('Somewhere', 'there/somewhere.php'),
+		);
 
 		public function __construct($from='') {
 			$this->from = $from;
 		}
 		
-		public function import($what) {
+		//~ public function preimport($what, $into) {
+			
+		//~ }
+		
+		public function import($what, $into='') {
 			$imports = explode(',', $what);
 			foreach($imports as $import) {
 				$import = trim($import);
@@ -28,9 +37,14 @@ namespace Coxis\Core {
 					$class = trim($vals[0]);
 					$alias = trim($vals[1]);
 				}
+			
+				//~ $alias = $into.'\\'.$alias;
+				$alias = preg_replace('/^\\\+/', '', $into.'\\'.$alias);
+				$class = preg_replace('/^\\\+/', '', $this->from.'\\'.$class);
+				static::$preimported[$alias] = $class;
 				
-				if(!static::_import($this->from.'\\'.$class, array('as'=>$alias)))
-					throw new \Exception($this->from.'\\'.$class.' not found!');
+				//~ if(!static::_import($this->from.'\\'.$class, array('as'=>$alias, 'into'=>$into)))
+					//~ throw new \Exception($this->from.'\\'.$class.' not found!');
 			}
 		
 			return $this;
@@ -43,17 +57,39 @@ namespace Coxis\Core {
 		
 			$path = static::class2path($class);
 			
+			//~ if(static::$preimported)
+			//~ d(static::$preimported);
+			//~ var_dump(static::$preimported, $class);die('123');
+			if(isset(static::$preimported[$class])) {
+				if(static::_import(static::$preimported[$class], array('as'=>false))) {
+					//~ die(class_exists('Error'));
+			//~ var_dump(static::$preimported, $class);die('123');
+			
+					$toload = static::$preimported[$class];
+					unset(static::$preimported[$class]);
+					class_alias($toload, $class);
+					
+					//~ die('qw');
+					return true;
+				}
+			}
+				
+			//~ if(!in_array($class, array('Coxis\Core\Error', 'Coxis\Core\Response')))
+			//~ die($class);
+			
 			if(static::loadClass($class)) {
-				if(!$alias)
-					$alias = ($intoNamespace ? $intoNamespace.'\\':'').basename($class);
-				if($class != $alias)
-					try {
-						class_alias($class, $alias);
-					} catch(\Exception $e) {
-						#create an alias with php4 alias trick?
-						//~ eval('abstract class ' . $alias . ' extends ' . $class . ' {}');
-						return false;
-					}
+				if($alias !== false) {
+					if(!$alias)
+						$alias = ($intoNamespace ? $intoNamespace.'\\':'').basename($class);
+					if($class != $alias)
+						try {
+							class_alias($class, $alias);
+						} catch(\Exception $e) {
+							#create an alias with php4 alias trick?
+							//~ eval('abstract class ' . $alias . ' extends ' . $class . ' {}');
+							return false;
+						}
+				}
 					
 				return true;
 			}
