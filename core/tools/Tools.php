@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Core;
+namespace Coxis\Core\Tools;
 
 class Tools {
 	static $months = array(

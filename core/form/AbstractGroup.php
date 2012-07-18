@@ -54,7 +54,7 @@ abstract class AbstractGroup implements \ArrayAccess, \Iterator {
 				//~ else
 					//~ return new Group($widgets, $this, $name);
 			}
-			elseif(is_object($widgets) && is_subclass_of($widgets, 'WidgetHelper')) {
+			elseif(is_object($widgets) && is_subclass_of($widgets, 'Coxis\Core\Form\WidgetHelper')) {
 				if(in_array($name, array('groupName', 'dad', 'data', 'widgets', 'params', 'files'), true))
 					throw new \Exception('Can\'t use keyword "'.$name.'" for form widget');
 				$widget = $widgets;
@@ -135,7 +135,7 @@ abstract class AbstractGroup implements \ArrayAccess, \Iterator {
 	
 	public function hasFile() {
 		foreach($this->widgets as $name=>$widget) {
-			if(is_subclass_of($widget, 'AbstractGroup')) {
+			if(is_subclass_of($widget, 'Coxis\Core\Form\AbstractGroup')) {
 				if($widget->hasFile())
 					return true;
 			}
@@ -148,7 +148,7 @@ abstract class AbstractGroup implements \ArrayAccess, \Iterator {
 	
 	protected function updateChilds() {
 		foreach($this->widgets as $name=>$widget)
-			if(is_subclass_of($widget, 'AbstractGroup'))
+			if(is_subclass_of($widget, 'Coxis\Core\Form\AbstractGroup'))
 				$widget->setData(
 					(isset($this->data[$name]) ? $this->data[$name]:array()),
 					(isset($this->files[$name]) ? $this->files[$name]:array())
@@ -185,7 +185,7 @@ abstract class AbstractGroup implements \ArrayAccess, \Iterator {
 		$errors = array();
 	
 		foreach($this->widgets as $name=>$widget)
-			if(is_subclass_of($widget, 'AbstractGroup')) {
+			if(is_subclass_of($widget, 'Coxis\Core\Form\AbstractGroup')) {
 				$errors[$name] = $widget->errors();
 				if(sizeof($errors[$name]) == 0)
 					unset($errors[$name]);
@@ -202,7 +202,7 @@ abstract class AbstractGroup implements \ArrayAccess, \Iterator {
 		$messages = array();
 		
 		foreach($this->widgets as $name=>$widget)
-			if(!is_subclass_of($widget, 'AbstractGroup')) {
+			if(!is_subclass_of($widget, 'Coxis\Core\Form\AbstractGroup')) {
 				if(isset($widget->params['rules']))
 					$constrains[$name] = $widget->params['rules'];
 				if(isset($widget->params['messages']))
@@ -234,9 +234,9 @@ abstract class AbstractGroup implements \ArrayAccess, \Iterator {
 		if(!$group)
 			$group = $this;
 			
-		if(is_subclass_of($group, 'AbstractGroup'))
+		if(is_subclass_of($group, 'Coxis\Core\Form\AbstractGroup'))
 			foreach($group->widgets as $name=>$widget) {
-				if(is_subclass_of($widget, 'AbstractGroup')) {
+				if(is_subclass_of($widget, 'Coxis\Core\Form\AbstractGroup')) {
 					$widget->_save($widget);
 				}
 			}

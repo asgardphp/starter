@@ -4,8 +4,7 @@
 */
 class InscritController extends Controller {
 	public function widgetAction($request) {
-		$inscrit = new Inscrit;
-		$this->form = new ModelForm($inscrit);
+		$this->form = new ModelForm(new Inscrit);
 		
 		if($this->form->isSent()) {
 			try {

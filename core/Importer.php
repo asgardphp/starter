@@ -77,7 +77,7 @@ namespace Coxis\Core {
 			$namespace = dirname($class);
 			
 			#remove vendor prefix
-			$namespace = preg_replace('/[a-zA-Z0-9]+\\\/', '', $namespace, -1, $count);
+			$namespace = preg_replace('/^[a-zA-Z0-9]+\\\/', '', $namespace, -1, $count);
 			if($count == 0)
 				$namespace = preg_replace('/[a-zA-Z0-9]+_/', '', $namespace);
 			
@@ -102,7 +102,6 @@ namespace Coxis\Core {
 				if(method_exists($class, '_autoload'))
 					call_user_func(array($class, '_autoload'));
 			
-			//~ d($file, access(array_values($diff), sizeof($diff)-1));
 			return access(array_values($diff), sizeof($diff)-1);
 		}
 
@@ -110,13 +109,13 @@ namespace Coxis\Core {
 			#already loaded
 			if(class_exists($class, false))
 				return true;
-			#map
+			#file map
 			elseif(isset(Autoloader::$map[$class])) {
-				//~ require_once Autoloader::$map[$class];
 				static::loadClassFile(Autoloader::$map[$class]);
 				return true;
 			}
 			else {
+				#directory map
 				foreach(Autoloader::$directories as $prefix=>$dir) {
 					if(preg_match('/^'.preg_quote($prefix).'/', $class)) {
 						$rest = preg_replace('/^'.preg_quote($prefix).'\\\?/', '', $class);
@@ -132,7 +131,6 @@ namespace Coxis\Core {
 				
 				#to load
 				if(file_exists(($path = static::class2path($class)))) {
-					//~ require_once $path;
 					static::loadClassFile($path);
 					if(class_exists($class, false))
 						return true;
@@ -148,17 +146,15 @@ namespace Coxis\Core {
 							return true;
 						}
 					
+					#todo remove, only for testing class loading
+					return false;
+					
 					foreach(Autoloader::$preloaded as $v)
 						if(strtolower(basename($class)) == $v[0])
 							$classes[] = $v;
 							
 					if(sizeof($classes) == 1) {
-						//~ require_once $classes[0][1];
-					//~ if($class!='Error')
-					//~ d($class, $classes[0][1]);
-					//~ try {
 						static::loadClassFile($classes[0][1]);
-						//~ } catch(\Exception $e) {d($e);}
 						
 						if(class_exists(basename($class), false))
 							return true;

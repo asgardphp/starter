@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Core;
+namespace Coxis\Core\Tools;
 
 class Paginator {
 	public $per_page;

@@ -5,4 +5,4 @@ define('_ENV_', 'dev');
 require('coxis.php');
 
 /* RUN */
-Router::run('Front', 'main');
+\Coxis\Core\Router::run('Coxis\Core\Front', 'main');

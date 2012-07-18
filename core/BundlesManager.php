@@ -1,22 +1,20 @@
 <?php
 namespace {
-	require_once('vendors/addendum/annotations.php');
-	
-	/* Controllers */
-	class Hook extends Annotation {}
-	class Prefix extends Annotation {}
-	class Priority extends Annotation {}
-	class Filter extends Annotation {}
-	class Route extends Annotation {
-		public $name;
-		public $requirements;
-		public $method;
-	}
+require_once('vendors/addendum/annotations.php');
+
+/* Controllers */
+class Hook extends Annotation {}
+class Prefix extends Annotation {}
+class Priority extends Annotation {}
+class Filter extends Annotation {}
+class Route extends Annotation {
+	public $name;
+	public $requirements;
+	public $method;
+}
 }
 
 namespace Coxis\Core {
-
-	
 class BundlesManager {
 	public static $bundles_routes = array();
 	public static $filters_table = array();
@@ -27,11 +25,11 @@ class BundlesManager {
 		if(file_exists($bundle.'/bundle.php'))
 			include($bundle.'/bundle.php');
 
-		Autoloader::preloadDir($bundle.'/models');
+		\Coxis\Core\Autoloader::preloadDir($bundle.'/models');
 	
 		if(file_exists($bundle.'/controllers/'))
 			foreach(glob($bundle.'/controllers/*.php') as $filename) {
-				$classname = Importer::loadClassFile($filename);
+				$classname = \Coxis\Core\Importer::loadClassFile($filename);
 				
 				$reflection = new \ReflectionAnnotatedClass($classname);
 				

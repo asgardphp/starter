@@ -87,6 +87,7 @@ register_shutdown_function(function () {
 });
 
 /* CONFIG */
+import('Coxis\Core\Config');
 Config::loadConfigDir('config');
 if(Config::get('error_display'))
-	Error::display(true);
+	\Coxis\Core\Error::display(true);

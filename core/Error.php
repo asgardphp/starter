@@ -93,7 +93,7 @@ class Error {
 					$next = $backtrace[sizeof($backtrace)-1];
 				
 				if(isset($trace['file']))
-					echo 'File:  '.$trace['file'].' ('.$trace['line'].')'."<br/>\n";
+					echo 'File:  <a href="scite:'.$trace['file'].'">'.$trace['file'].'</a> ('.$trace['line'].')'."<br/>\n";
 				if(isset($next['class']))
 					echo 'At: '.$next['class'].$next['type'].$next['function']."()<br/>\n";
 				else

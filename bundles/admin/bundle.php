@@ -1,5 +1,5 @@
 <?php
-class AdminBundle extends Bundle {
+class AdminBundle extends \Coxis\Core\Bundle {
 	public static function configure() {
 		ImageCache::addPreset('admin_thumb', array(
 			'resize'	=>	array(
