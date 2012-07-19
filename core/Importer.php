@@ -155,7 +155,7 @@ namespace Coxis\Core {
 				if(method_exists($class, '_autoload'))
 					call_user_func(array($class, '_autoload'));
 			
-			return access(array_values($diff), sizeof($diff)-1);
+			return get(array_values($diff), sizeof($diff)-1);
 		}
 
 		public static function loadClass($class) {
@@ -225,7 +225,7 @@ namespace Coxis\Core {
 						else {
 							#maybe the loaded class uses another namespace?
 							#todo check that basename is equal
-							//~ $loadedClass = access(get_declared_classes(), sizeof(get_declared_classes())-1);
+							//~ $loadedClass = get(get_declared_classes(), sizeof(get_declared_classes())-1);
 							$res = array_values(preg_grep('/'.basename($class).'/', $diff));
 							//~ d($res, $diff);
 							$loadedClass = $res[sizeof($res)-1];

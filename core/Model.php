@@ -392,7 +392,7 @@ abstract class Model {
 	}
 	
 	public static function getProperty($prop) {
-		return access(static::getProperties(), $prop);
+		return get(static::getProperties(), $prop);
 	}
 
 	public static function getProperties() {

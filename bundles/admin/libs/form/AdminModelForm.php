@@ -40,7 +40,7 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 	
 		$modelName = $this->model->getClassName();
 	
-		$relationship = access($modelName::$relationships, $relation);
+		$relationship = get($modelName::$relationships, $relation);
 		$relation_model = $relationship['model'];
 		$widget = $relation.'_id';
 		
@@ -49,7 +49,7 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 			echo '<p>';
 			$label = isset($options['label']) ? $options['label']:ucfirst($widget);
 			//~ d($widget);
-			if(access($this->model->relationships(), $widget, 'required'))
+			if(get($this->model->relationships(), $widget, 'required'))
 				$label .= '*';
 				
 			$choices = array();
@@ -70,7 +70,7 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 		elseif($relationship['type'] == 'hasMany') {
 			echo '<p>';
 			$label = isset($options['label']) ? $options['label']:ucfirst($relation);
-			if(access($this->model->relationships(), $widget, 'required'))
+			if(get($this->model->relationships(), $widget, 'required'))
 				$label .= '*';
 				
 			$choices = array();
@@ -95,7 +95,7 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 		elseif($relationship['type'] == 'HMABT') {
 			echo '<p>';
 			$label = isset($options['label']) ? $options['label']:ucfirst($widget);
-			if(access($this->model->relationships(), $widget, 'required'))
+			if(get($this->model->relationships(), $widget, 'required'))
 				$label .= '*';
 				
 			$choices = array();
@@ -127,7 +127,7 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 		else
 			$label = $options['label'];
 		
-		if(access($this->model->getProperty($widget), 'required'))
+		if(get($this->model->getProperty($widget), 'required'))
 			$label .= '*';
 			
 		return $label;

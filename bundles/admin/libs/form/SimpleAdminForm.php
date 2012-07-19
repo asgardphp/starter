@@ -58,7 +58,7 @@ class SimpleAdminForm extends Form {
 	
 		$modelName = $this->model->getClassName();
 	
-		$relationship = access($modelName::$relationships, $relation);
+		$relationship = get($modelName::$relationships, $relation);
 		$relation_model = $relationship['model'];
 		$widget = $relation.'_id';
 		
@@ -67,7 +67,7 @@ class SimpleAdminForm extends Form {
 			echo '<p>';
 			$label = isset($options['label']) ? $options['label']:ucfirst($widget);
 			//~ d($widget);
-			if(access($this->model->relationships(), $widget, 'required'))
+			if(get($this->model->relationships(), $widget, 'required'))
 				$label .= '*';
 				
 			$choices = array();
@@ -91,7 +91,7 @@ class SimpleAdminForm extends Form {
 			echo '<p>';
 			$label = isset($options['label']) ? $options['label']:ucfirst($relation);
 			//~ d($widget);
-			if(access($this->model->relationships(), $widget, 'required'))
+			if(get($this->model->relationships(), $widget, 'required'))
 				$label .= '*';
 				
 			$choices = array();
@@ -120,7 +120,7 @@ class SimpleAdminForm extends Form {
 			echo '<p>';
 			$label = isset($options['label']) ? $options['label']:ucfirst($widget);
 			//~ d($widget);
-			if(access($this->model->relationships(), $widget, 'required'))
+			if(get($this->model->relationships(), $widget, 'required'))
 				$label .= '*';
 				
 			$choices = array();
@@ -152,7 +152,7 @@ class SimpleAdminForm extends Form {
 			
 		echo '<p>';
 		$label = isset($options['label']) ? $options['label']:ucfirst($widget);
-		if(access($this->model->getProperty($widget), 'required'))
+		if(get($this->model->getProperty($widget), 'required'))
 			$label .= '*';
 		$this->$widget->label($label);
 		echo '<br>';
@@ -170,7 +170,7 @@ class SimpleAdminForm extends Form {
 			
 		echo '<p>';
 		$label = isset($options['label']) ? $options['label']:ucfirst($widget);
-		if(access($this->model->getProperty($widget), 'required'))
+		if(get($this->model->getProperty($widget), 'required'))
 			$label .= '*';
 		$this->$widget->label($label);
 		echo '<br>';
@@ -193,7 +193,7 @@ class SimpleAdminForm extends Form {
 			
 		echo '<p>';
 		$label = isset($options['label']) ? $options['label']:ucfirst($widget);
-		if(access($this->model->getProperty($widget), 'required'))
+		if(get($this->model->getProperty($widget), 'required'))
 			$label .= '*';
 		$this->$widget->label($label);
 		echo '<br>';
@@ -222,7 +222,7 @@ class SimpleAdminForm extends Form {
 		//~ d($specific_file);
 
 		$label = isset($options['label']) ? $options['label']:ucfirst($widget);
-		if(access($this->model->getProperty($widget), 'required'))
+		if(get($this->model->getProperty($widget), 'required'))
 			$label .= '*';
 				
 		//~ d(BundlesManager::$routes);
@@ -329,7 +329,7 @@ class SimpleAdminForm extends Form {
 			
 		echo '<p>';
 		$label = isset($options['label']) ? $options['label']:ucfirst($widget);
-		if(access($this->model->getProperty($widget), 'required'))
+		if(get($this->model->getProperty($widget), 'required'))
 			$label .= '*';
 		$this->$widget->label($label);
 		echo '<br>';
@@ -351,7 +351,7 @@ class SimpleAdminForm extends Form {
 			
 		echo '<p>';
 		$label = isset($options['label']) ? $options['label']:ucfirst($widget);
-		if(access($this->model->getProperty($widget), 'required'))
+		if(get($this->model->getProperty($widget), 'required'))
 			$label .= '*';
 		$this->$widget->label($label);
 		echo '<br>';
@@ -377,7 +377,7 @@ class SimpleAdminForm extends Form {
 			
 		echo '<p>';
 		$label = isset($options['label']) ? $options['label']:ucfirst($widget);
-		if(access($this->model->getProperty($widget), 'required'))
+		if(get($this->model->getProperty($widget), 'required'))
 			$label .= '*';
 		$this->$widget->label($label);
 		$this->$widget->checkbox();

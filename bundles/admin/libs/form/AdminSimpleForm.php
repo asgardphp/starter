@@ -8,7 +8,7 @@ class AdminSimpleForm extends Form {
 		else
 			$label = $options['label'];
 		
-		if(access($this->$widget->params, 'required'))
+		if(get($this->$widget->params, 'required'))
 			$label .= '*';
 			
 		return $label;

@@ -8,7 +8,7 @@ class DefaultController extends Controller {
 	}
 	
 	public function layoutAction($content) {
-		if(access(Router::getRequest(), 'format') != 'html')
+		if(get(Router::getRequest(), 'format') != 'html')
 			return $content;
 		$this->content = $content;
 		$this->view = 'layout.php';

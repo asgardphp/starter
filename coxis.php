@@ -27,7 +27,7 @@ function d() {
 	\Coxis\Core\Error::print_backtrace('', debug_backtrace());
 	exit();
 }
-function access() {	
+function get() {	
 	$args = func_get_args();
 	$result = array_shift($args);
 	foreach($args as $key)
@@ -48,8 +48,6 @@ ob_start();
 
 /* CORE/LIBS */
 require_once 'core/Autoloader.php';
-require_once 'core/Log.php';
-require_once 'core/Tools/FileManager.php';
 spl_autoload_register(array('Coxis\Core\Autoloader', 'loadClass'));
 Autoloader::preloadDir('core');
 
