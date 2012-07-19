@@ -24,18 +24,9 @@ class BundlesManager {
 	public static $load_routes = true;
 	
 	public static function loadBundle($bundle) {
-		if(file_exists($bundle.'/bundle.php'))
-			include($bundle.'/bundle.php');
-
 		\Coxis\Core\Autoloader::preloadDir($bundle.'/models');
 		
-		//~ d(\Coxis\Core\BundlesManager::$routes);
-	//~ static::$bundles_routes
-	//~ static::$filters_table
-	//~ Event::$hooks_table
-		
 		if(!static::$load_routes)
-		//~ if(\Coxis\Core\BundlesManager::$routes)
 			\Coxis\Core\Autoloader::preloadDir($bundle.'/controllers');
 		else {
 			if(file_exists($bundle.'/controllers/'))
@@ -83,45 +74,16 @@ class BundlesManager {
 						}
 					}
 				}
-			//~ static::$routes = 
-			//~ d(static::$bundles_routes);
 		}
 	}
 	
-	public static function loadBundleLibs($bundle) {
-		Autoloader::preloadDir($bundle.'/libs');
-	}
-	
 	public static function getBundles() {
-		//~ $bundles = array();
-		//~ foreach(static::$directories as $dir) {
-			//~ $inclusion_bundles_list = array();
-			//~ $exclusion_bundles_list = array();
-			//~ if(isset($inclusion_bundles_list) && sizeof($inclusion_bundles_list)>0)
-				//~ $bundles = $inclusion_bundles_list;
-			//~ else {
-				//~ $bundles = glob($dir.'/*');
-				//~ $bundles = str_replace($dir.'/', '', static::$bundles);
-			//~ }
-		//~ }
-		
-		//~ foreach($bundles as $k=>$bundle)
-			//~ if(in_array($bundle, $exclusion_bundles_list))
-				//~ unset($bundles[$k]);
 		foreach(static::$directories as $dir)
-			//~ d(glob($dir.'/*'));
 			foreach(glob($dir.'/*') as $bundlepath)
-				//~ static::$bundles[] = basename($bundlepath);
 				static::$bundles[] = $bundlepath;
-				
-		//~ d();
-		//~ static::$bundles = $bundles;
 	}
 	
 	public static function loadBundles() {
-		//~ foreach(static::$directories as $dir)
-			//~ static::loadBundlesDir($dir);
-		
 		static::getBundles();
 		
 		if(static::$load_routes) {
@@ -130,18 +92,13 @@ class BundlesManager {
 			Event::$filters_table = array();
 		}
 		
-		//~ d(static::$bundles);
 		foreach(static::$bundles as $bundle)
-			static::loadBundleLibs($bundle);
+			Autoloader::preloadDir($bundle.'/libs');
 		foreach(static::$bundles as $bundle)
 			static::loadBundle($bundle);
-		foreach(static::$bundles as $bundle) {
-			$bundleclass = basename($bundle).'Bundle';#todo check basename with namespace
-			//~ if(class_exists($bundleclass, false))
-			if(class_exists($bundleclass))
-				$bundleclass::configure();
-		}
-		//~ d(BundlesManager::$routes, \Coxis\Core\Event::$hooks_table, );
+		foreach(static::$bundles as $bundle)
+			if(file_exists($bundle.'/bundle.php'))
+				include($bundle.'/bundle.php');
 			
 		if(static::$load_routes) {
 			foreach(Event::$hooks_table as $k=>$v)
@@ -149,7 +106,6 @@ class BundlesManager {
 
 			Event::$filters_table = static::$filters_table;
 			
-			//~ $all_routes = array_merge(static::$bundles_routes, $routes);
 			$all_routes = static::$bundles_routes;
 			
 			usort($all_routes, function($route1, $route2) {
@@ -177,21 +133,9 @@ class BundlesManager {
 					}
 				}
 			});
-
-			//~ $route_paths = array_keys($routes);
-			//~ for($i=sizeof($route_paths)-2; $i>=0; $i--)
-				//~ if(keypos($route_paths[$i], $all_routes) > keypos($route_paths[$i+1], $all_routes))
-					//~ move_key($route_paths[$i], keypos($route_paths[$i+1], $all_routes), $all_routes);
-
-			//~ foreach($bundles as $bundle) {
-				//~ $bundleclass = $bundle.'Bundle';
-				//~ if(class_exists($bundleclass, false))
-					//~ $bundleclass::configure();
-			//~ }
 			
 			static::$routes = $all_routes;
 		}
-		
 		
 		if(\Coxis\Core\Config::get('phpcache')) {
 			\Coxis\Core\Cache::store('routing/routes', BundlesManager::$routes);
@@ -199,35 +143,8 @@ class BundlesManager {
 			\Coxis\Core\Cache::store('routing/filters', Event::$filters_table);
 		}
 	}
-	
-	#todo deprecated?
-	public static function loadBundlesDir($dir) {
-		//TODO: either set all routes or simply give specific routes
-		//TODO: Takes routes from CONFIG
-		//~ $routes = Config::get('routes');
-		//~ if(!$routes)	$routes = array();
-
-		//~ foreach($routes as $route=>$params) {
-			//~ unset($routes[$route]);
-			//~ $routes[Router::formatRoute($route)] = $params;
-		//~ }
-		//~ $routes = array();
-
-		foreach($bundles as $k=>$bundle) {
-			if(in_array($bundle, $exclusion_bundles_list))
-				unset($bundles[$k]);
-		}
-
-		foreach($bundles as $bundle)
-			static::loadBundleLibs($dir.'/'.$bundle);
-		foreach($bundles as $bundle)
-			static::loadBundle($dir.'/'.$bundle);
-		
-		//~ static::$routes = $all_routes;
-		//~ require 'cache/routes.php';
-		//~ Cache::load('routes.php');
-	}
-
+	//TODO: either set all routes or simply give specific routes
+	//TODO: Takes routes from CONFIG
 	
 	private static function move_key($key, $pos, &$arr) {
 		$before = array_slice($arr, 0, $pos);
