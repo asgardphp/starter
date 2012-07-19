@@ -78,7 +78,7 @@ abstract class AbstractGroup implements \ArrayAccess, \Iterator {
 					
 				return $widget;
 			}
-			elseif(is_object($widgets) && (is_subclass_of($widgets, 'Form') || is_a($widgets, 'Form'))) {
+			elseif(is_object($widgets) && (is_subclass_of($widgets, 'Coxis\Core\Form\Form') || is_a($widgets, 'Coxis\Core\Form\Form'))) {
 				$form = $widgets;
 				$form->setName($name);
 				$form->setDad($this);

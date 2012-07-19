@@ -6,7 +6,7 @@ import('Coxis\Bundles\Admin\Libs\Controller\MultiAdminController', __NAMESPACE__
 /**
 @Prefix('admin/administrators')
 */
-class AdministratorAdminController extends MultiAdminController {
+class AdministratorAdminController extends AdminModelForm {
 	public function configure($params=null) {
 		parent::configure($params);
 	}

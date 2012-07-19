@@ -14,8 +14,9 @@ if(!defined('_ENV_'))
 
 /* UTILS */
 function d() {
-	if(ob_get_length() > 0)
-		ob_end_clean();
+	try {
+		while(ob_end_clean()){}
+	} catch(PHPErrorException $e) {}
 		
 	if(php_sapi_name() != 'cli')
 		echo '<pre>';

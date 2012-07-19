@@ -8,6 +8,6 @@ $config = array(
 		'imagecache'	=>	false,
 	),
 	'dev'	=>	array(
-		'phpcache'	=>	true,
+		'phpcache'	=>	false,
 	),
 );

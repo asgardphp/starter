@@ -7,7 +7,15 @@ class SortableBehaviorController extends Controller {
 	**/
 	public function behaviors_load_sortableAction($modelName) {
 		$modelName::addProperty('position', array('type' => 'integer', 'required' => true, 'editable' => false));
-		$admin_controller = strtolower(\Coxis\Bundles\Admin\Libs\CoxisAdmin::getAdminControllerFor($modelName)).'Controller';
+	}
+	
+	/**
+	@Hook('behaviors_coxisadmin_sortable')
+	*/
+	public function behaviors_coxisadmin_sortableAction($admin_controller) {
+		$admin_controller .= 'Controller';
+		$modelName = strtolower(basename($admin_controller::getModel()));
+		
 		try {
 			$admin_controller::addHook(array(
 				'route'			=>	':id/promote',
@@ -57,7 +65,8 @@ class SortableBehaviorController extends Controller {
 	}
 
 	public function promoteAction($request) {
-		$modelName = CoxisAdmin::getModelNameFor($request['_controller']);
+		$controller = $request['_controller'].'Controller';
+		$modelName = $controller::getModel();
 		$model = $modelName::load($request['id']);
 		static::reset($modelName);
 		
@@ -81,7 +90,8 @@ class SortableBehaviorController extends Controller {
 	}
 	
 	public function demoteAction($request) {
-		$modelName = CoxisAdmin::getModelNameFor($request['_controller']);
+		$controller = $request['_controller'].'Controller';
+		$modelName = $controller::getModel();
 		$model = $modelName::load($request['id']);
 		static::reset($modelName);
 		

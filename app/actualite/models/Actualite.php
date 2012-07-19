@@ -16,7 +16,7 @@ class Actualite extends \Coxis\Core\Model {
 		'image' => array(
 			'dir'	=>	'actualite/',
 			'type'	=>	'image',
-			'required'	=>	true,
+			'required'	=>	false,
 			//~ 'multiple'	=>	true,
 		),
 	);

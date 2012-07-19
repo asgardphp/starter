@@ -2,7 +2,7 @@
 /**
 @Prefix('admin/inscrits')
 */
-class InscritAdminController extends MultiAdminController {
+class InscritAdminController extends AdminModelForm {
 	static $_model = 'inscrit';
 	static $_models = 'inscrits';
 	

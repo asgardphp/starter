@@ -167,7 +167,7 @@ class Form extends AbstractGroup {
 		$res = array();
 		
 		foreach($this->widgets as $widget) {
-			if(is_subclass_of($widget, 'WidgetHelper')) {
+			if(is_subclass_of($widget, 'Coxis\Core\Form\WidgetHelper')) {
 				if($widget->params['type'] == 'boolean')
 					$res[$widget->name] = ($widget->val() ? true:false);
 				else

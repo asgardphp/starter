@@ -2,9 +2,15 @@
 namespace Coxis\Bundles\Admin\Libs\Form;
 
 class AdminModelForm extends \Coxis\Core\Form\ModelForm {
-	static $SEND = 0;
-	static $SAVE = 1;
-	static $BOTH = 2;
+	public static $SEND = 0;
+	public static $SAVE = 1;
+	public static $BOTH = 2;
+	public $controller = null;
+	
+	function __construct($model, $controller) {
+		parent::__construct($model);
+		$this->controller = $controller;
+	}
 	
 	public function def($widget, $options=array()) {
 		$properties = $this->model->getProperty($widget);
@@ -262,14 +268,13 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 				}
 				else {
 					echo '<p>
-						<a href="../'.$path.'">Download file</a>
+						<a href="../'.$path.'">Télécharger</a>
 					</p>';
 				}
 				
 				if($optional && !$this->model->isNew()):
-					//~ d(CoxisAdmin::url_for_model($this->model->getModelName(), 'deleteFile', array('file'=>$file, 'id'=>$this->model->id)));
 					?>
-					<a href="<?php echo CoxisAdmin::url_for_model($this->model->getClassName(), 'deleteFile', array('file'=>$widget, 'id'=>$this->model->id), false) ?>">Delete</a><br/><br/>
+					<a href="<?php echo $this->controller->url_for('deleteSingleFile', array('file'=>$widget, 'id'=>$this->model->id)) ?>">Supprimer</a><br/><br/>
 					<?php
 				endif;
 			}

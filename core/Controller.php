@@ -2,12 +2,22 @@
 namespace Coxis\Core;
 
 class Controller {
+	#autoload function
+	public static function _autoload() {
+		//~ if(static::getClassName() == 'Coxis\Core\Model')
+			//~ return;
+		//~ static::loadModel();
+		//~ d();
+		
+		//~ Event::trigger('behaviors_coxisadmin_sortable', array(static::getControllerName()));
+	}
+	
 	public function forward404() {
 		Response::setCode(404)->send();
 	}
 	
-	public function url_for($action, $params=array(), $relative=false) {
-		return url_for(array($this->getControllerName(), $action), $params, $relative);
+	public static function url_for($action, $params=array(), $relative=false) {
+		return url_for(array(static::getControllerName(), $action), $params, $relative);
 	}
 	
 	public static function getControllerName() {

@@ -1,10 +1,12 @@
 <?php
+#todo refactor this whole class
 namespace Coxis\Bundles\Admin\Libs\Form;
 
 class SimpleAdminForm extends Form {
-	static $SEND = 0;
-	static $SAVE = 1;
-	static $BOTH = 2;
+	public static $SEND = 0;
+	public static $SAVE = 1;
+	public static $BOTH = 2;
+	public $controller = null;
 
 	function __construct(
 		$params=array('action' => '', 'method' => 'post')
@@ -307,14 +309,13 @@ class SimpleAdminForm extends Form {
 				}
 				else {
 					echo '<p>
-						<a href="../'.$path.'">Download file</a>
+						<a href="../'.$path.'">Télécharger</a>
 					</p>';
 				}
 				
 				if($optional && !$this->model->isNew()):
-					//~ d(CoxisAdmin::url_for_model($this->model->getModelName(), 'deleteFile', array('file'=>$file, 'id'=>$this->model->id)));
 					?>
-					<a href="<?php echo CoxisAdmin::url_for_model($this->model->getClassName(), 'deleteFile', array('file'=>$widget, 'id'=>$this->model->id), false) ?>">Delete</a><br/><br/>
+					<a href="<?php echo $this->controller->url_for($this->model->getClassName(), 'deleteFile', array('file'=>$widget, 'id'=>$this->model->id)) ?>">Supprimer</a><br/><br/>
 					<?php
 				endif;
 			}

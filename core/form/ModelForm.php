@@ -95,14 +95,14 @@ class ModelForm extends Form {
 			
 		$errors = array();
 		
-		if(is_subclass_of($widget, 'AbstractGroup')) {
-			if(is_a($widget, 'ModelForm') || is_subclass_of($widget, 'ModelForm'))
+		if(is_subclass_of($widget, 'Coxis\Core\Form\AbstractGroup')) {
+			if(is_a($widget, 'Coxis\Core\Form\ModelForm') || is_subclass_of($widget, 'Coxis\Core\Form\ModelForm'))
 				$errors = $widget->my_errors();
-			elseif(is_a($widget, 'Form') || is_subclass_of($widget, 'Form'))
+			elseif(is_a($widget, 'Coxis\Core\Form\Form') || is_subclass_of($widget, 'Coxis\Core\Form\Form'))
 				$errors = $widget->errors();
 				
 			foreach($widget as $name=>$sub_widget) {
-				if(is_subclass_of($sub_widget, 'AbstractGroup')) {
+				if(is_subclass_of($sub_widget, 'Coxis\Core\Form\AbstractGroup')) {
 					$widget_errors = $this->errors($sub_widget);
 					if(sizeof($widget_errors) > 0)
 						$errors[$name] = $widget_errors;
@@ -146,12 +146,12 @@ class ModelForm extends Form {
 		if(!$group)
 			$group = $this;
 			
-		if(is_a($group, 'ModelForm') || is_subclass_of($group, 'ModelForm'))
+		if(is_a($group, 'Coxis\Core\Form\ModelForm') || is_subclass_of($group, 'Coxis\Core\Form\ModelForm'))
 			$group->model->_save();
 			
-		if(is_subclass_of($group, 'AbstractGroup'))
+		if(is_subclass_of($group, 'Coxis\Core\Form\AbstractGroup'))
 			foreach($group->widgets as $name=>$widget)
-				if(is_subclass_of($widget, 'AbstractGroup'))
+				if(is_subclass_of($widget, 'Coxis\Core\Form\AbstractGroup'))
 					$this->_save($widget);
 	}
 }
