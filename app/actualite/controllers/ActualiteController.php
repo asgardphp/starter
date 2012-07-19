@@ -8,7 +8,7 @@ class ActualiteController extends Controller {
 	*/
 	public function indexAction($request) {
 		$page = isset($request['page']) ? $request['page']:1;
-		list($this->actualites, $this->paginator) = Paginator::paginate('actualite', $page, array());
+		list($this->actualites, $this->paginator) = Paginator::paginate('\Coxis\App\Actualite\Models\Actualite', $page, array());
 		//~ d($this->actualites);
 		//~ $this->actualites = Actualite::find();
 	}
@@ -38,6 +38,6 @@ class ActualiteController extends Controller {
 	
 	public function listAction($request) {
 		$page = isset($request['page']) ? $request['page']:1;
-		list($this->actualites, $this->paginator) = Paginator::paginate('actualite', $page, array(), 3);
+		list($this->actualites, $this->paginator) = \Coxis\Core\Tools\Paginator::paginate('\Coxis\App\Actualite\Models\Actualite', $page, array(), 3);
 	}
 }

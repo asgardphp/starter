@@ -54,30 +54,48 @@ namespace Coxis\Core {
 			$class = preg_replace('/^\\\+/', '', $class);
 			$alias = isset($params['as']) ? $params['as']:null;
 			$intoNamespace= isset($params['into']) ? $params['into']:null;
+		//~ if(defined('asd'))
+			//~ d($intoNamespace);
+			if($intoNamespace == '.')
+				$intoNamespace = '';
 		
 			$path = static::class2path($class);
+		
+		//~ if($class == 'Coxis\\Core\\Config')
+		//~ d('asdf');
 			
-			//~ if(static::$preimported)
-			//~ d(static::$preimported);
-			//~ var_dump(static::$preimported, $class);die('123');
 			if(isset(static::$preimported[$class])) {
 				if(static::_import(static::$preimported[$class], array('as'=>false))) {
-					//~ die(class_exists('Error'));
-			//~ var_dump(static::$preimported, $class);die('123');
-			
 					$toload = static::$preimported[$class];
-					unset(static::$preimported[$class]);
-					class_alias($toload, $class);
+		//~ if(defined('asd'))
+			//~ d($class, static::$preimported[$class], class_exists('Config'), class_exists('Coxis\\Core\\Config'));
+			//~ try {
+					//~ unset(static::$preimported[$class]);
+					//~ } catch(Exception $e){}
 					
-					//~ die('qw');
+					#import as ..
+					if($alias !== false) {
+						if(!$alias)
+							$alias = ($intoNamespace ? $intoNamespace.'\\':'').basename($class);
+		//~ if(defined('asd'))
+		//~ d($toload, $alias);
+						if($toload != $alias)
+							try {
+		//~ if(defined('asd'))
+			//~ d($class, static::$preimported[$class], $toload, $alias);
+								
+								class_alias($toload, $alias);
+							} catch(\Exception $e) {
+								return false;
+							}
+					}
+					
 					return true;
 				}
 			}
-				
-			//~ if(!in_array($class, array('Coxis\Core\Error', 'Coxis\Core\Response')))
-			//~ die($class);
 			
 			if(static::loadClass($class)) {
+				#import as ..
 				if($alias !== false) {
 					if(!$alias)
 						$alias = ($intoNamespace ? $intoNamespace.'\\':'').basename($class);
@@ -85,8 +103,6 @@ namespace Coxis\Core {
 						try {
 							class_alias($class, $alias);
 						} catch(\Exception $e) {
-							#create an alias with php4 alias trick?
-							//~ eval('abstract class ' . $alias . ' extends ' . $class . ' {}');
 							return false;
 						}
 				}
@@ -129,6 +145,7 @@ namespace Coxis\Core {
 		}
 		
 		public static function loadClassFile($file) {
+		//~ Log::write('loader.txt', $file);
 			$before = get_declared_classes();
 			require_once $file;
 			$after = get_declared_classes();
@@ -183,22 +200,39 @@ namespace Coxis\Core {
 						}
 					
 					#todo remove, only for testing class loading
-					return false;
+					//~ return false;
+					
+				//~ if($class='DefaultController')
+					//~ d($class, Autoloader::$preloaded);
 					
 					foreach(Autoloader::$preloaded as $v)
 						if(strtolower(basename($class)) == $v[0])
 							$classes[] = $v;
 							
 					if(sizeof($classes) == 1) {
+						$before = get_declared_classes();
 						static::loadClassFile($classes[0][1]);
+						$after = get_declared_classes();
+						
+						$diff = array_diff($after, $before);
+						
+						//~ if($class=='BundlesManager')
+						//~ d(preg_grep('/'.basename($class).'/', $diff));
+							//~ d($diff);
 						
 						if(class_exists(basename($class), false))
 							return true;
 						else {
 							#maybe the loaded class uses another namespace?
 							#todo check that basename is equal
-							$loadedClass = access(get_declared_classes(), sizeof(get_declared_classes())-1);
+							//~ $loadedClass = access(get_declared_classes(), sizeof(get_declared_classes())-1);
+							$res = array_values(preg_grep('/'.basename($class).'/', $diff));
+							//~ d($res, $diff);
+							$loadedClass = $res[sizeof($res)-1];
+							//~ d($loadedClass);
 							try {
+			//~ if($class=='BundlesManager')
+			//~ d($class, $loadedClass, array_search('Coxis\Core\BundlesManager', get_declared_classes()), array_slice(get_declared_classes(), -50));
 								class_alias($loadedClass, $class);
 								return true;
 							} catch(PHPErrorException $e) {

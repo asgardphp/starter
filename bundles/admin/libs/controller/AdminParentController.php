@@ -52,7 +52,7 @@ abstract class AdminParentController extends Controller {
 	*/
 	public function hooksAction($request) {
 		$modelName = static::$_model;
-		$modelName::init();
+		$modelName::init();#todo not generic (generic for models actually..)
 		
 		$controller = static::getControllerName();
 		

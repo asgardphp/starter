@@ -48,14 +48,10 @@ ob_start();
 
 /* CORE/LIBS */
 require_once 'core/Autoloader.php';
+require_once 'core/Log.php';
+require_once 'core/Tools/FileManager.php';
 spl_autoload_register(array('Coxis\Core\Autoloader', 'loadClass'));
 Autoloader::preloadDir('core');
-
-//~ require_once 'core/Importer.php';
-//~ import('Coxis\Core\Error');
-//~ Error::report('test');
-//~ d();
-//~ die('end');
 
 /* ERRORS/EXCEPTIONS */
 class PHPErrorException extends Exception {

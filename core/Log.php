@@ -12,6 +12,7 @@ class Log {
 	
 	public static function write($filename, $msg) {
 		\Coxis\Core\Tools\FileManager::mkdir(dirname('logs/'.$filename));
-		file_put_contents('logs/'.$filename, $msg, FILE_APPEND);
+		file_put_contents('logs/'.$filename, "\n".$msg, FILE_APPEND|LOCK_EX);
+		#todo concurrent writing problem?!
 	}
 }

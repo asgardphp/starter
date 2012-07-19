@@ -371,7 +371,7 @@ abstract class Model {
 						$this->$col = array();
 				}
 				elseif(static::$properties[$col]['type'] === 'date') {
-					$this->$col = Date::fromDatetime($value);//todo with Date class
+					$this->$col = \Coxis\Core\Tools\Date::fromDatetime($value);//todo with Date class
 				}
 				else
 					$this->$col = $value;

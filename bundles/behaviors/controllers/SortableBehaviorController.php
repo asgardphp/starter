@@ -7,7 +7,7 @@ class SortableBehaviorController extends Controller {
 	**/
 	public function behaviors_load_sortableAction($modelName) {
 		$modelName::addProperty('position', array('type' => 'integer', 'required' => true, 'editable' => false));
-		$admin_controller = strtolower(CoxisAdmin::getAdminControllerFor($modelName)).'Controller';
+		$admin_controller = strtolower(\Coxis\Bundles\Admin\Libs\CoxisAdmin::getAdminControllerFor($modelName)).'Controller';
 		try {
 			$admin_controller::addHook(array(
 				'route'			=>	':id/promote',

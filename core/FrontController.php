@@ -11,15 +11,38 @@ namespace {
 namespace Coxis\Core {
 
 class FrontController extends Controller {
-	public static $loaded = false;
-
 	public function mainAction() {
 		/* WEB RESOURCES */
 		$this->getResource();
 		
+		//~ d(\BundlesManager::$routes);
+		
 		/* BUNDLES */
 		_frontcontrollerGlobal();
-		$this->load();
+		//~ $this->load();
+		
+		if(\Coxis\Core\Config::get('phpcache')) {
+			BundlesManager::$routes = Cache::load('routing/routes');
+			Event::$hooks_table = Cache::load('routing/hooks');
+			Event::$filters_table = Cache::load('routing/filters');
+			if(BundlesManager::$routes && Event::$hooks_table && Event::$filters_table)
+				BundlesManager::$load_routes = false;
+		}
+		
+		//~ d(BundlesManager::$filters_table);
+		
+		//~ d(BundlesManager::$routes);
+		
+		BundlesManager::loadBundles();
+		
+		//~ d(BundlesManager::$bundles_routes);
+		//~ d(BundlesManager::$routes);
+		//~ d(Event::$hooks_table);
+		//~ die(var_export(Event::$hooks_table));
+		//~ die(var_export(BundlesManager::$filters_table));
+	
+		//User Session
+		User::start();
 		
 		Router::parseRoutes(BundlesManager::$routes);
 
@@ -34,19 +57,22 @@ class FrontController extends Controller {
 		Response::setContent($output)->send();
 	}
 	
+	#todo deprecated
 	public function load() {
-		if(static::$loaded)
-			return;
-		
-		BundlesManager::$directories[] = 'app';
+		//~ Cache::load('routes.php');
+		//~ BundlesManager::$directories[] = 'app';
 		BundlesManager::loadBundles();
+		
+		//~ require 'cache/routes.php';
+		
+		//~ echo var_export(BundlesManager::$bundles_routes);die();
 		#todo should load libs first in all bundles
 		#
 	
 		//User Session
 		User::start();
 		
-		static::$loaded = true;
+		//~ static::$loaded = true;
 	}
 
 	public function send_file($file) {

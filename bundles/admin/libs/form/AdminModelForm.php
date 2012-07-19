@@ -1,7 +1,7 @@
 <?php
 namespace Coxis\Bundles\Admin\Libs\Form;
 
-class AdminModelForm extends ModelForm {
+class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 	static $SEND = 0;
 	static $SAVE = 1;
 	static $BOTH = 2;

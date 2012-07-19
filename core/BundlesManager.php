@@ -19,89 +19,199 @@ class BundlesManager {
 	public static $bundles_routes = array();
 	public static $filters_table = array();
 	public static $routes = array();
-	public static $directories = array('bundles');
+	public static $directories = array('app', 'bundles');
+	public static $bundles = array();
+	public static $load_routes = true;
 	
 	public static function loadBundle($bundle) {
 		if(file_exists($bundle.'/bundle.php'))
 			include($bundle.'/bundle.php');
 
 		\Coxis\Core\Autoloader::preloadDir($bundle.'/models');
-	
-		if(file_exists($bundle.'/controllers/'))
-			foreach(glob($bundle.'/controllers/*.php') as $filename) {
-				$classname = \Coxis\Core\Importer::loadClassFile($filename);
-				
-				$reflection = new \ReflectionAnnotatedClass($classname);
-				
-				if($reflection->getAnnotation('Prefix'))
-					$prefix = Router::formatRoute($reflection->getAnnotation('Prefix')->value);
-				else
-					$prefix = '';
-				
-				$methods = get_class_methods($classname);
-				foreach($methods as $method) {
-					if(!preg_match('/Action$/i', $method))
-						continue;
-					$method_reflection = new \ReflectionAnnotatedMethod($classname, $method);
-				
-					if($method_reflection->getAnnotation('Route')) {
-						$route = Router::formatRoute($prefix.'/'.$method_reflection->getAnnotation('Route')->value);
-						static::$bundles_routes[] = array(
-							'route'	=>	$route,
-							'controller'		=>	static::formatControllerName($classname), 
-							'action'			=>	static::formatActionName($method),
-							'requirements'	=>	$method_reflection->getAnnotation('Route')->requirements,
-							'method'	=>	$method_reflection->getAnnotation('Route')->method,
-							'name'	=>	isset($method_reflection->getAnnotation('Route')->name) ? $method_reflection->getAnnotation('Route')->name:null
-						);
-					}
-					if($method_reflection->getAnnotation('Hook')) {
-						$hook = $method_reflection->getAnnotation('Hook')->value;
-						if($method_reflection->getAnnotation('Priority'))
-							$priority = $method_reflection->getAnnotation('Priority')->value;
-						else
-							$priority = 0;
-						$priority *= 1000;
-						while(isset(Event::$hooks_table[$hook][$priority]))
-							$priority += 1;
-						Event::$hooks_table[$hook][$priority] = array('controller'=>static::formatControllerName($classname), 'action'=>static::formatActionName($method));
-					}
-					if($method_reflection->getAnnotation('Filter')) {
-						$filter = $method_reflection->getAnnotation('Filter')->value;
-						static::$filters_table[$filter][] = array('controller'=>static::formatControllerName($classname), 'action'=>static::formatActionName($method));
+		
+		//~ d(\Coxis\Core\BundlesManager::$routes);
+	//~ static::$bundles_routes
+	//~ static::$filters_table
+	//~ Event::$hooks_table
+		
+		if(!static::$load_routes)
+		//~ if(\Coxis\Core\BundlesManager::$routes)
+			\Coxis\Core\Autoloader::preloadDir($bundle.'/controllers');
+		else {
+			if(file_exists($bundle.'/controllers/'))
+				foreach(glob($bundle.'/controllers/*.php') as $filename) {
+					$classname = \Coxis\Core\Importer::loadClassFile($filename);
+					
+					$reflection = new \ReflectionAnnotatedClass($classname);
+					
+					if($reflection->getAnnotation('Prefix'))
+						$prefix = Router::formatRoute($reflection->getAnnotation('Prefix')->value);
+					else
+						$prefix = '';
+					
+					$methods = get_class_methods($classname);
+					foreach($methods as $method) {
+						if(!preg_match('/Action$/i', $method))
+							continue;
+						$method_reflection = new \ReflectionAnnotatedMethod($classname, $method);
+					
+						if($method_reflection->getAnnotation('Route')) {
+							$route = Router::formatRoute($prefix.'/'.$method_reflection->getAnnotation('Route')->value);
+							static::$bundles_routes[] = array(
+								'route'	=>	$route,
+								'controller'		=>	static::formatControllerName($classname), 
+								'action'			=>	static::formatActionName($method),
+								'requirements'	=>	$method_reflection->getAnnotation('Route')->requirements,
+								'method'	=>	$method_reflection->getAnnotation('Route')->method,
+								'name'	=>	isset($method_reflection->getAnnotation('Route')->name) ? $method_reflection->getAnnotation('Route')->name:null
+							);
+						}
+						if($method_reflection->getAnnotation('Hook')) {
+							$hook = $method_reflection->getAnnotation('Hook')->value;
+							if($method_reflection->getAnnotation('Priority'))
+								$priority = $method_reflection->getAnnotation('Priority')->value;
+							else
+								$priority = 0;
+							$priority *= 1000;
+							while(isset(Event::$hooks_table[$hook][$priority]))
+								$priority += 1;
+							Event::$hooks_table[$hook][$priority] = array('controller'=>static::formatControllerName($classname), 'action'=>static::formatActionName($method));
+						}
+						if($method_reflection->getAnnotation('Filter')) {
+							$filter = $method_reflection->getAnnotation('Filter')->value;
+							static::$filters_table[$filter][] = array('controller'=>static::formatControllerName($classname), 'action'=>static::formatActionName($method));
+						}
 					}
 				}
-			}
+			//~ static::$routes = 
+			//~ d(static::$bundles_routes);
+		}
 	}
 	
 	public static function loadBundleLibs($bundle) {
 		Autoloader::preloadDir($bundle.'/libs');
 	}
 	
-	public static function loadBundles() {
+	public static function getBundles() {
+		//~ $bundles = array();
+		//~ foreach(static::$directories as $dir) {
+			//~ $inclusion_bundles_list = array();
+			//~ $exclusion_bundles_list = array();
+			//~ if(isset($inclusion_bundles_list) && sizeof($inclusion_bundles_list)>0)
+				//~ $bundles = $inclusion_bundles_list;
+			//~ else {
+				//~ $bundles = glob($dir.'/*');
+				//~ $bundles = str_replace($dir.'/', '', static::$bundles);
+			//~ }
+		//~ }
+		
+		//~ foreach($bundles as $k=>$bundle)
+			//~ if(in_array($bundle, $exclusion_bundles_list))
+				//~ unset($bundles[$k]);
 		foreach(static::$directories as $dir)
-			static::loadBundlesDir($dir);
+			//~ d(glob($dir.'/*'));
+			foreach(glob($dir.'/*') as $bundlepath)
+				//~ static::$bundles[] = basename($bundlepath);
+				static::$bundles[] = $bundlepath;
+				
+		//~ d();
+		//~ static::$bundles = $bundles;
 	}
 	
+	public static function loadBundles() {
+		//~ foreach(static::$directories as $dir)
+			//~ static::loadBundlesDir($dir);
+		
+		static::getBundles();
+		
+		if(static::$load_routes) {
+			BundlesManager::$routes = array();
+			Event::$hooks_table = array();
+			Event::$filters_table = array();
+		}
+		
+		//~ d(static::$bundles);
+		foreach(static::$bundles as $bundle)
+			static::loadBundleLibs($bundle);
+		foreach(static::$bundles as $bundle)
+			static::loadBundle($bundle);
+		foreach(static::$bundles as $bundle) {
+			$bundleclass = basename($bundle).'Bundle';#todo check basename with namespace
+			//~ if(class_exists($bundleclass, false))
+			if(class_exists($bundleclass))
+				$bundleclass::configure();
+		}
+		//~ d(BundlesManager::$routes, \Coxis\Core\Event::$hooks_table, );
+			
+		if(static::$load_routes) {
+			foreach(Event::$hooks_table as $k=>$v)
+				ksort(Event::$hooks_table[$k]);
+
+			Event::$filters_table = static::$filters_table;
+			
+			//~ $all_routes = array_merge(static::$bundles_routes, $routes);
+			$all_routes = static::$bundles_routes;
+			
+			usort($all_routes, function($route1, $route2) {
+				$route1 = $route1['route'];
+				$route2 = $route2['route'];
+				
+				while(true) {
+					if(!$route1)
+						return 1;
+					if(!$route2)
+						return -1;
+					$c1 = substr($route1, 0, 1);
+					$c2 = substr($route2, 0, 1);
+					if($c1 == ':' && $c2 != ':')
+						return 1;
+					elseif($c1 != ':' && $c2 == ':')
+						return -1;
+					elseif($c1 != ':' && $c2 != ':'){
+						$route1 = substr($route1, 1);
+						$route2 = substr($route2, 1);
+					}
+					elseif($c1 == ':' && $c2 == ':') {
+						$route1 = preg_replace('/^:[a-zA-Z0-9_]+/', '', $route1);
+						$route2 = preg_replace('/^:[a-zA-Z0-9_]+/', '', $route2);
+					}
+				}
+			});
+
+			//~ $route_paths = array_keys($routes);
+			//~ for($i=sizeof($route_paths)-2; $i>=0; $i--)
+				//~ if(keypos($route_paths[$i], $all_routes) > keypos($route_paths[$i+1], $all_routes))
+					//~ move_key($route_paths[$i], keypos($route_paths[$i+1], $all_routes), $all_routes);
+
+			//~ foreach($bundles as $bundle) {
+				//~ $bundleclass = $bundle.'Bundle';
+				//~ if(class_exists($bundleclass, false))
+					//~ $bundleclass::configure();
+			//~ }
+			
+			static::$routes = $all_routes;
+		}
+		
+		
+		if(\Coxis\Core\Config::get('phpcache')) {
+			\Coxis\Core\Cache::store('routing/routes', BundlesManager::$routes);
+			\Coxis\Core\Cache::store('routing/hooks', Event::$hooks_table);
+			\Coxis\Core\Cache::store('routing/filters', Event::$filters_table);
+		}
+	}
+	
+	#todo deprecated?
 	public static function loadBundlesDir($dir) {
 		//TODO: either set all routes or simply give specific routes
 		//TODO: Takes routes from CONFIG
-		$routes = Config::get('routes');
-		if(!$routes)	$routes = array();
+		//~ $routes = Config::get('routes');
+		//~ if(!$routes)	$routes = array();
 
-		foreach($routes as $route=>$params) {
-			unset($routes[$route]);
-			$routes[Router::formatRoute($route)] = $params;
-		}
-		
-		$inclusion_bundles_list = array();
-		$exclusion_bundles_list = array();
-		if(isset($inclusion_bundles_list) && sizeof($inclusion_bundles_list)>0)
-			$bundles = $inclusion_bundles_list;
-		else {
-			$bundles = glob($dir.'/*');
-			$bundles = str_replace($dir.'/', '', $bundles);
-		}
+		//~ foreach($routes as $route=>$params) {
+			//~ unset($routes[$route]);
+			//~ $routes[Router::formatRoute($route)] = $params;
+		//~ }
+		//~ $routes = array();
 
 		foreach($bundles as $k=>$bundle) {
 			if(in_array($bundle, $exclusion_bundles_list))
@@ -112,52 +222,10 @@ class BundlesManager {
 			static::loadBundleLibs($dir.'/'.$bundle);
 		foreach($bundles as $bundle)
 			static::loadBundle($dir.'/'.$bundle);
-
-		foreach(Event::$hooks_table as $k=>$v)
-			ksort(Event::$hooks_table[$k]);
-
-		Event::$filters_table = static::$filters_table;
 		
-		$all_routes = array_merge(static::$bundles_routes, $routes);
-		
-		usort($all_routes, function($route1, $route2) {
-			$route1 = $route1['route'];
-			$route2 = $route2['route'];
-			
-			while(true) {
-				if(!$route1)
-					return 1;
-				if(!$route2)
-					return -1;
-				$c1 = substr($route1, 0, 1);
-				$c2 = substr($route2, 0, 1);
-				if($c1 == ':' && $c2 != ':')
-					return 1;
-				elseif($c1 != ':' && $c2 == ':')
-					return -1;
-				elseif($c1 != ':' && $c2 != ':'){
-					$route1 = substr($route1, 1);
-					$route2 = substr($route2, 1);
-				}
-				elseif($c1 == ':' && $c2 == ':') {
-					$route1 = preg_replace('/^:[a-zA-Z0-9_]+/', '', $route1);
-					$route2 = preg_replace('/^:[a-zA-Z0-9_]+/', '', $route2);
-				}
-			}
-		});
-
-		$route_paths = array_keys($routes);
-		for($i=sizeof($route_paths)-2; $i>=0; $i--)
-			if(keypos($route_paths[$i], $all_routes) > keypos($route_paths[$i+1], $all_routes))
-				move_key($route_paths[$i], keypos($route_paths[$i+1], $all_routes), $all_routes);
-
-		foreach($bundles as $bundle) {
-			$bundleclass = $bundle.'Bundle';
-			if(class_exists($bundleclass, false))
-				$bundleclass::configure();
-		}
-		
-		static::$routes = $all_routes;
+		//~ static::$routes = $all_routes;
+		//~ require 'cache/routes.php';
+		//~ Cache::load('routes.php');
 	}
 
 	

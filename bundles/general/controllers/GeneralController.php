@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Bundles\General\Controller;
+namespace Coxis\Bundles\General\Controllers;
 
 class GeneralController extends Controller {
 	static $called404 = false;
@@ -57,7 +57,7 @@ class GeneralController extends Controller {
 	public function preSendingAction($args) {
 		$content = $args[0];
 		try {
-			$type = Response::getHeader('Content-Type');
+			$type = \Coxis\Core\Response::getHeader('Content-Type');
 			
 			if($type != 'text/html')
 				return $content;
@@ -74,7 +74,7 @@ class GeneralController extends Controller {
 	@Hook('start')
 	*/
 	public function initAction($params) {
-		HTML::setTitle(Value::val('name'));
+		\Coxis\Core\Tools\HTML::setTitle(\Coxis\Bundles\Value\Models\Value::val('name'));
 		//~ HTML::setDescription('');
 		//~ HTML::setKeywords('');
 	}

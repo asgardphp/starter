@@ -3,7 +3,7 @@
 @Prefix('admin/actualites')
 */
 class ActualiteAdminController extends MultiAdminController {
-	static $_model = 'actualite';
+	static $_model = 'actualite';#todo\Coxis\App\Actualite\Models\Actualite
 	static $_models = 'actualites';
 	
 	static $_messages = array(
@@ -15,7 +15,7 @@ class ActualiteAdminController extends MultiAdminController {
 		);
 	
 	public function formConfigure($model) {
-		$form = new AdminModelForm($model);
+		$form = new \Coxis\Bundles\Admin\Libs\Form\AdminModelForm($model);
 		
 		return $form;
 	}

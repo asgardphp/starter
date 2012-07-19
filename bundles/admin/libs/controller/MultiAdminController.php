@@ -11,7 +11,7 @@ abstract class MultiAdminController extends AdminParentController {
 		$_model = static::$_model;
 		$_models = static::$_models;
 		
-		$this->searchForm = new Form();
+		$this->searchForm = new \Coxis\Core\Form\Form();
 		$this->searchForm->search = new Widget();
 	
 		//submitted
@@ -39,7 +39,7 @@ abstract class MultiAdminController extends AdminParentController {
 					$conditions['and']["`$key` LIKE ?"] = array('%'.$value.'%');
 		}
 		
-		list($this->$_models, $this->paginator) = Paginator::paginate(
+		list($this->$_models, $this->paginator) = \Coxis\Core\Tools\Paginator::paginate(
 			$_model,
 			isset($request['page']) ? $request['page']:1,
 			array(

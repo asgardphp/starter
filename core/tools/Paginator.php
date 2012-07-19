@@ -13,6 +13,7 @@ class Paginator {
 	}
 	
 	public static function paginate($model, $page, $params=array(), $per_page=10) {
+	//~ d($model);
 		$total = $model::count($params);
 		
 		$params['offset'] = ($page-1)*$per_page;

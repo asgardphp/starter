@@ -28,7 +28,7 @@ class ImageCacheController extends Controller {
 	})
 	*/
 	public function imgAction($request) {
-		if(Config::get('imagecache')) {
+		if(\Coxis\Core\Config::get('imagecache')) {
 			$file = _WEB_DIR_.'/cache/imagecache/'.$request['preset'].'/'.$request['src'];
 			if(file_exists($file)) {
 				$img = ImageManager::load($file);
