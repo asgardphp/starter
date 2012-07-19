@@ -1,16 +1,10 @@
 <?php
 namespace Coxis\Bundles\Admin\Controllers;
 
-import('Coxis\Bundles\Admin\Libs\Controller\MultiAdminController', __NAMESPACE__);
-
 /**
 @Prefix('admin/administrators')
 */
-class AdministratorAdminController extends AdminModelForm {
-	public function configure($params=null) {
-		parent::configure($params);
-	}
-	
+class AdministratorAdminController extends ModelAdminController {
 	static $_model = 'administrator';
 	static $_messages = array(
 		'modified'			=>	'Administrateur mis à jour avec succès.',
@@ -21,7 +15,7 @@ class AdministratorAdminController extends AdminModelForm {
 	);
 	
 	public function formConfigure($model) {
-		$form = new AdminModelForm($model);
+		$form = new AdminModelForm($model, $this);
 		$form->password->params['view']['value'] = '';
 		
 		return $form;

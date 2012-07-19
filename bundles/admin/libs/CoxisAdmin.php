@@ -7,18 +7,10 @@ class CoxisAdmin {
 	}
 
 	public static function getIndexURLFor($controller) {
-		try {
-			return $controller::getIndexURL();
-		} catch(PHPErrorException $e) {
-			throw new \Exception('Admin Controller does not exist for model '.$controller);
-		}
+		return $controller::getIndexURL();
 	}
 
 	public static function getEditURLFor($controller, $id) {
-		try {
-			return $controller::getEditURL($id);
-		} catch(PHPErrorException $e) {
-			throw new \Exception('Admin Controller does not exist for model '.$controller);
-		}
+		return $controller::getEditURL($id);
 	}
 }

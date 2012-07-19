@@ -9,5 +9,6 @@ $config = array(
 	),
 	'dev'	=>	array(
 		'phpcache'	=>	false,
+		//~ 'phpcache'	=>	true,
 	),
 );

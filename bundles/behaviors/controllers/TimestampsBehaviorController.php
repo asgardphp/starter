@@ -14,8 +14,8 @@ class TimestampsBehaviorController extends Controller {
 	@Hook('behaviors_load_timestamps')
 	**/
 	public function behaviors_load_timestampsAction($model) {
-		$model::addProperty('created_at', array('type' => 'date', 'required' => true, 'editable' => false));
-		$model::addProperty('updated_at', array('type' => 'date', 'required' => true, 'editable' => false));
+		$model::addProperty('created_at', array('type' => 'date', 'required' => false, 'editable' => false));
+		$model::addProperty('updated_at', array('type' => 'date', 'required' => false, 'editable' => false));
 	}
 	
 	/**

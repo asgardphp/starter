@@ -226,10 +226,13 @@ namespace Coxis\Core {
 							#maybe the loaded class uses another namespace?
 							#todo check that basename is equal
 							//~ $loadedClass = get(get_declared_classes(), sizeof(get_declared_classes())-1);
-							$res = array_values(preg_grep('/'.basename($class).'/', $diff));
+							$res = array_values(preg_grep('/'.basename($class).'/i', $diff));
 							//~ d($res, $diff);
-							$loadedClass = $res[sizeof($res)-1];
 							//~ d($loadedClass);
+							//~ if(!isset($res[sizeof($res)-1]))
+							//~ d($classes[0][1], $res, $class);
+								//~ return false;
+							$loadedClass = $res[sizeof($res)-1];
 							try {
 			//~ if($class=='BundlesManager')
 			//~ d($class, $loadedClass, array_search('Coxis\Core\BundlesManager', get_declared_classes()), array_slice(get_declared_classes(), -50));

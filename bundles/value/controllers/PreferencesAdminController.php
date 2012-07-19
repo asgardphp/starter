@@ -5,11 +5,6 @@ namespace Coxis\Bundles\Value\Controllers;
 @Prefix('admin/preferences')
 */
 class PreferencesAdminController extends AdminParentController {
-	public function configure($params=null) {
-		parent::configure($params);
-	}
-	
-	static $_model = 'preferences';
 	static $_messages = array(
 		'modified'			=>	'Préférences mises à jour avec succès.',
 	);
@@ -19,10 +14,9 @@ class PreferencesAdminController extends AdminParentController {
 		
 		$form->values = array();
 		$vars = array('name', 'email', 'head_script');
-		//~ foreach($values as $value) {
 		foreach($vars as $valueName) {
 			$value = Value::get($valueName);
-			$a = new AdminModelForm($value);
+			$a = new AdminModelForm($value, $this);
 			unset($a->key);
 			$form->values[$value->key] = $a;
 		}
