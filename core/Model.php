@@ -287,6 +287,7 @@ abstract class Model {
 							'a.'.$relation_id_field.'=b.id',
 						)
 					);
+					#todo wtf?
 					if($name == 'projects')
 				$conditions = array_merge_recursive(array('order_by'	=>	'a.'.$model::$order_by), $pre_conditions, $conditions);
 				

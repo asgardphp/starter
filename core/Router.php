@@ -5,22 +5,7 @@ class Router {
 	public static $request;
 
 	public static function dispatch($src=null) {
-		//~ import('DefaultController'); #todo not working ?
-		
-		//~ Importer::_import('DefaultController');
-		//~ d(class_exists('DefaultController'));
-		//~ d(static::$request['controller'].'Controller');
-		//~ d(static::$request);
-		
-		//~ static::$request['controller'] = 'Default';
-		//~ static::$request['action'] = 'index';
-		//~ new \DefaultController;
-		#why this does not load?
-		#and then should pass full controller namespace to method_exists
-		//~ d(static::$request);
-		
 		if(method_exists(static::$request['controller'].'Controller', static::$request['action'].'Action')) {
-		//~ d(static::$request);
 			$controllerName = ucfirst(strtolower(static::$request['controller']));
 			$controllerClassName = $controllerName.'Controller';
 			$controller = new $controllerClassName();
