@@ -35,7 +35,7 @@ CREATE TABLE `arpa_actualite` (
   `updated_at` datetime NOT NULL,
   `filename_image` text,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=14 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=16 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -44,8 +44,31 @@ CREATE TABLE `arpa_actualite` (
 
 LOCK TABLES `arpa_actualite` WRITE;
 /*!40000 ALTER TABLE `arpa_actualite` DISABLE KEYS */;
-INSERT INTO `arpa_actualite` VALUES (1,'RESEAU VOIX MIDI-PYRENEES','Le 5 novembre 2011','Foix centre universitaire.','Cette annÃ©e la JournÃ©e Mondiale de la Voix se tiendra le lundi 16 avril 2012 Ã  lâ€™Ecole SupÃ©rieure dâ€™Audiovisuel de Toulouse. Pour tÃ©lÃ©charger le programme.','<p>\r\n	Cette ann&eacute;e la Journ&eacute;e Mondiale de la Voix se tiendra le lundi 16 avril 2012 &agrave; l&rsquo;Ecole Sup&eacute;rieure d&rsquo;Audiovisuel de Toulouse. Pour t&eacute;l&eacute;charger le programme.</p>\r\n','reseau-voix-midi-pyrenees',2,'1960-10-00 00:00:00','0000-00-00 00:00:00','Chrysanthemum_17.jpg'),(2,'JOURNEE MONDIALE DE LA VOIX','','','sdfgm','<p>\r\n	Cette ann&eacute;e la Journ&eacute;e Mondiale de la Voix se tiendra le lundi 16 avril 2012 &agrave; l&rsquo;Ecole Sup&eacute;rieure d&rsquo;Audiovisuel de Toulouse.</p>\r\n','journee-mondiale-de-la-voix',1,'2008-06-00 15:37:00','2012-07-26 18:09:26','img2.jpg'),(3,'JAZZ VOCAL','Le 4 et 5 fÃ©vrier ainsi que le 28, 29 avril 2012.','','Stage jazz vocal avec Sonia Cat-Berro. Ce stage donnera lieu Ã  une premiÃ¨re partie de concert professionnel dans le cadre des \"Correspondances vocales\" accueillies par le festival \"Eclats de Voix\".','<p>\r\n	Stage jazz vocal avec Sonia Cat-Berro. Ce stage donnera lieu &agrave; une premi&egrave;re partie de concert professionnel dans le cadre des &quot;Correspondances vocales&quot; accueillies par le festival &quot;Eclats de Voix&quot;.</p>\r\n','jazz-vocal',0,'2012-07-16 13:48:16','2012-07-26 18:09:26','img3.jpg'),(4,'VOIX LA','','','Le printemps vocal du Tarn avec le festival Voix lÃ  a commencÃ©.','<p>\r\n	Le printemps vocal du Tarn avec le festival Voix l&agrave; a commenc&eacute;.</p>\r\n','voix-la',3,'2012-07-16 13:48:16','2012-07-26 18:09:26','Chrysanthemum_18.jpg'),(5,'METHODE DALCROZE','','','Formation rÃ©alisÃ©e dans le cadre du plan interdÃ©partemental de la formation Midi-PyrÃ©nÃ©es.','<p>\r\n	Formation r&eacute;alis&eacute;e dans le cadre du plan interd&eacute;partemental de la formation Midi-Pyr&eacute;n&eacute;es.</p>\r\n','methode-dalcroze',5,'2012-07-16 13:48:16','2012-07-26 18:09:26','img5.jpg'),(6,'ACTIVITES VOCALES DANS LE TARN','','','En ce dÃ©but dâ€™annÃ©e 2012, lâ€™activitÃ© vocale dans le Tarn foisonne : ateliers de dÃ©couverte et de dÃ©gustation de rÃ©pertoires, atelier de culture musicale, rÃ©pÃ©titions publiques, ateliers vocaux, ensembles qui recrutent, ou encore â€œchÅ“urs de projetâ€ qui se constituent le temps dâ€™un rÃ©pertoire bien particulier.','<p>\r\n	En ce d&eacute;but d&rsquo;ann&eacute;e 2012, l&rsquo;activit&eacute; vocale dans le Tarn foisonne : ateliers de d&eacute;couverte et de d&eacute;gustation de r&eacute;pertoires, atelier de culture musicale, r&eacute;p&eacute;titions publiques, ateliers vocaux, ensembles qui recrutent, ou encore &ldquo;ch&oelig;urs de projet&rdquo; qui se constituent le temps d&rsquo;un r&eacute;pertoire bien particulier.</p>\r\n','activites-vocales-dans-le-tarn',4,'2012-07-16 13:48:16','2012-07-26 18:09:26','img4_1.jpg');
+INSERT INTO `arpa_actualite` VALUES (1,'RESEAU VOIX MIDI-PYRENEES','Le 5 novembre 2011','Foix centre universitaire.','Cette annÃ©e la JournÃ©e Mondiale de la Voix se tiendra le lundi 16 avril 2012 Ã  lâ€™Ecole SupÃ©rieure dâ€™Audiovisuel de Toulouse. Pour tÃ©lÃ©charger le programme.','<p>\r\n	Cette ann&eacute;e la Journ&eacute;e Mondiale de la Voix se tiendra le lundi 16 avril 2012 &agrave; l&rsquo;Ecole Sup&eacute;rieure d&rsquo;Audiovisuel de Toulouse. Pour t&eacute;l&eacute;charger le programme.</p>\r\n','reseau-voix-midi-pyrenees',2,'1960-03-00 00:00:00','0000-00-00 00:00:00','Chrysanthemum_17.jpg'),(2,'JOURNEE MONDIALE DE LA VOIX','','','sdfgm','<p>\r\n	Cette ann&eacute;e la Journ&eacute;e Mondiale de la Voix se tiendra le lundi 16 avril 2012 &agrave; l&rsquo;Ecole Sup&eacute;rieure d&rsquo;Audiovisuel de Toulouse.</p>\r\n','journee-mondiale-de-la-voix',0,'2017-02-00 15:37:00','0000-00-00 00:00:00','img2.jpg'),(3,'JAZZ VOCAL','Le 4 et 5 fÃ©vrier ainsi que le 28, 29 avril 2012.','','Stage jazz vocal avec Sonia Cat-Berro. Ce stage donnera lieu Ã  une premiÃ¨re partie de concert professionnel dans le cadre des \"Correspondances vocales\" accueillies par le festival \"Eclats de Voix\".','<p>\r\n	Stage jazz vocal avec Sonia Cat-Berro. Ce stage donnera lieu &agrave; une premi&egrave;re partie de concert professionnel dans le cadre des &quot;Correspondances vocales&quot; accueillies par le festival &quot;Eclats de Voix&quot;.</p>\r\n','jazz-vocal',1,'2012-07-16 13:48:16','0000-00-00 00:00:00','img3.jpg'),(4,'VOIX LA','','','Le printemps vocal du Tarn avec le festival Voix lÃ  a commencÃ©.','<p>\r\n	Le printemps vocal du Tarn avec le festival Voix l&agrave; a commenc&eacute;.</p>\r\n','voix-la',4,'2012-07-16 13:48:16','0000-00-00 00:00:00','Chrysanthemum_18.jpg'),(5,'METHODE DALCROZE','','','Formation rÃ©alisÃ©e dans le cadre du plan interdÃ©partemental de la formation Midi-PyrÃ©nÃ©es.','<p>\r\n	Formation r&eacute;alis&eacute;e dans le cadre du plan interd&eacute;partemental de la formation Midi-Pyr&eacute;n&eacute;es.</p>\r\n','methode-dalcroze',3,'2012-07-16 13:48:16','0000-00-00 00:00:00','img5.jpg'),(6,'ACTIVITES VOCALES DANS LE TARN','','','En ce dÃ©but dâ€™annÃ©e 2012, lâ€™activitÃ© vocale dans le Tarn foisonne : ateliers de dÃ©couverte et de dÃ©gustation de rÃ©pertoires, atelier de culture musicale, rÃ©pÃ©titions publiques, ateliers vocaux, ensembles qui recrutent, ou encore â€œchÅ“urs de projetâ€ qui se constituent le temps dâ€™un rÃ©pertoire bien particulier.','<p>\r\n	En ce d&eacute;but d&rsquo;ann&eacute;e 2012, l&rsquo;activit&eacute; vocale dans le Tarn foisonne : ateliers de d&eacute;couverte et de d&eacute;gustation de r&eacute;pertoires, atelier de culture musicale, r&eacute;p&eacute;titions publiques, ateliers vocaux, ensembles qui recrutent, ou encore &ldquo;ch&oelig;urs de projet&rdquo; qui se constituent le temps d&rsquo;un r&eacute;pertoire bien particulier.</p>\r\n','activites-vocales-dans-le-tarn',5,'2012-07-16 13:48:16','0000-00-00 00:00:00','img4_1.jpg');
 /*!40000 ALTER TABLE `arpa_actualite` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `arpa_actualite_commentaire`
+--
+
+DROP TABLE IF EXISTS `arpa_actualite_commentaire`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `arpa_actualite_commentaire` (
+  `actualite_id` int(11) NOT NULL,
+  `commentaire_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `arpa_actualite_commentaire`
+--
+
+LOCK TABLES `arpa_actualite_commentaire` WRITE;
+/*!40000 ALTER TABLE `arpa_actualite_commentaire` DISABLE KEYS */;
+INSERT INTO `arpa_actualite_commentaire` VALUES (3,2),(2,0);
+/*!40000 ALTER TABLE `arpa_actualite_commentaire` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -160,6 +183,33 @@ LOCK TABLES `arpa_choeur` WRITE;
 /*!40000 ALTER TABLE `arpa_choeur` DISABLE KEYS */;
 INSERT INTO `arpa_choeur` VALUES (1,'GlÃ¼e Design','Haute-Garonne','12 rue Arnaud vidal','Toulouse','31000','05 53 68 63 18','06 65 09 16 81','gl@glue-design.com','www.glue-design.com','12 rue arnaud Vidal','Toulouse','31000','Les rÃ©pÃ©titions ont lieux tous les jours \r\nde 18h00 Ã  20h00. \r\nSauf le dimanche : pas de rÃ©pÃ©tition.','a:2:{i:0;s:18:\"ChÅ“ur dâ€™enfants\";i:1;s:18:\"ChÅ“ur dâ€™adultes\";}','','','','Llorca','Ghislain','303030303','','ghislain@llorca.com','a:2:{i:0;s:16:\"Un test de chant\";i:1;s:12:\"Un entretien\";}','a:3:{i:0;s:7:\"Baroque\";i:1;s:15:\"Chants du monde\";i:2;s:9:\"Classique\";}','glue-design','0000-00-00 00:00:00','0000-00-00 00:00:00');
 /*!40000 ALTER TABLE `arpa_choeur` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `arpa_commentaire`
+--
+
+DROP TABLE IF EXISTS `arpa_commentaire`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `arpa_commentaire` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `titre` text NOT NULL,
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL,
+  `actualite_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `arpa_commentaire`
+--
+
+LOCK TABLES `arpa_commentaire` WRITE;
+/*!40000 ALTER TABLE `arpa_commentaire` DISABLE KEYS */;
+INSERT INTO `arpa_commentaire` VALUES (2,'un com','2012-07-20 00:00:00','2012-07-27 00:00:00',3);
+/*!40000 ALTER TABLE `arpa_commentaire` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -374,7 +424,7 @@ CREATE TABLE `arpa_value` (
 
 LOCK TABLES `arpa_value` WRITE;
 /*!40000 ALTER TABLE `arpa_value` DISABLE KEYS */;
-INSERT INTO `arpa_value` VALUES (1,'name','ARPA','1967-07-00 00:00:00','2012-07-19 18:09:19'),(2,'email','leyou.m@gmail.com','1967-07-00 00:00:00','2012-07-19 18:09:19'),(3,'head_script','sdfgh','1967-07-00 00:00:00','2012-07-19 18:09:19');
+INSERT INTO `arpa_value` VALUES (1,'name','ARPA','1967-06-00 00:00:00','2012-07-19 18:34:19'),(2,'email','leyou.m@gmail.com','1967-06-00 00:00:00','2012-07-19 18:34:19'),(3,'head_script','sdfgh','1967-06-00 00:00:00','2012-07-19 18:34:19');
 /*!40000 ALTER TABLE `arpa_value` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -387,4 +437,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2012-07-20 12:01:35
+-- Dump completed on 2012-07-22 15:58:12

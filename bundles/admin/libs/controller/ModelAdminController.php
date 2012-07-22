@@ -52,7 +52,7 @@ class ModelAdminController extends AdminParentController {
 		$_models = static::$_models;
 		
 		$this->searchForm = new \Coxis\Core\Form\Form();
-		$this->searchForm->search = new Widget();
+		$this->searchForm->search = new \Coxis\Core\Form\Widget();
 	
 		//submitted
 		$i = 0;
@@ -79,13 +79,11 @@ class ModelAdminController extends AdminParentController {
 					$conditions['and']["`$key` LIKE ?"] = array('%'.$value.'%');
 		}
 		
-		list($this->$_models, $this->paginator) = \Coxis\Core\Tools\Paginator::paginate(
-			$_model,
-			isset($request['page']) ? $request['page']:1,
-			array(
-				'conditions'	=>	$conditions,
-				'order_by'	=>	isset(static::$_orderby) ? static::$_orderby:null
-			)
+		$pagination = $_model::where($conditions);
+		if(isset(static::$_orderby))
+			$pagination->orderBy(static::$_orderby);
+		list($this->$_models, $this->paginator) = $_model::where($conditions)->paginate(
+			isset($request['page']) ? $request['page']:1
 		);
 	}
 	

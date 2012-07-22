@@ -55,7 +55,7 @@ class ModelForm extends Form {
 			#todo why using _id instead of name?!
 			
 			$ids = array();
-			foreach($relation['model']::find() as $v)
+			foreach($relation['model']::all() as $v)
 				$ids[$v->id] = $v;
 					
 			if($relation['type'] == 'hasOne' || $relation['type'] == 'belongsTo') {
@@ -69,7 +69,7 @@ class ModelForm extends Form {
 			#todo hasMany?
 			elseif($relation['type'] == 'HMABT') {
 				$defaults = array();
-				foreach($this->model->getRelation($name) as $r)
+				foreach($this->model->getRelation($name)->all() as $r)
 					$defaults[] = $r->id;
 				$widget_params = array(
 					//~ 'type'	=>	'integer',

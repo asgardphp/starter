@@ -20,4 +20,7 @@ class Administrator extends Model {
 	public static function hash($pwd) {
 		return sha1(Config::get('salt').$pwd);
 	}
+		
+	public static $meta = array(
+	);
 }

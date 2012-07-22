@@ -6,6 +6,7 @@ class SortableBehaviorController extends Controller {
 	@Hook('behaviors_load_sortable')
 	**/
 	public function behaviors_load_sortableAction($modelName) {
+		$modelName::$meta['order_by'] = 'position ASC';
 		$modelName::addProperty('position', array('type' => 'integer', 'required' => true, 'editable' => false));
 	}
 	
@@ -40,24 +41,12 @@ class SortableBehaviorController extends Controller {
 	public function behaviors_presave_sortableAction($model) {
 		if($model->isNew()) {
 			try {
-				$last = Database::getInstance()->query('SELECT position FROM `'.Config::get('database', 'prefix').$model::getModelName().'` ORDER BY position ASC LIMIT 1')->fetchOne();
-				$model->position = $last['position']+1;
+				$last = $model::orderBy('position ASC')->first();
+				$model->position = $last->position+1;
 			} catch(\Exception $e) {
 				$model->position = 0;
 			}
 		}
-	}
-	
-	/**
-	@Filter('find_model')
-	**/
-	public function find_modelAction($args) {
-		list($order_by, $modelName) = $args;
-		
-		if(in_array('sortable', array_keys($modelName::$behaviors)))
-			return ' ORDER BY position ASC';
-		else
-			return '';
 	}
 	
 	public function sortableactionsAction($model) {
@@ -71,12 +60,13 @@ class SortableBehaviorController extends Controller {
 		static::reset($modelName);
 		
 		try {
-			$over_model = $modelName::findOne(array(
-				'conditions'	=>	array(
-					'position < ?'	=>	array($model->position),
-				),
-				'order_by'	=>	'position DESC'
-			));
+			//~ $over_model = $modelName::findOne(array(
+				//~ 'conditions'	=>	array(
+					//~ 'position < ?'	=>	array($model->position),
+				//~ ),
+				//~ 'order_by'	=>	'position DESC'
+			//~ ));
+			$over_model = $modelName::where(array('position < ?'=>$model->position))->orderBy('position DESC')->first();
 			
 			$old = $model->position;
 			$model->position = $over_model->position;
@@ -96,12 +86,13 @@ class SortableBehaviorController extends Controller {
 		static::reset($modelName);
 		
 		try {
-			$below_model = $modelName::findOne(array(
-				'conditions'	=>	array(
-					'position > ?'	=>	array($model->position),
-				),
-				'order_by'	=>	'position ASC'
-			));
+			//~ $below_model = $modelName::findOne(array(
+				//~ 'conditions'	=>	array(
+					//~ 'position > ?'	=>	array($model->position),
+				//~ ),
+				//~ 'order_by'	=>	'position ASC'
+			//~ ));
+			$below_model = $modelName::where(array('position > ?'=>$model->position))->orderBy('position ASC')->first();
 			
 			$old = $model->position;
 			$model->position = $below_model->position;
@@ -115,9 +106,10 @@ class SortableBehaviorController extends Controller {
 	}
 	
 	public static function reset($modelName) {
-		$all = $modelName::find(array(
-			'order_by'	=>	'position ASC'
-		));
+		//~ $all = $modelName::find(array(
+			//~ 'order_by'	=>	'position ASC'
+		//~ ));
+		$all = $modelName::orderBy('position ASC')->all();
 		
 		#reset positions
 		foreach($all as $i=>$one_model) {

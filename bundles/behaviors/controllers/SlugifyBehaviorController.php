@@ -24,7 +24,10 @@ class SlugifyBehaviorController extends Controller {
 				$model->slug = Tools::slugify($src).($inc < 2 ? '':'-'.$inc);
 				$inc++;
 			}
-			while($model::query('SELECT * FROM %table% WHERE id!=? AND slug=?', array($model->id, $model->slug)));
+			while($model::where(array(
+				'id != ?' => $model->id,
+				'slug' => $model->slug,
+			))->count());
 		}
 	}
 }

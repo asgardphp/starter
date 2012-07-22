@@ -12,19 +12,24 @@ class Paginator {
 		$this->page		= $page;
 	}
 	
-	public static function paginate($model, $page, $params=array(), $per_page=10) {
+	/*
+	public static function paginate($model, $page, $where=array(), $per_page=10) {
+	d();
 	//~ d($model);
-		$total = $model::count($params);
+		//~ $total = $model::count($params);
+		$total = $model::where($where)->count();
 		
-		$params['offset'] = ($page-1)*$per_page;
-		$params['limit'] = $per_page;
+		$offset = ($page-1)*$per_page;
+		$limit = $per_page;
 		
-		$models = $model::find($params);
+		//~ $models = $model::find($params);
+		$models = $model::where($where)->offset($offset)->limit($limit)->get();
 		
 		$paginator = new static($per_page, $total, $page);
 		
 		return array($models, $paginator);
 	}
+	*/
 	
 	public function getStart() {
 		return ($this->page-1)*$this->per_page;
@@ -82,6 +87,7 @@ class Paginator {
 		return $url.'?'.http_build_query(array_merge($_GET, array('page'=>$this->page+1)));
 	}
 	
+	#todo remove (only for arpa)
 	public function display($url) {
 		if($this->getPages() == 1)
 			return;

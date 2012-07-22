@@ -1,15 +1,7 @@
 <?php
-class Actualite extends \Coxis\Core\Model {
+class Commentaire extends \Coxis\Core\Model {
 	public static $properties = array(
 		'titre',
-		'date'    =>    array(
-			'required'    =>    false,
-		),
-		'lieu'    =>    array(
-			'required'    =>    false,
-		),
-		'introduction',
-		'contenu',
 	);
 	
 	public static $files = array(	
@@ -22,19 +14,19 @@ class Actualite extends \Coxis\Core\Model {
 	);
 	
 	public static $relationships = array(
-		'commentaires'	=>	array(
-			'model'	=>	'commentaire',
+		'actualite'	=>	array(
+			'model'	=>	'actualite',
 			'type'		=>	'HMABT',
-			//~ HMABT
 		),
 	);
 	
 	public static $behaviors = array(
-		'slugify' => true,
-		'sortable' => true,
+		//~ 'slugify' => true,
+		//~ 'sortable' => true,
 	);
 		
-	public static $meta = array();
+	public static $meta = array(
+	);
 		
 	#General
 	public function __toString() {

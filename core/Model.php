@@ -7,9 +7,7 @@ class ModelException extends \Exception {
 
 abstract class Model {
 	protected $data = array();
-	
-	public static $order_by = 'id DESC';
-	
+	public static $meta = array();
 	public static $properties = array();
 	public static $files = array();
 	public static $relationships = array();
@@ -34,13 +32,21 @@ abstract class Model {
 	}
 	
 	public function __get($name) {
-		if(Coxis::get('in_view'))
-			if(is_string($this->data[$name]))
-				return HTML::sanitize($this->data[$name]);
+		if(isset($this->data[$name]))
+			if(Coxis::get('in_view'))
+				if(is_string($this->data[$name]))
+					return HTML::sanitize($this->data[$name]);
+				else
+					return $this->data[$name];
 			else
 				return $this->data[$name];
-		else
-			return $this->data[$name];
+		elseif(array_key_exists($name, $this::$relationships)) {
+			$res = $this->getRelation($name);
+			if($res instanceof \Coxis\Core\ORM)
+				return $res->get();
+			else
+				return $res;
+		}
 	}
 	
 	public function __isset($name) {
@@ -73,6 +79,11 @@ abstract class Model {
 			else
 				return $this->getRelation($what);
 		}
+		else {
+			if(array_key_exists($name, $this::$relationships)) {
+				return $this->getRelation($name);
+			}
+		}
     }
 	
 	public static function __callStatic($name, $arguments) {
@@ -81,9 +92,7 @@ abstract class Model {
 			$property = $matches[1];
 			$val = $arguments[0];
 			try {
-				return static::findOne(array(
-					'conditions'=> array('`'.$property.'`=?' => array($val))
-				));
+				return static::getORM()->where(array($property => $val))->first();
 			}
 			catch(\Exception $e) {
 				if(is_a($e, 'DBException'))
@@ -91,12 +100,21 @@ abstract class Model {
 				return null;
 			}
 		}
+		elseif(method_exists('Coxis\Core\ORM', $name)) {
+			$orm = static::getORM();
+			//~ $order_by = Event::filter('find_model', $order_by, static::getModelName());
+			//~ if(!$order_by)
+				//~ $order_by = static::$order_by;
+			$orm->orderBy(static::$meta['order_by']);
+			
+			return call_user_func_array(array($orm, $name), $arguments);
+		}
 	}
 	
 	/* INIT AND MODEL CONFIGURATION */
 	#autoload function
 	final public static function _autoload() {
-		if(static::getClassName() == 'Coxis\Core\Model')
+		if(static::getClassName() == 'coxis\core\model')
 			return;
 		static::loadModel();
 	}
@@ -125,6 +143,12 @@ abstract class Model {
 	}
 	
 	public static function loadModel() {
+	if(!isset(static::$meta))
+		d(static::getClassName());
+	
+		if(!isset(static::$meta['order_by']))
+			static::$meta['order_by'] = 'id DESC';
+	
 		$properties = static::$properties;
 		foreach($properties as $k=>$v)
 			if(is_int($k)) {
@@ -152,10 +176,16 @@ abstract class Model {
 		//~ d(static::$behaviors);
 	
 		$model_behaviors = static::$behaviors;
+		
+	//~ if(static::getModelName() == 'commentaire')
+		//~ d($model_behaviors);
+		
 		//~ d(static::getModelName(), $model_behaviors);
 		foreach($model_behaviors as $behavior => $params)
 			if($params)
 				Event::trigger('behaviors_load_'.$behavior, static::getClassName());
+	//~ if(static::getModelName() == 'commentaire')
+		//~ d($model_behaviors, static::getClassName());
 				//~ if(static::getClassName() != "Coxis\\bundles\\value\\models\\Value")
 				//~ d(static::getClassName());
 	}
@@ -167,31 +197,8 @@ abstract class Model {
 		if(is_array($model_files))
 			foreach($model_files as $file => $params)
 				#multiple
-				if(isset($params['multiple']) && $params['multiple']) {
+				if(isset($params['multiple']) && $params['multiple'])
 					static::addProperty('filename_'.$file, array('type' => 'array', 'defaultvalue'=>array(), 'editable'=>false, 'required'=>false));
-					
-					#if the coxisadmin controller exists
-					//~ try {
-						//~ $modelName = static::getModelName();
-						//~ $admin_controller = strtolower(CoxisAdmin::getAdminControllerFor($modelName));
-						//~ $index = CoxisAdmin::getIndexFor($modelName);
-	
-						//~ #todo should handle this in bundles/_admin/ ..
-						//~ #todo be sure not to create multiple times the same hook
-						//~ Coxis::$controller_hooks[$admin_controller][] = array(
-									//~ 'route'			=>	$index.'/:id/:file/add',
-									//~ 'name'			=>	'coxis_'.$modelName.'_files_add',
-									//~ 'controller'	=>	'Multifile',
-									//~ 'action'			=>	'add'
-								//~ );
-						//~ Coxis::$controller_hooks[$admin_controller][] = array(
-									//~ 'route'			=>	$index.'/:id/:file/delete/:pos',
-									//~ 'name'			=>	'coxis_'.$modelName.'_files_delete',
-									//~ 'controller'	=>	'Multifile',
-									//~ 'action'			=>	'delete'
-								//~ );
-					//~ } catch(Exception $e) {}
-				}
 				#single
 				else
 					static::addProperty('filename_'.$file, array('type' => 'text', 'editable'=>false, 'required'=>false));
@@ -208,8 +215,13 @@ abstract class Model {
 	
 	/* MISC */
 	public function set($vars) {
-		foreach($vars as $k=>$v)
+		$props = $this->getProperties();
+		foreach($vars as $k=>$v) {
+			if(isset($props[$k]) && $props[$k]['type'] == 'date')
+				$this->$k = Date::fromDatetime($v);
+			else
 				$this->$k = $v;
+		}
 				
 		return $this;
 	}
@@ -218,7 +230,7 @@ abstract class Model {
 		return $this->data[$name];
 	}
 
-	public function getRelation($name, $params=array()) {
+	public function getRelation($name) {
 		$relationships = static::$relationships;
 		
 		if(!isset($relationships[$name]['type']) || !isset($relationships[$name]['model']))
@@ -226,8 +238,6 @@ abstract class Model {
 			
 		$relation_type = $relationships[$name]['type'];
 		$model = $relationships[$name]['model'];
-					
-		$pre_conditions = $params;
 		
 		switch($relation_type) {
 			case 'hasOne':
@@ -240,7 +250,7 @@ abstract class Model {
 				else
 					$id_field = strtolower($name).'_id';
 			
-				if(isset($this->$model) && is_object($this->$model) && get_parent_class($this->$model)=='Model'
+				if(isset($this->$model) && is_object($this->$model) && get_parent_class($this->$model)=='Model'#todo not the right way to test
 					&& isset($this->$model->id) && $this->$model->id == $this->$id_field) //if relationshp is already set and id is the same as the relationship id
 					return $this->$model;
 				else
@@ -253,71 +263,49 @@ abstract class Model {
 					
 				if(isset($relationships[$name]['link']))
 					$field_id = $relationships[$name]['link'];
-				else {				
+				else		
 					#todo recheck and think about this part..
-					
 					foreach($model::$relationships as $parent_name=>$relation)
 						if(strtolower($relation['model']) == strtolower(static::getModelName())) {
 							$field_id = strtolower($parent_name).'_id';
 							break;
 						}
-				}
-					
-				$conditions = array(
-					'conditions'	=>	array($field_id." = ?" => array($this->id))
-				);
-				$conditions = array_merge_recursive(array('order_by'	=>	$model::$order_by), $pre_conditions, $conditions);
-
-				return $model::find($conditions);
+						
+				//~ return $model::all();
+				return $model::getORM();
 			case 'HMABT':
 				if($this->isNew())
 					return array();
 					
 				$model = $relationships[$name]['model'];
 				if(strtolower(static::getModelName()) <= strtolower($model))
-					$join_table = strtolower(static::getModelName()).'_'.strtolower($model);
+					$join_table = Config::get('database', 'prefix').strtolower(static::getModelName()).'_'.strtolower($model);
 				else
-					$join_table = strtolower($model).'_'.strtolower(static::getModelName());
+					$join_table = Config::get('database', 'prefix').strtolower($model).'_'.strtolower(static::getModelName());
 				$model_id_field = strtolower(static::getModelName()).'_id';
 				$relation_id_field = strtolower($model).'_id';
 				
-				$conditions = array(
-						'conditions'	=>	array(
-							'a.'.$model_id_field.'=?'	=>	array($this->id),
-							'a.'.$relation_id_field.'=b.id',
-						)
-					);
-					#todo wtf?
-					if($name == 'projects')
-				$conditions = array_merge_recursive(array('order_by'	=>	'a.'.$model::$order_by), $pre_conditions, $conditions);
-				
-				return $model::select(
-					array(
-						'a' => $join_table, 
-						'b' => strtolower($model)
-					),
-					$conditions
-				);
+				return $model::getORM()->setTable($join_table.' as a, '.$model::getTable().' as b')
+					->where(array(
+						'a.'.$model_id_field	=>	$this->id,
+						'a.'.$relation_id_field.'=b.id',
+					));
+					//~ ->get();
 			default:	
-				throw new \Exception('Relation '.$name.' has no correct type.');
+				throw new \Exception('Relation '.$relation_type.' does not exist.');
 		}
 	}
 	
-	public function getTableName() {
-		return static::getModelName();
+	public static function getTable() {
+		return Config::get('database', 'prefix').static::getModelName();
 	}
 	
 	public static function getClassName() {
 		return strtolower(get_called_class());
+		#todo move strtolower to getModelName
 	}
 	
 	public static function getModelName() {
-	//~ if(!in_array(strtolower(get_called_class()), array("coxis\\core\\model")))
-	//~ if(!in_array(strtolower(get_called_class()), 'model'))
-	//~ d(strtolower(get_called_class()));
-	//~ d(basename(get_called_class()), get_called_class());
-	//~ d(strtolower(basename(get_called_class())));
-		//~ return strtolower(get_called_class());
 		return basename(static::getClassName());
 	}
 	
@@ -330,27 +318,25 @@ abstract class Model {
 	}
 	
 	public static function load($id) {
+		//~ if($model = static::loadFromID($id)) {
 		$model = new static;
-		
-		try {
-			$model->loadFromID($id);
+		if($model->loadFromID($id)) {
 			$model->configure();
 			return $model;
-		} catch(\Exception $e) {
-			if(is_a($e, 'DBException'))
-				throw $e;
-			return null;
 		}
+		else
+			return null;
 	}
 	
 	public function loadFromID($id) {
-		$cols = Database::getInstance()->query('SELECT * FROM `'.Config::get('database', 'prefix').$this->getTableName().'` WHERE id=?', array($id))->fetchOne();
-		//TODO: move it into Database::
-		
-		if(!$cols)
-			return null;
-		else
-			return $this->loadFromArray($cols);
+		//~ $res = static::getModelORM()->where(array('id' => $id))->first();
+		$res = static::getORM()->dal()->where(array('id' => $id))->first();
+		//~ d($res);
+		if($res) {
+			$this->set($res);
+			return true;
+		}
+		return false;
 	}
 	
 	public function loadFromArray($cols) {
@@ -387,8 +373,6 @@ abstract class Model {
 
 	
 	public static function addProperty($property, $params) {
-		//~ $modelName = static::getModelName();
-		//~ Model::$_properties[$modelName][$property] = $params;
 		static::$properties[$property] = $params;
 	}
 	
@@ -417,15 +401,10 @@ abstract class Model {
 		
 		return $vars;
 	}
-	public static function findOne($params=array()) {
-		$params['limit'] = 1;
-		$results = static::find($params);
-		if(!isset($results[0]))
-			throw new \Exception('no result');
-			
-		return $results[0];
+	
+	public static function getORM() {
+		return new ORM(static::getClassName());
 	}
-
 	
 	/* VALIDATION */
 	public function getValidator() {
@@ -545,16 +524,17 @@ abstract class Model {
 		
 		//new
 		if(!isset($this->id)) {
-			Database::getInstance()->insert($this->getTableName(), $vars);
-			$this->id = Database::getInstance()->id();
+			//~ DB::getInstance()->insert($this->getTableName(), $vars);
+			$this->id = static::getORM()->insert($vars);
 		}
 		//existing
 		elseif(sizeof($vars) > 0) {
 			#todo should update, see if working, then insert if no affected rows?
-			if(Database::getInstance()->select($this->getTableName(), array('id' => $this->id))->num())
-				Database::getInstance()->update($this->getTableName(), array('id' => $this->id), $vars);
+			$orm = static::getORM();
+			if($orm->where(array('id'=>$this->id))->count())
+				$orm->where(array('id'=>$this->id))->update($vars);
 			else
-				Database::getInstance()->insert($this->getTableName(), array_merge(array('id' => $this->id), $vars));
+				$orm->insert(array_merge(array('id' => $this->id), $vars));
 		}
 	
 		//Persist relationships
@@ -578,42 +558,54 @@ abstract class Model {
 					}
 					if(!$model_id_field)//no reverse hasOne relation
 						continue;
-				
-					Database::getInstance()->update(
-						$params['model'],
-						array($model_id_field => $this->id),
-						array($model_id_field => 0)
-					);
-					Database::getInstance()->update(
-						$params['model'],
-						array('id' => $this->$id_field),
-						array($model_id_field => $this->id)
-					);
+					
+					$model = $params['model'];
+					$model::getORM()->where(array($model_id_field => $this->id))->update(array($model_id_field => 0));
+					$model::getORM()->where(array('id' => $this->$id_field))->update(array($model_id_field => $this->id));
+					
+					//~ DB::getInstance()->update(
+						//~ $params['model'],
+						//~ array($model_id_field => $this->id),
+						//~ array($model_id_field => 0)
+					//~ );
+					//~ DB::getInstance()->update(
+						//~ $params['model'],
+						//~ array('id' => $this->$id_field),
+						//~ array($model_id_field => $this->id)
+					//~ );
 				}
 				//todo mieux faire HMABT
 				elseif($params['type'] == 'HMABT') {
+					$model = static::getModelName();
 					$id_field = $relationship.'_id';
 					//~ d($this->$id_field);
 					
 					$relation_model = $params['model'];
 					if(strtolower($model) <= strtolower($relation_model))
-						$join_table = strtolower($model).'_'.strtolower($relation_model);
+						$join_table = Config::get('database', 'prefix').strtolower($model).'_'.strtolower($relation_model);
 					else
-						$join_table = strtolower($relation_model).'_'.strtolower($model);
+						$join_table = Config::get('database', 'prefix').strtolower($relation_model).'_'.strtolower($model);
 					$model_id_field = strtolower($model).'_id';
 					$relation_id_field = strtolower($relation_model).'_id';
 					
 					//~ d($join_table, $model_id_field, $relation_id_field);
 						
-					if(isset($this->$id_field)) {				
-						Database::getInstance()->delete($join_table, array(
-							$model_id_field	=>	$this->id
-						));
+					if(isset($this->$id_field)) {
+						$dal = new DAL($join_table);
+						$dal->where(array($model_id_field	=>	$this->id))->delete();
+						//~ DAL::delete($join_table, array(
+							//~ $model_id_field	=>	$this->id
+						//~ ));
 						
+						#todo what for?
 						if(!is_array($this->$id_field))
 							$this->$id_field = array($this->$id_field);
-						foreach($this->$id_field as $relation_id)
-							Database::getInstance()->insert($join_table, array($model_id_field => $this->id, $relation_id_field => $relation_id));
+						foreach($this->$id_field as $relation_id) {
+							//~ DB::getInstance()->insert($join_table, array($model_id_field => $this->id, $relation_id_field => $relation_id));
+							$dal = new DAL($join_table);
+							$dal->insert(array($model_id_field => $this->id, $relation_id_field => $relation_id));
+							//~ DB::getInstance()->insert($join_table, array($model_id_field => $this->id, $relation_id_field => $relation_id));
+						}
 					}
 				}
 			}
@@ -631,7 +623,7 @@ abstract class Model {
 		}
 		
 		//todo delete all cascade models and files
-		return Database::getInstance()->delete($this->getTableName(), array('id' => $this->id))->affected_rows();
+		return static::getORM()->where(array('id' => $this->id))->delete();
 	}
 	
 	public static function destroyOne($id) {
@@ -641,101 +633,13 @@ abstract class Model {
 	}
 	
 	/* DB */
-	public static function select($tables, $conditions, $fields=null) {
-		$results = Database::getInstance()->select($tables, $conditions, $fields)->fetchAll();
+	public static function toModels($rows) {
+		$res = array();
 		
-		$models = array();
-		foreach($results as $result)
-			//~ $models[] = new static($result);
-			$models[] = new static($result);
+		foreach($rows as $row)
+			$res[] = new static($row);
 		
-		return $models;
-	}
-	
-	public static function find($params=array()) {
-		$conditions = '';
-		$order_by = '';
-		$limit = '';
-		
-		if(isset($params['conditions'])) {
-			$conditions = Database::formatConditions('AND', $params['conditions']);
-			if($conditions && $conditions != '()')
-				$conditions = ' WHERE '.$conditions;
-			else
-				$conditions = '';
-		}
-		
-		if(!$order_by)
-			if(isset($params['order_by']) && $params['order_by'])
-				$order_by = ' ORDER BY '.$params['order_by'];
-		
-		if(!$order_by)
-			$order_by = Event::filter('find_model', $order_by, static::getModelName());
-		
-		if(!$order_by)
-				$order_by = ' ORDER BY '.static::$order_by;
-		
-		if(isset($params['limit'])) {
-			if(isset($params['offset']))
-				$limit = ' LIMIT '.$params['offset'].', '.$params['limit'];
-			else
-				$limit = ' LIMIT '.$params['limit'];
-		}
-			
-		$sql = 'SELECT * FROM %table%';
-		$sql .= $conditions;
-		$sql .= $order_by;
-		$sql .= $limit;
-		
-		return static::query($sql);
-	}
-	
-	public static function count($params) {
-		$conditions = '';
-		$order_by = '';
-		$limit = '';
-		
-		if(isset($params['conditions'])) {
-			$conditions = Database::formatConditions('AND', $params['conditions']);
-			if($conditions && $conditions != '()')
-				$conditions = ' WHERE '.$conditions;
-			else
-				$conditions = '';
-		}
-		
-		if(isset($params['order_by']))
-			$order_by = ' ORDER BY '.$params['order_by'];
-		else
-			$order_by = ' ORDER BY '.static::$order_by;
-		
-		if(isset($params['limit']))
-			if(isset($params['offset']))
-				$limit = ' LIMIT '.$params['offset'].', '.$params['limit'];
-			else
-				$limit = ' LIMIT '.$params['limit'];
-			
-		$sql = 'SELECT count(*) as total FROM `'.Config::get('database', 'prefix').strtolower(static::getModelName()).'`';
-		$sql .= $conditions;
-		$sql .= $order_by;
-		$sql .= $limit;
-		
-		$result = Database::getInstance()->query($sql)->fetchOne();
-		return $result['total'];
-	}
-	
-	public static function query($sql, $args=array()) {
-		$db = Database::getInstance();
-		$tableName = strtolower(static::getModelName());
-		
-		$sql = str_replace('%table%', '`'.Config::get('database', 'prefix').$tableName.'`', $sql);
-		
-		$results = $db->query($sql, $args)->fetchAll();
-		
-		$models = array();
-		foreach($results as $result)
-			$models[] = new static($result);
-		
-		return $models;
+		return $res;
 	}
 	
 	/* FILES */
