@@ -2,176 +2,142 @@
 namespace Coxis\Core;
 
 class Validator {
+	private static $rules = array();
+	private static $rules_messages = array();
 	public $constrains = array();
-	public $vars = array();
+	public $messages = array();
 
-	public function setVars($vars) {
-		$this->vars = $vars;
+	public static function _autoload() {
+		static::register('same', function($attribute, $value, $params) {
+			return ($value == $params[1][$params[0]]);
+		}, 'The field ":attribute" must be same as ":param0".');
+		static::register('integer', function($attribute, $value, $params) {
+			return preg_match('/[0-9]+/', $value);
+		}, 'The field ":attribute" must be an integer.');
+		static::register('true', function($attribute, $value, $params) {
+			return (boolean)$value;
+		}, 'The field ":attribute" must be checked.');
+		static::register('required', function($attribute, $value, $params) {
+			return $value !== null && $value !== '';
+		}, 'The field ":attribute" is required.');
+		static::register('email', function($attribute, $value, $params) {
+			return filter_var($value, FILTER_VALIDATE_EMAIL);
+		}, 'The field ":attribute" must be a valid e-mail address.');
+		static::register('image', function($attribute, $value, $params) {
+			try {
+				$mime = mime_content_type($value['tmp_name']);
+				return in_array($mime, array('image/jpeg', 'image/png', 'image/gif'));
+			} catch(\ErrorException $e) {
+				return true;
+			}
+		}, 'The file ":attribute" must be an image.');
+		static::register('filerequired', function($attribute, $value, $params) {
+			return $value && file_exists($value['tmp_name']);
+		}, 'The file ":attribute" is required.');
+	}
+
+	function __construct($constrains=array(), $messages=array()) {
+		$this->setConstrains($constrains);
+		$this->setMessages($messages);
+	}
+	
+	public static function register($rule, $callback, $message=false) {
+		static::$rules[$rule] = $callback;
+		if($message)
+			static::$rules_messages[$rule] = $message;
 	}
 	
 	public function setConstrains($constrains) {
-		$cp = $constrains;
-		//todo check this part below have prioritize constrains..
-		if(isset($constrains['required'])) {
-			$v = $constrains['required'];
-			unset($constrains['required']);
-			$constrains = array_merge(array('required'=>$v), $constrains);
+		foreach($constrains as $attribute=>$attr_constrains) {
+			if(!is_array($attr_constrains))
+				$attr_constrains = array($attr_constrains);
+			foreach($attr_constrains as $k=>$v)
+				if(is_int($k)) {
+					try {
+						list($rule, $params) = explode(':', $v);
+					} catch(\ErrorException $e) {
+						$rule = $v;
+						$paramas = array();
+					}
+					$constrains[$attribute] = array();
+					$constrains[$attribute][$rule] = $params;
+				}
 		}
 		
-		foreach($constrains as $property=>$property_constrains)
-			foreach($property_constrains as $constrain=>$value)
-				if(!isset($value['condition']) || !is_array($value['condition']))
-					if($value === '')
-						$cp[$property][$constrain] = array('condition' => true);
-					else
-						$cp[$property][$constrain] = array('condition' => $value);
-		$this->constrains = $cp;
-
+		$res = array();
+		foreach($constrains as $attribute=>$attr_constrains) {
+			foreach($attr_constrains as $rule=>$params) {
+				$callback = false;
+				//~ d($rule, $params);
+				if(!is_string($params) && is_callable($params)) {
+					$callback = $params;
+					$params = array();
+				}
+				elseif(isset(static::$rules[$rule])) {
+					$callback = static::$rules[$rule];
+					if(!is_array($params))
+						$params = array($params);
+				}
+				if(!$callback)
+					continue;
+					
+				$res[$attribute][] = array(
+					'rule'	=>	$rule, 
+					'params'	=>	$params,
+					'callback'	=>	$callback,
+				);
+			}
+		}
+		$this->constrains = $res;
 		return $this;
 	}
 	
 	public function setMessages($messages) {
-		//Model Messages
-		foreach($messages as $property=>$constrains)
-			foreach($constrains as $constrain=>$message)
-				if(isset($this->constrains[$property][$constrain]))
-					$this->constrains[$property][$constrain]['message'] = $message;
-		
+		$this->messages = $messages;
 		return $this;
 	}
 
-	var $default_messages = array(
-		'max'		=>	'Le champ "%s" doit être inféreieur ou égal à %s.',
-		'min'		=>	'Le champ "%s" doit être supérieur ou égal à %s.',
-		'required'		=>	'Le champ "%s" est obligatoire.',
-		'file_required'	=>	'Le fichier "%s" est obligatoire.',
-		'length'			=>	'Le champ "%s" doit faire moins de %s caractères.',
-		'type'				=>	array(
-			'integer'	=>	'Le champ "%s" doit être un nombre.',
-			'email'	=>	'Le champ "%s" doit être une adresse email valide.'
-		),
-		'_default'		=>	'Le champ "%s" est incorrect.',
-	);
-	
-	public function isValid($var, $constrain, $condition) {
-		switch($constrain) {
-			case 'validation':
-				$model = $condition[0];
-				$function = $condition[1];
-				if(!$model->$function($var))
-					return false;
-				break;
-			case 'required':
-				if($condition && is_array($var) && sizeof($var) == 0)
-					return false;
-				elseif($condition && ($var===null || $var===''))
-					return false;
-				break;
-			case 'file_required':
-				if(!is_array($var) || !isset($var['tmp_name']) || empty($var['tmp_name']))
-					return false;
-				break;
-			case 'eq':
-				if($var !== $condition)
-					return false;
-				break;
-			case 'max':
-				if((int)$var>$condition)
-					return false;
-				break;
-			case 'min':
-				if((int)$var<$condition)
-					return false;
-				break;
-			case 'length':
-				if(strlen($var)>$condition)
-					return false;
-				break;
-			case 'type':
-				switch($condition) {
-					case 'text':
-						break;
-					case 'integer':
-						if(!preg_match('/^-?[0-9 ]*$/', $var))
-							return false;
-						break;
-					case 'email':
-						if(!preg_match('/^[\w-]+(\.[\w-]+)*@([a-z0-9-]+(\.[a-z0-9-]+)*?\.[a-z]{2,6}|(\d{1,3}\.){3}\d{1,3})(:\d{4})?$/', $var))
-							return false;
-						break;
-					case 'image':
-						if(!is_array($var) || !isset($var['tmp_name']) || empty($var['tmp_name']))
-							continue;
-						list($w, $h, $type) = getimagesize($var['tmp_name']);
-						if($type != IMAGETYPE_GIF && $type != IMAGETYPE_JPEG && $type != IMAGETYPE_PNG)
-							return false;
-						break;
-				}
-				break;
-			case 'in':
-				if($var) {
-					if(is_array($var)) {
-						foreach($var as $k=>$v) {
-							if(!in_array($v, $condition))
-								return false;
-						}
-					}
-					else{
-						if(!in_array($var, $condition))
-							return false;
-					}
-				}
-				break;
-			case 'regex':
-				if(!preg_match($condition, $var))
-					return false;
-				break;
-		}
+	public function errors($data) {
+		$missing = array_diff(array_keys($this->constrains), array_keys($data));
+		foreach($missing as $key)
+			$data[$key] = null;
 		
-		return true;
-	}
-
-	public function validate_property($property, $constrains) {
-		if(isset($this->vars[$property]))
-			$var = $this->vars[$property];
-		else
-			$var = '';
-		
-		//todo redo messages system...
-		foreach($constrains as $constrain=>$options) {
-			$condition = $options['condition'];
-			if(!$this->isValid($var, $constrain, $condition)) {
-				if(isset($options['message']))
-					$message = $options['message'];
-				//~ elseif(isset()) {
-					
-				//~ }
-				//~ Default message
-				else {
-					if(!is_array($condition) && isset($this->default_messages[$constrain]) && is_array($this->default_messages[$constrain]) && isset($this->default_messages[$constrain][$condition]))
-						$message = $this->default_messages[$constrain][$condition];
-					elseif(isset($this->default_messages[$constrain]) && !is_array($this->default_messages[$constrain]))
-						$message = $this->default_messages[$constrain];
-					else
-						$message = $this->default_messages['_default'];
-					$message = sprintf($message, $property, $condition);
-				}
-				
-				return $message;
-			}
-		}
-		
-		//~ return $errors;
-	}
-
-	public function validate($vars) {
-		$this->vars = $vars;
 		$errors = array();
+		foreach($data as $attribute=>$val)
+			$errors[] = $this->attributeError($attribute, $val, $data);
+		
+		return array_filter($errors);
+	}
 	
-		foreach($this->constrains as $property=>$property_constrains)//~ Validate each var
-			if($property_error = $this->validate_property($property, $property_constrains))//~ Check if var returns any error
-				$errors[] = $property_error;
-				
-		return $errors;
+	public function getMessage($rule, $attribute, $params) {
+		if(isset($this->messages[$attribute][$rule]))
+			$msg = $this->messages[$attribute][$rule];
+		elseif(isset($this->messages[$attribute]['_default']))
+			$msg = $this->messages[$attribute]['_default'];
+		elseif(isset($this->messages['_default']))
+			$msg = $this->messages['_default'];
+		elseif(isset(static::$rules_messages[$rule]))
+			$msg = static::$rules_messages[$rule];
+		else
+			$msg = 'The field "'.$attribute.'" is invalid.';
+		
+		$msg = str_replace(':attribute', $attribute, $msg);
+		foreach($params as $k=>$v)
+			$msg = str_replace(':param'.$k, $v, $msg);
+		
+		return $msg;
+	}
+	
+	public function attributeError($attribute, $val, $data) {
+		if(!isset($this->constrains[$attribute]))
+			return false;
+		foreach($this->constrains[$attribute] as $constrain) {
+			$rule = $constrain['rule'];
+			$callback = $constrain['callback'];
+			$params = $constrain['params'];
+			if(!call_user_func_array($callback, array($attribute, $val, array_merge($params, array($data)))))
+				return $this->getMessage($rule, $attribute, $params);
+		}
+		return false;
 	}
 }

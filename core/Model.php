@@ -28,6 +28,13 @@ abstract class Model {
 	
 	/* MAGIC METHODS */
 	public function __set($name, $value) {
+		//~ d(static::$properties);
+		if(isset(static::$properties[$name]['setFilter'])) {
+			$filter = static::$properties[$name]['setFilter'];
+			//~ $value = $filter($value);
+			//~ d($filter	);
+			$value = call_user_func_array($filter, array($value));
+		}
 		$this->data[$name] = $value;
 	}
 	
@@ -84,7 +91,7 @@ abstract class Model {
 				return $this->getRelation($name);
 			}
 		}
-    }
+	}
 	
 	public static function __callStatic($name, $arguments) {
 		if(strpos($name, 'loadBy') === 0) {
@@ -129,8 +136,8 @@ abstract class Model {
 
 	public function loadDefault() {
 		foreach(static::getProperties() as $property=>$params)
-			if(isset($params['defaultvalue']))
-				$this->$property = $params['defaultvalue'];
+			if(isset($params['default']))
+				$this->$property = $params['default'];
 			elseif($params['type'] == 'array')
 				$this->$property = array();
 			else
@@ -176,7 +183,7 @@ abstract class Model {
 			foreach($model_files as $file => $params)
 				#multiple
 				if(isset($params['multiple']) && $params['multiple'])
-					static::addProperty('filename_'.$file, array('type' => 'array', 'defaultvalue'=>array(), 'editable'=>false, 'required'=>false));
+					static::addProperty('filename_'.$file, array('type' => 'array', 'default'=>array(), 'editable'=>false, 'required'=>false));
 				#single
 				else
 					static::addProperty('filename_'.$file, array('type' => 'text', 'editable'=>false, 'required'=>false));
@@ -378,17 +385,34 @@ abstract class Model {
 	
 	/* VALIDATION */
 	public function getValidator() {
-		//~ $modelName = static::getModelName();
-		
 		$validator = new Validator();
-		$constrains = static::$properties;
 		
-		foreach($constrains as $property=>$property_constrains)
-			foreach($property_constrains as $k=>$constrain)
-				if(strtolower($k)=='validation')
-					$constrains[$property][$k] = array($this, $constrain);
+		$constrains = static::$properties;
+		foreach($constrains as $attribute=>$attribute_constrains)
+			foreach($attribute_constrains as $rule=>$params)
+				if($rule === 'type') {
+					$constrains[$attribute][$params] = array();
+					unset($constrains[$attribute]['type']);
+				}
+		foreach(static::$files as $file=>$params) {
+			$res = $params;
+			if(isset($params['required'])) {
+				$res['filerequired'] = $params['required'];
+				unset($res['required']);
+			}
+			if(isset($params['type'])) {
+				$res[$params['type']] = null;
+				unset($res['type']);
+			}
+			unset($res['dir']);
+			unset($res['multiple']);
+			$constrains[$file] = $res;
+		}
 		
 		$validator->setConstrains($constrains);
+		
+		$messages = static::$messages;
+		$validator->setMessages($messages);
 
 		return $validator;
 	}
@@ -420,21 +444,30 @@ abstract class Model {
 	}
 	
 	public function errors() {
+		$data = $this->getVars();
+		foreach(static::$files as $file=>$params)
+			if(isset($this->data[$file]))
+				$data[$file] = $this->data[$file];
+		return $this->getValidator()->errors($data);
+	
+	/*
 		#validator
 		$validator = $this->getValidator();
-		if(static::$messages)
-			$validator->setMessages(static::$messages);
-		$file_validator = $this->getFileValidator();
+		//~ if(static::$messages)
+			//~ $validator->setMessages(static::$messages);
+		//~ $file_validator = $this->getFileValidator();
 		
-		if(static::$file_messages)
-			$file_validator->setMessages(static::$file_messages);
+		//~ if(static::$file_messages)
+			//~ $file_validator->setMessages(static::$file_messages);
 			
 		$vars = $this->getVars();
 		
-		return array_merge(
-			$validator->validate($vars), 
-			$file_validator->validate($this->getFiles())
-		);
+		return $validator->errors($vars);
+		//~ return array_merge(
+			//~ $validator->validate($vars), 
+			//~ $file_validator->validate($this->getFiles())
+		//~ );
+		*/
 	}
 	
 	/* PERSISTENCE */
@@ -575,8 +608,8 @@ abstract class Model {
 	
 	public function move_files() {
 		$model_files = static::$files;
-		if(isset($this->_files) && is_array($this->_files))
-			foreach($this->_files as $file=>$arr)
+		if(isset($this->data['_files']) && is_array($this->data['_files']))
+			foreach($this->data['_files'] as $file=>$arr)
 				if(isset($model_files[$file]) && is_uploaded_file($arr['tmp_name'])) {
 					if(!isset($model_files[$file]['format']))
 						$model_files[$file]['format'] = IMAGETYPE_JPEG;
@@ -593,7 +626,7 @@ abstract class Model {
 						else
 							#todo change filename if already existing
 							#todo add it to model filename_
-							FileManager::move_uploaded($_FILES[$file]['tmp_name'], $model_files[$file]['path']);
+							FileManager::move_uploaded($_FILES[$file], $model_files[$file]['path']);
 					}
 					else {
 						#delete old file
@@ -624,9 +657,11 @@ abstract class Model {
 						}
 					}
 				}
+		//~ }
 	}
 	
 	public function setFiles($files) {
+		//~ $this->set($files);
 		$this->_files = $files;
 				
 		return $this;

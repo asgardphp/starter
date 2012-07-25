@@ -15,11 +15,8 @@ class FrontController extends Controller {
 		/* WEB RESOURCES */
 		$this->getResource();
 		
-		//~ d(\BundlesManager::$routes);
-		
 		/* BUNDLES */
 		_frontcontrollerGlobal();
-		//~ $this->load();
 		
 		if(\Coxis\Core\Config::get('phpcache')) {
 			BundlesManager::$routes = Cache::get('routing/routes');
@@ -28,10 +25,6 @@ class FrontController extends Controller {
 			if(BundlesManager::$routes && Event::$hooks_table && Event::$filters_table)
 				BundlesManager::$load_routes = false;
 		}
-		
-		//~ d(BundlesManager::$filters_table);
-		
-		//~ d(BundlesManager::$routes);
 		
 		BundlesManager::loadBundles();
 		

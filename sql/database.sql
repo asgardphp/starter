@@ -45,7 +45,7 @@ CREATE TABLE `arpa_actualite` (
 
 LOCK TABLES `arpa_actualite` WRITE;
 /*!40000 ALTER TABLE `arpa_actualite` DISABLE KEYS */;
-INSERT INTO `arpa_actualite` VALUES (2,'JOURNEE MONDIALE DE LA VOIX','','','sdfgm','<p>\r\n	Cette ann&eacute;e la Journ&eacute;e Mondiale de la Voix se tiendra le lundi 16 avril 2012 &agrave; l&rsquo;Ecole Sup&eacute;rieure d&rsquo;Audiovisuel de Toulouse.</p>\r\n','journee-mondiale-de-la-voix',1,'2010-11-00 15:37:00','0000-00-00 00:00:00','img2.jpg',2),(17,'JOURNEE MONDIALE DE LA VOIX','','','sdfgm','<p>\r\n	Cette ann&eacute;e la Journ&eacute;e Mondiale de la Voix se tiendra le lundi 16 avril 2012 &agrave; l&rsquo;Ecole Sup&eacute;rieure d&rsquo;Audiovisuel de Toulouse.</p>\r\n','journee-mondiale-de-la-voix-3',0,'2014-07-00 15:37:00','0000-00-00 00:00:00','img2.jpg',0),(18,'JOURNEE MONDIALE DE LA VOIX','','','sdfgm','<p>\r\n	Cette ann&eacute;e la Journ&eacute;e Mondiale de la Voix se tiendra le lundi 16 avril 2012 &agrave; l&rsquo;Ecole Sup&eacute;rieure d&rsquo;Audiovisuel de Toulouse.</p>\r\n','journee-mondiale-de-la-voix-4',2,'2016-06-00 15:37:00','0000-00-00 00:00:00','img2.jpg',0),(19,'JOURNEE MONDIALE DE LA VOIX','','','sdfgm','<p>\r\n	Cette ann&eacute;e la Journ&eacute;e Mondiale de la Voix se tiendra le lundi 16 avril 2012 &agrave; l&rsquo;Ecole Sup&eacute;rieure d&rsquo;Audiovisuel de Toulouse.</p>\r\n','journee-mondiale-de-la-voix-5',3,'2016-06-00 15:37:00','0000-00-00 00:00:00','img2.jpg',0),(20,'JOURNEE MONDIALE DE LA VOIX','','','sdfgm','<p>\r\n	Cette ann&eacute;e la Journ&eacute;e Mondiale de la Voix se tiendra le lundi 16 avril 2012 &agrave; l&rsquo;Ecole Sup&eacute;rieure d&rsquo;Audiovisuel de Toulouse.</p>\r\n','journee-mondiale-de-la-voix-6',4,'2016-06-00 15:37:00','0000-00-00 00:00:00','img2.jpg',0),(21,'JOURNEE MONDIALE DE LA VOIX','','','sdfgm','<p>\r\n	Cette ann&eacute;e la Journ&eacute;e Mondiale de la Voix se tiendra le lundi 16 avril 2012 &agrave; l&rsquo;Ecole Sup&eacute;rieure d&rsquo;Audiovisuel de Toulouse.</p>\r\n','journee-mondiale-de-la-voix-2',5,'2016-06-00 15:37:00','0000-00-00 00:00:00','img2.jpg',0);
+INSERT INTO `arpa_actualite` VALUES (2,'JOURNEE MONDIALE DE LA VOIX','','','sdfgm','<p>\r\n	Cette ann&eacute;e la Journ&eacute;e Mondiale de la Voix se tiendra le lundi 16 avril 2012 &agrave; l&rsquo;Ecole Sup&eacute;rieure d&rsquo;Audiovisuel de Toulouse.</p>\r\n','journee-mondiale-de-la-voix',1,'2010-11-00 15:37:00','0000-00-00 00:00:00','img2.jpg',2),(17,'JOURNEE MONDIALE DE LA VOIX','','','sdfgm','<p>\r\n	Cette ann&eacute;e la Journ&eacute;e Mondiale de la Voix se tiendra le lundi 16 avril 2012 &agrave; l&rsquo;Ecole Sup&eacute;rieure d&rsquo;Audiovisuel de Toulouse.</p>\r\n','journee-mondiale-de-la-voix-3',0,'2014-06-00 15:37:00','2012-07-16 11:28:16','img2.jpg',0),(18,'JOURNEE MONDIALE DE LA VOIX','','','sdfgm','<p>\r\n	Cette ann&eacute;e la Journ&eacute;e Mondiale de la Voix se tiendra le lundi 16 avril 2012 &agrave; l&rsquo;Ecole Sup&eacute;rieure d&rsquo;Audiovisuel de Toulouse.</p>\r\n','journee-mondiale-de-la-voix-4',2,'2016-06-00 15:37:00','0000-00-00 00:00:00','img2.jpg',0),(19,'JOURNEE MONDIALE DE LA VOIX','','','sdfgm','<p>\r\n	Cette ann&eacute;e la Journ&eacute;e Mondiale de la Voix se tiendra le lundi 16 avril 2012 &agrave; l&rsquo;Ecole Sup&eacute;rieure d&rsquo;Audiovisuel de Toulouse.</p>\r\n','journee-mondiale-de-la-voix-5',3,'2016-06-00 15:37:00','0000-00-00 00:00:00','img2.jpg',0),(20,'JOURNEE MONDIALE DE LA VOIX','','','sdfgm','<p>\r\n	Cette ann&eacute;e la Journ&eacute;e Mondiale de la Voix se tiendra le lundi 16 avril 2012 &agrave; l&rsquo;Ecole Sup&eacute;rieure d&rsquo;Audiovisuel de Toulouse.</p>\r\n','journee-mondiale-de-la-voix-6',4,'2016-06-00 15:37:00','0000-00-00 00:00:00','img2.jpg',0),(21,'JOURNEE MONDIALE DE LA VOIX','','','sdfgm','<p>\r\n	Cette ann&eacute;e la Journ&eacute;e Mondiale de la Voix se tiendra le lundi 16 avril 2012 &agrave; l&rsquo;Ecole Sup&eacute;rieure d&rsquo;Audiovisuel de Toulouse.</p>\r\n','journee-mondiale-de-la-voix-2',5,'2016-06-00 15:37:00','0000-00-00 00:00:00','img2.jpg',0);
 /*!40000 ALTER TABLE `arpa_actualite` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -240,6 +240,37 @@ LOCK TABLES `arpa_document` WRITE;
 /*!40000 ALTER TABLE `arpa_document` DISABLE KEYS */;
 INSERT INTO `arpa_document` VALUES (1,'Titre de lâ€™Ã©tude','attention le texte de ne doit pas excÃ©der les 400 caractÃ¨res. Description de lâ€™Ã©tude : attention le texte de ne doit pas excÃ©der les 400 caractÃ¨res.Description de lâ€™Ã©tude : attention le texte de ne doit pas excÃ©der les 400 caractÃ¨res. Description de lâ€™Ã©tude : attention le texte de ne doit pas excÃ©der les 400 caractÃ¨res.',0,'0000-00-00 00:00:00','0000-00-00 00:00:00','img1.png'),(2,'Titre de lâ€™Ã©tude',' attention le texte de ne doit pas excÃ©der les 400 caractÃ¨res. Description de lâ€™Ã©tude : attention le texte de ne doit pas excÃ©der les 400 caractÃ¨res.Description de lâ€™Ã©tude : attention le texte de ne doit pas excÃ©der les 400 caractÃ¨res. Description de lâ€™Ã©tude : attention le texte de ne doit pas excÃ©der les 400 caractÃ¨res.',1,'0000-00-00 00:00:00','0000-00-00 00:00:00','img3.png'),(3,'Titre de lâ€™Ã©tude',' attention le texte de ne doit pas excÃ©der les 400 caractÃ¨res. Description de lâ€™Ã©tude : attention le texte de ne doit pas excÃ©der les 400 caractÃ¨res.Description de lâ€™Ã©tude : attention le texte de ne doit pas excÃ©der les 400 caractÃ¨res. Description de lâ€™Ã©tude : attention le texte de ne doit pas excÃ©der les 400 caractÃ¨res.',1,'0000-00-00 00:00:00','0000-00-00 00:00:00','img3_1.png'),(4,'Titre de lâ€™Ã©tude','attention le texte de ne doit pas excÃ©der les 400 caractÃ¨res. Description de lâ€™Ã©tude : attention le texte de ne doit pas excÃ©der les 400 caractÃ¨res.Description de lâ€™Ã©tude : attention le texte de ne doit pas excÃ©der les 400 caractÃ¨res. Description de lâ€™Ã©tude : attention le texte de ne doit pas excÃ©der les 400 caractÃ¨res.',1,'0000-00-00 00:00:00','0000-00-00 00:00:00','img2.png');
 /*!40000 ALTER TABLE `arpa_document` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `arpa_foo`
+--
+
+DROP TABLE IF EXISTS `arpa_foo`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `arpa_foo` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `date_naissance` text NOT NULL,
+  `mot_de_passe` text NOT NULL,
+  `email` text NOT NULL,
+  `slug` text NOT NULL,
+  `position` int(11) NOT NULL,
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL,
+  `filename_image` text NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `arpa_foo`
+--
+
+LOCK TABLES `arpa_foo` WRITE;
+/*!40000 ALTER TABLE `arpa_foo` DISABLE KEYS */;
+INSERT INTO `arpa_foo` VALUES (1,'4/6/2011','a','a','a',0,'0000-00-00 00:00:00','0000-00-00 00:00:00','a:0:{}'),(2,'4/6/2011','a','a','a',1,'0000-00-00 00:00:00','0000-00-00 00:00:00','a:1:{i:0;s:4:\".jpg\";}'),(3,'4/6/2011','a','a','a',1,'2012-07-19 19:56:19','2012-07-19 19:56:19','a:1:{i:0;s:11:\"php7421.jpg\";}'),(4,'4/6/2011','a','a','a',1,'2012-07-12 20:06:12','2012-07-12 20:06:12','a:0:{}'),(5,'4/6/2011','a','a','a',1,'2012-07-23 20:06:23','2012-07-23 20:06:23','a:0:{}'),(6,'4/6/2011','a','a','a',1,'0000-00-00 00:00:00','0000-00-00 00:00:00','a:0:{}'),(7,'4/6/2011','a','a','a',1,'0000-00-00 00:00:00','0000-00-00 00:00:00','a:0:{}'),(8,'4/6/2011','a','a','a',1,'2012-07-01 20:07:01','2012-07-01 20:07:01','a:0:{}'),(9,'4/6/2011','a','a','a',1,'2012-07-19 20:07:19','2012-07-19 20:07:19','a:1:{i:0;s:20:\"Chrysanthemum_18.jpg\";}'),(10,'4/6/2011','a','a','a',1,'0000-00-00 00:00:00','0000-00-00 00:00:00','a:1:{i:0;s:20:\"Chrysanthemum_19.jpg\";}'),(11,'4/6/2011','a','a','a',1,'2012-07-11 20:11:11','2012-07-11 20:11:11','a:1:{i:0;s:20:\"Chrysanthemum_20.jpg\";}'),(12,'4/6/2011','0cc175b9c0f1b6a831c399e269772661','a','a',1,'0000-00-00 00:00:00','0000-00-00 00:00:00','a:1:{i:0;s:20:\"Chrysanthemum_21.jpg\";}');
+/*!40000 ALTER TABLE `arpa_foo` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -438,4 +469,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2012-07-25 13:18:39
+-- Dump completed on 2012-07-25 22:25:15

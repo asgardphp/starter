@@ -162,6 +162,7 @@ abstract class AbstractGroup implements \ArrayAccess, \Iterator {
 					//~ $widget->value = $this->data[$name];
 				if($widget->params['type'] == 'file') {
 					if(isset($this->files[$name]))
+						//~ $widget->value = $this->files[$name];
 						$widget->value = $this->files[$name];
 					else
 						$widget->value = null;
@@ -185,7 +186,7 @@ abstract class AbstractGroup implements \ArrayAccess, \Iterator {
 		$errors = array();
 	
 		foreach($this->widgets as $name=>$widget)
-			if(is_subclass_of($widget, 'Coxis\Core\Form\AbstractGroup')) {
+			if($widget instanceof \Coxis\Core\Form\AbstractGroup) {
 				$errors[$name] = $widget->errors();
 				if(sizeof($errors[$name]) == 0)
 					unset($errors[$name]);
@@ -202,22 +203,19 @@ abstract class AbstractGroup implements \ArrayAccess, \Iterator {
 		$messages = array();
 		
 		foreach($this->widgets as $name=>$widget)
-			if(!is_subclass_of($widget, 'Coxis\Core\Form\AbstractGroup')) {
-				if(isset($widget->params['rules']))
-					$constrains[$name] = $widget->params['rules'];
+			if($widget instanceof \Coxis\Core\Form\Widget) {
+				if(isset($widget->params['validation']))
+					$constrains[$name] = $widget->params['validation'];
 				if(isset($widget->params['messages']))
 					$messages[$name] = $widget->params['messages'];
 				if(isset($widget->params['choices']))
 					$constrains[$name]['in']	=	array_keys($widget->params['choices']);
-				//todo all constrains type.. or a better system?
 			}
 			
-		//~ d($this->widgets);
-
 		$validator->setConstrains($constrains);
 		$validator->setMessages($messages);
 
-		return $validator->validate($this->data, $this->files);
+		return $validator->errors($this->data);
 	}
 	
 	public function save() {

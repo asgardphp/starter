@@ -51,7 +51,6 @@ class ModelForm extends Form {
 				if(!in_array($name, $params['only']))
 					continue;
 					
-			//~ $property_name = $name.'_id';
 			$property_name = $name;
 			#todo why using _id instead of name?!
 			
@@ -94,9 +93,9 @@ class ModelForm extends Form {
 		$errors = array();
 		
 		if(is_subclass_of($widget, 'Coxis\Core\Form\AbstractGroup')) {
-			if(is_a($widget, 'Coxis\Core\Form\ModelForm') || is_subclass_of($widget, 'Coxis\Core\Form\ModelForm'))
+			if($widget instanceof \Coxis\Core\Form\ModelForm)
 				$errors = $widget->my_errors();
-			elseif(is_a($widget, 'Coxis\Core\Form\Form') || is_subclass_of($widget, 'Coxis\Core\Form\Form'))
+			elseif($widget instanceof \Coxis\Core\Form\Form)
 				$errors = $widget->errors();
 				
 			foreach($widget as $name=>$sub_widget) {
@@ -117,10 +116,10 @@ class ModelForm extends Form {
 	
 	public function my_errors() {
 		$data = $this->getData();
-		$res = $this->callback('pre_set', array($data));
+		$res = $this->callback('pre_test', array($data));
 		if($res)
 			$data = $res;
-		
+			
 		$this->model->set($data);
 		$this->model->setFiles($this->files);
 		$this->model->pre_save();
