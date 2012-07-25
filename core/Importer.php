@@ -238,7 +238,7 @@ namespace Coxis\Core {
 			//~ d($class, $loadedClass, array_search('Coxis\Core\BundlesManager', get_declared_classes()), array_slice(get_declared_classes(), -50));
 								class_alias($loadedClass, $class);
 								return true;
-							} catch(PHPErrorException $e) {
+							} catch(\ErrorException $e) {
 								return false;
 							}
 						}

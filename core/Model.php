@@ -320,7 +320,7 @@ abstract class Model {
 				if(static::$properties[$col]['type'] === 'array') {#php, seriously.. == 'array'
 					try {
 						$this->$col = unserialize($value);
-					} catch(PHPErrorException $e) {
+					} catch(\ErrorException $e) {
 						$this->$col = array($value);
 					}
 					if(!is_array($this->$col))

@@ -16,7 +16,7 @@ if(!defined('_ENV_'))
 function d() {
 	try {
 		while(ob_end_clean()){}
-	} catch(PHPErrorException $e) {}
+	} catch(\ErrorException $e) {}
 		
 	if(php_sapi_name() != 'cli')
 		echo '<pre>';
@@ -53,20 +53,12 @@ spl_autoload_register(array('Coxis\Core\Autoloader', 'loadClass'));
 Autoloader::preloadDir('core');
 
 /* ERRORS/EXCEPTIONS */
-class PHPErrorException extends Exception {
-	public $errno, $errstr, $errfile, $errline;
-}
 set_error_handler(function ($errno, $errstr, $errfile, $errline) {
-	$e = new PHPErrorException();
-	$e->errno = $errno;
-	$e->errstr = $errstr;
-	$e->errfile = $errfile;
-	$e->errline = $errline;
-	throw $e;
+	throw new \ErrorException($errstr, $errno, 0, $errfile, $errline);
 });
 set_exception_handler(function ($e) {
-	if(is_a($e, 'PHPErrorException')) {
-		$msg = '('.$e->errno.') '.$e->errstr.'<br>'.$e->errfile.' ('.$e->errline.')';
+	if(is_a($e, 'ErrorException')) {
+		$msg = '('.$e->getCode().') '.$e->getMessage().'<br>'.$e->getFile().' ('.$e->getLine().')';
 		$result = Error::report($msg, $e->getTrace());
 	}
 	else {

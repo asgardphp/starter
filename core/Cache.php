@@ -6,7 +6,7 @@ class Cache {
 		try {
 			require 'cache/'.$file.'.php';
 			return $cache;
-		} catch(PHPErrorException $e) {
+		} catch(\ErrorException $e) {
 			return false;
 		}
 	}
@@ -25,7 +25,7 @@ class Cache {
 			FileManager::mkdir(dirname($output));
 			file_put_contents($output, $res);
 			return true;
-		} catch(PHPErrorException $e) {
+		} catch(\ErrorException $e) {
 			return false;
 		}
 	}
