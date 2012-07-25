@@ -41,16 +41,11 @@ abstract class Model {
 			else
 				return $this->data[$name];
 		elseif(array_key_exists($name, $this::$relationships)) {
-			//~ if(isset($this->data[$name])) {
-				//~ return $this->data[$name];
-			//~ }
-			//~ else {
-				$res = $this->getRelation($name);
-				if($res instanceof \Coxis\Core\ORM)
-					return $res->get();
-				else
-					return $res;
-			//~ }
+			$res = $this->getRelation($name);
+			if($res instanceof \Coxis\Core\ORM)
+				return $res->get();
+			else
+				return $res;
 		}
 	}
 	
@@ -98,8 +93,7 @@ abstract class Model {
 			$val = $arguments[0];
 			try {
 				return static::getORM()->where(array($property => $val))->first();
-			}
-			catch(\Exception $e) {
+			} catch(\Exception $e) {
 				if(is_a($e, 'DBException'))
 					throw $e;
 				return null;
@@ -107,10 +101,6 @@ abstract class Model {
 		}
 		elseif(method_exists('Coxis\Core\ORM', $name)) {
 			$orm = static::getORM();
-			//~ $order_by = Event::filter('find_model', $order_by, static::getModelName());
-			//~ if(!$order_by)
-				//~ $order_by = static::$order_by;
-			$orm->orderBy(static::$meta['order_by']);
 			
 			return call_user_func_array(array($orm, $name), $arguments);
 		}
@@ -382,7 +372,8 @@ abstract class Model {
 	}
 	
 	public static function getORM() {
-		return new ORM(static::getClassName());
+		$orm = new ORM(static::getClassName());
+		return $orm->orderBy(static::$meta['order_by']);
 	}
 	
 	/* VALIDATION */
