@@ -51,7 +51,8 @@ class ModelForm extends Form {
 				if(!in_array($name, $params['only']))
 					continue;
 					
-			$property_name = $name.'_id';
+			//~ $property_name = $name.'_id';
+			$property_name = $name;
 			#todo why using _id instead of name?!
 			
 			$ids = array();
@@ -66,8 +67,7 @@ class ModelForm extends Form {
 				);
 				$widgets[$property_name] = new Widget($widget_params);
 			}
-			#todo hasMany?
-			elseif($relation['type'] == 'HMABT') {
+			elseif($relation['type'] == 'HMABT' || $relation['type'] == 'hasMany') {
 				$defaults = array();
 				foreach($this->model->getRelation($name)->all() as $r)
 					$defaults[] = $r->id;
@@ -79,8 +79,6 @@ class ModelForm extends Form {
 				$widgets[$property_name] = new Widget($widget_params);
 			}
 		}
-		
-		//~ d($widgets);
 		
 		parent::__construct(
 			$model->getModelName(),

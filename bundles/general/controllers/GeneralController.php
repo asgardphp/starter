@@ -74,7 +74,7 @@ class GeneralController extends Controller {
 	@Hook('start')
 	*/
 	public function initAction($params) {
-		\Coxis\Core\Tools\HTML::setTitle(\Coxis\Bundles\Value\Models\Value::val('name'));
+		//~ \Coxis\Core\Tools\HTML::setTitle(\Coxis\Bundles\Value\Models\Value::val('name'));
 		//~ HTML::setDescription('');
 		//~ HTML::setKeywords('');
 	}

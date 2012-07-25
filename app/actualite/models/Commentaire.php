@@ -5,18 +5,18 @@ class Commentaire extends \Coxis\Core\Model {
 	);
 	
 	public static $files = array(	
-		'image' => array(
-			'dir'	=>	'actualite/',
-			'type'	=>	'image',
-			'required'	=>	false,
+		//~ 'image' => array(
+			//~ 'dir'	=>	'actualite/',
+			//~ 'type'	=>	'image',
+			//~ 'required'	=>	false,
 			//~ 'multiple'	=>	true,
-		),
+		//~ ),
 	);
 	
 	public static $relationships = array(
 		'actualite'	=>	array(
 			'model'	=>	'actualite',
-			'type'		=>	'HMABT',
+			'type'		=>	'belongsTo',
 		),
 	);
 	

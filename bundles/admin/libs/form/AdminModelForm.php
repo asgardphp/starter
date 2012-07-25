@@ -23,18 +23,16 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 			$this->checkbox($widget, $options);
 		elseif($properties['type'] === 'date')
 			$this->input($widget, array_merge($options, array('class'=>'text date_picker')));
+		elseif($this->model->hasFile($widget)) {
+			$file = $this->model->getFile($widget);
+			$this->file($widget, $options);
+		}
 		else {
-			if($this->model->hasFile($widget)) {
-				$file = $this->model->getFile($widget);
-				$this->file($widget, $options);
-			}
-			else {
-				$relationships = $modelName::$relationships;
-				if(isset($relationships[$widget]))
-					$this->relation($widget, $options);
-				else
-					$this->input($widget, $options);
-			}
+			$relationships = $modelName::$relationships;
+			if(isset($relationships[$widget]))
+				$this->relation($widget, $options);
+			else
+				$this->input($widget, $options);
 		}
 			
 		return $this;
@@ -48,21 +46,23 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 	
 		$relationship = get($modelName::$relationships, $relation);
 		$relation_model = $relationship['model'];
-		$widget = $relation.'_id';
+		$widget = $relation;
 		
 		if($relationship['type'] == 'belongsTo' || $relationship['type'] == 'hasOne') {
-			
 			echo '<p>';
 			$label = isset($options['label']) ? $options['label']:ucfirst($widget);
 			//~ d($widget);
-			if(get($this->model->relationships(), $widget, 'required'))
-				$label .= '*';
 				
 			$choices = array();
-			$all = $relation_model::find();
+			$all = $relation_model::all();
 			foreach($all as $one)
 				$choices[$one->id] = $one->__toString();
-			
+				
+			if(get($this->model->relationships(), $widget, 'required'))
+				$label .= '*';
+			else
+				$choices = array(''=>'Choisir') + $choices;
+		
 			$this->$widget->label($label);
 			echo '<br>';
 			$this->$widget->select(
@@ -80,7 +80,7 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 				$label .= '*';
 				
 			$choices = array();
-			$all = $relation_model::find();
+			$all = $relation_model::all();
 			foreach($all as $one)
 				$choices[$one->id] = $one->__toString();
 			
@@ -105,7 +105,7 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 				$label .= '*';
 				
 			$choices = array();
-			$all = $relation_model::find();
+			$all = $relation_model::all();
 			foreach($all as $one)
 				$choices[$one->id] = $one->__toString();
 			

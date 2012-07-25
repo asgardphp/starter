@@ -32,7 +32,7 @@ abstract class Model {
 	}
 	
 	public function __get($name) {
-		if(isset($this->data[$name]))
+		if(in_array($name, array_keys(static::$properties)) || $name == 'id')
 			if(Coxis::get('in_view'))
 				if(is_string($this->data[$name]))
 					return HTML::sanitize($this->data[$name]);
@@ -41,11 +41,16 @@ abstract class Model {
 			else
 				return $this->data[$name];
 		elseif(array_key_exists($name, $this::$relationships)) {
-			$res = $this->getRelation($name);
-			if($res instanceof \Coxis\Core\ORM)
-				return $res->get();
-			else
-				return $res;
+			//~ if(isset($this->data[$name])) {
+				//~ return $this->data[$name];
+			//~ }
+			//~ else {
+				$res = $this->getRelation($name);
+				if($res instanceof \Coxis\Core\ORM)
+					return $res->get();
+				else
+					return $res;
+			//~ }
 		}
 	}
 	
@@ -166,30 +171,13 @@ abstract class Model {
 	
 	public static function loadBehaviors() {
 		Event::trigger('behaviors_pre_load', static::getClassName());
-	//~ try {
-		//~ d(page::$behaviors);
-		//~ }
-		//~ catch(Exception $e) {
-		//~ }
-		
-		//~ Controller::static_trigger('behaviors_load');
-		//~ d(static::$behaviors);
 	
 		$model_behaviors = static::$behaviors;
 		
-	//~ if(static::getModelName() == 'commentaire')
-		//~ d($model_behaviors);
-		
-		//~ d(static::getModelName(), $model_behaviors);
 		foreach($model_behaviors as $behavior => $params)
 			if($params)
 				Event::trigger('behaviors_load_'.$behavior, static::getClassName());
-	//~ if(static::getModelName() == 'commentaire')
-		//~ d($model_behaviors, static::getClassName());
-				//~ if(static::getClassName() != "Coxis\\bundles\\value\\models\\Value")
-				//~ d(static::getClassName());
 	}
-	//todo add properties on the fly when saving?
 	
 	public static function loadFiles() {
 		$model_files = static::$files;
@@ -209,8 +197,10 @@ abstract class Model {
 		
 		if(is_array($model_relationships))
 			foreach($model_relationships as $relationship => $params)
-				if($params['type'] == 'belongsTo' || $params['type'] == 'hasOne')
-					static::addProperty($relationship.'_id', array('type' => 'integer', 'required' => (isset($params['required']) && $params['required']), 'editable'=>false));
+				if($params['type'] == 'belongsTo') {
+					$rel = static::relationData(static::getModelName(), $relationship);
+					static::addProperty($rel['link'], array('type' => 'integer', 'required' => (isset($params['required']) && $params['required']), 'editable'=>false));
+				}
 	}
 	
 	/* MISC */
@@ -229,68 +219,57 @@ abstract class Model {
 	public function raw($name) {
 		return $this->data[$name];
 	}
+	
+	public static function relationData($model, $name) {
+		$relations = $model::$relationships;
+		$relation = $relations[$name];
+		
+		$res = array();
+		$res['type'] = $relation['type'];
+		$res['model'] = $relation_model = $relation['model'];
+		if($res['type'] == 'hasMany')
+			$res['link'] = $model::getModelName().'_id';
+		elseif($res['type'] == 'HMABT') {
+			$res['link_a'] = $model::getModelName().'_id';
+			$res['link_b'] = $relation_model::getModelName().'_id';
+			if($model::getModelName() < $relation_model::getModelName())
+				$res['join_table'] = Config::get('database', 'prefix').$model::getModelName().'_'.$relation_model::getModelName();
+			else
+				$res['join_table'] = Config::get('database', 'prefix').$relation_model::getModelName().'_'.$model::getModelName();
+		}
+		elseif($res['type'] == 'hasOne')
+			$res['link'] = $model::getModelName().'_id';
+		elseif($res['type'] == 'belongsTo')
+			$res['link'] = $relation_model::getModelName().'_id';
+		
+		return $res;
+	}
 
 	public function getRelation($name) {
-		$relationships = static::$relationships;
-		
-		if(!isset($relationships[$name]['type']) || !isset($relationships[$name]['model']))
-			throw new \Exception('Relation '.$name.' does not exists or is not set properly.');
-			
-		$relation_type = $relationships[$name]['type'];
-		$model = $relationships[$name]['model'];
+		$rel = static::relationData($this, $name);
+		$relation_type = $rel['type'];
+		$model = $rel['model'];
 		
 		switch($relation_type) {
 			case 'hasOne':
+				if($this->isNew())
+					return null;
+					
+				$link = $rel['link'];
+				return $model::where(array($link.' = ?' => $this->id))->first();
 			case 'belongsTo':
 				if($this->isNew())
 					return null;
 					
-				if(isset($relationships[$name]['link']))
-					$field_id = $relationships[$name]['link'];
-				else
-					$id_field = strtolower($name).'_id';
-			
-				if(isset($this->$model) && is_object($this->$model) && get_parent_class($this->$model)=='Model'#todo not the right way to test
-					&& isset($this->$model->id) && $this->$model->id == $this->$id_field) //if relationshp is already set and id is the same as the relationship id
-					return $this->$model;
-				else
-					return $model::load($this->$id_field);
+				$link = $rel['link'];
+				return $model::where(array('id = ?' => $this->$link))->first();
 			case 'hasMany':
-				if($this->isNew())
-					return array();
-					
-				$model = $relationships[$name]['model'];
-					
-				if(isset($relationships[$name]['link']))
-					$field_id = $relationships[$name]['link'];
-				else		
-					#todo recheck and think about this part..
-					foreach($model::$relationships as $parent_name=>$relation)
-						if(strtolower($relation['model']) == strtolower(static::getModelName())) {
-							$field_id = strtolower($parent_name).'_id';
-							break;
-						}
-						
-				//~ return $model::all();
-				return $model::getORM();
 			case 'HMABT':
 				if($this->isNew())
 					return array();
 					
-				$model = $relationships[$name]['model'];
-				if(strtolower(static::getModelName()) <= strtolower($model))
-					$join_table = Config::get('database', 'prefix').strtolower(static::getModelName()).'_'.strtolower($model);
-				else
-					$join_table = Config::get('database', 'prefix').strtolower($model).'_'.strtolower(static::getModelName());
-				$model_id_field = strtolower(static::getModelName()).'_id';
-				$relation_id_field = strtolower($model).'_id';
-				
-				return $model::getORM()->setTable($join_table.' as a, '.$model::getTable().' as b')
-					->where(array(
-						'a.'.$model_id_field	=>	$this->id,
-						'a.'.$relation_id_field.'=b.id',
-					));
-					//~ ->get();
+				$collection = new Collection($this, $name);
+				return $collection;
 			default:	
 				throw new \Exception('Relation '.$relation_type.' does not exist.');
 		}
@@ -467,10 +446,6 @@ abstract class Model {
 		);
 	}
 	
-	//~ public static function getStatic($model, $attr) {
-		//~ return $model::$attr;
-	//~ }
-	
 	/* PERSISTENCE */
 	public function save($params=null, $force=false) {
 		$this->pre_save($params);
@@ -507,9 +482,20 @@ abstract class Model {
 		
 		$vars = $this->getVars();
 		
+		//Persist local id field
+		foreach(static::$relationships as $relationship => $params) {
+			if(!isset($this->data[$relationship]))
+				continue;
+			$rel = static::relationData($this, $relationship);
+			$type = $rel['type'];
+			if($type == 'belongsTo') {
+				$link = $rel['link'];
+				$vars[$link] = $this->data[$relationship];
+			}
+		}
+		
 		#apply filters before saving
 		foreach($vars as $col => $var) {
-			//~ $model = static::getModelName();
 			if(isset(static::$properties[$col]['filter'])) {
 				$filter = static::$properties[$col]['filter']['to'];
 				$vars[$col] = static::$filter($var);
@@ -524,90 +510,30 @@ abstract class Model {
 		
 		//new
 		if(!isset($this->id)) {
-			//~ DB::getInstance()->insert($this->getTableName(), $vars);
 			$this->id = static::getORM()->insert($vars);
 		}
 		//existing
 		elseif(sizeof($vars) > 0) {
-			#todo should update, see if working, then insert if no affected rows?
 			$orm = static::getORM();
-			if($orm->where(array('id'=>$this->id))->count())
-				$orm->where(array('id'=>$this->id))->update($vars);
-			else
+			if(!$orm->where(array('id'=>$this->id))->update($vars))
 				$orm->insert(array_merge(array('id' => $this->id), $vars));
 		}
 	
 		//Persist relationships
-		$relationships = static::$relationships;
-		if(is_array($relationships)) {
-			foreach($relationships as $relationship => $params) {
-				if($params['type'] == 'hasOne') {
-					//todo find a better way to link two hasOne models..
-					$relation_model = $params['model'];
-					$rels = $relation_model::$relationships;
-					//~ d($rels);
-					
-					$id_field = $relationship.'_id';
-					//~ $model_id_field = strtolower($model).'_id';
-					$model_id_field = false;
-					
-					foreach($rels as $name=>$rel) {
-						if($rel['type'] == 'hasOne' && strtolower($rel['model']) == $this->getModelName()) {
-							$model_id_field = strtolower($name).'_id';
-						}
-					}
-					if(!$model_id_field)//no reverse hasOne relation
-						continue;
-					
-					$model = $params['model'];
-					$model::getORM()->where(array($model_id_field => $this->id))->update(array($model_id_field => 0));
-					$model::getORM()->where(array('id' => $this->$id_field))->update(array($model_id_field => $this->id));
-					
-					//~ DB::getInstance()->update(
-						//~ $params['model'],
-						//~ array($model_id_field => $this->id),
-						//~ array($model_id_field => 0)
-					//~ );
-					//~ DB::getInstance()->update(
-						//~ $params['model'],
-						//~ array('id' => $this->$id_field),
-						//~ array($model_id_field => $this->id)
-					//~ );
-				}
-				//todo mieux faire HMABT
-				elseif($params['type'] == 'HMABT') {
-					$model = static::getModelName();
-					$id_field = $relationship.'_id';
-					//~ d($this->$id_field);
-					
-					$relation_model = $params['model'];
-					if(strtolower($model) <= strtolower($relation_model))
-						$join_table = Config::get('database', 'prefix').strtolower($model).'_'.strtolower($relation_model);
-					else
-						$join_table = Config::get('database', 'prefix').strtolower($relation_model).'_'.strtolower($model);
-					$model_id_field = strtolower($model).'_id';
-					$relation_id_field = strtolower($relation_model).'_id';
-					
-					//~ d($join_table, $model_id_field, $relation_id_field);
-						
-					if(isset($this->$id_field)) {
-						$dal = new DAL($join_table);
-						$dal->where(array($model_id_field	=>	$this->id))->delete();
-						//~ DAL::delete($join_table, array(
-							//~ $model_id_field	=>	$this->id
-						//~ ));
-						
-						#todo what for?
-						if(!is_array($this->$id_field))
-							$this->$id_field = array($this->$id_field);
-						foreach($this->$id_field as $relation_id) {
-							//~ DB::getInstance()->insert($join_table, array($model_id_field => $this->id, $relation_id_field => $relation_id));
-							$dal = new DAL($join_table);
-							$dal->insert(array($model_id_field => $this->id, $relation_id_field => $relation_id));
-							//~ DB::getInstance()->insert($join_table, array($model_id_field => $this->id, $relation_id_field => $relation_id));
-						}
-					}
-				}
+		foreach(static::$relationships as $relationship => $params) {
+			if(!isset($this->data[$relationship]))
+				continue;
+			$rel = static::relationData($this, $relationship);
+			$type = $rel['type'];
+				
+			if($type == 'hasOne') {
+				$relation_model = $rel['model'];
+				$link = $rel['link'];
+				$relation_model::where(array($link.' = ?' => $this->id))->update(array($link => 0));
+				$relation_model::where(array('id = ?' => $this->data[$relationship]))->update(array($link => $this->id));
+			}
+			elseif($type == 'hasMany' || $type == 'HMABT') {
+				$this->$relationship()->sync($this->data[$relationship]);
 			}
 		}
 	}
@@ -658,7 +584,7 @@ abstract class Model {
 	
 	public function move_files() {
 		$model_files = static::$files;
-		if(isset($this->_files))
+		if(isset($this->_files) && is_array($this->_files))
 			foreach($this->_files as $file=>$arr)
 				if(isset($model_files[$file]) && is_uploaded_file($arr['tmp_name'])) {
 					if(!isset($model_files[$file]['format']))

@@ -34,8 +34,9 @@ CREATE TABLE `arpa_actualite` (
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `filename_image` text,
+  `commentaire_id` int(1) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=16 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=24 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -44,7 +45,7 @@ CREATE TABLE `arpa_actualite` (
 
 LOCK TABLES `arpa_actualite` WRITE;
 /*!40000 ALTER TABLE `arpa_actualite` DISABLE KEYS */;
-INSERT INTO `arpa_actualite` VALUES (1,'RESEAU VOIX MIDI-PYRENEES','Le 5 novembre 2011','Foix centre universitaire.','Cette annÃ©e la JournÃ©e Mondiale de la Voix se tiendra le lundi 16 avril 2012 Ã  lâ€™Ecole SupÃ©rieure dâ€™Audiovisuel de Toulouse. Pour tÃ©lÃ©charger le programme.','<p>\r\n	Cette ann&eacute;e la Journ&eacute;e Mondiale de la Voix se tiendra le lundi 16 avril 2012 &agrave; l&rsquo;Ecole Sup&eacute;rieure d&rsquo;Audiovisuel de Toulouse. Pour t&eacute;l&eacute;charger le programme.</p>\r\n','reseau-voix-midi-pyrenees',2,'1960-03-00 00:00:00','0000-00-00 00:00:00','Chrysanthemum_17.jpg'),(2,'JOURNEE MONDIALE DE LA VOIX','','','sdfgm','<p>\r\n	Cette ann&eacute;e la Journ&eacute;e Mondiale de la Voix se tiendra le lundi 16 avril 2012 &agrave; l&rsquo;Ecole Sup&eacute;rieure d&rsquo;Audiovisuel de Toulouse.</p>\r\n','journee-mondiale-de-la-voix',0,'2017-02-00 15:37:00','0000-00-00 00:00:00','img2.jpg'),(3,'JAZZ VOCAL','Le 4 et 5 fÃ©vrier ainsi que le 28, 29 avril 2012.','','Stage jazz vocal avec Sonia Cat-Berro. Ce stage donnera lieu Ã  une premiÃ¨re partie de concert professionnel dans le cadre des \"Correspondances vocales\" accueillies par le festival \"Eclats de Voix\".','<p>\r\n	Stage jazz vocal avec Sonia Cat-Berro. Ce stage donnera lieu &agrave; une premi&egrave;re partie de concert professionnel dans le cadre des &quot;Correspondances vocales&quot; accueillies par le festival &quot;Eclats de Voix&quot;.</p>\r\n','jazz-vocal',1,'2012-07-16 13:48:16','0000-00-00 00:00:00','img3.jpg'),(4,'VOIX LA','','','Le printemps vocal du Tarn avec le festival Voix lÃ  a commencÃ©.','<p>\r\n	Le printemps vocal du Tarn avec le festival Voix l&agrave; a commenc&eacute;.</p>\r\n','voix-la',4,'2012-07-16 13:48:16','0000-00-00 00:00:00','Chrysanthemum_18.jpg'),(5,'METHODE DALCROZE','','','Formation rÃ©alisÃ©e dans le cadre du plan interdÃ©partemental de la formation Midi-PyrÃ©nÃ©es.','<p>\r\n	Formation r&eacute;alis&eacute;e dans le cadre du plan interd&eacute;partemental de la formation Midi-Pyr&eacute;n&eacute;es.</p>\r\n','methode-dalcroze',3,'2012-07-16 13:48:16','0000-00-00 00:00:00','img5.jpg'),(6,'ACTIVITES VOCALES DANS LE TARN','','','En ce dÃ©but dâ€™annÃ©e 2012, lâ€™activitÃ© vocale dans le Tarn foisonne : ateliers de dÃ©couverte et de dÃ©gustation de rÃ©pertoires, atelier de culture musicale, rÃ©pÃ©titions publiques, ateliers vocaux, ensembles qui recrutent, ou encore â€œchÅ“urs de projetâ€ qui se constituent le temps dâ€™un rÃ©pertoire bien particulier.','<p>\r\n	En ce d&eacute;but d&rsquo;ann&eacute;e 2012, l&rsquo;activit&eacute; vocale dans le Tarn foisonne : ateliers de d&eacute;couverte et de d&eacute;gustation de r&eacute;pertoires, atelier de culture musicale, r&eacute;p&eacute;titions publiques, ateliers vocaux, ensembles qui recrutent, ou encore &ldquo;ch&oelig;urs de projet&rdquo; qui se constituent le temps d&rsquo;un r&eacute;pertoire bien particulier.</p>\r\n','activites-vocales-dans-le-tarn',5,'2012-07-16 13:48:16','0000-00-00 00:00:00','img4_1.jpg');
+INSERT INTO `arpa_actualite` VALUES (2,'JOURNEE MONDIALE DE LA VOIX','','','sdfgm','<p>\r\n	Cette ann&eacute;e la Journ&eacute;e Mondiale de la Voix se tiendra le lundi 16 avril 2012 &agrave; l&rsquo;Ecole Sup&eacute;rieure d&rsquo;Audiovisuel de Toulouse.</p>\r\n','journee-mondiale-de-la-voix',1,'2010-11-00 15:37:00','0000-00-00 00:00:00','img2.jpg',2),(17,'JOURNEE MONDIALE DE LA VOIX','','','sdfgm','<p>\r\n	Cette ann&eacute;e la Journ&eacute;e Mondiale de la Voix se tiendra le lundi 16 avril 2012 &agrave; l&rsquo;Ecole Sup&eacute;rieure d&rsquo;Audiovisuel de Toulouse.</p>\r\n','journee-mondiale-de-la-voix-3',0,'2014-09-00 15:37:00','0000-00-00 00:00:00','img2.jpg',0),(18,'JOURNEE MONDIALE DE LA VOIX','','','sdfgm','<p>\r\n	Cette ann&eacute;e la Journ&eacute;e Mondiale de la Voix se tiendra le lundi 16 avril 2012 &agrave; l&rsquo;Ecole Sup&eacute;rieure d&rsquo;Audiovisuel de Toulouse.</p>\r\n','journee-mondiale-de-la-voix-4',2,'2016-06-00 15:37:00','0000-00-00 00:00:00','img2.jpg',0),(19,'JOURNEE MONDIALE DE LA VOIX','','','sdfgm','<p>\r\n	Cette ann&eacute;e la Journ&eacute;e Mondiale de la Voix se tiendra le lundi 16 avril 2012 &agrave; l&rsquo;Ecole Sup&eacute;rieure d&rsquo;Audiovisuel de Toulouse.</p>\r\n','journee-mondiale-de-la-voix-5',3,'2016-06-00 15:37:00','0000-00-00 00:00:00','img2.jpg',0),(20,'JOURNEE MONDIALE DE LA VOIX','','','sdfgm','<p>\r\n	Cette ann&eacute;e la Journ&eacute;e Mondiale de la Voix se tiendra le lundi 16 avril 2012 &agrave; l&rsquo;Ecole Sup&eacute;rieure d&rsquo;Audiovisuel de Toulouse.</p>\r\n','journee-mondiale-de-la-voix-6',4,'2016-06-00 15:37:00','0000-00-00 00:00:00','img2.jpg',0),(21,'JOURNEE MONDIALE DE LA VOIX','','','sdfgm','<p>\r\n	Cette ann&eacute;e la Journ&eacute;e Mondiale de la Voix se tiendra le lundi 16 avril 2012 &agrave; l&rsquo;Ecole Sup&eacute;rieure d&rsquo;Audiovisuel de Toulouse.</p>\r\n','journee-mondiale-de-la-voix-2',5,'2016-06-00 15:37:00','0000-00-00 00:00:00','img2.jpg',0);
 /*!40000 ALTER TABLE `arpa_actualite` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -67,7 +68,7 @@ CREATE TABLE `arpa_actualite_commentaire` (
 
 LOCK TABLES `arpa_actualite_commentaire` WRITE;
 /*!40000 ALTER TABLE `arpa_actualite_commentaire` DISABLE KEYS */;
-INSERT INTO `arpa_actualite_commentaire` VALUES (3,2),(2,0);
+INSERT INTO `arpa_actualite_commentaire` VALUES (2,2);
 /*!40000 ALTER TABLE `arpa_actualite_commentaire` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -208,7 +209,7 @@ CREATE TABLE `arpa_commentaire` (
 
 LOCK TABLES `arpa_commentaire` WRITE;
 /*!40000 ALTER TABLE `arpa_commentaire` DISABLE KEYS */;
-INSERT INTO `arpa_commentaire` VALUES (2,'un com','2012-07-20 00:00:00','2012-07-27 00:00:00',3);
+INSERT INTO `arpa_commentaire` VALUES (2,'un com','2012-01-00 00:00:00','2012-07-09 20:24:09',2);
 /*!40000 ALTER TABLE `arpa_commentaire` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -437,4 +438,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2012-07-22 15:58:12
+-- Dump completed on 2012-07-25 12:58:40

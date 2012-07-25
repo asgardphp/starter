@@ -20,6 +20,14 @@ class DAL {
 		return $this;
 	}
 	
+	public function reset() {
+		$this->where = null;
+		$this->offset = null;
+		$this->limit = null;
+		
+		return $this;
+	}
+	
 	public function query($sql, $args) {
 		$sql = static::replace($sql, $args);
 		
@@ -29,6 +37,9 @@ class DAL {
 	public function where($conditions) {
 		if($this->where === null)
 			$this->where = array();
+			
+		if(!$conditions)
+			return $this;
 		
 		$this->where[] = static::parseConditions($conditions);
 		
@@ -186,8 +197,9 @@ class DAL {
 		$limit = $per_page;
 		
 		#late binding for non-static..
-		$dal = new DAL($this->table);
-		return $dal->where($this->where)->orderBy($this->orderBy)->offset($offset)->limit($limit)->get();
+		//~ $dal = new DAL($this->table);
+		//~ return $dal->where($this->where)->orderBy($this->orderBy)->offset($offset)->limit($limit)->get();
+		return static::where($this->where)->orderBy($this->orderBy)->offset($offset)->limit($limit)->get();
 	}
 	
 	public function update($values) {

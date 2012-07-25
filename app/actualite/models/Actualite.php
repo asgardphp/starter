@@ -24,7 +24,10 @@ class Actualite extends \Coxis\Core\Model {
 	public static $relationships = array(
 		'commentaires'	=>	array(
 			'model'	=>	'commentaire',
-			'type'		=>	'HMABT',
+			//~ 'type'		=>	'HMABT',
+			//~ 'type'		=>	'hasOne',
+			'type'		=>	'belongsTo',
+			//~ 'type'		=>	'hasMany',
 			//~ HMABT
 		),
 	);

@@ -15,17 +15,13 @@
 					
 					<?php
 					$form->start()
-																				->def('titre'
-										)
-																									->def('date'
-										)
-																									->def('lieu'
-										)
-																									->textarea('introduction')
-																									->wysiwyg('contenu')
-																									//~ ->def('slug')
-																																								->def('image')
-															
+						->def('commentaires')
+						->def('titre')
+						->def('date')
+						->def('lieu')
+						->textarea('introduction')
+						->wysiwyg('contenu')
+						//~ ->def('slug')								
 					->end();
 					?>
 					

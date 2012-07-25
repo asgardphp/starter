@@ -7,6 +7,35 @@ class ActualiteController extends Controller {
 	@Route('')
 	*/
 	public function indexAction($request) {
+		$actu = new Actualite(2);
+		//~ $actu->commentaires = array(2);
+		//~ $actu->save();
+		d($actu->commentaires);
+		/*
+		
+		$actu = new Commentaire(2);
+		$actu->actualite = 2;
+		$actu->save();
+		d($actu->actualite);
+		
+		//~ d(Commentaire::with('actualite')->get());
+		$actu = new Actualite(2);
+		//~ d($actu->commentaires()->sync(array(2)));
+		//~ $actu->commentaires()->remove(array(2));
+		//~ d($actu->commentaires()->add(2));
+		//~ d($actu->commentaires()->delete(2));
+		//~ d($actu->commentaires);
+		//~ d(Actualite::with('commentaires')->get());
+		//~ d(Commentaire::with('actualite')->get());
+		
+		//~ $actus = Actualite::with('commentaires')->get();
+		//~ d($actus[0]->commentaires);
+		d($actu->commentaires);
+		
+		$com = new Commentaire(2);
+		d($com->actualite);
+		*/
+	
 		$page = isset($request['page']) ? $request['page']:1;
 		list($this->actualites, $this->paginator) = Coxis\App\Actualite\Models\Actualite::paginate($page, 10);
 		//~ d($this->actualites);
