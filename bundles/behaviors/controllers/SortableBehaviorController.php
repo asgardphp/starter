@@ -73,7 +73,7 @@ class SortableBehaviorController extends Controller {
 			$over_model->position = $old;
 			$model->save(null, true);
 			$over_model->save(null, true);
-			Messenger::addSuccess('Ordre modifié avec succès.');
+			Flash::addSuccess('Ordre modifié avec succès.');
 		} catch(\Exception $e) {}
 		
 		Response::redirect(url_for(array($request['_controller'], 'index')))->send();
@@ -99,7 +99,7 @@ class SortableBehaviorController extends Controller {
 			$below_model->position = $old;
 			$model->save(null, true);
 			$below_model->save(null, true);
-			Messenger::addSuccess('Ordre modifié avec succès.');
+			Flash::addSuccess('Ordre modifié avec succès.');
 		} catch(\Exception $e) {}
 		
 		Response::redirect(url_for(array($request['_controller'], 'index')))->send();

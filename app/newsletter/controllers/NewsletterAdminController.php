@@ -40,11 +40,10 @@ class NewsletterAdminController extends AdminParentController {
 				$inscrits = Inscrit::find();
 				foreach($inscrits as $inscrit)
 					Email::generate($inscrit->email, $subject, Value::val('email'), '', $html)->send();
-				Messenger::getInstance()->addSuccess('Newsletter envoyée avec succès !');
+				Flash::addSuccess('Newsletter envoyée avec succès !');
 			}
-			else {
-				Messenger::getInstance()->addError($errors);
-			}
+			else
+				Flash::addError($errors);
 		}
 	}
 }

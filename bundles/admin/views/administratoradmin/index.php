@@ -26,7 +26,7 @@
 						
 						
 						<div class="block_content">
-					<?php Messenger::getInstance()->showAll() ?>
+					<?php Flash::showAll() ?>
 				
 					<form action="" method="post">
 						<table cellpadding="0" cellspacing="0" width="100%" class="sortable">

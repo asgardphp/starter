@@ -11,7 +11,7 @@
 					<?php echo !$actualite->isNew() ? $actualite:'Nouveau' ?>
 					</a></p>
 				
-					<?php Messenger::getInstance()->showAll() ?>
+					<?php Flash::showAll() ?>
 					
 					<?php
 					$form->start()

@@ -60,7 +60,7 @@ class ModelAdminController extends AdminParentController {
 			foreach($_POST['id'] as $id)
 				$i += $_model::destroyOne($id);
 		
-			Messenger::getInstance()->addSuccess(sprintf(static::$_messages['many_deleted'], $i));
+			Flash::addSuccess(sprintf(static::$_messages['many_deleted'], $i));
 		}
 		
 		$conditions = array();
@@ -102,11 +102,11 @@ class ModelAdminController extends AdminParentController {
 		if($this->form->isSent())
 			try {
 				$this->form->save();
-				Messenger::getInstance()->addSuccess(static::$_messages['modified']);
+				Flash::addSuccess(static::$_messages['modified']);
 				if(isset($_POST['send']))
 					Response::redirect('admin/'.static::$_index)->send();
 			} catch(\Coxis\Core\Form\FormException $e) {
-				Messenger::getInstance()->addError($e->errors);
+				Flash::addError($e->errors);
 			}
 		
 		$this->view = 'form.php';
@@ -126,14 +126,14 @@ class ModelAdminController extends AdminParentController {
 		if($this->form->isSent())
 			try {
 				$this->form->save();
-				Messenger::getInstance()->addSuccess(static::$_messages['created']);
+				Flash::addSuccess(static::$_messages['created']);
 				if(isset($_POST['send']))
 					Response::redirect('admin/'.static::$_index)->send();
 				else {
 					Response::redirect('admin/'.static::$_index.'/'.$this->$modelName->id.'/edit')->send();
 				}
 			} catch(\Coxis\Core\Form\FormException $e) {
-				Messenger::getInstance()->addError($e->errors);
+				Flash::addError($e->errors);
 			}
 		
 		$this->view = 'form.php';
@@ -146,8 +146,8 @@ class ModelAdminController extends AdminParentController {
 		$_model = static::$_model;
 		
 		!$_model::destroyOne($request['id']) ?
-			Messenger::getInstance()->addError(static::$_messages['unexisting']) :
-			Messenger::getInstance()->addSuccess(static::$_messages['deleted']);
+			Flash::addError(static::$_messages['unexisting']) :
+			Flash::addSuccess(static::$_messages['deleted']);
 			
 		Response::redirect('admin/'.static::$_index)->send();
 	}
@@ -162,7 +162,7 @@ class ModelAdminController extends AdminParentController {
 			$this->forward404();
 			
 		$this->$_model->deleteFile($request['file']);
-		Messenger::addSuccess('Fichier supprimé avec succès.');
+		Flash::addSuccess('Fichier supprimé avec succès.');
 		Response::redirect(static::getEditURL($this->$_model->id), false)->send();
 	}
 	
@@ -219,10 +219,10 @@ class ModelAdminController extends AdminParentController {
 		
 		try {
 			$model->setRawFilePath($request['file'], $rawpaths)->save(null, true);
-			Messenger::addSuccess('Fichier supprimé avec succès.');
+			Flash::addSuccess('Fichier supprimé avec succès.');
 			FileManager::unlink(_WEB_DIR_.'/'.$path);
 		} catch(\Exception $e) {
-			Messenger::addError('Il y a eu une erreur avec le fichier');
+			Flash::addError('Il y a eu une erreur avec le fichier');
 		}
 		
 		try {

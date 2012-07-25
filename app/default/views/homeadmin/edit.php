@@ -8,7 +8,7 @@
 				<div class="block_content">
 					<p class="breadcrumb">Home</a></p>
 				
-					<?php Messenger::getInstance()->showAll() ?>
+					<?php Flash::showAll() ?>
 					
 					<?php
 					$form->start()

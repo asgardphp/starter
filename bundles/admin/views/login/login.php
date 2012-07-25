@@ -22,7 +22,7 @@
 					</ul>
 				</div>		<!-- .block_head ends -->
 				<div class="block_content">
-					<?php Messenger::getInstance()->showAll() ?>
+					<?php Flash::showAll() ?>
 					<form action="login" method="post">
 						<p>
 							<label>Utilisateur :</label> <br />

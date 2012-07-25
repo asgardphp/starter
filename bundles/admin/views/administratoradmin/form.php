@@ -14,7 +14,7 @@
 					<?php echo !$administrator->isNew() ? $administrator:'Nouveau' ?>
 					</a></p>
 				
-					<?php Messenger::getInstance()->showAll() ?>
+					<?php Flash::showAll() ?>
 					
 					<?php
 					$form->start();

@@ -1,7 +1,7 @@
 <?php
 namespace Coxis\Core;
 
-class Messenger {
+class Flash {
 	private static $messages = array('success' => array(), 'error' => array());
 	private static $instance;
 
@@ -41,11 +41,11 @@ class Messenger {
 		static::showError();
 	}
 	
-	public static function flate_array($arr) {
+	public static function flateArray($arr) {
 		$res = array();
 		foreach($arr as $k=>$v)
 			if(is_array($v))
-				$res = array_merge($res, static::flate_array($v));
+				$res = array_merge($res, static::flateArray($v));
 			else
 				$res[] = $v;
 				
@@ -53,15 +53,14 @@ class Messenger {
 	}
 	
 	public static function showSuccess() {
-		foreach(static::flate_array(static::$messages['success']) as $msg) {
+		foreach(static::flateArray(static::$messages['success']) as $msg)
 			echo '<div class="message success"><p>'.$msg.'</p></div>'."\n";
-		}
 		static::$messages['success'] = array();	
 		static::persist();
 	}
 	
 	public static function showError() {
-		foreach(static::flate_array(static::$messages['error']) as $msg)
+		foreach(static::flateArray(static::$messages['error']) as $msg)
 			echo '<div class="message errormsg"><p>'.$msg.'</p></div>'."\n";
 		static::$messages['error'] = array();	
 		static::persist();

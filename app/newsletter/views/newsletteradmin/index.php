@@ -7,7 +7,7 @@
 				
 				<div class="block_content">
 				
-					<?php Messenger::getInstance()->showAll() ?>
+					<?php Flash::showAll() ?>
 					
 					<?php
 					$form->start();

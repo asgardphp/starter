@@ -30,10 +30,10 @@ class HomeAdminController extends AdminParentController {
 		if($this->form->isSent())
 			try {
 				$this->form->save();
-				Messenger::getInstance()->addSuccess(static::$_messages['modified']);
+				Flash::addSuccess(static::$_messages['modified']);
 			}
 			catch(FormException $e) {
-				Messenger::getInstance()->addError($e->errors);
+				Flash::addError($e->errors);
 			}
 	}
 }

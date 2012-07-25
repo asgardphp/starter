@@ -35,7 +35,7 @@ class LoginController extends Controller {
 				Response::redirect('admin')->send();
 		}
 		elseif(isset($_POST['username'])) {
-			Messenger::getInstance()->addError('Utilisateur ou mot de passe invalide.');
+			Flash::addError('Utilisateur ou mot de passe invalide.');
 		}
 	}
 	
@@ -54,7 +54,7 @@ class LoginController extends Controller {
 	public function forgottenAction($request) {
 		Email::generate(Config::get('website', 'email'), 'Mot de pase oublié', Config::get('website', 'email'), 'Votre identifiant/mot de passe : '.Config::get('admin', 'username').'/'.Config::get('admin', 'password'))->send();
 		
-		Messenger::getInstance()->addSuccess('Votre identifiant/mot de passe vous a été envoyé par mail.');
+		Flash::addSuccess('Votre identifiant/mot de passe vous a été envoyé par mail.');
 		$this->useView('login.php');
 	}
 }

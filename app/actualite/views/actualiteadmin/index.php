@@ -25,7 +25,7 @@
 						</div>	
 						<div class="block_content"> -->
 						
-							<?php \Coxis\Core\Tools\Messenger::getInstance()->showAll() ?>
+							<?php \Coxis\Core\Tools\Flash::showAll() ?>
 						
 							<form action="" method="post">
 								<table cellpadding="0" cellspacing="0" width="100%" class="sortable">
