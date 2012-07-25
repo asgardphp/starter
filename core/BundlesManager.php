@@ -138,9 +138,9 @@ class BundlesManager {
 		}
 		
 		if(\Coxis\Core\Config::get('phpcache')) {
-			\Coxis\Core\Cache::store('routing/routes', BundlesManager::$routes);
-			\Coxis\Core\Cache::store('routing/hooks', Event::$hooks_table);
-			\Coxis\Core\Cache::store('routing/filters', Event::$filters_table);
+			\Coxis\Core\Cache::set('routing/routes', BundlesManager::$routes);
+			\Coxis\Core\Cache::set('routing/hooks', Event::$hooks_table);
+			\Coxis\Core\Cache::set('routing/filters', Event::$filters_table);
 		}
 	}
 	//TODO: either set all routes or simply give specific routes

@@ -22,9 +22,9 @@ class FrontController extends Controller {
 		//~ $this->load();
 		
 		if(\Coxis\Core\Config::get('phpcache')) {
-			BundlesManager::$routes = Cache::load('routing/routes');
-			Event::$hooks_table = Cache::load('routing/hooks');
-			Event::$filters_table = Cache::load('routing/filters');
+			BundlesManager::$routes = Cache::get('routing/routes');
+			Event::$hooks_table = Cache::get('routing/hooks');
+			Event::$filters_table = Cache::get('routing/filters');
 			if(BundlesManager::$routes && Event::$hooks_table && Event::$filters_table)
 				BundlesManager::$load_routes = false;
 		}

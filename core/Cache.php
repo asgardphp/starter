@@ -2,7 +2,7 @@
 namespace Coxis\Core;
 
 class Cache {
-	public static function load($file) {
+	public static function get($file) {
 		try {
 			require 'cache/'.$file.'.php';
 			return $cache;
@@ -11,7 +11,7 @@ class Cache {
 		}
 	}
 	
-	public static function store($file, $var) {
+	public static function set($file, $var) {
 		try {
 			//~ $res = '<?php'."\n".'$cache = '.var_export($var).';';
 			if(var_export($var, true) == '')
