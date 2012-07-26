@@ -2,8 +2,7 @@
 namespace Coxis\Core;
 
 class User {
-	private static $id = null;
-	private static $role = null;
+	private static $data = array();
 	  
 	public static function start() {
 		if(!headers_sent()) {
@@ -13,34 +12,22 @@ class User {
 				session_id($_POST['PHPSESSID']);
 			session_start();
 		}
-		if(isset($_SESSION['id']) && is_numeric($_SESSION['id']))
-			static::$id = $_SESSION['id'];
-		if(isset($_SESSION['role']))
-			static::$role = $_SESSION['role'];
-	}
-	  
-	public static function getId() {
-		return static::$id;
-	}
-	  
-	public static function setId($id) {
-		$_SESSION['id'] = $id;
-		static::$id = $id;
-	}
-	  
-	public static function getRole() {
-		return static::$role;
-	}
-	  
-	public static function setRole($role) {
-		$_SESSION['role'] = $role;
-		static::$role = $role;
+		static::$data = $_SESSION;
 	}
 	
-	public static function logout() {
-		unset($_SESSION['id']);
-		static::$id = null;
-		unset($_SESSION['role']);
-		static::$role = null;
+	public static function delete($name) {
+		unset($_SESSION[$name]);
+		unset(static::$data[$name]);
+	}
+	
+	public static function get($name) {
+		if(isset(static::$data[$name]))
+			return static::$data[$name];
+		return null;
+	}
+	  
+	public static function set($name, $value) {
+		static::$data[$name] = $value;
+		$_SESSION[$name] = $value;
 	}
 }

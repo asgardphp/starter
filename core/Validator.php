@@ -11,18 +11,19 @@ class Validator {
 		static::register('same', function($attribute, $value, $params) {
 			return ($value == $params[1][$params[0]]);
 		}, 'The field ":attribute" must be same as ":param0".');
+		
 		static::register('integer', function($attribute, $value, $params) {
 			return preg_match('/[0-9]+/', $value);
 		}, 'The field ":attribute" must be an integer.');
-		static::register('true', function($attribute, $value, $params) {
-			return (boolean)$value;
-		}, 'The field ":attribute" must be checked.');
+		
 		static::register('required', function($attribute, $value, $params) {
 			return $value !== null && $value !== '';
 		}, 'The field ":attribute" is required.');
+		
 		static::register('email', function($attribute, $value, $params) {
 			return filter_var($value, FILTER_VALIDATE_EMAIL);
 		}, 'The field ":attribute" must be a valid e-mail address.');
+		
 		static::register('image', function($attribute, $value, $params) {
 			try {
 				$mime = mime_content_type($value['tmp_name']);
@@ -31,9 +32,11 @@ class Validator {
 				return true;
 			}
 		}, 'The file ":attribute" must be an image.');
+		
 		static::register('filerequired', function($attribute, $value, $params) {
 			return $value && file_exists($value['tmp_name']);
-		}, 'The file ":attribute" is required.');
+			//~ return array('aaa', 'bbb');
+		});
 	}
 
 	function __construct($constrains=array(), $messages=array()) {
@@ -68,7 +71,6 @@ class Validator {
 		foreach($constrains as $attribute=>$attr_constrains) {
 			foreach($attr_constrains as $rule=>$params) {
 				$callback = false;
-				//~ d($rule, $params);
 				if(!is_string($params) && is_callable($params)) {
 					$callback = $params;
 					$params = array();
@@ -119,7 +121,7 @@ class Validator {
 		elseif(isset(static::$rules_messages[$rule]))
 			$msg = static::$rules_messages[$rule];
 		else
-			$msg = 'The field "'.$attribute.'" is invalid.';
+			$msg = 'The field "'.$attribute.'" is incorrect.';
 		
 		$msg = str_replace(':attribute', $attribute, $msg);
 		foreach($params as $k=>$v)
@@ -135,8 +137,16 @@ class Validator {
 			$rule = $constrain['rule'];
 			$callback = $constrain['callback'];
 			$params = $constrain['params'];
-			if(!call_user_func_array($callback, array($attribute, $val, array_merge($params, array($data)))))
-				return $this->getMessage($rule, $attribute, $params);
+			$res = call_user_func_array($callback, array($attribute, $val, array_merge($params, array($data))));
+			if(is_array($res)) {
+				//~ d($res);
+				foreach($res as $name) {
+					if()
+				}
+			}
+			else
+				if(!$res)
+					return $this->getMessage($rule, $attribute, $params);
 		}
 		return false;
 	}

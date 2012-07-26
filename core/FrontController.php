@@ -49,24 +49,6 @@ class FrontController extends Controller {
 		//Send the response
 		Response::setContent($output)->send();
 	}
-	
-	#todo deprecated
-	public function load() {
-		//~ Cache::load('routes.php');
-		//~ BundlesManager::$directories[] = 'app';
-		BundlesManager::loadBundles();
-		
-		//~ require 'cache/routes.php';
-		
-		//~ echo var_export(BundlesManager::$bundles_routes);die();
-		#todo should load libs first in all bundles
-		#
-	
-		//User Session
-		User::start();
-		
-		//~ static::$loaded = true;
-	}
 
 	public function send_file($file) {
 		$mimetypes = array(

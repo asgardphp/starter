@@ -33,7 +33,7 @@ class TestController extends Controller {
 				),
 			)),
 			'conditions'			=>	new Widget(array(
-				'validation'		=>	'true',
+				'validation'		=>	'required',
 				'messages'		=>	array(
 					'true'		=>	'Vous devez accepter les conditions d\'utilisation du site.',
 				),

@@ -10,33 +10,30 @@ class LoginController extends Controller {
 	@Route('admin/login')
 	*/
 	public function loginAction($request) {
-		if(User::getId() && User::getRole()=='admin')
+		if(User::get('admin_id'))
 			Response::redirect('admin')->send();
 	
 		$administrator = null;
 		if(isset($_POST['username']))
-			$administrator = Administrator::query('SELECT * FROM %table% WHERE username=? AND password=?', array($_POST['username'], sha1(Config::get('salt').$_POST['password'])));
+			$administrator = Administrator::where(array('username' => $_POST['username'], 'password' => sha1(Config::get('salt').$_POST['password'])))->first();
 		elseif(Cookie::exist('coxis_remember')) {
 			$remember = Cookie::get('coxis_remember');
-			$administrator = Administrator::query('SELECT * FROM %table% WHERE MD5(CONCAT(username, \'-\', password))=?', array($remember));
+			$administrator = Administrator::where(array('MD5(CONCAT(username, \'-\', password))' => $remember))->first();
 		}
 		
 		if($administrator) {
-			User::setId($administrator[0]->id);
-			User::setRole('admin');
+			User::set('admin_id', $administrator->id);
 			if(isset($_POST['remember']) && $_POST['remember']=='yes') {
 				Cookie::delete('coxis_remember');
-				Cookie::set('coxis_remember', md5($administrator[0]->username.'-'.$administrator[0]->password));
+				Cookie::set('coxis_remember', md5($administrator->username.'-'.$administrator->password));
 			}
-			if(isset($_SESSION['redirect_to'])) {
+			if(isset($_SESSION['redirect_to']))
 				Response::redirect($_SESSION['redirect_to'], false)->send();
-			}
 			else
 				Response::redirect('admin')->send();
 		}
-		elseif(isset($_POST['username'])) {
+		elseif(isset($_POST['username']))
 			Flash::addError('Utilisateur ou mot de passe invalide.');
-		}
 	}
 	
 	/**
@@ -44,7 +41,7 @@ class LoginController extends Controller {
 	*/
 	public function logoutAction($request) {
 		Cookie::delete('coxis_remember');
-		User::logout();
+		User::delete('admin_id');
 		Response::redirect('')->send();
 	}
 	
