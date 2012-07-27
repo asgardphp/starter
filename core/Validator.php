@@ -3,40 +3,82 @@ namespace Coxis\Core;
 
 class Validator {
 	private static $rules = array();
-	private static $rules_messages = array();
 	public $constrains = array();
 	public $messages = array();
 
 	public static function _autoload() {
-		static::register('same', function($attribute, $value, $params) {
-			return ($value == $params[1][$params[0]]);
-		}, 'The field ":attribute" must be same as ":param0".');
+		static::register('same', function($attribute, $value, $params, $validator) {
+			$as = $params[0];
+			$as_value = $params[1][$as];
+			if($value !== $as_value) {
+				$msg = $validator->getMessage('same', $attribute, 'The field ":attribute" must be same as ":as".');
+				return Validator::format($msg, array(
+					'attribute'	=>	$attribute,
+					'as'	=>	$as,
+				));
+			}
+		});
 		
-		static::register('integer', function($attribute, $value, $params) {
-			return preg_match('/[0-9]+/', $value);
-		}, 'The field ":attribute" must be an integer.');
+		static::register('integer', function($attribute, $value, $params, $validator) {
+			if(!preg_match('/[0-9]+/', $value)) {
+				$msg = $validator->getMessage('integer', $attribute, 'The field ":attribute" must be an integer.');
+				return Validator::format($msg, array(
+					'attribute'	=>	$attribute,
+				));
+			}
+		});
 		
-		static::register('required', function($attribute, $value, $params) {
-			return $value !== null && $value !== '';
-		}, 'The field ":attribute" is required.');
+		static::register('required', function($attribute, $value, $params, $validator) {
+			$required = $params[0];
+			if(!$required)
+				return false;
+			if(!($value !== null && $value !== '')) {
+				$msg = $validator->getMessage('required', $attribute, 'The field ":attribute" is required.');
+				return Validator::format($msg, array(
+					'attribute'	=>	$attribute,
+				));
+			}
+		});
 		
-		static::register('email', function($attribute, $value, $params) {
-			return filter_var($value, FILTER_VALIDATE_EMAIL);
-		}, 'The field ":attribute" must be a valid e-mail address.');
+		static::register('email', function($attribute, $value, $params, $validator) {
+			if(!filter_var($value, FILTER_VALIDATE_EMAIL)) {
+				$msg = $validator->getMessage('email', $attribute, 'The field ":attribute" must be a valid e-mail address.');
+				return Validator::format($msg, array(
+					'attribute'	=>	$attribute,
+				));
+			}
+		});
 		
-		static::register('image', function($attribute, $value, $params) {
+		static::register('image', function($attribute, $value, $params, $validator) {
 			try {
 				$mime = mime_content_type($value['tmp_name']);
-				return in_array($mime, array('image/jpeg', 'image/png', 'image/gif'));
-			} catch(\ErrorException $e) {
-				return true;
-			}
-		}, 'The file ":attribute" must be an image.');
-		
-		static::register('filerequired', function($attribute, $value, $params) {
-			return $value && file_exists($value['tmp_name']);
-			//~ return array('aaa', 'bbb');
+				if(!in_array($mime, array('image/jpeg', 'image/png', 'image/gif'))) {
+					$msg = $validator->getMessage('image', $attribute, 'The file ":attribute" must be an image.');
+					return Validator::format($msg, array(
+						'attribute'	=>	$attribute,
+					));
+				}
+			} catch(\ErrorException $e) {}
 		});
+		
+		static::register('filerequired', function($attribute, $value, $params, $validator) {
+			$msg = false;
+			//~ d($value);
+			if(!$value)
+				$msg = $validator->getMessage('filerequired', $attribute, 'The file ":attribute" is required.');
+			elseif(!file_exists($value))
+				$msg = $validator->getMessage('fileexists', $attribute, 'The file ":attribute" does not exist.');
+			if($msg)
+				return Validator::format($msg, array(
+					'attribute'	=>	$attribute,
+				));
+		});
+	}
+	
+	public static function format($msg, $params) {
+		foreach($params as $k=>$v)
+			$msg = str_replace(':'.$k, $v, $msg);
+		return $msg;
 	}
 
 	function __construct($constrains=array(), $messages=array()) {
@@ -44,10 +86,8 @@ class Validator {
 		$this->setMessages($messages);
 	}
 	
-	public static function register($rule, $callback, $message=false) {
+	public static function register($rule, $callback) {
 		static::$rules[$rule] = $callback;
-		if($message)
-			static::$rules_messages[$rule] = $message;
 	}
 	
 	public function setConstrains($constrains) {
@@ -70,18 +110,14 @@ class Validator {
 		$res = array();
 		foreach($constrains as $attribute=>$attr_constrains) {
 			foreach($attr_constrains as $rule=>$params) {
-				$callback = false;
+				$callback = null;
 				if(!is_string($params) && is_callable($params)) {
 					$callback = $params;
 					$params = array();
 				}
-				elseif(isset(static::$rules[$rule])) {
-					$callback = static::$rules[$rule];
+				elseif(isset(static::$rules[$rule]))
 					if(!is_array($params))
 						$params = array($params);
-				}
-				if(!$callback)
-					continue;
 					
 				$res[$attribute][] = array(
 					'rule'	=>	$rule, 
@@ -91,6 +127,7 @@ class Validator {
 			}
 		}
 		$this->constrains = $res;
+		
 		return $this;
 	}
 	
@@ -101,8 +138,9 @@ class Validator {
 
 	public function errors($data) {
 		$missing = array_diff(array_keys($this->constrains), array_keys($data));
-		foreach($missing as $key)
-			$data[$key] = null;
+		if(is_array($missing))
+			foreach($missing as $key)
+				$data[$key] = null;
 		
 		$errors = array();
 		foreach($data as $attribute=>$val)
@@ -111,21 +149,17 @@ class Validator {
 		return array_filter($errors);
 	}
 	
-	public function getMessage($rule, $attribute, $params) {
+	public function getMessage($rule, $attribute, $default=null) {
 		if(isset($this->messages[$attribute][$rule]))
 			$msg = $this->messages[$attribute][$rule];
 		elseif(isset($this->messages[$attribute]['_default']))
 			$msg = $this->messages[$attribute]['_default'];
 		elseif(isset($this->messages['_default']))
 			$msg = $this->messages['_default'];
-		elseif(isset(static::$rules_messages[$rule]))
-			$msg = static::$rules_messages[$rule];
+		elseif($default)
+			$msg = $default;
 		else
 			$msg = 'The field "'.$attribute.'" is incorrect.';
-		
-		$msg = str_replace(':attribute', $attribute, $msg);
-		foreach($params as $k=>$v)
-			$msg = str_replace(':param'.$k, $v, $msg);
 		
 		return $msg;
 	}
@@ -137,17 +171,25 @@ class Validator {
 			$rule = $constrain['rule'];
 			$callback = $constrain['callback'];
 			$params = $constrain['params'];
-			$res = call_user_func_array($callback, array($attribute, $val, array_merge($params, array($data))));
-			if(is_array($res)) {
-				//~ d($res);
-				foreach($res as $name) {
-					if()
-				}
-			}
-			else
-				if(!$res)
-					return $this->getMessage($rule, $attribute, $params);
+			
+			if(!is_array($params))
+				$params = array($params);
+			$params = array_merge($params, array($data));
+			$msg = $this->error($rule, $callback, $attribute, $val, $params);
+			
+			if($msg)
+				return $msg;
 		}
 		return false;
+	}
+	
+	public function error($rule, $callback, $attribute, $val, $params) {
+		if(!isset(static::$rules[$rule]))
+			return false;
+		if(!$callback)
+			$callback = static::$rules[$rule];
+		$result = call_user_func_array($callback, array($attribute, $val, $params, $this));
+		
+		return $result;
 	}
 }

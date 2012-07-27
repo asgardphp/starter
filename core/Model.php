@@ -28,11 +28,8 @@ abstract class Model {
 	
 	/* MAGIC METHODS */
 	public function __set($name, $value) {
-		//~ d(static::$properties);
 		if(isset(static::$properties[$name]['setFilter'])) {
 			$filter = static::$properties[$name]['setFilter'];
-			//~ $value = $filter($value);
-			//~ d($filter	);
 			$value = call_user_func_array($filter, array($value));
 		}
 		$this->data[$name] = $value;
@@ -47,6 +44,10 @@ abstract class Model {
 					return $this->data[$name];
 			else
 				return $this->data[$name];
+		elseif(array_key_exists($name, $this::$files)) {
+			$file = new ModelFile($this, $name);
+			return $file;
+		}
 		elseif(array_key_exists($name, $this::$relationships)) {
 			$res = $this->getRelation($name);
 			if($res instanceof \Coxis\Core\ORM)
@@ -114,7 +115,6 @@ abstract class Model {
 	}
 	
 	/* INIT AND MODEL CONFIGURATION */
-	#autoload function
 	final public static function _autoload() {
 		if(static::getClassName() == 'coxis\core\model')
 			return;
@@ -145,9 +145,6 @@ abstract class Model {
 	}
 	
 	public static function loadModel() {
-	if(!isset(static::$meta))
-		d(static::getClassName());
-	
 		if(!isset(static::$meta['order_by']))
 			static::$meta['order_by'] = 'id DESC';
 	
@@ -277,12 +274,12 @@ abstract class Model {
 	}
 	
 	public static function getClassName() {
-		return strtolower(get_called_class());
+		return get_called_class();
 		#todo move strtolower to getModelName
 	}
 	
 	public static function getModelName() {
-		return basename(static::getClassName());
+		return strtolower(basename(static::getClassName()));
 	}
 	
 	public function isNew() {
@@ -294,7 +291,6 @@ abstract class Model {
 	}
 	
 	public static function load($id) {
-		//~ if($model = static::loadFromID($id)) {
 		$model = new static;
 		if($model->loadFromID($id)) {
 			$model->configure();
@@ -305,9 +301,7 @@ abstract class Model {
 	}
 	
 	public function loadFromID($id) {
-		//~ $res = static::getModelORM()->where(array('id' => $id))->first();
 		$res = static::getORM()->dal()->where(array('id' => $id))->first();
-		//~ d($res);
 		if($res) {
 			$this->set($res);
 			return true;
@@ -316,10 +310,8 @@ abstract class Model {
 	}
 	
 	public function loadFromArray($cols) {
-		//~ $model = static::getModelName();
 		foreach($cols as $col=>$value) {
 			if(isset(static::$properties[$col]['filter'])) {
-				//~ $filter = Model::$_properties[$model][$col]['filter']['from'];
 				$filter = static::$properties[$col]['filter']['from'];
 				$this->$col = $model::$filter($value);
 			}
@@ -333,9 +325,8 @@ abstract class Model {
 					if(!is_array($this->$col))
 						$this->$col = array();
 				}
-				elseif(static::$properties[$col]['type'] === 'date') {
-					$this->$col = \Coxis\Core\Tools\Date::fromDatetime($value);//todo with Date class
-				}
+				elseif(static::$properties[$col]['type'] === 'date')
+					$this->$col = \Coxis\Core\Tools\Date::fromDatetime($value);
 				else
 					$this->$col = $value;
 			}
@@ -385,8 +376,6 @@ abstract class Model {
 	
 	/* VALIDATION */
 	public function getValidator() {
-		$validator = new Validator();
-		
 		$constrains = static::$properties;
 		foreach($constrains as $attribute=>$attribute_constrains)
 			foreach($attribute_constrains as $rule=>$params)
@@ -409,65 +398,26 @@ abstract class Model {
 			$constrains[$file] = $res;
 		}
 		
-		$validator->setConstrains($constrains);
-		
 		$messages = static::$messages;
-		$validator->setMessages($messages);
+		
+		$validator = new Validator($constrains, $messages);
 
 		return $validator;
 	}
 	
-	public function getFileValidator() {
-		$files = static::$files;
-		
-		$file_validator = new FileValidator();
-		$constrains = $files;
-		
-		foreach($constrains as $file=>$file_constrains)
-			foreach($file_constrains as $k=>$constrain) {
-				if($this->getFilePath($file))
-					$constrains[$file]['path'] = $this->getFilePath($file);
-				else
-					$constrains[$file]['path'] = false;
-				unset($constrains[$file]['dir']);
-			}
-			
-		$file_validator->setConstrains($constrains);
-		
-		return $file_validator;
-	}
-	
 	public function isValid($file) {
-		$file_validator = $this->getFileValidator();
-		
-		return !$file_validator->validate($this->getFiles());
+		return $this->getValidator()->errors();
 	}
 	
 	public function errors() {
 		$data = $this->getVars();
 		foreach(static::$files as $file=>$params)
-			if(isset($this->data[$file]))
-				$data[$file] = $this->data[$file];
+			if(isset($this->data[$file]['tmp_name']))
+				$data[$file] = $this->data[$file]['tmp_name'];
+			else
+				$data[$file] = 'web/'.$this->$file->get();
+				
 		return $this->getValidator()->errors($data);
-	
-	/*
-		#validator
-		$validator = $this->getValidator();
-		//~ if(static::$messages)
-			//~ $validator->setMessages(static::$messages);
-		//~ $file_validator = $this->getFileValidator();
-		
-		//~ if(static::$file_messages)
-			//~ $file_validator->setMessages(static::$file_messages);
-			
-		$vars = $this->getVars();
-		
-		return $validator->errors($vars);
-		//~ return array_merge(
-			//~ $validator->validate($vars), 
-			//~ $file_validator->validate($this->getFiles())
-		//~ );
-		*/
 	}
 	
 	/* PERSISTENCE */
@@ -563,14 +513,8 @@ abstract class Model {
 	}
 	
 	public function destroy() {
-		foreach(static::$files as $name=>$v) {
-			$path = $this->getFilePath($name);
-			if(is_array($path))
-				foreach($path as $file)
-					FileManager::unlink($file);
-			else
-				FileManager::unlink($path);
-		}
+		foreach(static::$files as $name=>$v)
+			$this->$name->delete();
 		
 		//todo delete all cascade models and files
 		return static::getORM()->where(array('id' => $this->id))->delete();
@@ -582,185 +526,24 @@ abstract class Model {
 		return false;
 	}
 	
-	/* DB */
-	public static function toModels($rows) {
-		$res = array();
-		
-		foreach($rows as $row)
-			$res[] = new static($row);
-		
-		return $res;
-	}
-	
 	/* FILES */
-	public function deleteFile($file) {
-		$params = $this->getFile($file);
-		if(isset($params['multiple']) && $params['multiple'])
-			return;
-			
-		$path = $this->getFilepath($file);
-		if(file_exists(_WEB_DIR_.'/'.$path))
-			unlink(_WEB_DIR_.'/'.$path);
-		ImageCache::clearFile($path);
-		$file_property = 'filename_'.$file;
-		$this->$file_property = '';
-	}
-	
 	public function move_files() {
 		$model_files = static::$files;
 		if(isset($this->data['_files']) && is_array($this->data['_files']))
 			foreach($this->data['_files'] as $file=>$arr)
-				if(isset($model_files[$file]) && is_uploaded_file($arr['tmp_name'])) {
-					if(!isset($model_files[$file]['format']))
-						$model_files[$file]['format'] = IMAGETYPE_JPEG;
-						
-					if(isset($model_files[$file]['multiple']) && $model_files[$file]['multiple']) {
-						if($model_files[$file]['type'] == 'image') {
-							$filename = $arr['name'];
-							
-							$path = _WEB_DIR_.'/upload/'.trim($model_files[$file]['dir'], '/').'/'.$filename;
-							$filename = ImageManager::load($arr['tmp_name'])->save($path, $model_files[$file]['format']);
-							$file_property = 'filename_'.$file;
-							array_push($this->data[$file_property], $filename);
-						}
-						else
-							#todo change filename if already existing
-							#todo add it to model filename_
-							FileManager::move_uploaded($_FILES[$file], $model_files[$file]['path']);
-					}
-					else {
-						#delete old file
-						$old_path = $this->getFilePath($file);
-						if($old_path) {
-							FileManager::unlink(_WEB_DIR_.'/upload/'.$old_path);
-							if($model_files[$file]['type'] == 'image')
-								ImageCache::clearFile($old_path);
-						}
-							
-						if($model_files[$file]['type'] == 'image') {
-							$filename = $arr['name'];
-							
-							$path = _WEB_DIR_.'/upload/'.trim($model_files[$file]['dir'], '/').'/'.$filename;
-							$filename = ImageManager::load($arr['tmp_name'])->save($path, $model_files[$file]['format']);
-							$file_property = 'filename_'.$file;
-							$this->$file_property = $filename;
-						}
-						else {
-							#todo change filename if already existing
-							#todo add it to model filename_
-							$filename = $arr['name'];
-							
-							$path = _WEB_DIR_.'/upload/'.trim($model_files[$file]['dir'], '/').'/'.$filename;
-							$filename = FileManager::move_uploaded($arr['tmp_name'], $path);
-							$file_property = 'filename_'.$file;
-							$this->$file_property = $filename;
-						}
-					}
+				if($this->hasFile($file) && is_uploaded_file($arr['tmp_name'])) {
+					$path = _WEB_DIR_.'/'.$this->$file->dir().'/'.$arr['name'];
+					$this->$file->add($arr['tmp_name'], $path);
 				}
-		//~ }
 	}
 	
 	public function setFiles($files) {
-		//~ $this->set($files);
 		$this->_files = $files;
 				
 		return $this;
 	}
 	
-	public function setRawFilePath($file, $paths) {
-		$file_infos = $this->getFile($file);
-		$filename_property = 'filename_'.$file;
-		$this->$filename_property = $paths;
-		
-		return $this;
-	}
-	
-	public function getFiles() {
-		$results = array();
-		$existing_files = static::$files;
-		foreach($existing_files as $name => $file) {
-			$path = $this->getFilePath($name);
-			if(is_array($path)) {
-				foreach($path as $k=>$one_path)
-					$path[$k] = _WEB_DIR_.'/'.$one_path;
-				$results[$name] = $path;	
-			}
-			elseif($this->getFilePath($name))
-				$results[$name] = _WEB_DIR_.'/'.$this->getFilePath($name);
-			else
-				$results[$name] = null;
-		}
-		
-		if(isset($this->_files)) {
-			$new_files = $this->_files;
-			if(isset($new_files))
-				foreach($new_files as $name => $file)
-					if(isset($file['error']) && $file['error'] == 0)
-						if(isset($file['tmp_name']) && !empty($file['tmp_name']))
-							$results[$name] = $file['tmp_name'];
-		}
-		
-		return $results;
-	}
-	
-	public function getFile($file) {
-		$files = static::$files;
-		return $files[$file];
-	}
-	
-	public function getFilePath($file) {
-		$file_infos = $this->getFile($file);
-		$dir = 'upload/'.trim($file_infos['dir'], '/').'/';
-		$filename_property = 'filename_'.$file;
-		if(isset($this->$filename_property)) {
-			#multiple files
-			if(isset($file_infos['multiple']) && $file_infos['multiple']) {
-				$result = array();
-				try {
-					foreach($this->$filename_property as $filename) {
-						$result[] = $dir.$filename;
-					}
-				} catch(\Exception $e) {
-					d($filename_property, $this->$filename_property);
-				}
-				return $result;
-			}
-			#single file
-			else {
-				$filename = $this->$filename_property;
-				
-				if($filename)
-					return $dir.$filename;
-				else
-					return null;	
-			}
-		}
-		else
-			return null;
-	}
-	
-	public function getRawFilePath($file) {
-		$file_infos = $this->getFile($file);
-		$filename_property = 'filename_'.$file;
-		return $this->$filename_property;
-	}
-	
 	public function hasFile($file) {
-		$files = static::$files;
-		return array_key_exists($file, $files);
+		return array_key_exists($file, static::$files);
 	}
-	
-	public function fileExists($file) {
-		$file_infos = $this->getFile($file);
-		$filename_property = 'filename_'.$file;
-		return isset($this->$filename_property);
-	}
-	
-	
-	/* STUBS */
-	//todo
-	public function newCollection($array) {
-		return new Collection($this, $array);
-	}
-	
 }

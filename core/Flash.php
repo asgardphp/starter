@@ -5,7 +5,7 @@ class Flash {
 	private static $messages = array('success' => array(), 'error' => array());
 	private static $instance;
 
-	public function __construct() {
+	public static function _autoload() {
 		if(isset($_SESSION['messages']))
 			static::$messages = $_SESSION['messages'];
 	}

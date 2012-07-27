@@ -7,6 +7,10 @@ class ActualiteController extends Controller {
 	@Route('')
 	*/
 	public function indexAction($request) {
+		//~ $actu = new Actualite(17);
+		//~ d($actu->image->__toString());
+		
+		
 		//~ $actu = new Actualite(2);
 		//~ $actu->commentaires = array(2);
 		//~ $actu->save();

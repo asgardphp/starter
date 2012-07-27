@@ -117,8 +117,6 @@ class Form extends AbstractGroup {
 			
 			$files = $this->merge_all($name, $type, $tmp_name, $error, $size);
 		}
-			
-		//~ d($_FILES, $res);
 	
 		$this->data = array();
 		if($this->groupName)
@@ -130,12 +128,6 @@ class Form extends AbstractGroup {
 			if(isset($_POST))
 				$this->setData($_POST, $_FILES);
 						
-		return $this;
-	}
-	
-	public function reset() {
-		$this->data = array();
-		
 		return $this;
 	}
 	

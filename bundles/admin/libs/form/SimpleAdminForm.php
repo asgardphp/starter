@@ -218,10 +218,8 @@ class SimpleAdminForm extends Form {
 		if($this->$widget->params['type'] != 'file')
 			throw new \Exception($widget.' should be a file.');
 		
-		$specific_file = $this->model->getFile($widget);
-		$path = $this->model->getFilePath($widget);
-		$optional = !(isset($specific_file['required']) && $specific_file['required']);
-		//~ d($specific_file);
+		$path = $this->model->$widget->get();
+		$optional = !$this->model->$widget->required();
 
 		$label = isset($options['label']) ? $options['label']:ucfirst($widget);
 		if(get($this->model->getProperty($widget), 'required'))
@@ -229,7 +227,7 @@ class SimpleAdminForm extends Form {
 				
 		//~ d(BundlesManager::$routes);
 				
-		if(isset($specific_file['multiple']) && $specific_file['multiple']) {
+		if($this->model->$widget->multiple()) {
 			if(!$this->model->isNew()):
 				$uid = Tools::randstr(10);
 				HTML::code_js("
@@ -302,7 +300,7 @@ class SimpleAdminForm extends Form {
 				echo '<span>'.$options['nb'].'</span>';
 							
 			if(!$this->model->isNew() && $path && file_exists(_WEB_DIR_.'/'.$path)) {
-				if($specific_file['type'] == 'image') {
+				if($this->model->$widget->type() == 'image') {
 					echo '<p>
 						<a href="../'.$path.'" rel="facebox"><img src="../'.ImageCache::src($path, 'admin_thumb').'" alt=""/></a>
 					</p>';

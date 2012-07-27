@@ -125,6 +125,7 @@ class ModelForm extends Form {
 		$this->model->pre_save();
 		
 		return array_merge(parent::my_errors(), $this->model->errors());
+		//~ return $this->model->errors();
 	}
 	
 	public function save() {

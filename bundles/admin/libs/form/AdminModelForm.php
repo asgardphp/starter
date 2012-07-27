@@ -24,7 +24,7 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 		elseif($properties['type'] === 'date')
 			$this->input($widget, array_merge($options, array('class'=>'text date_picker')));
 		elseif($this->model->hasFile($widget)) {
-			$file = $this->model->getFile($widget);
+			$file = $this->model->$widget->params();
 			$this->file($widget, $options);
 		}
 		else {
@@ -193,9 +193,8 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 		if($this->$widget->params['type'] != 'file')
 			throw new \Exception($widget.' should be a file.');
 		
-		$specific_file = $this->model->getFile($widget);
-		$path = $this->model->getFilePath($widget);
-		$optional = !(isset($specific_file['required']) && $specific_file['required']);
+		$path = $this->model->$widget->get();
+		$optional = !$this->model->$widget->required();
 				
 		if(isset($specific_file['multiple']) && $specific_file['multiple']) {
 			if(!$this->model->isNew()):
@@ -260,8 +259,8 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 		else {
 			AdminForm::file($this->$widget, $options);
 							
-			if(!$this->model->isNew() && $path && file_exists(_WEB_DIR_.'/'.$path)) {
-				if($specific_file['type'] == 'image') {
+			if(!$this->model->isNew() && $this->model->$widget->exists()) {
+				if($this->model->$widget->type() == 'image') {
 					echo '<p>
 						<a href="../'.$path.'" rel="facebox"><img src="../'.ImageCache::src($path, 'admin_thumb').'" alt=""/></a>
 					</p>';

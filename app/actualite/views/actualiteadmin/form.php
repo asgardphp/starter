@@ -10,7 +10,6 @@
 					<a href="<?php echo !$actualite->isNew() ? $this->url_for('edit', array('id'=>$actualite->id)):$this->url_for('new') ?>">
 					<?php echo !$actualite->isNew() ? $actualite:'Nouveau' ?>
 					</a></p>
-				
 					<?php Flash::showAll() ?>
 					
 					<?php
@@ -21,6 +20,7 @@
 						->def('lieu')
 						->textarea('introduction')
 						->wysiwyg('contenu')
+						->def('image')
 						//~ ->def('slug')								
 					->end();
 					?>

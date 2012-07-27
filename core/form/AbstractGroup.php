@@ -126,11 +126,19 @@ abstract class AbstractGroup implements \ArrayAccess, \Iterator {
 		$this->groupName = $name;
 	}
 	
+	public function reset() {
+		$this->setData(array(), array());
+		
+		return $this;
+	}
+	
 	public function setData($data, $files) {
 		$this->data = $data;
 		$this->files = $files;
 		
 		$this->updateChilds();
+		
+		return $this;
 	}
 	
 	public function hasFile() {
@@ -148,21 +156,14 @@ abstract class AbstractGroup implements \ArrayAccess, \Iterator {
 	
 	protected function updateChilds() {
 		foreach($this->widgets as $name=>$widget)
-			if(is_subclass_of($widget, 'Coxis\Core\Form\AbstractGroup'))
+			if($widget instanceof \Coxis\Core\Form\AbstractGroup)
 				$widget->setData(
 					(isset($this->data[$name]) ? $this->data[$name]:array()),
 					(isset($this->files[$name]) ? $this->files[$name]:array())
 				);
-				//~ if(isset($this->data[$name]))
-					//~ $widget->setData($this->data[$name], (isset($this->files[$name]) ? $this->files[$name]:array()));
-				//~ else
-					//~ $widget->setData(array());
-			else {
-				//~ if(isset($this->data[$name]))
-					//~ $widget->value = $this->data[$name];
+			elseif($widget instanceof \Coxis\Core\Form\Widget) {
 				if($widget->params['type'] == 'file') {
 					if(isset($this->files[$name]))
-						//~ $widget->value = $this->files[$name];
 						$widget->value = $this->files[$name];
 					else
 						$widget->value = null;
@@ -232,12 +233,10 @@ abstract class AbstractGroup implements \ArrayAccess, \Iterator {
 		if(!$group)
 			$group = $this;
 			
-		if(is_subclass_of($group, 'Coxis\Core\Form\AbstractGroup'))
-			foreach($group->widgets as $name=>$widget) {
-				if(is_subclass_of($widget, 'Coxis\Core\Form\AbstractGroup')) {
+		if($group instanceof \Coxis\Core\Form\AbstractGroup)
+			foreach($group->widgets as $name=>$widget)
+				if($widget instanceof \Coxis\Core\Form\AbstractGroup)
 					$widget->_save($widget);
-				}
-			}
 	}
 	
 	public function isValid() {

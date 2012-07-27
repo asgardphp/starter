@@ -7,7 +7,7 @@
 					
 					<div class="fiche-content">
 						<div class="image-holder img-left">
-							<img src="<?php echo $actualite->getFilePath('image') ? $actualite->getFilePath('image'):'images/img5.jpg' ?>" width="90" height="90" alt="image description" />
+							<img src="<?php echo $actualite->image ? $actualite->image:'images/img5.jpg' ?>" width="90" height="90" alt="image description" />
 						</div>
 						
 						<div class="fiche-right" style="font-style:italic">

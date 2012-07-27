@@ -161,7 +161,8 @@ class ModelAdminController extends AdminParentController {
 		if(!($this->$_model = $_model::load($request['id'])))
 			$this->forward404();
 			
-		$this->$_model->deleteFile($request['file']);
+		$file = $request['file'];
+		$this->$_model->$file->delete();
 		Flash::addSuccess('Fichier supprimé avec succès.');
 		Response::redirect(static::getEditURL($this->$_model->id), false)->send();
 	}
@@ -183,8 +184,9 @@ class ModelAdminController extends AdminParentController {
 			else
 				Response::setCode(500)->setContent('Erreur lors de l\'envoi.')->send();
 				
+			$file = $request['file'];
 			$model->setFiles($files)->save();
-			$final_paths = $model->getFilePath($request['file']);
+			$final_paths = $model->$file->get();
 			$response = array(
 				'url' => array_pop($final_paths),
 				'deleteurl' => $this->url_for('deleteFile', array('id' => $model->id, 'pos' => sizeof($final_paths)+1, 'file' => $request['file'])),
@@ -205,20 +207,22 @@ class ModelAdminController extends AdminParentController {
 			$this->forward404();
 		if(!$model->fileExists($request['file']))
 			$this->forward404();
+		
+		$file = $request['file'];
 			
-		$paths = $model->getFilePath($request['file']);
+		$paths = $model->$file->get();
 
 		if(!isset($paths[$request['pos']-1]))
 			Response::redirect($this->url_for('edit', array('id' => $model->id)), false)->setCode(404)->send();
 
 		$path = $paths[$request['pos']-1];
 		
-		$rawpaths = $model->getRawFilePath($request['file']);
+		$rawpaths = $model->$file->raw();
 		unset($rawpaths[$request['pos']-1]);
 		$rawpaths = array_values($rawpaths);
 		
 		try {
-			$model->setRawFilePath($request['file'], $rawpaths)->save(null, true);
+			$model->$file->set($rawpaths)->save(null, true);
 			Flash::addSuccess('Fichier supprimé avec succès.');
 			FileManager::unlink(_WEB_DIR_.'/'.$path);
 		} catch(\Exception $e) {

@@ -6,7 +6,7 @@
 						<?php foreach($actualites as $actualite): ?>
 						<li>
 							<div class="image-holder">
-								<img src="<?php echo $actualite->getFilePath('image') ? $actualite->getFilePath('image'):'images/img5.jpg' ?>" width="90" height="90" alt="image description" />
+								<img src="<?php echo $actualite->image ? $actualite->image:'images/img5.jpg' ?>" width="90" height="90" alt="image description" />
 							</div>
 							<div class="text-info">
 								<h2><a href="actualites/<?php echo $actualite->id ?>/<?php echo $actualite->slug ?>"><?php echo $actualite ?></a></h2>
