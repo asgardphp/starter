@@ -6,14 +6,18 @@ class ModelAdminController extends AdminParentController {
 	static $_models = null;
 	static $_index = null;
 	static $_messages = null;
-	static $__messages = array(
-		'modified'			=>	'Elément mis à jour avec succès.',
-		'created'				=>	'Elément créée avec succès.',
-		'many_deleted'	=>	'%s éléments supprimés.',
-		'deleted'				=>	'Elément supprimé avec succès.',
-		'unexisting'			=>	'Cet élément n\'existe pas.',
-	);
+	static $__messages = array();
 	protected static $_hooks = array();
+	
+	public static function _autoload() {
+		static::$__messages = array(
+			'modified'			=>	__('Element updated with success.'),
+			'created'				=>	__('Element created with success.'),
+			'many_deleted'	=>	__('%s elements deleted.'),
+			'deleted'				=>	__('Element deleted with success.'),
+			'unexisting'			=>	__('This element does not item.'),
+		);
+	}
 	
 	function __construct() {
 		#trigger the model behaviors coxisadmin hook
@@ -163,7 +167,7 @@ class ModelAdminController extends AdminParentController {
 			
 		$file = $request['file'];
 		$this->$_model->$file->delete();
-		Flash::addSuccess('Fichier supprimé avec succès.');
+		Flash::addSuccess(__('File deleted with success.'));
 		Response::redirect(static::getEditURL($this->$_model->id), false)->send();
 	}
 	
@@ -171,7 +175,6 @@ class ModelAdminController extends AdminParentController {
 	@Route(':id/:file/add')
 	*/
 	public function addFileAction($request) {
-		//~ $modelName = CoxisAdmin::getModelNameFor($request['_controller']);
 		$modelName = static::$_model;;
 		if(!($model = $modelName::load($request['id'])))
 			$this->forward404();
@@ -182,7 +185,7 @@ class ModelAdminController extends AdminParentController {
 			if(isset($_FILES['Filedata']))
 				$files = array($request['file'] => $_FILES['Filedata']);
 			else
-				Response::setCode(500)->setContent('Erreur lors de l\'envoi.')->send();
+				Response::setCode(500)->setContent(__('An error occured.'))->send();
 				
 			$file = $request['file'];
 			$model->setFiles($files)->save();
@@ -193,7 +196,7 @@ class ModelAdminController extends AdminParentController {
 			);
 			Response::setCode(200)->setContent(json_encode($response))->send();
 		} catch(\Exception $e) {
-			Response::setCode(500)->setContent('Erreur lors de l\'envoi.')->send();
+			Response::setCode(500)->setContent(__('An error occured.'))->send();
 		}
 	}
 	
@@ -223,10 +226,10 @@ class ModelAdminController extends AdminParentController {
 		
 		try {
 			$model->$file->set($rawpaths)->save(null, true);
-			Flash::addSuccess('Fichier supprimé avec succès.');
+			Flash::addSuccess(__('File deleted with success.'));
 			FileManager::unlink(_WEB_DIR_.'/'.$path);
 		} catch(\Exception $e) {
-			Flash::addError('Il y a eu une erreur avec le fichier');
+			Flash::addError(__('There was an error in the file'));
 		}
 		
 		try {
@@ -269,6 +272,6 @@ class ModelAdminController extends AdminParentController {
 				return Router::run($hook['controller'], $hook['action'], $request, $this);
 			}
 		}
-		throw new \Exception('Controller hook does not exist!');
+		throw new \Exception(__('Controller hook does not exist!'));
 	}
 }

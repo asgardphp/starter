@@ -18,21 +18,7 @@ class FrontController extends Controller {
 		/* BUNDLES */
 		_frontcontrollerGlobal();
 		
-		if(\Coxis\Core\Config::get('phpcache')) {
-			BundlesManager::$routes = Cache::get('routing/routes');
-			Event::$hooks_table = Cache::get('routing/hooks');
-			Event::$filters_table = Cache::get('routing/filters');
-			if(BundlesManager::$routes && Event::$hooks_table && Event::$filters_table)
-				BundlesManager::$load_routes = false;
-		}
-		
 		BundlesManager::loadBundles();
-		
-		//~ d(BundlesManager::$bundles_routes);
-		//~ d(BundlesManager::$routes);
-		//~ d(Event::$hooks_table);
-		//~ die(var_export(Event::$hooks_table));
-		//~ die(var_export(BundlesManager::$filters_table));
 	
 		//User Session
 		User::start();

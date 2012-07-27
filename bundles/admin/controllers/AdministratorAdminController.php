@@ -6,13 +6,17 @@ namespace Coxis\Bundles\Admin\Controllers;
 */
 class AdministratorAdminController extends ModelAdminController {
 	static $_model = 'administrator';
-	static $_messages = array(
-		'modified'			=>	'Administrateur mis à jour avec succès.',
-		'created'				=>	'Administrateur créée avec succès.',
-		'many_deleted'	=>	'%s administrateurs supprimés.',
-		'deleted'				=>	'Administrateur supprimé avec succès.',
-		'unexisting'			=>	'Cet administrateur n\'existe pas.',
-	);
+	static $_messages = array();
+	
+	public static function _autoload() {
+		static::$__messages = array(
+			'modified'			=>	__('Administrator updated with success.'),
+			'created'				=>	__('Administrator created with success.'),
+			'many_deleted'	=>	__('%s administrators deleted.'),
+			'deleted'				=>	__('Administrator deleted with success.'),
+			'unexisting'			=>	__('This administrator does not exist.'),
+		);
+	}
 	
 	public function formConfigure($model) {
 		$form = new AdminModelForm($model, $this);

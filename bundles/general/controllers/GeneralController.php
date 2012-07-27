@@ -55,6 +55,7 @@ class GeneralController extends Controller {
 	@Filter('output')
 	*/
 	public function preSendingAction($args) {
+		$this->view = false;
 		$content = $args[0];
 		try {
 			$type = \Coxis\Core\Response::getHeader('Content-Type');

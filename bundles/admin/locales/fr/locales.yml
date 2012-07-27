@@ -1,0 +1,48 @@
+'Administrator updated with success.': Administrateur mis à jour avec succès.
+'Administrator created with success.': Administrateur créée avec succès.
+'%s administrators deleted.': %s administrateurs supprimés.
+'Administrator deleted with success.': Administrateur supprimé avec succès.
+'This administrator does not exist.': Cet administrateur n''existe pas.
+'Invalid username or password.': Utilisateur ou mot de passe invalide.
+'Your username/password were sent to you by email.': Votre identifiant/mot de passe vous a été envoyé par mail.
+'Content': Contenu
+'Element updated with success.': Elément mis à jour avec succès.
+'Element created with success.': Elément créée avec succès.
+'%s elements deleted.': %s éléments supprimés.
+'Element deleted with success.': Elément supprimé avec succès.
+'This element does not exist.': Cet élément n''existe pas.
+'File deleted with success.': Fichier supprimé avec succès.
+'An error occured.': Erreur lors de l''envoi.
+'There was an error in the file': Il y a eu une erreur avec le fichier
+'Controller hook does not exist!': Controller hook does not exist!
+'Upload: ': Télécharger :
+'Maximum size 3Mb': Taille maximale 3Mb
+'Download': Télécharger
+'Delete': Supprimer
+'Save & Back': Sauvegarder & Revenir
+'Save & Stay': Sauvegarder & Rester
+'Send': Envoyer
+'Del.': Supp.
+'Administration': Administration
+'Dashboard': Tableau de bord
+'See website': Voir le site
+'Disconnect': Déconnexion
+'See': Voir
+'files uploaded': fichiers uploadés 
+'errors': erreurs
+'Error: ': Erreur :
+'Administrators': Administrateurs
+'Username': Utilisateur
+'Password': Mot de passe
+'Add': Ajouter
+'List': Liste
+'Actions': Actions
+'Filters': Filtres
+'back to website': retour au site
+'Username: ': Utilisateur : 
+'Password: ': Mot de passe : 
+'Password forgotten?': Mot de passe oublié ?
+'Remember me': Se souvenir de moi
+'Your username/password: :credentials': Votre identifiant/mot de passe : :credentials
+Promote: Monter
+Demote: Descendre

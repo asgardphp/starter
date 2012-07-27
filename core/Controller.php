@@ -2,16 +2,6 @@
 namespace Coxis\Core;
 
 class Controller {
-	#autoload function
-	public static function _autoload() {
-		//~ if(static::getClassName() == 'Coxis\Core\Model')
-			//~ return;
-		//~ static::loadModel();
-		//~ d();
-		
-		//~ Event::trigger('behaviors_coxisadmin_sortable', array(static::getControllerName()));
-	}
-	
 	public function forward404() {
 		Response::setCode(404)->send();
 	}

@@ -50,7 +50,7 @@ class SortableBehaviorController extends Controller {
 	}
 	
 	public function sortableactionsAction($model) {
-		return '<a href="'.url_for('coxis_'.$model->getClassName().'_promote', array('id' => $model->id), false).'">Monter</a> | <a href="'.url_for('coxis_'.$model->getClassName().'_demote', array('id' => $model->id), false).'">Descendre</a> | ';
+		return '<a href="'.url_for('coxis_'.$model->getClassName().'_promote', array('id' => $model->id), false).'">'.__('Promote').'</a> | <a href="'.url_for('coxis_'.$model->getClassName().'_demote', array('id' => $model->id), false).'">'.__('Demote').'</a> | ';
 	}
 
 	public function promoteAction($request) {

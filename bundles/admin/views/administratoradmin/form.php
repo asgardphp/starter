@@ -9,7 +9,7 @@
 				
 				<div class="block_content">
 				
-					<p class="breadcrumb"><a href="administrators">Administrateurs</a> &raquo; 
+					<p class="breadcrumb"><a href="administrators"><?php echo __('Administrators') ?></a> &raquo; 
 					<a href="<?php echo !$administrator->isNew() ? 'administrators/'.$administrator->id.'/edit':'administrators/new' ?>">
 					<?php echo !$administrator->isNew() ? $administrator:'Nouveau' ?>
 					</a></p>
@@ -18,8 +18,8 @@
 					
 					<?php
 					$form->start();
-					$form->input('username', array('label'	=>	'Utilisateur'));
-					$form->password('password', array('label'	=>	'Mot de passe', 'nb' => 'Laissez vide pour ne pas modifier le mot de passe'));
+					$form->input('username', array('label'	=>	__('Username')));
+					$form->password('password', array('label'	=>	__('Password')));
 					$form->end();
 					?>
 					

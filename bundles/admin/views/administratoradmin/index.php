@@ -2,9 +2,9 @@
 				<div class="block_head">
 					<div class="bheadl"></div>
 					<div class="bheadr"></div>
-					<h2>Administrateurs</h2>
+					<h2><?php echo __('Administrators') ?></h2>
 					<ul>
-						<li><a href="administrators/new">Ajouter</a></li>
+						<li><a href="administrators/new"><?php echo __('Add') ?></a></li>
 					</ul>
 					<?php
 					//~ $form = Form::create()->open('', 'get');
@@ -20,7 +20,7 @@
 							<div class="bheadl"></div>
 							<div class="bheadr"></div>
 							
-							<h2><a href="administrators">Liste</a></h2>	
+							<h2><a href="administrators"><?php echo __('List') ?></a></h2>	
 						</div>		<!-- .block_head ends -->
 						
 						
@@ -33,7 +33,7 @@
 							<thead>
 								<tr>
 									<th width="10"><input type="checkbox" class="check_all" /></th>
-									<th>Utilisateur</th>
+									<th><?php echo __('Username') ?></th>
 									<td>&nbsp;</td>
 								</tr>
 							</thead>
@@ -46,7 +46,7 @@
 										<td><a href="administrators/<?php echo $administrator->id ?>/edit"><?php echo $administrator ?></a></td>
 											<td class="actions">
 													<?php Event::trigger_show('coxis_administrator_actions', $administrator) ?>
-													<a class="delete" href="administrators/<?php echo $administrator->id ?>/delete">Supprimer</a>
+													<a class="delete" href="administrators/<?php echo $administrator->id ?>/delete"><?php echo __('Delete') ?></a>
 												</td>
 									</tr>
 								<?php } ?>
@@ -56,8 +56,8 @@
 						
 						<div class="tableactions">
 							<select name="action">
-								<option>Actions</option>
-								<option value="delete">Supprimer</option>
+								<option><?php echo __('Actions') ?></option>
+								<option value="delete"><?php echo __('Delete') ?></option>
 							</select>
 							
 							<input type="submit" class="submit tiny" value="Appliquer" />
@@ -89,7 +89,7 @@
 							<div class="bheadl"></div>
 							<div class="bheadr"></div>
 							
-							<h2>Filters</h2>
+							<h2><?php echo __('Filters') ?></h2>
 						</div>		<!-- .block_head ends -->
 						
 						

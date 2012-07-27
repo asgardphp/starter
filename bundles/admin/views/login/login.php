@@ -18,22 +18,22 @@
 					<div class="bheadr"></div>
 					<h2>Login</h2>
 					<ul>
-						<li><a href="<?php echo URL::to('') ?>">retour au site</a></li>
+						<li><a href="<?php echo URL::to('') ?>"><?php echo __('back to website') ?></a></li>
 					</ul>
 				</div>		<!-- .block_head ends -->
 				<div class="block_content">
 					<?php Flash::showAll() ?>
 					<form action="login" method="post">
 						<p>
-							<label>Utilisateur :</label> <br />
+							<label><?php echp __('Username:') ?></label> <br />
 							<input type="text" class="text" name="username"/>
 						</p>
 						<p>
-							<label>Mot de passe :</label> <br />
-							<input type="password" class="text" name="password"/> (<a href="forgotten">Mot de passe oublié ?</a>)
+							<label><?php echp __('Password:') ?></label> <br />
+							<input type="password" class="text" name="password"/> (<a href="forgotten"><?php echo __('Password forgotten?') ?></a>)
 						</p>
 						<p>
-							<input type="submit" class="submit" value="Login" /> <span><label for="remember">Se souvenir de moi</label> <input type="checkbox" id="remember" name="remember" value="yes"/></span>
+							<input type="submit" class="submit" value="Login" /> <span><label for="remember"><?php echo __('Remember me') ?></label> <input type="checkbox" id="remember" name="remember" value="yes"/></span>
 						</p>
 					</form>
 				</div>		<!-- .block_content ends -->

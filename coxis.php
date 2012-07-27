@@ -40,9 +40,17 @@ function get() {
 	return $result;
 }
 function send($result) {
+	try {
+		Event::trigger('end');
+	} catch(\Exception $e) {
+		Error::report($e->getMessage(), $e->getTrace());
+	}
 	Response::sendHeaders($result->headers);
 	echo $result->content;
 	exit();
+}
+function __($key, $params=array()) {
+	return Locale::translate($key, $params);
 }
 
 ob_start();
@@ -57,7 +65,7 @@ set_error_handler(function ($errno, $errstr, $errfile, $errline) {
 	throw new \ErrorException($errstr, $errno, 0, $errfile, $errline);
 });
 set_exception_handler(function ($e) {
-	if(is_a($e, 'ErrorException')) {
+	if($e instanceof \ErrorException) {
 		$msg = '('.$e->getCode().') '.$e->getMessage().'<br>'.$e->getFile().' ('.$e->getLine().')';
 		$result = Error::report($msg, $e->getTrace());
 	}

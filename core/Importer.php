@@ -71,7 +71,7 @@ namespace Coxis\Core {
 					
 					return true;
 				}
-			}
+			}	
 			
 			if(static::loadClass($class)) {
 				#import as ..
@@ -96,7 +96,7 @@ namespace Coxis\Core {
 						$next = basename($class);
 					else
 						$next = dirname($dir).'\\'.basename($class);
-					
+				
 					return static::_import($next, array('into'=>$intoNamespace, 'as'=>$alias));
 				}
 			
@@ -131,7 +131,11 @@ namespace Coxis\Core {
 			$diff = array_diff($after, $before);
 			foreach($diff as $class)		
 				if(method_exists($class, '_autoload'))
-					call_user_func(array($class, '_autoload'));
+					try {
+						call_user_func(array($class, '_autoload'));
+					} catch(\Exception $e) {
+						d($e); #todo error report this exception cause autoloader does not let it bubble up
+					}
 			
 			return get(array_values($diff), sizeof($diff)-1);
 		}

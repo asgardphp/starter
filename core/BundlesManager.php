@@ -16,15 +16,18 @@ class Route extends Annotation {
 
 namespace Coxis\Core {
 class BundlesManager {
-	public static $bundles_routes = array();
-	public static $filters_table = array();
 	public static $routes = array();
-	public static $directories = array('app', 'bundles');
+	public static $hooks_table = array();
+	public static $filters_table = array();
+	public static $directories = array('bundles', 'app');
 	public static $bundles = array();
 	public static $load_routes = true;
 	
 	public static function loadBundle($bundle) {
 		\Coxis\Core\Autoloader::preloadDir($bundle.'/models');
+		
+		if(Coxis::get('load_locales', true))
+			Locale::importLocales($bundle.'/locales');
 		
 		if(!static::$load_routes)
 			\Coxis\Core\Autoloader::preloadDir($bundle.'/controllers');
@@ -48,7 +51,7 @@ class BundlesManager {
 					
 						if($method_reflection->getAnnotation('Route')) {
 							$route = Router::formatRoute($prefix.'/'.$method_reflection->getAnnotation('Route')->value);
-							static::$bundles_routes[] = array(
+							static::$routes[] = array(
 								'route'	=>	$route,
 								'controller'		=>	static::formatControllerName($classname), 
 								'action'			=>	static::formatActionName($method),
@@ -64,9 +67,9 @@ class BundlesManager {
 							else
 								$priority = 0;
 							$priority *= 1000;
-							while(isset(Event::$hooks_table[$hook][$priority]))
+							while(isset(BundlesManager::$hooks_table[$hook][$priority]))
 								$priority += 1;
-							Event::$hooks_table[$hook][$priority] = array('controller'=>static::formatControllerName($classname), 'action'=>static::formatActionName($method));
+							BundlesManager::$hooks_table[$hook][$priority] = array('controller'=>static::formatControllerName($classname), 'action'=>static::formatActionName($method));
 						}
 						if($method_reflection->getAnnotation('Filter')) {
 							$filter = $method_reflection->getAnnotation('Filter')->value;
@@ -84,13 +87,20 @@ class BundlesManager {
 	}
 	
 	public static function loadBundles() {
-		static::getBundles();
-		
-		if(static::$load_routes) {
-			BundlesManager::$routes = array();
-			Event::$hooks_table = array();
-			Event::$filters_table = array();
+		if(\Coxis\Core\Config::get('phpcache')) {
+			BundlesManager::$routes = Cache::get('routing/routes');
+			BundlesManager::$hooks_table = Cache::get('routing/hooks');
+			BundlesManager::$filters_table = Cache::get('routing/filters');
+			if(BundlesManager::$routes && BundlesManager::$hooks_table && BundlesManager::$filters_table)
+				BundlesManager::$load_routes = false;
+			else {
+				BundlesManager::$routes = array();
+				BundlesManager::$hooks_table = array();
+				BundlesManager::$filters_table = array();
+			}
 		}
+		
+		static::getBundles();
 		
 		foreach(static::$bundles as $bundle)
 			Autoloader::preloadDir($bundle.'/libs');
@@ -101,14 +111,12 @@ class BundlesManager {
 				include($bundle.'/bundle.php');
 			
 		if(static::$load_routes) {
-			foreach(Event::$hooks_table as $k=>$v)
-				ksort(Event::$hooks_table[$k]);
+			foreach(BundlesManager::$hooks_table as $k=>$v)
+				ksort(BundlesManager::$hooks_table[$k]);
 
-			Event::$filters_table = static::$filters_table;
+			BundlesManager::$filters_table = static::$filters_table;
 			
-			$all_routes = static::$bundles_routes;
-			
-			usort($all_routes, function($route1, $route2) {
+			usort(static::$routes, function($route1, $route2) {
 				$route1 = $route1['route'];
 				$route2 = $route2['route'];
 				
@@ -133,18 +141,25 @@ class BundlesManager {
 					}
 				}
 			});
-			
-			static::$routes = $all_routes;
 		}
 		
 		if(\Coxis\Core\Config::get('phpcache')) {
-			\Coxis\Core\Cache::set('routing/routes', BundlesManager::$routes);
-			\Coxis\Core\Cache::set('routing/hooks', Event::$hooks_table);
-			\Coxis\Core\Cache::set('routing/filters', Event::$filters_table);
+			Event::addHook('end', function() {
+				\Coxis\Core\Cache::set('routing/routes', BundlesManager::$routes);
+				\Coxis\Core\Cache::set('routing/hooks', BundlesManager::$hooks_table);
+				\Coxis\Core\Cache::set('routing/filters', BundlesManager::$filters_table);
+			});
 		}
+		//~ Router::$routes = BundlesManager::$routes; #todo
+		Event::addHooks(BundlesManager::$hooks_table);
+		Event::addFilters(BundlesManager::$filters_table);
+		
+		//~ d(BundlesManager::$bundles_routes);
+		//~ d(BundlesManager::$routes);
+		//~ d(Event::$hooks_table);
+		//~ die(var_export(Event::$hooks_table));
+		//~ die(var_export(BundlesManager::$filters_table));
 	}
-	//TODO: either set all routes or simply give specific routes
-	//TODO: Takes routes from CONFIG
 	
 	private static function move_key($key, $pos, &$arr) {
 		$before = array_slice($arr, 0, $pos);

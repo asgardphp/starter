@@ -56,7 +56,7 @@ class AdminSimpleForm extends Form {
 	public function end($submits=null) {
 		echo '													
 					<p>
-					<input name="stay" type="submit" class="submit long" value="Envoyer"> 
+					<input name="stay" type="submit" class="submit long" value="'.__('Send').'"> 
 					</p>';
 		parent::end();
 		

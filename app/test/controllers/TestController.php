@@ -1,6 +1,17 @@
 <?php
 class TestController extends Controller {
 	/**
+	@Route('trad')
+	*/
+	public function tradAction($request) {
+		Coxis::set('layout', false);
+		echo 'test: ';
+		
+		//~ echo __('Hello :name!', array('name'=>'Michel'));
+		echo __('Here I am');
+	}
+
+	/**
 	@Route('test')
 	*/
 	public function testAction($request) {

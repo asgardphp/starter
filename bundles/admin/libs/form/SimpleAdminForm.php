@@ -261,7 +261,7 @@ class SimpleAdminForm extends Form {
 								<img src="<?php echo URL::to('imagecache/admin_thumb/'.$one_path) ?>" alt=""/>
 								<ul>
 									<li class="view"><a href="<?php echo URL::to($one_path) ?>" rel="facebox">Voir</a></li>
-									<li class="delete"><a href="<?php echo url_for('coxis_'.$this->model->getClassName().'_files_delete', array('id' => $this->model->id, 'pos' => $i, 'file' => $widget)) ?>">Suppr.</a></li>
+									<li class="delete"><a href="<?php echo url_for('coxis_'.$this->model->getClassName().'_files_delete', array('id' => $this->model->id, 'pos' => $i, 'file' => $widget)) ?>"><?php echo __('Del.') ?></a></li>
 								</ul>
 							</li>
 							<?php
@@ -273,9 +273,9 @@ class SimpleAdminForm extends Form {
 						</ul>
 						
 						<p id="<?php echo $uid ?>">
-							<label>Uploader :</label><br />
+							<label><?php echo __('Upload:') ?></label><br />
 							<input type="file" id="<?php echo $uid ?>-filesupload" class="filesupload" /><br/>
-							<span class="uploadmsg">Taille maximale 3Mb</span>
+							<span class="uploadmsg"><?php echo __('Maximum size 3Mb') ?></span>
 							<div id="<?php echo $uid ?>-custom-queue"></div>
 						</p>
 						
@@ -313,7 +313,7 @@ class SimpleAdminForm extends Form {
 				
 				if($optional && !$this->model->isNew()):
 					?>
-					<a href="<?php echo $this->controller->url_for($this->model->getClassName(), 'deleteFile', array('file'=>$widget, 'id'=>$this->model->id)) ?>">Supprimer</a><br/><br/>
+					<a href="<?php echo $this->controller->url_for($this->model->getClassName(), 'deleteFile', array('file'=>$widget, 'id'=>$this->model->id)) ?>"><?php echo __('Delete') ?></a><br/><br/>
 					<?php
 				endif;
 			}
@@ -390,8 +390,8 @@ class SimpleAdminForm extends Form {
 			$submits = static::$BOTH;
 		echo '<hr />
 						<p>'.
-							($submits!=static::$SAVE ? '<input name="send" type="submit" class="submit long" value="Save and back to list" /> ':'').
-							($submits!=static::$SEND ? '<input name="stay" type="submit" class="submit long" value="Save" /> ':'').
+							($submits!=static::$SAVE ? '<input name="send" type="submit" class="submit long" value="'.__('Save & Back').'" /> ':'').
+							($submits!=static::$SEND ? '<input name="stay" type="submit" class="submit long" value="'.__('Save & Stay').'" /> ':'').
 						'</p>';
 		parent::end();
 		
@@ -408,8 +408,6 @@ class SimpleAdminForm extends Form {
 		if(is_subclass_of($widget, 'AbstractGroup')) {
 			if(is_a($widget, 'ModelForm') || is_subclass_of($widget, 'ModelForm'))
 				$errors = $widget->my_errors();
-			//~ elseif(is_a($widget, 'Form') || is_subclass_of($widget, 'Form'))
-				//~ $errors = $widget->errors();
 				
 			foreach($widget as $name=>$sub_widget) {
 				if(is_subclass_of($sub_widget, 'AbstractGroup')) {
@@ -437,7 +435,6 @@ class SimpleAdminForm extends Form {
 		if(!$group)
 			$group = $this;
 			
-		//~ if(is_a($group, 'ModelForm') || is_subclass_of($group, 'ModelForm'))
 		if($group instanceof  ModelForm)
 			$group->getModel()->_save();
 			

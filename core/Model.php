@@ -274,12 +274,12 @@ abstract class Model {
 	}
 	
 	public static function getClassName() {
-		return get_called_class();
+		return strtolower(get_called_class());
 		#todo move strtolower to getModelName
 	}
 	
 	public static function getModelName() {
-		return strtolower(basename(static::getClassName()));
+		return basename(static::getClassName());
 	}
 	
 	public function isNew() {

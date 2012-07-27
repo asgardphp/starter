@@ -5,6 +5,26 @@ class Event {
 	static $filters_table = array();
 	static $hooks_table = array();
 	
+	public static function addHooks($hooks) {
+		foreach($hooks as $hook=>$callbacks)
+			foreach($callbacks as $callback)
+				static::addHook($hook, $callback);
+	}
+	
+	public static function addHook($hook, $callback) {
+		static::$hooks_table[$hook][] = $callback;
+	}
+	
+	public static function addFilters($filters) {
+		foreach($filters as $filter=>$callbacks)
+			foreach($callbacks as $callback)
+				static::addFilter($filter, $callback);
+	}
+	
+	public static function addFilter($filter, $callback) {
+		static::$filters_table[$filter][] = $callback;
+	}
+	
 	public static function filter($filterName, $p, $args=array()) {
 		if(isset(static::$filters_table[$filterName]))
 			foreach(static::$filters_table[$filterName] as $filter)

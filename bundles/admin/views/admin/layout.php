@@ -3,7 +3,7 @@
 <head>
 	<meta http-equiv="X-UA-Compatible" content="IE=7" />
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<title><?php echo Value::val('name') ?> &#9679; Administration</title>
+	<title><?php echo Value::val('name') ?> &#9679; <?php echo __('Administration') ?></title>
 	<base href="<?php echo URL::to('admin/') ?>" />
 	<style type="text/css" media="all">
 		@import url("../bundles/admin/css/admin.css");
@@ -25,7 +25,7 @@
 				
 				
 				<ul id="nav">
-					<li><a href="#">Tableau de bord</a></li>
+					<li><a href="#"><?php echo __('Dashboard') ?></a></li>
 					<?php
 					function showMenu($menu) {
 						foreach($menu as $item) {
@@ -46,7 +46,7 @@
 					showMenu(AdminMenu::$menu);
 					?>
 				</ul>
-				<p class="user"><a href="..">Voir le site</a> | <a href="logout">Déconnexion</a></p>
+				<p class="user"><a href=".."><?php echo __('See website') ?></a> | <a href="logout"><?php echo __('Disconnect') ?></a></p>
 			</div>	
 			
 			<?php echo $content; ?>
@@ -87,24 +87,24 @@
 		'queueID'        : el+'-custom-queue',
 		'simUploadLimit' : 3,
 		'onSelectOnce'   : function(event,data) {
-			$(elID).find('.uploadmsg').text(data.filesSelected + ' file(s) were added to the list.');
+			$(elID).find('.uploadmsg').text(data.filesSelected + ' <?php echo __('file(s) were added to the list.') ?>');
 		},
 		'onComplete' : function(event, ID, fileObj, response, data) {
 			var result = JSON.parse(response);
 			$('.imglist').append('<li>\
 							<img src="../imagecache/admin_thumb/'+result.url+'" alt=""/>\
 							<ul>\
-								<li class="view"><a href="../'+result.url+'" rel="facebox">Voir</a></li>\
-								<li class="delete"><a href="'+result.deleteurl+'">Supprimer</a></li>\
+								<li class="view"><a href="../'+result.url+'" rel="facebox"><?php echo __('See') ?></a></li>\
+								<li class="delete"><a href="'+result.deleteurl+'"><?php echo __('Delete') ?></a></li>\
 							</ul>\
 						</li>');
 			$('a[rel*=facebox]').facebox()
 		},
 		'onAllComplete'  : function(event,data) {
-			$(elID).find('.uploadmsg').text(data.filesUploaded + ' fichiers uploadés, ' + data.errors + ' erreurs.');
+			$(elID).find('.uploadmsg').text(data.filesUploaded + ' <?php echo __('files uploaded') ?>, ' + data.errors + ' <?php echo __('erreurs') ?>.');
 		},
 		'onError': function (event,ID,fileObj,errorObj) {
-			console.log(errorObj.type + ' Error: ' + errorObj.info);
+			console.log(errorObj.type + ' <?php echo __('Error:') ?> ' + errorObj.info);
 		},
 	  });
 	};

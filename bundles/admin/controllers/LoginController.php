@@ -33,7 +33,7 @@ class LoginController extends Controller {
 				Response::redirect('admin')->send();
 		}
 		elseif(isset($_POST['username']))
-			Flash::addError('Utilisateur ou mot de passe invalide.');
+			Flash::addError(__('Invalid username or password.'));
 	}
 	
 	/**
@@ -49,9 +49,17 @@ class LoginController extends Controller {
 	@Route('admin/forgotten')
 	*/
 	public function forgottenAction($request) {
-		Email::generate(Config::get('website', 'email'), 'Mot de pase oublié', Config::get('website', 'email'), 'Votre identifiant/mot de passe : '.Config::get('admin', 'username').'/'.Config::get('admin', 'password'))->send();
+		Email::generate(
+			Config::get('website', 'email'), 
+			'Mot de pase oublié', 
+			Config::get('website', 'email'), 
+			__(
+				'Your username/password: :credentials',
+				array('credentials'=>Config::get('admin', 'username').'/'.Config::get('admin', 'password'))
+			)
+		)->send();
 		
-		Flash::addSuccess('Votre identifiant/mot de passe vous a été envoyé par mail.');
+		Flash::addSuccess(__('Your username/password were sent to you by email.'));
 		$this->useView('login.php');
 	}
 }

@@ -242,9 +242,9 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 						</ul>
 						
 						<p id="<?php echo $uid ?>">
-							<label>Uploader :</label><br />
+							<label><?php echo __('Upload:') ?></label><br />
 							<input type="file" id="<?php echo $uid ?>-filesupload" class="filesupload" /><br/>
-							<span class="uploadmsg">Taille maximale 3Mb</span>
+							<span class="uploadmsg"><?php echo __('Maximum size 3Mb') ?></span>
 							<div id="<?php echo $uid ?>-custom-queue"></div>
 						</p>
 						
@@ -267,13 +267,13 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 				}
 				else {
 					echo '<p>
-						<a href="../'.$path.'">Télécharger</a>
+						<a href="../'.$path.'">'.__('Download').'</a>
 					</p>';
 				}
 				
 				if($optional && !$this->model->isNew()):
 					?>
-					<a href="<?php echo $this->controller->url_for('deleteSingleFile', array('file'=>$widget, 'id'=>$this->model->id)) ?>">Supprimer</a><br/><br/>
+					<a href="<?php echo $this->controller->url_for('deleteSingleFile', array('file'=>$widget, 'id'=>$this->model->id)) ?>"><?php echo __('Delete') ?></a><br/><br/>
 					<?php
 				endif;
 			}
@@ -299,8 +299,8 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 			$submits = static::$BOTH;
 		echo '<hr />
 						<p>'.
-							($submits!=static::$SAVE ? '<input name="send" type="submit" class="submit long" value="Sauvegarder & Retour" /> ':'').
-							($submits!=static::$SEND ? '<input name="stay" type="submit" class="submit long" value="Sauvegarder & Rester" /> ':'').
+							($submits!=static::$SAVE ? '<input name="send" type="submit" class="submit long" value="'.__('Save & Back').'" /> ':'').
+							($submits!=static::$SEND ? '<input name="stay" type="submit" class="submit long" value="'.__('Save & Stay').'" /> ':'').
 						'</p>';
 		parent::end();
 		
