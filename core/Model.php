@@ -412,11 +412,11 @@ abstract class Model {
 	public function errors() {
 		$data = $this->getVars();
 		foreach(static::$files as $file=>$params)
-			if(isset($this->data[$file]['tmp_name']))
+			if(isset($this->data[$file]['tmp_name']) && $this->data[$file]['tmp_name'])
 				$data[$file] = $this->data[$file]['tmp_name'];
 			else
 				$data[$file] = 'web/'.$this->$file->get();
-				
+		
 		return $this->getValidator()->errors($data);
 	}
 	
