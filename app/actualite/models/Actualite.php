@@ -12,6 +12,9 @@ class Actualite extends \Coxis\Core\Model {
 		),
 		'introduction',
 		'contenu',
+		'test'	=>	array(
+			'i18n'	=>	true,
+		),
 	);
 	
 	public static $files = array(	

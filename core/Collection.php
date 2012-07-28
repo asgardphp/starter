@@ -45,10 +45,14 @@ class Collection extends ORM {
 				$relation_model = $this->relation['model'];
 				$currentmodel_idfield = $this->link_a;
 				$relationmodel_idfield = $this->link_b;
-				$this->setTable($this->join_table.' as a, '.$relation_model::getTable().' as b')->where(array(
-					'a.'.$currentmodel_idfield.' = ?' => $this->current_model->id,
-					'a.'.$relationmodel_idfield.' = b.id',
+				
+				$this->rightjoin(array(
+					$this->join_table.' b' => array(
+						'b.'.$currentmodel_idfield => $this->current_model->id,
+						'b.'.$relationmodel_idfield.' = a.id',
+					)
 				));
+				
 				break;
 			default:
 				throw new \Exception('Collection only works with hasMany and HMABT');
@@ -71,7 +75,7 @@ class Collection extends ORM {
 				$dal = new DAL($relation_model::getTable());
 				$dal->where(array($link.' = ?' => $this->current_model->id))->update(array($link => 0));
 				if($ids)
-					$dal->reset()->where(array('ID IN ('.implode(', ', $ids).')'))->update(array($link => $this->current_model->id));
+					$dal->reset()->where(array('id IN ('.implode(', ', $ids).')'))->update(array($link => $this->current_model->id));
 				break;
 			case 'HMABT':
 				$dal = new DAL($this->join_table);
@@ -140,34 +144,4 @@ class Collection extends ORM {
 		
 		return $this;
 	}
-	
-	//~ public function insert($values) {
-		//~ d();
-		//~ return $this->dal->insert($values);
-	//~ }
-	
-	//~ public function delete($id) {
-		//~ if($id instanceof \Coxis\Core\Model)
-			//~ $id = (int)$id->id;
-			
-		//~ switch($this->relation['type']) {
-			//~ case 'hasMany':
-				//~ parent::delete();
-				//~ break;
-			//~ case 'HMABT':
-				//~ $dal = new DAL($this->join_table);
-				//~ $in = $dal->where(array($this->link_a => $this->current_model->id))->get();
-				//~ d($in);
-				//~ break;
-			//~ default:
-				//~ throw new \Exception('Collection only works with hasMany and HMABT');
-		//~ }
-		
-		//~ return $this;
-	//~ }
-	
-	//~ public function update($values) {
-		//~ d();
-		//~ return $this->dal->update($values);
-	//~ }
 }

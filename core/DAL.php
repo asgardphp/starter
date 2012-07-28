@@ -4,20 +4,52 @@ namespace Coxis\Core;
 #todo select only some columns
 class DAL {
 	public $db = null;
-	public $table = null;
+	public $tables = null;
 	
 	public $where = null;
 	public $offset = null;
 	public $limit = null;
 	public $orderBy = null;
+	public $leftjoin = array();
+	public $rightjoin = array();
 		
-	function __construct($table) {
+	function __construct($tables) {
 		$this->db = DB::getInstance();
-		$this->table = $table;
+		//~ $a = $tables;
+		$this->setTables($tables);
+		//~ if($a == 'arpa_actualite')
+			//~ d($tables, $this->tables);
 	}
 	
-	public function setTable($table) {
-		$this->table = $table;
+	public function setTable($table, $alias='a') {
+		$this->tables = array($table=>$alias);
+		
+		return $this;
+	}
+	
+	public function setTables($tables) {
+		if(!is_array($tables))
+			$tables = array($tables);
+
+		foreach($tables as $table=>$alias)
+			if(is_int($table)) {
+				$tables[$alias] = null;
+				unset($tables[$table]);
+			}
+			
+		$this->tables = $tables;
+		
+		return $this;
+	}
+	
+	public function rightjoin($jointures) {
+		$this->rightjoin = array_merge($this->rightjoin, $jointures);
+		
+		return $this;
+	}
+	
+	public function leftjoin($jointures) {
+		$this->leftjoin = array_merge($this->leftjoin, $jointures);
 		
 		return $this;
 	}
@@ -94,7 +126,7 @@ class DAL {
 		//~ return $this;
 	//~ }
 	
-	private static function processConditions($conditions, $join = 'and', $brackets=false) {
+	private static function processConditions($conditions, $join = 'and', $brackets=false, $table=null) {
 		if(sizeof($conditions) == 0)
 			return '';
 		
@@ -104,13 +136,13 @@ class DAL {
 			if($join == 'and')
 				return $conditions;
 			else
-				return static::replace($join, $conditions);
+				return static::replace($join, $conditions, $table);
 		else
 			foreach($conditions as $key=>$value)
 				if(is_int($key))
-					$string_conditions[] = static::processConditions($value, 'and', false);
+					$string_conditions[] = static::processConditions($value, 'and', false, $table);
 				else
-					$string_conditions[] = static::processConditions($value, $key, true);
+					$string_conditions[] = static::processConditions($value, $key, true, $table);
 			
 		$result = implode(' '.$join.' ', $string_conditions);
 		
@@ -120,16 +152,20 @@ class DAL {
 			return $result;
 	}
 	
-	private static function replace($condition, $params) {
+	private static function replace($condition, $params, $table='') {
 		if(!is_array($params))
 			$params = array($params);
-			
+		
+		#TODO MUST FIX THIS
 		//~ foreach($params as $k=>$v)
 			//~ $params[$k] = mysql_real_escape_string($v, $this->db);
 			
 		if(strpos($condition, '?') === false)
 			if(preg_match('/^[a-zA-Z]+$/', $condition))
-				$condition = '`'.$condition.'` = ?';
+				if($table)
+					$condition = $table.'.`'.$condition.'` = ?';
+				else
+					$condition = '`'.$condition.'` = ?';
 			else
 				$condition = $condition.' = ?';
 		
@@ -144,38 +180,39 @@ class DAL {
 		return $condition;
 	}
 	
-	public function first() {
-		$where = '';
-		$orderBy = '';
-		$limit = 1;
-		
-		if($where = static::processConditions($this->where))
-			$where = ' WHERE '.$where;
-		
-		if($this->orderBy)
-			$orderBy = ' ORDER BY '.$this->orderBy;
-			
-		if($this->offset)
-			$limit = ' LIMIT '.$this->offset.', 1';
-		else
-			$limit = ' LIMIT 1';
-	
-		$sql = 'SELECT * FROM '.$this->table.$where.$orderBy.$limit;
-		
-		return $this->db->query($sql)->first();
+	public function getTable($ref) {
+		foreach($this->tables as $table=>$alias)
+			if($alias == $ref)
+				return $table;
+		return null;
 	}
 	
-	public function get() {
+	public function buildSQL() {
 		$where = '';
 		$orderBy = '';
-		$limit = '';
+		$leftjoin = '';
+		$rightjoin = '';
+		$limit = null;
 		
-		if($where = static::processConditions($this->where))
+		$tables = array();
+		foreach($this->tables as $table=>$alias)
+			if($alias)
+				$tables[] = $table.' '.$alias;
+			else
+				$tables[] = $table;
+		$sqltable = implode(', ', $tables);
+		
+		if(get(array_values($this->tables), 0))
+			$default = get(array_values($this->tables), 0);
+		else
+			$default = get(array_keys($this->tables), 0);
+		
+		if($where = static::processConditions($this->where, 'and', false, $default))
 			$where = ' WHERE '.$where;
 		
 		if($this->orderBy)
 			$orderBy = ' ORDER BY '.$this->orderBy;
-			
+				
 		if($this->limit || $this->offset) {
 			$limit = ' LIMIT ';
 			if($this->offset) {
@@ -188,9 +225,37 @@ class DAL {
 			else
 				$limit .= $this->limit;
 		}
+				
+		foreach($this->rightjoin as $tableName=>$conditions) {
+			$table = $tableName;
+			if(preg_match('/^([a-zA-Z]+).Translation /', $tableName, $matches)) {
+				$ref_table = $this->getTable($matches[1]);
+				$table = preg_replace('/^([a-zA-Z]+)/', $ref_table, $table);
+				$table = str_replace('.Translation', '_translation', $table);
+			}
+			$rightjoin .= ' RIGHT JOIN '.$table.' ON '.static::processConditions($conditions);
+		}
+				
+		foreach($this->leftjoin as $tableName=>$conditions) {
+			$table = $tableName;
+			if(preg_match('/^([a-zA-Z]+).Translation /', $tableName, $matches)) {
+				$ref_table = $this->getTable($matches[1]);
+				$table = preg_replace('/^([a-zA-Z]+)/', $ref_table, $table);
+				$table = str_replace('.Translation', '_translation', $table);
+			}
+			$leftjoin .= ' LEFT JOIN '.$table.' ON '.static::processConditions($conditions);
+		}
 	
-		$sql = 'SELECT * FROM '.$this->table.$where.$orderBy.$limit;
-		
+		return 'SELECT * FROM '.$sqltable.$rightjoin.$leftjoin.$where.$orderBy.$limit;
+	}
+	
+	public function first() {
+		$sql = $this->limit(1)->buildSQL();
+		return $this->db->query($sql)->first();
+	}
+	
+	public function get() {
+		$sql = $this->buildSQL();
 		return $this->db->query($sql)->all();
 	}
 	
@@ -198,10 +263,8 @@ class DAL {
 		$offset = ($page-1)*$per_page;
 		$limit = $per_page;
 		
-		#late binding for non-static..
-		//~ $dal = new DAL($this->table);
-		//~ return $dal->where($this->where)->orderBy($this->orderBy)->offset($offset)->limit($limit)->get();
-		return static::where($this->where)->orderBy($this->orderBy)->offset($offset)->limit($limit)->get();
+		//~ return static::where($this->where)->orderBy($this->orderBy)->offset($offset)->limit($limit)->get();
+		return $this->offset($offset)->limit($limit)->get();
 	}
 	
 	public function update($values) {
@@ -211,13 +274,15 @@ class DAL {
 		
 		if(sizeof($values) == 0)
 			throw new Exception('Update values should not be empty.');
+		
+		$table = get(array_keys($this->tables), 0);
 			
 		$set = array();
 		foreach($values as $k=>$v)
 			$set[] = static::replace('`'.$k.'`=?', $v);
 		$set = ' SET '.implode(', ', $set);
 	
-		$sql = 'UPDATE '.$this->table.$set.$where;
+		$sql = 'UPDATE '.$table.$set.$where;
 		
 		return $this->db->query($sql)->affected();
 	}
@@ -226,6 +291,8 @@ class DAL {
 		if(sizeof($values) == 0)
 			throw new Exception('Insert values should not be empty.');
 		
+		$table = get(array_keys($this->tables), 0);
+			
 		$columns = array();
 		$vals = array();
 		foreach($values as $k=>$v)
@@ -235,7 +302,7 @@ class DAL {
 		
 		$str = ' ('.implode(', ', $columns).') VALUES ('.implode(', ', $vals).')';
 	
-		$sql = 'INSERT INTO '.$this->table.$str;
+		$sql = 'INSERT INTO '.$table.$str;
 		
 		return $this->db->query($sql)->id();
 	}
@@ -255,15 +322,23 @@ class DAL {
 		if($where = static::processConditions($this->where))
 			$where = ' WHERE '.$where;
 	
+		$tables = array();
+		foreach($this->tables as $table=>$alias)
+			if($alias)
+				$tables[] = $table.' '.$alias;
+			else
+				$tables[] = $table;
+		$sqltable = implode(', ', $tables);
+		
 		if($group_by) {
-			$sql = 'SELECT `'.$group_by.'` as groupby, count(*) as total FROM '.$this->table.$where.' GROUP BY '.$group_by;
+			$sql = 'SELECT `'.$group_by.'` as groupby, count(*) as total FROM '.$sqltable.$where.' GROUP BY '.$group_by;
 			$res = array();
 			foreach($this->db->query($sql)->all() as $v)
 				$res[$v['groupby']] = $v['total'];
 			return $res;
 		}
 		else {
-			$sql = 'SELECT count(*) as total FROM '.$this->table.$where;
+			$sql = 'SELECT count(*) as total FROM '.$sqltable.$where;
 			$res = $this->db->query($sql)->first();
 			return $res['total'];
 		}

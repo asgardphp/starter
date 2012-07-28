@@ -40,6 +40,7 @@ function get() {
 	return $result;
 }
 function send($result) {
+	#todo Move this to response send
 	try {
 		\Coxis\Core\Event::trigger('end');
 	} catch(\Exception $e) {

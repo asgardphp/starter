@@ -6,7 +6,10 @@ class ModelException extends \Exception {
 }
 
 abstract class Model {
-	protected $data = array();
+	protected $data = array(
+		'properties'	=>	array(),
+		#todo with others like files, relationships, ..
+	);
 	public static $meta = array();
 	public static $properties = array();
 	public static $files = array();
@@ -28,28 +31,75 @@ abstract class Model {
 	
 	/* MAGIC METHODS */
 	public function __set($name, $value) {
+		$this->setAttribute($name, $value);
+	}
+	
+	public function getAttribute($name, $lang=null) {
+		if(isset(static::$properties[$name]['i18n']) && static::$properties[$name]['i18n']) {
+			if(!$lang)
+				$lang = Config::get('locale');
+			if($lang == 'all') {
+				$langs = Config::get('locales');
+				$res = array();
+				foreach($langs as $lang)
+					$res[$lang] = $this->getAttribute($name, $lang);
+				return $res;
+			}
+			if(Coxis::get('in_view') && is_string($this->data['properties'][$name][$lang]))
+				return HTML::sanitize($this->data['properties'][$name][$lang]);
+			elseif(isset($this->data['properties'][$name][$lang]))
+				return $this->data['properties'][$name][$lang];
+			else {
+				$dal = new DAL(static::getTable().'_translation');
+				$res=$dal->where(array('id'=>$this->id, 'locale'=>$lang))->first();
+				if(!$res)
+					return null;
+				unset($res['id']);
+				unset($res['locale']);
+				foreach($res as $k=>$v)
+					$this->{'set'.$k}($v, $lang);
+					
+				if(isset($this->data['properties'][$name][$lang]))
+					return $this->data['properties'][$name][$lang];
+			}
+		}
+		else
+			if(Coxis::get('in_view') && is_string($this->data['properties'][$name]))
+				return HTML::sanitize($this->data['properties'][$name]);
+			elseif(isset($this->data['properties'][$name]))
+				return $this->data['properties'][$name];
+		return null;
+	}
+	
+	public function setAttribute($name, $value, $lang=null) {
 		if(isset(static::$properties[$name]['setFilter'])) {
 			$filter = static::$properties[$name]['setFilter'];
 			$value = call_user_func_array($filter, array($value));
 		}
-		$this->data[$name] = $value;
+		if(isset(static::$properties[$name]['i18n']) && static::$properties[$name]['i18n']) {
+			if(!$lang)
+				$lang = Config::get('locale');
+			if($lang == 'all')
+				foreach($value as $one => $v)
+					$this->data['properties'][$name][$one] = $v;
+			else
+				$this->data['properties'][$name][$lang] = $value;
+		}
+		else
+			$this->data['properties'][$name] = $value;
 	}
 	
 	public function __get($name) {
-		if(in_array($name, array_keys(static::$properties)) || $name == 'id')
-			if(Coxis::get('in_view'))
-				if(is_string($this->data[$name]))
-					return HTML::sanitize($this->data[$name]);
-				else
-					return $this->data[$name];
-			else
-				return $this->data[$name];
+		if(in_array($name, array_keys(static::$properties)) || $name == 'id') {
+			return $this->getAttribute($name);
+		}
 		elseif(array_key_exists($name, $this::$files)) {
 			$file = new ModelFile($this, $name);
 			return $file;
 		}
 		elseif(array_key_exists($name, $this::$relationships)) {
 			$res = $this->getRelation($name);
+			//~ d($res);
 			if($res instanceof \Coxis\Core\ORM)
 				return $res->get();
 			else
@@ -58,11 +108,11 @@ abstract class Model {
 	}
 	
 	public function __isset($name) {
-		return isset($this->data[$name]);
+		return isset($this->data['properties'][$name]);
 	}
 	
 	public function __unset($name) {
-		unset($this->data[$name]);
+		unset($this->data['properties'][$name]);
 	}
 
 	public function __call($name, $arguments) {
@@ -71,21 +121,17 @@ abstract class Model {
 		$what = strtolower(substr($name, 3));
 		
 		if($todo=='set') {
-			$model = $arguments[0];
-			$relationships = static::$relationships;
-			if(array_key_exists($what, $relationships) && is_object($model) && get_parent_class($model)=='Model' && isset($model->id)) {
-				$id_field = $what.'_id';
-				$this->$id_field = $model->id;
-				$this->$what = $model;
-				
-				return 1;
-			}
+			$value = $arguments[0];
+			$lang = null;
+			if(isset($arguments[1]))
+				$lang = $arguments[1];
+			$this->setAttribute($what, $value, $lang);
 		}
 		elseif($todo=='get') {
+			$lang = null;
 			if(isset($arguments[0]))
-				return $this->getRelation($what, $arguments[0]);
-			else
-				return $this->getRelation($what);
+				$lang = $arguments[0];
+			return $this->getAttribute($what, $lang);
 		}
 		else {
 			if(array_key_exists($name, $this::$relationships)) {
@@ -100,6 +146,7 @@ abstract class Model {
 			$property = $matches[1];
 			$val = $arguments[0];
 			try {
+				#todo ORM i18n
 				return static::getORM()->where(array($property => $val))->first();
 			} catch(\Exception $e) {
 				if(is_a($e, 'DBException'))
@@ -211,7 +258,7 @@ abstract class Model {
 	}
 	
 	public function raw($name) {
-		return $this->data[$name];
+		return $this->data['properties'][$name];
 	}
 	
 	public static function relationData($model, $name) {
@@ -250,13 +297,13 @@ abstract class Model {
 					return null;
 					
 				$link = $rel['link'];
-				return $model::where(array($link.' = ?' => $this->id))->first();
+				return $model::where(array($link => $this->id))->first();
 			case 'belongsTo':
 				if($this->isNew())
 					return null;
 					
 				$link = $rel['link'];
-				return $model::where(array('id = ?' => $this->$link))->first();
+				return $model::where(array('id' => $this->$link))->first();
 			case 'hasMany':
 			case 'HMABT':
 				if($this->isNew())
@@ -283,7 +330,7 @@ abstract class Model {
 	}
 	
 	public function isNew() {
-		return !isset($this->id);
+		return !(isset($this->data['properties']['id']) && $this->data['properties']['id']);
 	}
 	public static function create($values=array()) {
 		$m = new static($values);
@@ -302,10 +349,18 @@ abstract class Model {
 	
 	public function loadFromID($id) {
 		$res = static::getORM()->dal()->where(array('id' => $id))->first();
+			
 		if($res) {
 			$this->set($res);
 			return true;
 		}
+		return false;
+	}
+	
+	public static function isI18N() {
+		foreach(static::$properties as $prop)
+			if(isset($prop['i18n']) && $prop['i18n'])
+				return true;
 		return false;
 	}
 	
@@ -358,20 +413,31 @@ abstract class Model {
 	public function getVars() {
 		$attrs = $this->getAttributes();
 		$vars = array();
+		//~ d($this->data['properties']);
 		
 		foreach($attrs as $attr) {
-			if(!isset($this->$attr))
+			if(!isset($this->data['properties'][$attr]))
 				$vars[$attr] = '';
 			else
-				$vars[$attr] = $this->$attr;
+				$vars[$attr] = $this->data['properties'][$attr];
 		}
+		//~ d($vars);
 		
 		return $vars;
 	}
 	
 	public static function getORM() {
 		$orm = new ORM(static::getClassName());
-		return $orm->orderBy(static::$meta['order_by']);
+		//~ if(static::isI18N()){
+			//~ $orm->leftjoin(array(
+				//~ 'a.Translation t'	=>	array(
+					//~ 'a.id = t.id',
+					//~ 't.locale = ?'	=>	Config::get('locale'),
+				//~ ),
+			//~ ));
+		//~ }
+		//~ return $orm->orderBy(static::$meta['order_by']);
+		return $orm;
 	}
 	
 	/* VALIDATION */
@@ -446,7 +512,8 @@ abstract class Model {
 		if(!$force) {
 			#validate params and files
 			if($errors = $this->errors()) {
-				$e = new ModelException();
+				$msg = implode('<br>'."\n", $errors);
+				$e = new ModelException($msg);
 				$e->errors = $errors;
 				throw $e;
 			}
@@ -455,6 +522,7 @@ abstract class Model {
 		$this->move_files();
 		
 		$vars = $this->getVars();
+		//~ d($vars);
 		
 		//Persist local id field
 		foreach(static::$relationships as $relationship => $params) {
@@ -482,15 +550,42 @@ abstract class Model {
 			}
 		}
 		
-		//new
-		if(!isset($this->id)) {
-			$this->id = static::getORM()->insert($vars);
+		$values = array();
+		$i18n = array();
+		//~ d($vars);
+		foreach($vars as $p => $v) {
+			if(isset(static::$properties[$p]['i18n']) && static::$properties[$p]['i18n']) {
+				foreach($v as $lang=>$lang_value) {
+					$i18n[$lang][$p] = $lang_value;
+				}
+			}
+			else
+				$values[$p] = $v;
 		}
+		//~ d($values, $i18n);
+		
+		//new
+		if(!isset($this->id))
+			$this->id = static::getORM()->insert($values);
 		//existing
 		elseif(sizeof($vars) > 0) {
 			$orm = static::getORM();
-			if(!$orm->where(array('id'=>$this->id))->update($vars))
-				$orm->insert(array_merge(array('id' => $this->id), $vars));
+			if(!$orm->where(array('id'=>$this->id))->update($values))
+				$this->id = $orm->insert($values);
+		}		
+		
+		foreach($i18n as $lang=>$values) {
+			$orm = static::getORM()->setTable(static::getTable().'_translation');
+			if(!$orm->where(array('id'=>$this->id, 'locale'=>$lang))->update($values))
+				$orm->insert(
+					array_merge(
+						$values, 
+						array(
+							'locale'=>$lang, 
+							'id'=>$this->id,
+						)
+					)
+				);
 		}
 	
 		//Persist relationships

@@ -7,6 +7,45 @@ class ActualiteController extends Controller {
 	@Route('')
 	*/
 	public function indexAction($request) {
+		//~ d(Commentaire::with('actualite')->get());
+	
+		//~ $coms = Commentaire::with('actualite')->get();
+		//~ d($coms[0]->actualite->test);
+		//~ d($coms[0]->actualite[0]->test);
+	
+		//~ $com = new Commentaire(2);
+		
+		//~ d($com->actualite[0]->test);
+	
+		//~ $actu = new \Coxis\App\Actualite\Models\Actualite(2);
+		$actu = new Actualite(37);
+		$actu->test = 'un test !';
+		$actu->titre = 'aaa';
+		$actu->introduction = 'aaa';
+		$actu->contenu = 'aaa';
+		$actu->commentaire_id = 0;
+		//~ $actu->setTest('a test', 'en');
+		//~ $actu->setTest('un test', 'fr');
+		//~ $actu->setTest('un test', 'fr');
+		//~ $actu->setTest(
+			//~ array(
+				//~ 'fr'	=>	'un test',
+				//~ 'en'	=>	'a test',
+			//~ ),
+			//~ 'all'
+		//~ );
+		//~ $actu->test;
+		//~ d($actu->getTest());
+		//~ d($actu->getTest('fr'));
+		//~ d($actu->getTest('en'));
+		//~ var_dump($actu->getTest('all'));die();
+		$actu->save();
+		d();
+		
+		$actu = new Actualite(2);
+		//~ d($actu);
+		d($actu->test);
+		
 		//~ $actu = new Actualite(17);
 		//~ d($actu->image->__toString());
 		

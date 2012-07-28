@@ -201,8 +201,7 @@ namespace Coxis\Core {
 							return true;
 						else {
 							#maybe the loaded class uses another namespace?
-							$res = array_values(preg_grep('/'.basename($class).'/i', $diff));
-							
+							$res = array_values(preg_grep('/'.basename($class).'$/i', $diff));
 							$loadedClass = $res[sizeof($res)-1];
 							try {
 								class_alias($loadedClass, $class);

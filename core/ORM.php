@@ -6,16 +6,45 @@ class ORM {
 	private $with = null;
 	private $dal = null;
 		
-	function __construct($model, $table=null) {
+	function __construct($model, $tables=array()) {
 		$this->model = $model;
-		if(!$table)
-			$this->dal = new \Coxis\Core\DAL($model::getTable());
+		
+		if(!$tables)
+			$this->dal = new \Coxis\Core\DAL(array($model::getTable() => 'a'));
 		else
-			$this->dal = new \Coxis\Core\DAL($table);
+			$this->dal = new \Coxis\Core\DAL($tables);
+			
+		if($model::isI18N()){
+			$this->leftjoin(array(
+				'a.Translation t'	=>	array(
+					'a.id = t.id',
+					't.locale = ?'	=>	Config::get('locale'),
+				),
+			));
+		}
+		$this->orderBy($model::$meta['order_by']);
 	}
 	
-	public function setTable($table) {
-		$this->dal->table = $table;
+	public function setTable($table, $alias=null) {
+		$this->dal->setTable($table, $alias);
+		
+		return $this;
+	}
+	
+	public function setTables($tables) {
+		$this->dal->setTables($tables);
+		
+		return $this;
+	}
+	
+	public function leftjoin($jointures) {
+		$this->dal->leftjoin($jointures);
+		
+		return $this;
+	}
+	
+	public function rightjoin($jointures) {
+		$this->dal->rightjoin($jointures);
 		
 		return $this;
 	}
@@ -88,11 +117,6 @@ class ORM {
 		if(!sizeof($res))
 			return false;
 		return $res[0];
-		
-		//~ $res = $this->dal()->first();
-		//~ if($res)
-			//~ return new $model($res);
-		//~ return false;
 	}
 	
 	public function reset() {
@@ -128,7 +152,7 @@ class ORM {
 					case 'belongsTo':
 						$link = $rel['link'];
 						
-						$res = $relation_model::where(array('id IN ('.implode(', ', $ids).')'))->get();
+						$res = $relation_model::where(array('a.id IN ('.implode(', ', $ids).')'))->get();
 						foreach($models as $model) {
 							$id = $model->$link;
 							$filter = array_filter($res, function($result) use ($id) {
@@ -143,7 +167,7 @@ class ORM {
 					case 'hasMany':
 						$link = $rel['link'];
 						
-						$orm = $relation_model::where(array($link.' IN ('.implode(', ', $ids).')'));
+						$orm = $relation_model::where(array('a.'.$link.' IN ('.implode(', ', $ids).')'));
 						if(is_callable($closure))
 							$closure($orm);
 						$res = $orm->get();
@@ -158,11 +182,16 @@ class ORM {
 						$join_table = $rel['join_table'];
 						$currentmodel_idfield = $rel['link_a'];
 						$relationmodel_idfield = $rel['link_b'];
-						
-						$orm = $relation_model::setTable($join_table.' as a, '.$relation_model::getTable().' as b')->where(array(
-							'a.'.$currentmodel_idfield.' IN ('.implode(', ', $ids).')',#
-							'a.'.$relationmodel_idfield.' = b.id',
+
+						$orm = $relation_model::rightjoin(array(
+							'arpa_actualite_commentaire b' => array(
+								'a.id = b.actualite_id',
+							),
+						))->where(array(
+							'b.'.$currentmodel_idfield.' IN ('.implode(', ', $ids).')',#
+							'b.'.$relationmodel_idfield.' = a.id',
 						));
+
 						if(is_callable($closure))
 							$closure($orm);
 						$res = $orm->get();

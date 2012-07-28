@@ -7,6 +7,9 @@ $config = array(
 		'salt'	=>	'FCT7f6ew%^',
 		'imagecache'	=>	false,
 		'locale'	=>	'fr',
+		'locales'	=>	array(
+			'fr', 'en'
+		),
 		'cache'	=>	array(
 			'method'	=>	'apc',
 		)
