@@ -1,4 +1,6 @@
 <?php
+namespace Coxis\Core;
+
 #todo select only some columns
 class DAL {
 	public $db = null;

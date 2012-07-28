@@ -1,12 +1,12 @@
 <?php
 namespace Coxis\Bundles\Admin\Libs\Controller;
 
-abstract class AdminParentController extends Controller {
+abstract class AdminParentController extends \Coxis\Core\Controller {
 	public function configure($request) {
-		Coxis::set('layout', array('Admin', 'layout'));
-		if(!User::get('admin_id')) {
+		\Coxis\Core\Coxis::set('layout', array('\Coxis\Bundles\Admin\Controllers\Admin', 'layout'));
+		if(!\Coxis\Core\User::get('admin_id')) {
 			$_SESSION['redirect_to'] = URL::full();
-			Response::setCode(401)->redirect('admin/login', true)->send();
+			\Coxis\Core\Response::setCode(401)->redirect('admin/login', true)->send();
 		}
 	}
 }

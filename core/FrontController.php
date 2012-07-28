@@ -3,7 +3,7 @@
 namespace {
 	function _frontcontrollerGlobal() {
 		function url_for($what, $params=array(), $relative=true) {
-			return URL::url_for($what, $params, $relative);
+			return \Coxis\Core\URL::url_for($what, $params, $relative);
 		}
 	}
 }

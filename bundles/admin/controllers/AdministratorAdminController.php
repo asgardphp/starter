@@ -4,7 +4,7 @@ namespace Coxis\Bundles\Admin\Controllers;
 /**
 @Prefix('admin/administrators')
 */
-class AdministratorAdminController extends ModelAdminController {
+class AdministratorAdminController extends \Coxis\Bundles\Admin\Libs\Controller\ModelAdminController {
 	static $_model = 'administrator';
 	static $_messages = array();
 	

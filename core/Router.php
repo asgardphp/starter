@@ -40,7 +40,6 @@ class Router {
 		$controllerName = ucfirst(strtolower($controllerName));
 		$controllerClassName = $controllerName.'Controller';
 		$controller = new $controllerClassName();
-		
 		return static::runAction($controller, $actionName, $params, $src, $showView);
 	}
 

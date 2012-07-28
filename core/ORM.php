@@ -9,9 +9,9 @@ class ORM {
 	function __construct($model, $table=null) {
 		$this->model = $model;
 		if(!$table)
-			$this->dal = new DAL($model::getTable());
+			$this->dal = new \Coxis\Core\DAL($model::getTable());
 		else
-			$this->dal = new DAL($table);
+			$this->dal = new \Coxis\Core\DAL($table);
 	}
 	
 	public function setTable($table) {
@@ -204,7 +204,7 @@ class ORM {
 		foreach($rows as $row)
 			$models[] = new $model($row);
 		
-		return array($models, new Paginator($per_page, $this->count(), $page));
+		return array($models, new \Coxis\Core\Tools\Paginator($per_page, $this->count(), $page));
 	}
 	
 	public function with($with, $closure=null) {

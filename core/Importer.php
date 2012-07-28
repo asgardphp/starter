@@ -169,6 +169,9 @@ namespace Coxis\Core {
 					if(class_exists($class, false))
 						return true;
 				}
+				
+				//~ d();#only to test importer
+				
 				#lookup for global classes
 				if(dirname($class) == '.') {
 					$classes = array();

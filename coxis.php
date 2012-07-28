@@ -14,9 +14,9 @@ if(!defined('_ENV_'))
 
 /* UTILS */
 function d() {
-	try {
-		while(ob_end_clean()){}
-	} catch(\ErrorException $e) {}
+	while(ob_get_level()){
+		ob_end_clean();
+	}
 		
 	if(php_sapi_name() != 'cli')
 		echo '<pre>';
@@ -41,16 +41,16 @@ function get() {
 }
 function send($result) {
 	try {
-		Event::trigger('end');
+		\Coxis\Core\Event::trigger('end');
 	} catch(\Exception $e) {
 		Error::report($e->getMessage(), $e->getTrace());
 	}
-	Response::sendHeaders($result->headers);
+	\Coxis\Core\Response::sendHeaders($result->headers);
 	echo $result->content;
 	exit();
 }
 function __($key, $params=array()) {
-	return Locale::translate($key, $params);
+	return \Coxis\Core\Locale::translate($key, $params);
 }
 
 ob_start();
@@ -58,7 +58,7 @@ ob_start();
 /* CORE/LIBS */
 require_once 'core/Autoloader.php';
 spl_autoload_register(array('Coxis\Core\Autoloader', 'loadClass'));
-Autoloader::preloadDir('core');
+\Coxis\Core\Autoloader::preloadDir('core');
 
 /* ERRORS/EXCEPTIONS */
 set_error_handler(function ($errno, $errstr, $errfile, $errline) {
@@ -74,14 +74,14 @@ set_exception_handler(function ($e) {
 			'file'	=>	$e->getFile(),
 			'line'	=>	$e->getLine(),
 		));
-		$result = Error::report($e->getMessage(), array_merge($first_trace, $e->getTrace()));
+		$result = \Coxis\Core\Error::report($e->getMessage(), array_merge($first_trace, $e->getTrace()));
 	}
 	send($result);
 });
 register_shutdown_function(function () {
 	chdir(dirname(__FILE__));//wtf?
 	if($e=error_get_last()) {
-		$result = Error::report("($e[type]) $e[message]<br>
+		$result = \Coxis\Core\Error::report("($e[type]) $e[message]<br>
 			$e[file] ($e[line])", array(array('file'=>$e['file'], 'line'=>$e['line'])));
 		send($result);
 	}

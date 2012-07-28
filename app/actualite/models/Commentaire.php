@@ -1,4 +1,6 @@
 <?php
+namespace Coxis\App\Actualite\Models;
+
 class Commentaire extends \Coxis\Core\Model {
 	public static $properties = array(
 		'titre',
@@ -15,7 +17,7 @@ class Commentaire extends \Coxis\Core\Model {
 	
 	public static $relationships = array(
 		'actualite'	=>	array(
-			'model'	=>	'actualite',
+			'model'	=>	'\Coxis\App\Actualite\Models\Actualite',
 			'type'		=>	'belongsTo',
 		),
 	);

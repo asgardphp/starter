@@ -1,4 +1,6 @@
 <?php
+namespace Coxis\Core;
+
 class Locale {
 	private static $default = 'en';
 	private static $locale = 'en';
@@ -18,15 +20,15 @@ class Locale {
 		include_once('vendors/yaml/sfYamlParser.php');
 		
 		if(\Coxis\Core\Config::get('phpcache'))
-			static::$locales = Cache::get('locales');
+			static::$locales = \Coxis\Core\Cache::get('locales');
 		if(!static::$locales) {
 			Coxis::set('load_locales', true);
 			static::importLocales('locales');
 		}
 		
-		Event::addHook('end', function() {
+		\Coxis\Core\Event::addHook('end', function() {
 			if(\Coxis\Core\Config::get('phpcache'))
-				Cache::set('locales', Locale::$locales);
+				\Coxis\Core\Cache::set('locales', Locale::$locales);
 		});
 	}
 
@@ -54,7 +56,7 @@ class Locale {
 	}
 	
 	public static function import($lang, $file) {
-		$yaml = new sfYamlParser();
+		$yaml = new \sfYamlParser();
 		$raw = $yaml->parse(file_get_contents($file));
 		if(!isset(static::$locales[$lang]))
 			static::$locales[$lang] = array();

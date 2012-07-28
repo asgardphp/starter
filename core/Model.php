@@ -192,7 +192,7 @@ abstract class Model {
 		if(is_array($model_relationships))
 			foreach($model_relationships as $relationship => $params)
 				if($params['type'] == 'belongsTo') {
-					$rel = static::relationData(static::getModelName(), $relationship);
+					$rel = static::relationData(static::getClassName(), $relationship);
 					static::addProperty($rel['link'], array('type' => 'integer', 'required' => (isset($params['required']) && $params['required']), 'editable'=>false));
 				}
 	}

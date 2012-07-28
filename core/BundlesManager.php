@@ -54,6 +54,7 @@ class BundlesManager {
 							static::$routes[] = array(
 								'route'	=>	$route,
 								'controller'		=>	static::formatControllerName($classname), 
+								//~ 'controller'		=>	$classname, 
 								'action'			=>	static::formatActionName($method),
 								'requirements'	=>	$method_reflection->getAnnotation('Route')->requirements,
 								'method'	=>	$method_reflection->getAnnotation('Route')->method,
@@ -69,7 +70,11 @@ class BundlesManager {
 							$priority *= 1000;
 							while(isset(BundlesManager::$hooks_table[$hook][$priority]))
 								$priority += 1;
-							BundlesManager::$hooks_table[$hook][$priority] = array('controller'=>static::formatControllerName($classname), 'action'=>static::formatActionName($method));
+							BundlesManager::$hooks_table[$hook][$priority] = array(
+								'controller'=>static::formatControllerName($classname),
+								//~ 'controller'=>$classname,
+								'action'=>static::formatActionName($method)
+							);
 						}
 						if($method_reflection->getAnnotation('Filter')) {
 							$filter = $method_reflection->getAnnotation('Filter')->value;
@@ -145,6 +150,7 @@ class BundlesManager {
 		
 		if(\Coxis\Core\Config::get('phpcache')) {
 			Event::addHook('end', function() {
+				//~ d(BundlesManager::$routes);
 				\Coxis\Core\Cache::set('routing/routes', BundlesManager::$routes);
 				\Coxis\Core\Cache::set('routing/hooks', BundlesManager::$hooks_table);
 				\Coxis\Core\Cache::set('routing/filters', BundlesManager::$filters_table);

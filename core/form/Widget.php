@@ -69,8 +69,8 @@ class Widget extends WidgetHelper {
 		#todo with Coxis javascript
 		//~ d($widget);
 		if(isset($widget['view']['placeholder']))
-			JS::placeholder('#'.$this->getID(), $widget['view']['placeholder']);
-		echo HTMLHelper::tag('input', $params);
+			\Coxis\Core\JS::placeholder('#'.$this->getID(), $widget['view']['placeholder']);
+		echo \Coxis\Core\Form\HTMLHelper::tag('input', $params);
 		
 		return $this;
 	}

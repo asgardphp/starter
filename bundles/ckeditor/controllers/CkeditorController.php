@@ -1,7 +1,7 @@
 <?php
 namespace Coxis\Bundles\Ckeditor\Controllers;
 
-class CkeditorController extends Controller {
+class CkeditorController extends \Coxis\Core\Controller {
 	/**
 	@Route('bundles/ckeditor/ckeditor/config.js')
 	**/

@@ -4,7 +4,7 @@ namespace Coxis\Bundles\Value\Controllers;
 /**
 @Prefix('admin/preferences')
 */
-class PreferencesAdminController extends AdminParentController {
+class PreferencesAdminController extends \Coxis\Bundles\Admin\Libs\Controller\AdminParentController {
 	static $_messages = array(
 		'modified'			=>	'Préférences mises à jour avec succès.',
 	);

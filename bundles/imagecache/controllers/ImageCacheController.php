@@ -4,7 +4,7 @@ namespace Coxis\Bundles\Imagecache\Controllers;
 /**
 @Prefix('imagecache/')
 */
-class ImageCacheController extends Controller {
+class ImageCacheController extends \Coxis\Core\Controller {
 	private function apply($img, $preset) {
 		$preset = ImageCache::getPreset($preset);
 		foreach($preset as $op=>$params)

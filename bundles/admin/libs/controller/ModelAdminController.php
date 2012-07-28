@@ -25,7 +25,7 @@ class ModelAdminController extends AdminParentController {
 		$model_behaviors = $model::$behaviors;
 		foreach($model_behaviors as $behavior => $params)
 			if($params)
-				Event::trigger('behaviors_coxisadmin_'.$behavior, static::getControllerName());
+				\Coxis\Core\Event::trigger('behaviors_coxisadmin_'.$behavior, static::getControllerName());
 		
 		if(static::$_models == null)
 			static::$_models = basename(strtolower(static::$_model.'s'));
@@ -242,10 +242,10 @@ class ModelAdminController extends AdminParentController {
 	public static function addHook($hook) {
 		static::$_hooks[] = $hook;
 		
-		$hook['route'] = str_replace(':route', $hook['route'], Router::getRouteFor(array(static::getControllerName(), 'hooks')));
+		$hook['route'] = str_replace(':route', $hook['route'], \Coxis\Core\Router::getRouteFor(array(static::getControllerName(), 'hooks')));
 		$hook['controller'] = static::getControllerName();
 		$hook['action'] = 'hooks';
-		BundlesManager::$routes[] = $hook;
+		\Coxis\Core\BundlesManager::$routes[] = $hook;
 	}
 	
 	/**

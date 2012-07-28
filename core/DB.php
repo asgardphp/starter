@@ -48,10 +48,6 @@ class Query {
 	private $rsc;
 
 	public function __construct($db, $sql) {
-	if(!isset($GLOBALS['i']))
-	$GLOBALS['i'] = 1;
-		Log::write('db.txt', $sql.'-'.($GLOBALS['i']));
-		$GLOBALS['i'] = $GLOBALS['i']+1;
 		$this->db = $db;
 		try {
 			$rsc = $db->query($sql);

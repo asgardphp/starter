@@ -2,7 +2,7 @@
 /**
 @Prefix('admin/inscrits')
 */
-class InscritAdminController extends AdminModelForm {
+class InscritAdminController extends \Coxis\Bundles\Admin\Libs\Form\AdminModelForm {
 	static $_model = 'inscrit';
 	static $_models = 'inscrits';
 	
