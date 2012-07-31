@@ -1,7 +1,8 @@
 <?php
 namespace Coxis\App\Actualite\Models;
 
-class Actualite extends \Coxis\Core\Model {
+//~ class Actualite extends \Coxis\Core\Model {
+class Actualite extends \Coxis\Core\ORM\ModelORM {
 	public static $properties = array(
 		'titre',
 		'date'    =>    array(
@@ -31,7 +32,7 @@ class Actualite extends \Coxis\Core\Model {
 			'model'	=>	'\Coxis\App\Actualite\Models\Commentaire',
 			//~ 'type'		=>	'HMABT',
 			//~ 'type'		=>	'hasOne',
-			'type'		=>	'belongsTo',
+			'type'		=>	'hasMany',
 			//~ 'type'		=>	'hasMany',
 			//~ HMABT
 		),
@@ -39,7 +40,7 @@ class Actualite extends \Coxis\Core\Model {
 	
 	public static $behaviors = array(
 		'slugify' => true,
-		'sortable' => true,
+		//~ 'sortable' => true,
 	);
 		
 	public static $meta = array();

@@ -1,7 +1,8 @@
 <?php
 namespace Coxis\App\Actualite\Models;
 
-class Commentaire extends \Coxis\Core\Model {
+//~ class Commentaire extends \Coxis\Core\Model {
+class Commentaire extends \Coxis\Core\ORM\ModelORM {
 	public static $properties = array(
 		'titre',
 	);

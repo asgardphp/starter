@@ -120,12 +120,12 @@ class ModelForm extends Form {
 		if($res)
 			$data = $res;
 			
-		$this->model->set($data);
-		$this->model->setFiles($this->files);
-		$this->model->pre_save();
+		$this->model
+			->set($data)
+			->setFiles($this->files)
+			->pre_save();
 		
 		return array_merge(parent::my_errors(), $this->model->errors());
-		//~ return $this->model->errors();
 	}
 	
 	public function save() {

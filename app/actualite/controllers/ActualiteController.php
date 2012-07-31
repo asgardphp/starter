@@ -7,6 +7,22 @@ class ActualiteController extends Controller {
 	@Route('')
 	*/
 	public function indexAction($request) {
+		$actu = new Actualite(array(
+			'titre'=>'le titre',
+			'introduction'=>'introduction',
+			'contenu'=>'contenu',
+		));
+		//~ d($actu->titre);
+		d($actu->save());
+	
+		//~ d(Actualite::where(array('id' => '2'))->get());
+	
+		$actu = new Actualite(2);
+		//~ d($actu);
+		//~ d($actu->test);
+		//~ d($actu->getTest('en'));
+		d($actu->commentaires);
+	
 		//~ d(Commentaire::with('actualite')->get());
 	
 	/*

@@ -15,10 +15,7 @@ class DAL {
 		
 	function __construct($tables) {
 		$this->db = DB::getInstance();
-		//~ $a = $tables;
 		$this->setTables($tables);
-		//~ if($a == 'arpa_actualite')
-			//~ d($tables, $this->tables);
 	}
 	
 	public function setTable($table, $alias='a') {
@@ -112,19 +109,6 @@ class DAL {
 		$this->orderBy = $orderBy;
 		return $this;
 	}
-		
-	//~ public function with($arg1, $arg2) {
-		//~ if(!is_array($arg1))
-			//~ $with = array($arg1 => $arg2);
-		//~ else
-			//~ $with = $arg1;
-		
-		//~ if($this->with === null)
-			//~ $this->with = array();
-		//~ $this->with = array_merge($this->with, $with);
-		
-		//~ return $this;
-	//~ }
 	
 	private static function processConditions($conditions, $join = 'and', $brackets=false, $table=null) {
 		if(sizeof($conditions) == 0)
@@ -242,6 +226,7 @@ class DAL {
 				$ref_table = $this->getTable($matches[1]);
 				$table = preg_replace('/^([a-zA-Z]+)/', $ref_table, $table);
 				$table = str_replace('.Translation', '_translation', $table);
+				#todo move it into ORM
 			}
 			$leftjoin .= ' LEFT JOIN '.$table.' ON '.static::processConditions($conditions);
 		}
@@ -260,11 +245,10 @@ class DAL {
 	}
 	
 	public function paginate($page, $per_page=10) {
-		$offset = ($page-1)*$per_page;
-		$limit = $per_page;
+		$this->offset(($page-1)*$per_page);
+		$this->limit($per_page);
 		
-		//~ return static::where($this->where)->orderBy($this->orderBy)->offset($offset)->limit($limit)->get();
-		return $this->offset($offset)->limit($limit)->get();
+		return $this;
 	}
 	
 	public function update($values) {

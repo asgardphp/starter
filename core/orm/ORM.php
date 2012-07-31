@@ -1,114 +1,25 @@
 <?php
-namespace Coxis\Core;
+namespace Coxis\Core\ORM;
 
 class ORM {
 	private $model = null;
 	private $with = null;
 	private $dal = null;
 		
-	function __construct($model, $tables=array()) {
+	function __construct($model) {
 		$this->model = $model;
 		
-		if(!$tables)
-			$this->dal = new \Coxis\Core\DAL(array($model::getTable() => 'a'));
-		else
-			$this->dal = new \Coxis\Core\DAL($tables);
+		$this->dal = new \Coxis\Core\DAL(array($model::getTable() => 'a'));
 			
 		if($model::isI18N()){
 			$this->leftjoin(array(
 				'a.Translation t'	=>	array(
 					'a.id = t.id',
-					't.locale = ?'	=>	Config::get('locale'),
+					't.locale'	=>	Config::get('locale'),
 				),
 			));
 		}
 		$this->orderBy($model::$meta['order_by']);
-	}
-	
-	public function setTable($table, $alias=null) {
-		$this->dal->setTable($table, $alias);
-		
-		return $this;
-	}
-	
-	public function setTables($tables) {
-		$this->dal->setTables($tables);
-		
-		return $this;
-	}
-	
-	public function getI18N($lang) {
-		$model = $this->model;
-		$dal = new DAL($model::getTable().'_translation');
-		return $dal->where($this->dal()->where)->where(array('locale'=>$lang))->first();
-	}
-	
-	public function leftjoin($jointures) {
-		$this->dal->leftjoin($jointures);
-		
-		return $this;
-	}
-	
-	public function rightjoin($jointures) {
-		$this->dal->rightjoin($jointures);
-		
-		return $this;
-	}
-	
-	public function where($conditions) {
-		$this->dal->where($conditions);
-		
-		return $this;
-	}
-	
-	public function offset($offset) {
-		$this->dal->offset($offset);
-		
-		return $this;
-	}
-	
-	public function limit($limit) {
-		$this->dal->limit($limit);
-		
-		return $this;
-	}
-	
-	public function orderBy($orderBy) {
-		$this->dal->orderBy($orderBy);
-		
-		return $this;
-	}
-	
-	public function insert($values) {
-		return $this->dal->insert($values);
-	}
-	
-	public function delete() {
-		return $this->dal->delete();
-	}
-	
-	public function update($values) {
-		return $this->dal->update($values);
-	}
-	
-	public function count($group_by=null) {
-		return $this->dal->count($group_by);
-	}
-	
-	public function min($what, $group_by=null) {
-		return $this->dal->min($what, $group_by);
-	}
-	
-	public function max($what, $group_by=null) {
-		return $this->dal->max($what, $group_by);
-	}
-	
-	public function avg($what, $group_by=null) {
-		return $this->dal->avg($what, $group_by);
-	}
-	
-	public function sum($what, $group_by=null) {
-		return $this->dal->sum($what, $group_by);
 	}
 	
 	public function dal() {
@@ -123,12 +34,6 @@ class ORM {
 		if(!sizeof($res))
 			return false;
 		return $res[0];
-	}
-	
-	public function reset() {
-		$this->dal->reset();
-		
-		return $this;
 	}
 	
 	public function all() {
@@ -228,22 +133,101 @@ class ORM {
 		return $models;
 	}
 	
-	public function paginate($page, $per_page=10) {
-		$models = array();
-		$model = $this->model;
+	public function paginate($page, $per_page=10, &$paginator=null) {
+		$this->dal->paginate($page, $per_page);
+		$paginator = new \Coxis\Core\Tools\Paginator($per_page, $this->count(), $page);
 		
-		#todo
-		#limit, offset and then get().. to have with support.. ?
-		
-		$rows = $this->dal->paginate($page, $per_page);
-		foreach($rows as $row)
-			$models[] = new $model($row);
-		
-		return array($models, new \Coxis\Core\Tools\Paginator($per_page, $this->count(), $page));
+		return $this->get();
 	}
 	
 	public function with($with, $closure=null) {
 		$this->with[$with] = $closure;
+		
+		return $this;
+	}
+	
+	public function setTable($table, $alias=null) {
+		$this->dal->setTable($table, $alias);
+		
+		return $this;
+	}
+	
+	public function setTables($tables) {
+		$this->dal->setTables($tables);
+		
+		return $this;
+	}
+	
+	public function leftjoin($jointures) {
+		$this->dal->leftjoin($jointures);
+		
+		return $this;
+	}
+	
+	public function rightjoin($jointures) {
+		$this->dal->rightjoin($jointures);
+		
+		return $this;
+	}
+	
+	public function where($conditions) {
+		$this->dal->where($conditions);
+		
+		return $this;
+	}
+	
+	public function offset($offset) {
+		$this->dal->offset($offset);
+		
+		return $this;
+	}
+	
+	public function limit($limit) {
+		$this->dal->limit($limit);
+		
+		return $this;
+	}
+	
+	public function orderBy($orderBy) {
+		$this->dal->orderBy($orderBy);
+		
+		return $this;
+	}
+	
+	public function insert($values) {
+		return $this->dal->insert($values);
+	}
+	
+	public function delete() {
+		return $this->dal->delete();
+	}
+	
+	public function update($values) {
+		return $this->dal->update($values);
+	}
+	
+	public function count($group_by=null) {
+		return $this->dal->count($group_by);
+	}
+	
+	public function min($what, $group_by=null) {
+		return $this->dal->min($what, $group_by);
+	}
+	
+	public function max($what, $group_by=null) {
+		return $this->dal->max($what, $group_by);
+	}
+	
+	public function avg($what, $group_by=null) {
+		return $this->dal->avg($what, $group_by);
+	}
+	
+	public function sum($what, $group_by=null) {
+		return $this->dal->sum($what, $group_by);
+	}
+	
+	public function reset() {
+		$this->dal->reset();
 		
 		return $this;
 	}

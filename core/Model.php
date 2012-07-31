@@ -15,7 +15,6 @@ abstract class Model {
 	public static $files = array();
 	public static $relationships = array();
 	public static $behaviors = array();
-	public static $file_messages = array();
 	public static $messages = array();
 	
 	public function __construct($param='') {
@@ -34,63 +33,9 @@ abstract class Model {
 		$this->setAttribute($name, $value);
 	}
 	
-	public function getAttribute($name, $lang=null) {
-		if(isset(static::$properties[$name]['i18n']) && static::$properties[$name]['i18n']) {
-			if(!$lang)
-				$lang = Config::get('locale');
-			if($lang == 'all') {
-				$langs = Config::get('locales');
-				$res = array();
-				foreach($langs as $lang)
-					$res[$lang] = $this->getAttribute($name, $lang);
-				return $res;
-			}
-			if(Coxis::get('in_view') && is_string($this->data['properties'][$name][$lang]))
-				return HTML::sanitize($this->data['properties'][$name][$lang]);
-			elseif(isset($this->data['properties'][$name][$lang]))
-				return $this->data['properties'][$name][$lang];
-			else {
-				$res = static::myDM()->getI18N($lang);
-				if(!$res)
-					return null;
-				unset($res['id']);
-				unset($res['locale']);
-				foreach($res as $k=>$v)
-					$this->{'set'.$k}($v, $lang);
-					
-				if(isset($this->data['properties'][$name][$lang]))
-					return $this->data['properties'][$name][$lang];
-			}
-		}
-		else
-			if(Coxis::get('in_view') && is_string($this->data['properties'][$name]))
-				return HTML::sanitize($this->data['properties'][$name]);
-			elseif(isset($this->data['properties'][$name]))
-				return $this->data['properties'][$name];
-		return null;
-	}
-	
-	public function setAttribute($name, $value, $lang=null) {
-		if(isset(static::$properties[$name]['setFilter'])) {
-			$filter = static::$properties[$name]['setFilter'];
-			$value = call_user_func_array($filter, array($value));
-		}
-		if(isset(static::$properties[$name]['i18n']) && static::$properties[$name]['i18n']) {
-			if(!$lang)
-				$lang = Config::get('locale');
-			if($lang == 'all')
-				foreach($value as $one => $v)
-					$this->data['properties'][$name][$one] = $v;
-			else
-				$this->data['properties'][$name][$lang] = $value;
-		}
-		else
-			$this->data['properties'][$name] = $value;
-	}
-	
 	public function __get($name) {
-		if(in_array($name, array_keys(static::$properties)) || $name == 'id') {
-			return $this->getAttribute($name);
+		if(in_array($name, array_keys(static::$properties))) {
+			return $this->getVar($name);
 		}
 		elseif(array_key_exists($name, $this::$files)) {
 			$file = new ModelFile($this, $name);
@@ -98,8 +43,7 @@ abstract class Model {
 		}
 		elseif(array_key_exists($name, $this::$relationships)) {
 			$res = $this->getRelation($name);
-			//~ d($res);
-			if($res instanceof \Coxis\Core\Collection)
+			if($res instanceof \Collection)
 				return $res->get();
 			else
 				return $res;
@@ -130,27 +74,12 @@ abstract class Model {
 			$lang = null;
 			if(isset($arguments[0]))
 				$lang = $arguments[0];
-			return $this->getAttribute($what, $lang);
+			return $this->getVar($what, $lang);
 		}
 		else {
 			if(array_key_exists($name, $this::$relationships)) {
 				return $this->getRelation($name);
 			}
-		}
-	}
-	
-	public static function __callStatic($name, $arguments) {
-		if(strpos($name, 'loadBy') === 0) {
-			preg_match('/^loadBy(.*)/', $name, $matches);
-			$property = $matches[1];
-			$val = $arguments[0];
-			#todo ORM i18n
-			return static::getDataMapper()->where(array($property => $val))->first();
-		}
-		else {
-			$dm = static::getDataMapper();
-			if(method_exists($dm, $name))
-				return call_user_func_array(array($dm, $name), $arguments);
 		}
 	}
 	
@@ -196,6 +125,8 @@ abstract class Model {
 			}
 		static::$properties = $properties;
 		
+		static::addProperty('id', array('type' => 'text', 'editable'=>false, 'required'=>false));
+					
 		static::loadBehaviors();
 		static::loadRelationships();
 		static::loadFiles();
@@ -254,66 +185,6 @@ abstract class Model {
 		return $this->data['properties'][$name];
 	}
 	
-	public static function relationData($model, $name) {
-		$relations = $model::$relationships;
-		$relation = $relations[$name];
-		
-		$res = array();
-		$res['type'] = $relation['type'];
-		$res['model'] = $relation_model = $relation['model'];
-		if($res['type'] == 'hasMany')
-			$res['link'] = $model::getModelName().'_id';
-		elseif($res['type'] == 'HMABT') {
-			$res['link_a'] = $model::getModelName().'_id';
-			$res['link_b'] = $relation_model::getModelName().'_id';
-			if($model::getModelName() < $relation_model::getModelName())
-				$res['join_table'] = Config::get('database', 'prefix').$model::getModelName().'_'.$relation_model::getModelName();
-			else
-				$res['join_table'] = Config::get('database', 'prefix').$relation_model::getModelName().'_'.$model::getModelName();
-		}
-		elseif($res['type'] == 'hasOne')
-			$res['link'] = $model::getModelName().'_id';
-		elseif($res['type'] == 'belongsTo')
-			$res['link'] = $relation_model::getModelName().'_id';
-		
-		return $res;
-	}
-
-	#todo put it in orm
-	public function getRelation($name) {
-		$rel = static::relationData($this, $name);
-		$relation_type = $rel['type'];
-		$model = $rel['model'];
-		
-		switch($relation_type) {
-			case 'hasOne':
-				if($this->isNew())
-					return null;
-					
-				$link = $rel['link'];
-				return $model::where(array($link => $this->id))->first();
-			case 'belongsTo':
-				if($this->isNew())
-					return null;
-					
-				$link = $rel['link'];
-				return $model::where(array('id' => $this->$link))->first();
-			case 'hasMany':
-			case 'HMABT':
-				if($this->isNew())
-					return array();
-					
-				$collection = new Collection($this, $name);
-				return $collection;
-			default:	
-				throw new \Exception('Relation '.$relation_type.' does not exist.');
-		}
-	}
-	
-	public static function getTable() {
-		return Config::get('database', 'prefix').static::getModelName();
-	}
-	
 	public static function getClassName() {
 		return strtolower(get_called_class());
 		#todo move strtolower to getModelName
@@ -339,16 +210,6 @@ abstract class Model {
 		}
 		else
 			return null;
-	}
-	
-	public function loadFromID($id) {
-		$res = static::getDataMapper()->dal()->where(array('id' => $id))->first();
-			
-		if($res) {
-			$this->set($res);
-			return true;
-		}
-		return false;
 	}
 	
 	public static function isI18N() {
@@ -407,7 +268,6 @@ abstract class Model {
 	public function getVars() {
 		$attrs = $this->getAttributes();
 		$vars = array();
-		//~ d($this->data['properties']);
 		
 		foreach($attrs as $attr) {
 			if(!isset($this->data['properties'][$attr]))
@@ -415,20 +275,53 @@ abstract class Model {
 			else
 				$vars[$attr] = $this->data['properties'][$attr];
 		}
-		//~ d($vars);
 		
 		return $vars;
 	}
 	
-	public function myDM() {
-		if($this->isNew())
-			return static::getDataMapper();
+	public function getVar($name, $lang=null) {
+		$res = null;
+		if(isset(static::$properties[$name]['i18n']) && static::$properties[$name]['i18n']) {
+			if(!$lang)
+				$lang = Config::get('locale');
+			if($lang == 'all') {
+				$langs = Config::get('locales');
+				$res = array();
+				foreach($langs as $lang)
+					$res[$lang] = $this->getVar($name, $lang);
+				return $res;
+			}
+			if(isset($this->data['properties'][$name][$lang]))
+				$res = $this->data['properties'][$name][$lang];
+		}
+		elseif(isset($this->data['properties'][$name])) 
+			$res = $this->data['properties'][$name];
+		
+		if($res === null && method_exists($this, 'fetch'))
+			$res = $this->fetch($name, $lang);
+		
+		if(Coxis::get('in_view') && is_string($res))
+			return HTML::sanitize($res);
 		else
-			return static::getDataMapper()->where(array('id'=>$this->id));
+			return $res;
 	}
 	
-	public static function getDataMapper() {
-		return IoC::resolve('DataMapper', static::getClassName());
+	public function setAttribute($name, $value, $lang=null) {
+		if(isset(static::$properties[$name]['setFilter'])) {
+			$filter = static::$properties[$name]['setFilter'];
+			$value = call_user_func_array($filter, array($value));
+		}
+		if(isset(static::$properties[$name]['i18n']) && static::$properties[$name]['i18n']) {
+			if(!$lang)
+				$lang = Config::get('locale');
+			if($lang == 'all')
+				foreach($value as $one => $v)
+					$this->data['properties'][$name][$one] = $v;
+			else
+				$this->data['properties'][$name][$lang] = $value;
+		}
+		else
+			$this->data['properties'][$name] = $value;
 	}
 	
 	/* VALIDATION */
@@ -477,29 +370,7 @@ abstract class Model {
 		return $this->getValidator()->errors($data);
 	}
 	
-	/* PERSISTENCE */
-	public function save($params=null, $force=false) {
-		$this->pre_save($params);
-		$this->_save($params, $force);
-
-		return $this;
-	}
-	
-	public function pre_save($params=null) {
-		#set $params if any
-		if($params)
-			$this->set($params);
-		
-		#handle behaviors	
-		$model_behaviors = static::$behaviors;
-		foreach($model_behaviors as $behavior => $params)
-			if($params)
-				Event::trigger('behaviors_presave_'.$behavior, $this);	
-		
-		Event::trigger('presave_'.$this->getClassName(), $this);
-	}
-	
-	public function _save($params=null, $force=false) {
+	public function _save($force=false) {
 		if(!$force) {
 			#validate params and files
 			if($errors = $this->errors()) {
@@ -511,103 +382,33 @@ abstract class Model {
 		}
 			
 		$this->move_files();
-		
-		$vars = $this->getVars();
-		
-		//Persist local id field
-		foreach(static::$relationships as $relationship => $params) {
-			if(!isset($this->data[$relationship]))
-				continue;
-			$rel = static::relationData($this, $relationship);
-			$type = $rel['type'];
-			if($type == 'belongsTo') {
-				$link = $rel['link'];
-				$vars[$link] = $this->data[$relationship];
-			}
-		}
-		
-		#apply filters before saving
-		foreach($vars as $col => $var) {
-			if(isset(static::$properties[$col]['filter'])) {
-				$filter = static::$properties[$col]['filter']['to'];
-				$vars[$col] = static::$filter($var);
-			}
-			elseif(isset(static::$properties[$col]['type'])) {
-				if(static::$properties[$col]['type']=='array')
-					$vars[$col] = serialize($var);
-				elseif(static::$properties[$col]['type']=='date')
-					$vars[$col] = $var->datetime();
-			}
-		}
-		
-		//~ d($vars);
-		#with relationships
-		//~ static::getDataMapper()->save($this);
-		
-		$values = array();
-		$i18n = array();
-		foreach($vars as $p => $v) {
-			if(isset(static::$properties[$p]['i18n']) && static::$properties[$p]['i18n'])
-				foreach($v as $lang=>$lang_value)
-					$i18n[$lang][$p] = $lang_value;
-			else
-				$values[$p] = $v;
-		}
-		
-		//new
-		if(!isset($this->id))
-			$this->id = static::getDataMapper()->insert($values);
-		//existing
-		elseif(sizeof($vars) > 0) {
-			$dm = static::getDataMapper();
-			if(!$dm->where(array('id'=>$this->id))->update($values))
-				$this->id = $dm->insert($values);
-		}		
-		
-		foreach($i18n as $lang=>$values) {
-			$dm = static::getDataMapper()->setTable(static::getTable().'_translation');
-			if(!$dm->where(array('id'=>$this->id, 'locale'=>$lang))->update($values))
-				$dm->insert(
-					array_merge(
-						$values, 
-						array(
-							'locale'=>$lang,
-							'id'=>$this->id,
-						)
-					)
-				);
-		}
+	}
 	
-		//Persist relationships
-		foreach(static::$relationships as $relationship => $params) {
-			if(!isset($this->data[$relationship]))
-				continue;
-			$rel = static::relationData($this, $relationship);
-			$type = $rel['type'];
-				
-			if($type == 'hasOne') {
-				$relation_model = $rel['model'];
-				$link = $rel['link'];
-				$relation_model::where(array($link => $this->id))->update(array($link => 0));
-				$relation_model::where(array('id' => $this->data[$relationship]))->update(array($link => $this->id));
-			}
-			elseif($type == 'hasMany' || $type == 'HMABT')
-				$this->$relationship()->sync($this->data[$relationship]);
-		}
+	/* PERSISTENCE */
+	public function save($values=null, $force=false) {
+		#set $values if any
+		if($values)
+			$this->set($values);
+			
+		$this->pre_save();
+		$this->_save($force);
+
+		return $this;
+	}
+	
+	public function pre_save() {
+		#handle behaviors	
+		$model_behaviors = static::$behaviors;
+		foreach($model_behaviors as $behavior => $params)
+			if($params)
+				Event::trigger('behaviors_presave_'.$behavior, $this);
+		
+		Event::trigger('presave_'.$this->getClassName(), $this);
 	}
 	
 	public function destroy() {
 		foreach(static::$files as $name=>$v)
 			$this->$name->delete();
-		
-		//todo delete all cascade models and files
-		return static::getDataMapper()->where(array('id' => $this->id))->delete();
-	}
-	
-	public static function destroyOne($id) {
-		if($model = static::load($id))
-			return $model->destroy();
-		return false;
 	}
 	
 	/* FILES */
