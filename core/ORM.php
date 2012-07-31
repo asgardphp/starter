@@ -37,6 +37,12 @@ class ORM {
 		return $this;
 	}
 	
+	public function getI18N($lang) {
+		$model = $this->model;
+		$dal = new DAL($model::getTable().'_translation');
+		return $dal->where($this->dal()->where)->where(array('locale'=>$lang))->first();
+	}
+	
 	public function leftjoin($jointures) {
 		$this->dal->leftjoin($jointures);
 		

@@ -50,8 +50,7 @@ abstract class Model {
 			elseif(isset($this->data['properties'][$name][$lang]))
 				return $this->data['properties'][$name][$lang];
 			else {
-				$dal = new DAL(static::getTable().'_translation');
-				$res=$dal->where(array('id'=>$this->id, 'locale'=>$lang))->first();
+				$res = static::myDM()->getI18N($lang);
 				if(!$res)
 					return null;
 				unset($res['id']);
@@ -100,7 +99,7 @@ abstract class Model {
 		elseif(array_key_exists($name, $this::$relationships)) {
 			$res = $this->getRelation($name);
 			//~ d($res);
-			if($res instanceof \Coxis\Core\ORM)
+			if($res instanceof \Coxis\Core\Collection)
 				return $res->get();
 			else
 				return $res;
@@ -145,19 +144,13 @@ abstract class Model {
 			preg_match('/^loadBy(.*)/', $name, $matches);
 			$property = $matches[1];
 			$val = $arguments[0];
-			try {
-				#todo ORM i18n
-				return static::getORM()->where(array($property => $val))->first();
-			} catch(\Exception $e) {
-				if(is_a($e, 'DBException'))
-					throw $e;
-				return null;
-			}
+			#todo ORM i18n
+			return static::getDataMapper()->where(array($property => $val))->first();
 		}
-		elseif(method_exists('Coxis\Core\ORM', $name)) {
-			$orm = static::getORM();
-			
-			return call_user_func_array(array($orm, $name), $arguments);
+		else {
+			$dm = static::getDataMapper();
+			if(method_exists($dm, $name))
+				return call_user_func_array(array($dm, $name), $arguments);
 		}
 	}
 	
@@ -286,6 +279,7 @@ abstract class Model {
 		return $res;
 	}
 
+	#todo put it in orm
 	public function getRelation($name) {
 		$rel = static::relationData($this, $name);
 		$relation_type = $rel['type'];
@@ -348,7 +342,7 @@ abstract class Model {
 	}
 	
 	public function loadFromID($id) {
-		$res = static::getORM()->dal()->where(array('id' => $id))->first();
+		$res = static::getDataMapper()->dal()->where(array('id' => $id))->first();
 			
 		if($res) {
 			$this->set($res);
@@ -426,18 +420,15 @@ abstract class Model {
 		return $vars;
 	}
 	
-	public static function getORM() {
-		$orm = new ORM(static::getClassName());
-		//~ if(static::isI18N()){
-			//~ $orm->leftjoin(array(
-				//~ 'a.Translation t'	=>	array(
-					//~ 'a.id = t.id',
-					//~ 't.locale = ?'	=>	Config::get('locale'),
-				//~ ),
-			//~ ));
-		//~ }
-		//~ return $orm->orderBy(static::$meta['order_by']);
-		return $orm;
+	public function myDM() {
+		if($this->isNew())
+			return static::getDataMapper();
+		else
+			return static::getDataMapper()->where(array('id'=>$this->id));
+	}
+	
+	public static function getDataMapper() {
+		return IoC::resolve('DataMapper', static::getClassName());
 	}
 	
 	/* VALIDATION */
@@ -522,7 +513,6 @@ abstract class Model {
 		$this->move_files();
 		
 		$vars = $this->getVars();
-		//~ d($vars);
 		
 		//Persist local id field
 		foreach(static::$relationships as $relationship => $params) {
@@ -550,38 +540,38 @@ abstract class Model {
 			}
 		}
 		
+		//~ d($vars);
+		#with relationships
+		//~ static::getDataMapper()->save($this);
+		
 		$values = array();
 		$i18n = array();
-		//~ d($vars);
 		foreach($vars as $p => $v) {
-			if(isset(static::$properties[$p]['i18n']) && static::$properties[$p]['i18n']) {
-				foreach($v as $lang=>$lang_value) {
+			if(isset(static::$properties[$p]['i18n']) && static::$properties[$p]['i18n'])
+				foreach($v as $lang=>$lang_value)
 					$i18n[$lang][$p] = $lang_value;
-				}
-			}
 			else
 				$values[$p] = $v;
 		}
-		//~ d($values, $i18n);
 		
 		//new
 		if(!isset($this->id))
-			$this->id = static::getORM()->insert($values);
+			$this->id = static::getDataMapper()->insert($values);
 		//existing
 		elseif(sizeof($vars) > 0) {
-			$orm = static::getORM();
-			if(!$orm->where(array('id'=>$this->id))->update($values))
-				$this->id = $orm->insert($values);
+			$dm = static::getDataMapper();
+			if(!$dm->where(array('id'=>$this->id))->update($values))
+				$this->id = $dm->insert($values);
 		}		
 		
 		foreach($i18n as $lang=>$values) {
-			$orm = static::getORM()->setTable(static::getTable().'_translation');
-			if(!$orm->where(array('id'=>$this->id, 'locale'=>$lang))->update($values))
-				$orm->insert(
+			$dm = static::getDataMapper()->setTable(static::getTable().'_translation');
+			if(!$dm->where(array('id'=>$this->id, 'locale'=>$lang))->update($values))
+				$dm->insert(
 					array_merge(
 						$values, 
 						array(
-							'locale'=>$lang, 
+							'locale'=>$lang,
 							'id'=>$this->id,
 						)
 					)
@@ -598,12 +588,11 @@ abstract class Model {
 			if($type == 'hasOne') {
 				$relation_model = $rel['model'];
 				$link = $rel['link'];
-				$relation_model::where(array($link.' = ?' => $this->id))->update(array($link => 0));
-				$relation_model::where(array('id = ?' => $this->data[$relationship]))->update(array($link => $this->id));
+				$relation_model::where(array($link => $this->id))->update(array($link => 0));
+				$relation_model::where(array('id' => $this->data[$relationship]))->update(array($link => $this->id));
 			}
-			elseif($type == 'hasMany' || $type == 'HMABT') {
+			elseif($type == 'hasMany' || $type == 'HMABT')
 				$this->$relationship()->sync($this->data[$relationship]);
-			}
 		}
 	}
 	
@@ -612,7 +601,7 @@ abstract class Model {
 			$this->$name->delete();
 		
 		//todo delete all cascade models and files
-		return static::getORM()->where(array('id' => $this->id))->delete();
+		return static::getDataMapper()->where(array('id' => $this->id))->delete();
 	}
 	
 	public static function destroyOne($id) {

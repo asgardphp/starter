@@ -9,13 +9,18 @@ class ActualiteController extends Controller {
 	public function indexAction($request) {
 		//~ d(Commentaire::with('actualite')->get());
 	
-		//~ $coms = Commentaire::with('actualite')->get();
+	/*
+		$coms = Commentaire::with('actualite')->get();
 		//~ d($coms[0]->actualite->test);
+		d($coms[0]->actualite->getTest('en'));
 		//~ d($coms[0]->actualite[0]->test);
 	
-		//~ $com = new Commentaire(2);
-		
-		//~ d($com->actualite[0]->test);
+		$actu = new Actualite(2);
+		d($actu->commentaires);
+	
+		$com = new Commentaire(2);
+		d($com->actualite->test);
+		*/
 	
 		//~ $actu = new \Coxis\App\Actualite\Models\Actualite(2);
 		$actu = new Actualite(37);
