@@ -12,6 +12,7 @@ $config = array(
 		),
 		'cache'	=>	array(
 			'method'	=>	'apc',
+			//~ 'method'	=>	'file',
 		)
 	),
 	'dev'	=>	array(

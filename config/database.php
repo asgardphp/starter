@@ -10,6 +10,16 @@ $config = array(
 		),
 		'error_display' => true,
 	),
+	'test' => array(
+		'database' => array(
+			'host'			=>	'localhost',
+			'user'	=>	'root',
+			'password'	=>	'',
+			'database'	=>	'coxis3_test',
+			'prefix'		=>	'arpa_',
+		),
+		'error_display' => true,
+	),
 	'prod' => array(
 		'database' => array(
 			'host'			=>	'mysql51-35.pro',

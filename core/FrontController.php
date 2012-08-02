@@ -1,13 +1,4 @@
 <?php
-#to define url_for in global namespace
-namespace {
-	function _frontcontrollerGlobal() {
-		function url_for($what, $params=array(), $relative=true) {
-			return \Coxis\Core\URL::url_for($what, $params, $relative);
-		}
-	}
-}
-
 namespace Coxis\Core {
 
 class FrontController extends Controller {
@@ -15,15 +6,7 @@ class FrontController extends Controller {
 		/* WEB RESOURCES */
 		$this->getResource();
 		
-		/* BUNDLES */
-		_frontcontrollerGlobal();
-		
-		BundlesManager::loadBundles();
-	
-		//User Session
-		User::start();
-		
-		Router::parseRoutes(BundlesManager::$routes);
+		Coxis::load();
 
 		Event::trigger('start');
 			
@@ -54,7 +37,6 @@ class FrontController extends Controller {
 			exit();
 		}
 		else {
-			//~ $mime = 'application/octet-stream';
 			$finfo = new finfo(FILEINFO_MIME);
 			$mime = $finfo->file(getcwd().'/'.$file);
 		}

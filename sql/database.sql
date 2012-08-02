@@ -36,7 +36,7 @@ CREATE TABLE `arpa_actualite` (
   `filename_image` text,
   `commentaire_id` int(1) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=39 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=44 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -45,7 +45,7 @@ CREATE TABLE `arpa_actualite` (
 
 LOCK TABLES `arpa_actualite` WRITE;
 /*!40000 ALTER TABLE `arpa_actualite` DISABLE KEYS */;
-INSERT INTO `arpa_actualite` VALUES (2,'JOURNEE MONDIALE DE LA VOIX','','','sdfgm','<p>\r\n	Cette ann&eacute;e la Journ&eacute;e Mondiale de la Voix se tiendra le lundi 16 avril 2012 &agrave; l&rsquo;Ecole Sup&eacute;rieure d&rsquo;Audiovisuel de Toulouse.</p>\r\n','journee-mondiale-de-la-voix',1,'2010-11-00 15:37:00','0000-00-00 00:00:00','img2.jpg',2),(17,'JOURNEE MONDIALE DE LA VOIX','','','sdfgm','<p>\r\n	Cette ann&eacute;e la Journ&eacute;e Mondiale de la Voix se tiendra le lundi 16 avril 2012 &agrave; l&rsquo;Ecole Sup&eacute;rieure d&rsquo;Audiovisuel de Toulouse.</p>\r\n','journee-mondiale-de-la-voix-3',0,'2013-11-00 15:37:00','2012-07-21 13:52:21','Chrysanthemum_24.jpg',2),(18,'JOURNEE MONDIALE DE LA VOIX','','','sdfgm','<p>\r\n	Cette ann&eacute;e la Journ&eacute;e Mondiale de la Voix se tiendra le lundi 16 avril 2012 &agrave; l&rsquo;Ecole Sup&eacute;rieure d&rsquo;Audiovisuel de Toulouse.</p>\r\n','journee-mondiale-de-la-voix-4',2,'2016-06-00 15:37:00','0000-00-00 00:00:00','img2.jpg',0),(19,'JOURNEE MONDIALE DE LA VOIX','','','sdfgm','<p>\r\n	Cette ann&eacute;e la Journ&eacute;e Mondiale de la Voix se tiendra le lundi 16 avril 2012 &agrave; l&rsquo;Ecole Sup&eacute;rieure d&rsquo;Audiovisuel de Toulouse.</p>\r\n','journee-mondiale-de-la-voix-5',3,'2016-06-00 15:37:00','0000-00-00 00:00:00','img2.jpg',0),(20,'JOURNEE MONDIALE DE LA VOIX','','','sdfgm','<p>\r\n	Cette ann&eacute;e la Journ&eacute;e Mondiale de la Voix se tiendra le lundi 16 avril 2012 &agrave; l&rsquo;Ecole Sup&eacute;rieure d&rsquo;Audiovisuel de Toulouse.</p>\r\n','journee-mondiale-de-la-voix-6',4,'2016-06-00 15:37:00','0000-00-00 00:00:00','img2.jpg',0),(21,'JOURNEE MONDIALE DE LA VOIX','','','sdfgm','<p>\r\n	Cette ann&eacute;e la Journ&eacute;e Mondiale de la Voix se tiendra le lundi 16 avril 2012 &agrave; l&rsquo;Ecole Sup&eacute;rieure d&rsquo;Audiovisuel de Toulouse.</p>\r\n','journee-mondiale-de-la-voix-2',5,'2016-06-00 15:37:00','0000-00-00 00:00:00','img2.jpg',0),(24,'aaa','','','aaa','aaa','aaa',1,'0000-00-00 00:00:00','0000-00-00 00:00:00','',0),(25,'aaa','','','aaa','aaa','aaa',1,'0000-00-00 00:00:00','0000-00-00 00:00:00','',0),(26,'aaa','','','aaa','aaa','aaa',1,'0000-00-00 00:00:00','0000-00-00 00:00:00','',0),(27,'aaa','','','aaa','aaa','aaa',1,'2012-07-28 15:24:28','2012-07-28 15:24:28','',0),(28,'aaa','','','aaa','aaa','aaa',1,'2012-07-10 15:25:10','2012-07-10 15:25:10','',0),(29,'aaa','','','aaa','aaa','aaa',1,'0000-00-00 00:00:00','0000-00-00 00:00:00','',0),(30,'aaa','','','aaa','aaa','aaa',1,'0000-00-00 00:00:00','0000-00-00 00:00:00','',0),(31,'aaa','','','aaa','aaa','aaa',1,'2012-07-24 15:30:24','2012-07-24 15:30:24','',0),(32,'aaa','','','aaa','aaa','aaa',1,'0000-00-00 00:00:00','0000-00-00 00:00:00','',0),(33,'aaa','','','aaa','aaa','aaa',1,'0000-00-00 00:00:00','0000-00-00 00:00:00','',0),(34,'aaa','','','aaa','aaa','aaa',1,'0000-00-00 00:00:00','0000-00-00 00:00:00','',0),(35,'aaa','','','aaa','aaa','aaa',1,'0000-00-00 00:00:00','0000-00-00 00:00:00','',0),(36,'aaa','','','aaa','aaa','aaa',1,'2012-07-06 15:35:06','2012-07-06 15:35:06','',0),(37,'aaa','','','aaa','aaa','aaa-2',1,'2012-07-07 17:40:07','2012-07-18 09:59:18','',0),(38,'le titre','','','introduction','contenu','le-titre',0,'2012-07-08 12:07:08','2012-07-08 12:07:08','',0);
+INSERT INTO `arpa_actualite` VALUES (2,'JOURNEE MONDIALE DE LA VOIX','','','sdfgm','<p>\r\n	Cette ann&eacute;e la Journ&eacute;e Mondiale de la Voix se tiendra le lundi 16 avril 2012 &agrave; l&rsquo;Ecole Sup&eacute;rieure d&rsquo;Audiovisuel de Toulouse.</p>\r\n','journee-mondiale-de-la-voix',1,'2010-11-00 15:37:00','0000-00-00 00:00:00','img2.jpg',2),(17,'JOURNEE MONDIALE DE LA VOIX','','','sdfgm','<p>\r\n	Cette ann&eacute;e la Journ&eacute;e Mondiale de la Voix se tiendra le lundi 16 avril 2012 &agrave; l&rsquo;Ecole Sup&eacute;rieure d&rsquo;Audiovisuel de Toulouse.</p>\r\n','journee-mondiale-de-la-voix-3',0,'2013-11-00 15:37:00','2012-07-21 13:52:21','Chrysanthemum_24.jpg',2),(18,'JOURNEE MONDIALE DE LA VOIX','','','sdfgm','<p>\r\n	Cette ann&eacute;e la Journ&eacute;e Mondiale de la Voix se tiendra le lundi 16 avril 2012 &agrave; l&rsquo;Ecole Sup&eacute;rieure d&rsquo;Audiovisuel de Toulouse.</p>\r\n','journee-mondiale-de-la-voix-4',2,'2016-06-00 15:37:00','0000-00-00 00:00:00','img2.jpg',0),(19,'JOURNEE MONDIALE DE LA VOIX','','','sdfgm','<p>\r\n	Cette ann&eacute;e la Journ&eacute;e Mondiale de la Voix se tiendra le lundi 16 avril 2012 &agrave; l&rsquo;Ecole Sup&eacute;rieure d&rsquo;Audiovisuel de Toulouse.</p>\r\n','journee-mondiale-de-la-voix-5',3,'2016-06-00 15:37:00','0000-00-00 00:00:00','img2.jpg',0),(20,'JOURNEE MONDIALE DE LA VOIX','','','sdfgm','<p>\r\n	Cette ann&eacute;e la Journ&eacute;e Mondiale de la Voix se tiendra le lundi 16 avril 2012 &agrave; l&rsquo;Ecole Sup&eacute;rieure d&rsquo;Audiovisuel de Toulouse.</p>\r\n','journee-mondiale-de-la-voix-6',4,'2016-06-00 15:37:00','0000-00-00 00:00:00','img2.jpg',0),(21,'JOURNEE MONDIALE DE LA VOIX','','','sdfgm','<p>\r\n	Cette ann&eacute;e la Journ&eacute;e Mondiale de la Voix se tiendra le lundi 16 avril 2012 &agrave; l&rsquo;Ecole Sup&eacute;rieure d&rsquo;Audiovisuel de Toulouse.</p>\r\n','journee-mondiale-de-la-voix-2',5,'2016-06-00 15:37:00','0000-00-00 00:00:00','img2.jpg',0),(24,'aaa','','','aaa','aaa','aaa',1,'0000-00-00 00:00:00','0000-00-00 00:00:00','',0),(25,'aaa','','','aaa','aaa','aaa',1,'0000-00-00 00:00:00','0000-00-00 00:00:00','',0),(26,'aaa','','','aaa','aaa','aaa',1,'0000-00-00 00:00:00','0000-00-00 00:00:00','',0),(27,'aaa','','','aaa','aaa','aaa',1,'2012-07-28 15:24:28','2012-07-28 15:24:28','',0),(28,'aaa','','','aaa','aaa','aaa',1,'2012-07-10 15:25:10','2012-07-10 15:25:10','',0),(29,'aaa','','','aaa','aaa','aaa',1,'0000-00-00 00:00:00','0000-00-00 00:00:00','',0),(30,'aaa','','','aaa','aaa','aaa',1,'0000-00-00 00:00:00','0000-00-00 00:00:00','',0),(31,'aaa','','','aaa','aaa','aaa',1,'2012-07-24 15:30:24','2012-07-24 15:30:24','',0),(32,'aaa','','','aaa','aaa','aaa',1,'0000-00-00 00:00:00','0000-00-00 00:00:00','',0),(33,'aaa','','','aaa','aaa','aaa',1,'0000-00-00 00:00:00','0000-00-00 00:00:00','',0),(34,'aaa','','','aaa','aaa','aaa',1,'0000-00-00 00:00:00','0000-00-00 00:00:00','',0),(35,'aaa','','','aaa','aaa','aaa',1,'0000-00-00 00:00:00','0000-00-00 00:00:00','',0),(36,'aaa','','','aaa','aaa','aaa',1,'2012-07-06 15:35:06','2012-07-06 15:35:06','',0),(37,'aaa','','','aaa','aaa','aaa-2',1,'2012-07-07 17:40:07','2012-07-18 09:59:18','',0),(38,'le titre','','','introduction','contenu','le-titre',0,'2012-07-08 12:07:08','2012-07-08 12:07:08','',0),(39,'le titre','','','introduction','contenu','le-titre',0,'2012-07-08 12:35:08','2012-07-08 12:35:08','',0),(40,'le titre','','','introduction','contenu','le-titre',0,'0000-00-00 00:00:00','0000-00-00 00:00:00','',0),(41,'le titre','','','introduction','contenu','le-titre',0,'2012-07-15 12:43:15','2012-07-15 12:43:15','',0),(42,'le titre','','','introduction','contenu','le-titre',0,'2012-07-22 12:43:22','2012-07-22 12:43:22','',0),(43,'le titre','','','introduction','contenu','le-titre',0,'2012-07-04 12:44:04','2012-07-04 12:44:04','',0);
 /*!40000 ALTER TABLE `arpa_actualite` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -93,7 +93,7 @@ CREATE TABLE `arpa_actualite_translation` (
 
 LOCK TABLES `arpa_actualite_translation` WRITE;
 /*!40000 ALTER TABLE `arpa_actualite_translation` DISABLE KEYS */;
-INSERT INTO `arpa_actualite_translation` VALUES (2,'en','Hello'),(2,'fr','Bonjour'),(25,'fr','un test'),(26,'fr','un test'),(29,'fr','un test'),(30,'fr','un test'),(31,'fr','un test'),(32,'fr',''),(33,'fr','un test'),(34,'fr','un test'),(35,'en','un test'),(35,'fr',''),(36,'en','a test'),(36,'fr','un test'),(37,'en','a test'),(37,'fr','un test !'),(38,'fr','');
+INSERT INTO `arpa_actualite_translation` VALUES (2,'en','Hello'),(2,'fr','Bonjour'),(25,'fr','un test'),(26,'fr','un test'),(29,'fr','un test'),(30,'fr','un test'),(31,'fr','un test'),(32,'fr',''),(33,'fr','un test'),(34,'fr','un test'),(35,'en','un test'),(35,'fr',''),(36,'en','a test'),(36,'fr','un test'),(37,'en','a test'),(37,'fr','un test !'),(38,'fr',''),(39,'fr',''),(40,'fr',''),(41,'fr',''),(42,'fr',''),(43,'fr','');
 /*!40000 ALTER TABLE `arpa_actualite_translation` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -159,6 +159,78 @@ LOCK TABLES `arpa_annonce` WRITE;
 /*!40000 ALTER TABLE `arpa_annonce` DISABLE KEYS */;
 INSERT INTO `arpa_annonce` VALUES (1,'Ensemble vocal Le Tourdion cherche un chef','Chorale','Haute-Garonne','','Toulouse','','Recherche ...','Hognerud','Michel','','303030303','bob@joe.com','joe.com','ensemble-vocal-le-tourdion-cherche-un-chef','0000-00-00 00:00:00','0000-00-00 00:00:00'),(2,'Ensemble vocal Le Tourdion cherche un chef vocal Le Tourdion cherche un chef','Recherche','Doubs','','Besancon','','Aaaaaaaah','Ghislain','Llorca','','303030303','lol@lol.com','lol.com','ensemble-vocal-le-tourdion-cherche-un-chef-vocal-le-tourdion-cherche-un-chef','0000-00-00 00:00:00','0000-00-00 00:00:00'),(3,'Ensemble vocal Le Tourdion cherche un chef','Stage','Midi-PyrÃ©nÃ©es','1 rue de la paix','Besancon','25000','Trolololol','Obama','Barrack','','811565908','barrack@obama.com','obama.com','ensemble-vocal-le-tourdion-cherche-un-chef-2','0000-00-00 00:00:00','0000-00-00 00:00:00');
 /*!40000 ALTER TABLE `arpa_annonce` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `arpa_article`
+--
+
+DROP TABLE IF EXISTS `arpa_article`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `arpa_article` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` varchar(100) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `arpa_article`
+--
+
+LOCK TABLES `arpa_article` WRITE;
+/*!40000 ALTER TABLE `arpa_article` DISABLE KEYS */;
+INSERT INTO `arpa_article` VALUES (1,'About Me'),(2,'Introduction');
+/*!40000 ALTER TABLE `arpa_article` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `arpa_article_author`
+--
+
+DROP TABLE IF EXISTS `arpa_article_author`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `arpa_article_author` (
+  `article_id` int(11) NOT NULL,
+  `author_id` int(11) NOT NULL,
+  PRIMARY KEY (`article_id`,`author_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `arpa_article_author`
+--
+
+LOCK TABLES `arpa_article_author` WRITE;
+/*!40000 ALTER TABLE `arpa_article_author` DISABLE KEYS */;
+INSERT INTO `arpa_article_author` VALUES (1,1);
+/*!40000 ALTER TABLE `arpa_article_author` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `arpa_author`
+--
+
+DROP TABLE IF EXISTS `arpa_author`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `arpa_author` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `arpa_author`
+--
+
+LOCK TABLES `arpa_author` WRITE;
+/*!40000 ALTER TABLE `arpa_author` DISABLE KEYS */;
+INSERT INTO `arpa_author` VALUES (1,'Michel'),(2,'Bob');
+/*!40000 ALTER TABLE `arpa_author` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -494,4 +566,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2012-07-31 14:11:47
+-- Dump completed on 2012-08-02 18:07:35

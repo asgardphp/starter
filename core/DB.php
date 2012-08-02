@@ -23,7 +23,7 @@ class DB {
 		return $instance->db;
 	}
 
-	public function query($sql) {
+	public static function query($sql) {
 		$instance = static::getInstance();
 	
 		return new Query($instance->db, $sql);

@@ -193,7 +193,7 @@ abstract class ModelORM extends \Coxis\Core\Model {
 				if($this->isNew())
 					return array();
 					
-				$collection = new Collection($this, $name);
+				$collection = new CollectionORM($this, $name);
 				return $collection;
 			default:	
 				throw new \Exception('Relation '.$relation_type.' does not exist.');

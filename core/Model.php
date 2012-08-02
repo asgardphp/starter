@@ -43,7 +43,7 @@ abstract class Model {
 		}
 		elseif(array_key_exists($name, $this::$relationships)) {
 			$res = $this->getRelation($name);
-			if($res instanceof \Collection)
+			if($res instanceof \Coxis\Core\Collection)
 				return $res->get();
 			else
 				return $res;

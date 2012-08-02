@@ -31,4 +31,8 @@ class Coxis {
 		
 		return $result;
 	}
+	
+	public static function load() {
+		require_once('load.php');
+	}
 }

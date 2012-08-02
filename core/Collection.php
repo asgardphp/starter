@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Collection;
+namespace Coxis\Core;
 
 interface Collection {
 	public function sync($ids);

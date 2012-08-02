@@ -1,1 +1,0 @@
-{"event":"suiteStart","suite":"CoxisTest","tests":1}{"event":"testStart","suite":"CoxisTest","test":"CoxisTest::testSample"}{"event":"test","suite":"CoxisTest","test":"CoxisTest::testSample","status":"pass","time":0.018074035644531,"trace":[],"message":"","output":""}

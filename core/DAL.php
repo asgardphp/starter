@@ -145,7 +145,7 @@ class DAL {
 			//~ $params[$k] = mysql_real_escape_string($v, $this->db);
 			
 		if(strpos($condition, '?') === false)
-			if(preg_match('/^[a-zA-Z]+$/', $condition))
+			if(preg_match('/^[a-zA-Z0-9_]+$/', $condition))
 				if($table)
 					$condition = $table.'.`'.$condition.'` = ?';
 				else
@@ -194,8 +194,19 @@ class DAL {
 		if($where = static::processConditions($this->where, 'and', false, $default))
 			$where = ' WHERE '.$where;
 		
-		if($this->orderBy)
-			$orderBy = ' ORDER BY '.$this->orderBy;
+		if($this->orderBy) {
+			$orderBy = ' ORDER BY ';
+			if(!is_array($this->orderBy))
+				$orders = array($this->orderBy);
+			else
+				$orders = $this->orderBy;
+			
+			foreach($orders as $k=>$v)
+				if(preg_match('/^[a-zA-Z0-9_ ]+$/', $v))
+					$orders[$k] = $default.'.'.$v;
+					
+			$orderBy .= implode(', ', $orders);
+		}
 				
 		if($this->limit || $this->offset) {
 			$limit = ' LIMIT ';
