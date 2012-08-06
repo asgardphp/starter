@@ -7,13 +7,17 @@ class DB {
 	private $db;
 	private static $instance;
 
-	public function __construct() {
+	public function __construct($db=null) {
 		$config = Config::get('database');
-		$this->db = new \PDO('mysql:host='.$config['host'].';dbname='.$config['database'], 
-			$config['user'],
-			$config['password'],
-			array(\PDO::MYSQL_ATTR_FOUND_ROWS => true)
-		);
+		if(!$db) {
+			$this->db = new \PDO('mysql:host='.$config['host'].';dbname='.$config['database'], 
+				$config['user'],
+				$config['password'],
+				array(\PDO::MYSQL_ATTR_FOUND_ROWS => true)
+			);
+		}
+		else
+			$this->db = $db;
 		$this->db->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 	}
 	
@@ -38,6 +42,12 @@ class DB {
 	public static function getInstance() { 
 		if(!static::$instance)
 			static::$instance = new static;
+
+		return static::$instance; 
+	} 
+
+	public static function newInstance($db=null) { 
+		static::$instance = new static($db);
 
 		return static::$instance; 
 	} 
