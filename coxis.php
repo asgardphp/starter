@@ -6,11 +6,6 @@ if(version_compare(PHP_VERSION, '5.3.0') < 0)
 ini_set('error_reporting', E_ALL);
 chdir(dirname(__FILE__));
 define('_WEB_DIR_', 'web');#todo: remove..
-if(!defined('_ENV_'))
-	if(isset($_SERVER['HTTP_HOST']) && ($_SERVER['HTTP_HOST'] == '127.0.0.1' || $_SERVER['HTTP_HOST'] == 'localhost') || php_sapi_name() == 'cli')
-		define('_ENV_', 'dev');
-	else
-		define('_ENV_', 'prod');
 
 /* UTILS */
 function d() {
@@ -87,9 +82,3 @@ register_shutdown_function(function () {
 		send($result);
 	}
 });
-
-/* CONFIG */
-import('Coxis\Core\Config');
-\Coxis\Core\Config::loadConfigDir('config');
-if(\Coxis\Core\Config::get('error_display'))
-	\Coxis\Core\Error::display(true);

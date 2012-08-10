@@ -2,7 +2,7 @@
 namespace Coxis\App\Actualite\Models;
 
 //~ class Actualite extends \Coxis\Core\Model {
-class Actualite extends \Coxis\Core\ORM\ModelORM {
+class Test extends \Coxis\Core\ORM\ModelORM {
 	public static $properties = array(
 		'titre',
 		'date'    =>    array(
@@ -10,17 +10,8 @@ class Actualite extends \Coxis\Core\ORM\ModelORM {
 		),
 		'lieu'    =>    array(
 			'required'    =>    false,
-			'orm'	=>	array(
-				'type'	=>	'varchar(100)',
-				//~ 'default'	=>	'aaa',
-			),
 		),
-		'introduction' => array(
-			'orm'	=>	array(
-				'type'	=>	'varchar(100)',
-				'default'	=>	'aaa',
-			),
-		),
+		'introduction',
 		'contenu',
 		'test'	=>	array(
 			'i18n'	=>	true,

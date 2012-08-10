@@ -7,7 +7,8 @@ class BuildCol {
 	private $autoincrement = false;
 	private $def;
 	
-	function __construct($name, $type, $length=null) {
+	function __construct($table, $name, $type, $length=null) {
+		$this->table = $table;
 		$this->name = $name;
 		$this->type = $type;
 		$this->length = $length;
@@ -47,14 +48,26 @@ class BuildCol {
 			
 		return $sql;
 	}
+	
+	public function primary() {
+		$this->table->addPrimary($this->name);
+	}
+	
+	public function unique() {
+		$this->table->addUnique($this->name);
+	}
+	
+	public function index() {
+		$this->table->addIndex($this->name);
+	}
 }
 
 class BuildTable {
 	private $name;
 	private $cols = array();
-	private $primary;
-	private $indexes;
-	private $uniques;
+	private $primary = array();
+	private $indexes = array();
+	private $uniques = array();
 	
 	function __construct($name) {
 		$this->name = $name;
@@ -75,8 +88,23 @@ class BuildTable {
 		return $this;
 	}
 	
+	public function addPrimary($key) {
+		$this->primary[] = $key;
+		return $this;
+	}
+	
+	public function addIndex($key) {
+		$this->indexes[] = $key;
+		return $this;
+	}
+	
+	public function addUnique($key) {
+		$this->uniques[] = $key;
+		return $this;
+	}
+	
 	public function add($colName, $colType, $colLength=null) {
-		$col = new BuildCol($colName, $colType, $colLength);
+		$col = new BuildCol($this, $colName, $colType, $colLength);
 		$this->cols[] = $col;
 		return $col;
 	}
@@ -146,6 +174,11 @@ class Table {
 		return $col;
 	}
 	
+	public function drop($name) {
+		$col = new Column($this->name, $name);
+		return $col->drop();
+	}
+	
 	public function primary($keys) {
 		try {
 			DB::query('ALTER TABLE  `'.$this->name.'` DROP PRIMARY KEY');
@@ -175,6 +208,13 @@ class Column {
 		$this->name = $name;
 		$this->type = $type;
 		$this->length = $length;
+	}
+	
+	public function drop() {
+		$sql = 'alter table `'.$this->table.'` drop column `'.$this->name.'`';
+		DB::query($sql);
+		
+		return $this;
 	}
 	
 	public function create() {
@@ -249,10 +289,6 @@ class Column {
 	}
 	
 	public function nullable() {
-		//~ $type = $this->getType();
-		//~ $sql = 'ALTER TABLE `'.$this->table.'` CHANGE `'.$this->name.'` '.$type;
-		//~ DB::query($sql);
-		
 		$this->change(array('nullable'=>true));
 		
 		return $this;
@@ -261,9 +297,6 @@ class Column {
 	public function notNullable() {
 		$sql = 'UPDATE `'.$this->table.'` set `'.$this->name.'` = 0 where `'.$this->name.'` is null';
 		DB::query($sql);
-		//~ $type = $this->getType();
-		//~ $sql = 'ALTER TABLE `'.$this->table.'` CHANGE `'.$this->name.'` `'.$this->name.'` '.$type.' NOT NULL';
-		//~ DB::query($sql);
 		
 		$this->change(array('nullable'=>false));
 		
@@ -271,12 +304,19 @@ class Column {
 	}
 	
 	public function def($val) {
-		//~ $type = $this->getType();
-		//~ $sql = 'ALTER table `'.$this->table.'` CHANGE `'.$this->name.'` `'.$this->name.'` '.$type.' DEFAULT \''.$val.'\'';
-		//~ DB::query($sql);
-		//~ d($sql);
-		
 		$this->change(array('default'=>$val));
+		
+		return $this;
+	}
+	
+	public function autoincrement() {
+		$this->change(array('autoincrement'=>true));
+		
+		return $this;
+	}
+	
+	public function notAutoincrement() {
+		$this->change(array('autoincrement'=>false));
 		
 		return $this;
 	}
@@ -341,6 +381,14 @@ class Column {
 	public function unique() {
 		#todo length ADD INDEX(title(50))
 		$sql = 'ALTER TABLE `'.$this->table.'` ADD UNIQUE(`'.$this->name.'`)';
+		DB::query($sql);
+		
+		return $this;
+	}
+	
+	public function primary() {
+		#todo length ADD INDEX(title(50))
+		$sql = 'ALTER TABLE `'.$this->table.'` ADD PRIMARY(`'.$this->name.'`)';
 		DB::query($sql);
 		
 		return $this;

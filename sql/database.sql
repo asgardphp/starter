@@ -531,6 +531,37 @@ INSERT INTO `arpa_professeur` VALUES (1,'Llorca','Ghislain','Haute-Garonne','12 
 UNLOCK TABLES;
 
 --
+-- Table structure for table `arpa_test`
+--
+
+DROP TABLE IF EXISTS `arpa_test`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `arpa_test` (
+  `date` text NOT NULL,
+  `lieu` text NOT NULL,
+  `titre` text NOT NULL,
+  `introduction` text NOT NULL,
+  `contenu` text NOT NULL,
+  `id` int(11) NOT NULL,
+  `slug` text NOT NULL,
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL,
+  `filename_image` text NOT NULL,
+  `actualite_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `arpa_test`
+--
+
+LOCK TABLES `arpa_test` WRITE;
+/*!40000 ALTER TABLE `arpa_test` DISABLE KEYS */;
+/*!40000 ALTER TABLE `arpa_test` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `arpa_value`
 --
 
@@ -566,4 +597,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2012-08-06 14:02:34
+-- Dump completed on 2012-08-10 15:50:33

@@ -1,0 +1,8 @@
+#!/usr/bin/env php
+<?php
+set_time_limit(0);
+
+require_once('coxis.php');
+
+/* RUN */
+\Coxis\Core\Cli\Router::run('Coxis\Core\Cli\Front', 'main');

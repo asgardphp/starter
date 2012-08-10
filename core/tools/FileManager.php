@@ -15,7 +15,7 @@ class FileManager {
 		return $output;
 	}
 
-	public static function move_uploaded($src, $output) {	
+	public static function move_uploaded($src, $output) {
 		$output = static::getNewFileName($output);
 			
 		static::mkdir(dirname($output));

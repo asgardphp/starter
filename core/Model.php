@@ -113,19 +113,67 @@ abstract class Model {
 				$this->$property = '';
 	}
 	
+	public static function array_before($arr, $i) {
+		$res = array();
+		foreach($arr as $k=>$v) {
+			if($k === $i)
+				return $res;
+			$res[$k] = $v;
+		}
+		return $res;
+	}
+	
+	public static function array_after($arr, $i) {
+		$res = array();
+		$do = false;
+		foreach($arr as $k=>$v) {
+			if($do)
+				$res[$k] = $v;
+			if($k === $i)
+				$do = true;
+		}
+		return $res;
+	}
+	
 	public static function loadModel() {
 		if(!isset(static::$meta['order_by']))
 			static::$meta['order_by'] = 'id DESC';
 	
 		$properties = static::$properties;
 		foreach($properties as $k=>$v)
+			//~ $k = 'introd
 			if(is_int($k)) {
-				$properties[$v] = array();
-				unset($properties[$k]);
+				//~ $properties[$v] = array();
+				//~ unset($properties[$k]);
+				//~ d($k-1);
+				//~ d(array_slice(static::$properties, 0, 0));	
+				//~ d(array($v => array()));
+				//~ d(array_slice(static::$properties, $k+1));
+				//~ static::$properties = array_merge(
+					//~ array_slice(static::$properties, 0, $k),
+					//~ array($v => array()),
+					//~ array_slice(static::$properties, $k+1)
+				//~ );
+				//~ d(static::array_before(static::$properties, $k));
+				//~ d(static::array_after(static::$properties, $k));
+				static::$properties = 
+					//~ array_slice(static::$properties, 0, $k) +
+					static::array_before(static::$properties, $k) +
+					array($v => array()) +
+					//~ array_slice(static::$properties, $k+1);
+					static::array_after(static::$properties, $k);
+				//~ d(static::$properties);
 			}
-		static::$properties = $properties;
+		//~ static::$properties = $properties;
 		
-		static::addProperty('id', array('type' => 'text', 'editable'=>false, 'required'=>false));
+		//~ if(static::getModelName()=='actualite')
+		//~ d(static::$properties);
+		
+		//~ static::addProperty('id', array('type' => 'text', 'editable'=>false, 'required'=>false));
+		static::$properties = array_merge(array('id' => array('type' => 'text', 'editable'=>false, 'required'=>false)), static::$properties);
+		
+		//~ if(static::getModelName()=='actualite')
+		//~ d(static::$properties);
 					
 		static::loadBehaviors();
 		static::loadRelationships();
@@ -157,11 +205,13 @@ abstract class Model {
 					static::addProperty('filename_'.$file, array('type' => 'text', 'editable'=>false, 'required'=>false));
 	}
 	
+	#TODO MOVE IT INTO ORM
 	public static function loadRelationships() {
 		$model_relationships = static::$relationships;
 		
 		if(is_array($model_relationships))
 			foreach($model_relationships as $relationship => $params)
+				#todo and hasOne ?
 				if($params['type'] == 'belongsTo') {
 					$rel = static::relationData(static::getClassName(), $relationship);
 					static::addProperty($rel['link'], array('type' => 'integer', 'required' => (isset($params['required']) && $params['required']), 'editable'=>false));
