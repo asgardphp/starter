@@ -11,6 +11,7 @@ class Router {
 	public static $routes = array(
 		#move it to git
 		//~ 'init'	=>	'coxis:test',
+		#git clone https://leyou@bitbucket.org/leyou/coxis.git
 		//~ git clone ...
 		'set'	=>	'coxis:set',	#set config var
 		//~ 'search'	=>	'coxis:test',	#search for bundles

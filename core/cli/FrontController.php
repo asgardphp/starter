@@ -4,6 +4,14 @@ namespace Coxis\Core\Cli;
 class FrontController extends CLIController {
 	public function mainAction($request) {
 		global $argv;
+			
+		array_shift($argv);
+		
+		if(sizeof($argv) == 0)
+			static::usage();
+		
+		$route = $argv[0];
+		array_shift($argv);
 
 		$args = static::parseArgs($argv);
 		
@@ -18,14 +26,6 @@ class FrontController extends CLIController {
 			\Coxis\Core\Error::display(true);
 			
 		BundlesManager::loadBundles();
-			
-		array_shift($argv);
-		
-		if(sizeof($argv) == 0)
-			static::usage();
-		
-		$route = $argv[0];
-		array_shift($argv);
 		
 		#todo remove
 		try {
@@ -39,6 +39,7 @@ class FrontController extends CLIController {
 			
 			list($controller, $action) = explode(':', $route);
 
+		//~ d($argv, $args);
 			Router::dispatch($controller, $action, $args);
 		//~ } catch(\Exception $e) {
 			//~ static::usage();
