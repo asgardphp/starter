@@ -139,7 +139,7 @@ class MigrationController extends CLIController {
 								break;
 							case 'text':
 								if(isset($prop['length']))
-									$prop['orm']['type'] = 'varchar('.$prop['lenght'].')';
+									$prop['orm']['type'] = 'varchar('.$prop['length'].')';
 								else
 									$prop['orm']['type'] = 'text';
 								break;
@@ -240,6 +240,7 @@ class '.$filename.'_'.$i.' {
 	}
 }";
 		file_put_contents('migrations/'.$i.'_'.$filename.'.php', $migration);
+		echo 'New migration: '.$i.'_'.$filename;
 	}
 	
 	private static function tabs($str, $tabs) {

@@ -1,7 +1,7 @@
 <?php
 namespace Coxis\Bundles\Value\Models;
 
-class Value extends \Coxis\Core\Model {
+class Value extends \Coxis\Core\ORM\ModelORM {
 	public static $stored = array();
 
 	public function __toString() {

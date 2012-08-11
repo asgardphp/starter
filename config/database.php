@@ -5,7 +5,7 @@ $config = array(
 			'host'			=>	'localhost',
 			'user'	=>	'root',
 			'password'	=>	'',
-			'database'	=>	'coxis3',
+			'database'	=>	'coxis3_test',
 			'prefix'		=>	'arpa_',
 		),
 		'error_display' => true,

@@ -1,6 +1,9 @@
 <?php
 namespace Coxis\Core\Cli;
 
+#todo replace with a distributed architecture
+define('_GENERATOR_DIR_', 'C:\Users\leyou\Documents\projects\coxisgenerator');
+
 class CoxisController extends CLIController {
 	public function testAction($request) {
 		//~ d($request);
@@ -18,20 +21,11 @@ class CoxisController extends CLIController {
 	public function importAction($request) {
 		die('TODO');
 	}
- 
-	public static function promptConfirmation($msg) {
-		if(defined('_CONFIRMATION_') && _CONFIRMATION_)
-			return;
-		echo $msg.' (y/n)';
-		$reply = strtolower(getinput());
-		if($reply!='y')
-			die('OK!');
-	 }
 	
 	public function buildAction($request) {
-		define('_GENERATOR_DIR_', 'C:\Users\leyou\Documents\projects\coxisgenerator');
+		$input = $request[0];
 	
-		include('vendors/yaml/sfYamlParser.php');
+		//~ include('vendors/yaml/sfYamlParser.php');
 		$yaml = new sfYamlParser();
 		$raw = $yaml->parse(file_get_contents($input));
 		$bundles = array();
@@ -120,6 +114,8 @@ class CoxisController extends CLIController {
 			static::processDir('app/'.$bundle['name'], $bundle, $bundle_filenames);
 		}
 		
+		\Coxis\Core\Autoloader::preloadDir('app/'.$bundle['name'].'/models');
+		
 		foreach($bundles as $bundle) {		
 			$bundle_filenames = array(
 				'_ModelAdminController.php' =>	ucfirst($bundle['model']['meta']['name']).'AdminController.php',
@@ -148,13 +144,22 @@ class CoxisController extends CLIController {
 		//~ build_db();
 	}
  
+	public static function promptConfirmation($msg) {
+		if(defined('_CONFIRMATION_') && _CONFIRMATION_)
+			return;
+		echo $msg.' (y/n)';
+		$reply = strtolower(getinput());
+		if($reply!='y')
+			die('OK!');
+	 }
+ 
 	public static function rrmdir($dir) { 
 		if (is_dir($dir)) { 
 			$objects = scandir($dir); 
 			foreach ($objects as $object) { 
 				if ($object != "." && $object != "..") { 
 					if (filetype($dir."/".$object) == "dir")
-						rrmdir($dir."/".$object);
+						static::rrmdir($dir."/".$object);
 					else
 						unlink($dir."/".$object); 
 				} 
@@ -171,7 +176,7 @@ class CoxisController extends CLIController {
 	    while(false !== ( $file = readdir($dir)) ) { 
 		if (( $file != '.' ) && ( $file != '..' )) { 
 		    if ( is_dir($src . '/' . $file) ) { 
-			copyDir($src . '/' . $file,$dst . '/' . $file); 
+			static::copyDir($src . '/' . $file,$dst . '/' . $file); 
 		    } 
 		    else { 
 			copy($src . '/' . $file,$dst . '/' . $file); 
@@ -204,6 +209,29 @@ class CoxisController extends CLIController {
 				static::myrename($dir.'/'.$filename, $dir.'/'.$filename2);
 			}
 		}
+	}
+	
+	public static function processFile($file_path, $bundle) {
+	//~ var_dump($bundle['model']['files']);die();
+	//~ echo strpos($file_path, '_Model.php')."\n";
+		//~ echo '--'."\n";
+		ob_start();
+		include($file_path);
+		$content = ob_get_contents();
+		ob_end_clean();
+		//~ echo '----'."\n";
+	//~ echo $file_path."\n";
+		//~ if(strpos($file_path, '_Model.php') > 0)
+			//~ die('-'.$content);
+		//~ die($file_path);
+		//~ if(strpos($file_path, 'Actualite.php'))
+			//~ die($content);
+		$content = str_replace('<%', '<?php', $content);
+		$content = str_replace('%>', '?>', $content);
+		//~ $fp = fopen($file_path, 'w+');
+		//~ fwrite($fp, $content);
+		//~ fclose($fp);
+		file_put_contents($file_path, $content);
 	}
 	
 	public static function myrename($src, $dst) {

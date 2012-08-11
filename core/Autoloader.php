@@ -33,6 +33,8 @@ class Autoloader {
 			list($class) = explode('.', basename($file));
 			static::preloadClass($class, $file);
 		}
+		#remove duplicate files
+		static::$preloaded = array_unique(static::$preloaded, SORT_REGULAR);
 	}
 	
 	public static function loadClass($class) {

@@ -73,21 +73,23 @@ class ModelAdminController extends AdminParentController {
 		if(isset($request['search']) && $request['search']) {
 			$conditions['or'] = array();
 			foreach($_model::getAttributes() as $property)
-				$conditions['or']["`$property` LIKE ?"] = array('%'.$request['search'].'%');
+				$conditions['or']["`$property` LIKE ?"] = '%'.$request['search'].'%';
 		}
 		#Filters
 		elseif(isset($request['filter']) && $request['filter']) {
 			$conditions['and'] = array();
 			foreach($request['filter'] as $key=>$value)
 				if($value)
-					$conditions['and']["`$key` LIKE ?"] = array('%'.$value.'%');
+					$conditions['and']["`$key` LIKE ?"] = '%'.$value.'%';
 		}
 		
 		$pagination = $_model::where($conditions);
 		if(isset(static::$_orderby))
 			$pagination->orderBy(static::$_orderby);
-		list($this->$_models, $this->paginator) = $_model::where($conditions)->paginate(
-			isset($request['page']) ? $request['page']:1
+		$this->paginator = null;
+		$this->$_models = $_model::where($conditions)->paginate(
+			isset($request['page']) ? $request['page']:1,
+			$this->paginator
 		);
 	}
 	

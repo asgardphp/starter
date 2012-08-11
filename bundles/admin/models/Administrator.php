@@ -1,7 +1,7 @@
 <?php
 namespace Coxis\Bundles\Admin\Models;
 
-class Administrator extends Model {
+class Administrator extends \Coxis\Core\ORM\ModelORM {
 	#General
 	public function __toString() {
 		return $this->username;
