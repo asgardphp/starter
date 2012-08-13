@@ -7,17 +7,9 @@ Coxis::load();
 
 class i18nTest extends PHPUnit_Framework_TestCase {
 	public function setUp(){
-		$host = Config::get('database', 'host');
-		$user = Config::get('database', 'user');
-		$pwd = Config::get('database', 'password');
-		$db = Config::get('database', 'database');
-		//~ $cmd = 'mysql -h '.$host.' -u '.$user.' -p'.$pwd.' '.$db.' < tests/coxis3.sql';
-		$cmd = 'mysql -h '.$host.' -u '.$user.' '.$db.' < tests/coxis.sql';
-		exec($cmd);
-		#test database
-			//~ load it at start
-				//~ create test schema like dev schema
-				//~ data: fixtures
+		DB::import('tests/coxis.sql');
+				
+		Locale::setLocale('fr');
 	}
 
 	public function tearDown(){}
@@ -54,7 +46,8 @@ class i18nTest extends PHPUnit_Framework_TestCase {
     
 	#save english version
 	public function test5() {
-		Config::set('locale', 'en');
+		//~ Config::set('locale', 'en');
+		Locale::setLocale('en');
 		$actu = new \Coxis\Tests\App\Actualite\Models\Actualite(2);
 		$actu->test = 'Hi';
 		$actu->save(null, true);

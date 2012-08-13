@@ -8,12 +8,6 @@ class FrontController extends Controller {
 				define('_ENV_', 'dev');
 			else
 				define('_ENV_', 'prod');
-
-		/* CONFIG */
-		import('Coxis\Core\Config');
-		\Coxis\Core\Config::loadConfigDir('config');
-		if(\Coxis\Core\Config::get('error_display'))
-			\Coxis\Core\Error::display(true);
 	
 		/* WEB RESOURCES */
 		$this->getResource();

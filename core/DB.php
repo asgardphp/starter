@@ -26,6 +26,15 @@ class DB {
 		
 		return $instance->db;
 	}
+	
+	public static function import($file) {
+		$host = Config::get('database', 'host');
+		$user = Config::get('database', 'user');
+		$pwd = Config::get('database', 'password');
+		$db = Config::get('database', 'database');
+		$cmd = 'mysql -h '.$host.' -u '.$user.($pwd ? ' -p'.$pwd:'').' '.$db.' < '.$file;
+		exec($cmd);
+	}
 
 	public static function query($sql) {
 		$instance = static::getInstance();

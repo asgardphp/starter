@@ -7,34 +7,14 @@ Coxis::load();
 
 class SchemaTest extends PHPUnit_Framework_TestCase {
 	public function setUp(){
-		$host = Config::get('database', 'host');
-		$user = Config::get('database', 'user');
-		$pwd = Config::get('database', 'password');
 		$db = Config::get('database', 'database');
-		
-		$testdb = new \PDO('mysql:host='.$host.';', 
-			$user,
-			$pwd,
-			array(\PDO::MYSQL_ATTR_FOUND_ROWS => true)
-		);
-		DB::newInstance($testdb);
 		try {
 			DB::query('DROP DATABASE `'.$db.'`');
 		} catch(Exception $e) {}
 		DB::query('CREATE DATABASE `'.$db.'`');
-		//~ $cmd = 'mysql -h '.$host.' -u '.$user.' -p'.$pwd.' '.$db.' < tests/coxis3.sql';
-		$cmd = 'mysql -h '.$host.' -u '.$user.' '.$db.' < tests/coxis.sql';
 		DB::query('USE `'.$db.'`');
-		exec($cmd);
-		#test database
-			//~ load it at start
-				//~ create test schema like dev schema
-					#php definitions
-						#don't need migrations for test
-					#sql definitions
-						#may be optionnaly supported later
-				//~ data: fixtures
-					#yml <=> sql tables
+		
+		DB::import('tests/coxis.sql');
 	}
 
 	public function tearDown(){}

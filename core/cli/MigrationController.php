@@ -119,12 +119,12 @@ class MigrationController extends CLIController {
 				foreach($class::$properties as $name=>$prop) {
 					if(!isset($prop['orm']))
 						$prop['orm'] = array();
-					if($name == 'id') {
-						$prop['orm']['type'] = 'int(11)';
-						$prop['orm']['auto_increment'] = true;
-						$prop['orm']['key'] = 'PRI';
-						$prop['orm']['nullable'] = false;
-					}
+					//~ if($name == 'id') {
+						//~ $prop['orm']['type'] = 'int(11)';
+						//~ $prop['orm']['auto_increment'] = true;
+						//~ $prop['orm']['key'] = 'PRI';
+						//~ $prop['orm']['nullable'] = false;
+					//~ }
 					if(isset($prop['i18n']) && $prop['i18n'])
 						continue;
 					if(!isset($prop['orm']['type'])) {
