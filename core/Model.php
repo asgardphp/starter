@@ -18,10 +18,9 @@ abstract class Model {
 	public static $messages = array();
 	
 	public function __construct($param='') {
-		if(is_array($param)) {
-			$this->loadDefault();
-			$this->loadFromArray($param);
-		}
+		if(is_array($param))
+			$this->loadDefault()
+			       ->loadFromArray($param);
 		elseif($param != '')
 			$this->loadFromID($param);
 		else
@@ -34,13 +33,10 @@ abstract class Model {
 	}
 	
 	public function __get($name) {
-		if(in_array($name, array_keys(static::$properties))) {
+		if(in_array($name, array_keys(static::$properties)))
 			return $this->getVar($name);
-		}
-		elseif(array_key_exists($name, $this::$files)) {
-			$file = new ModelFile($this, $name);
-			return $file;
-		}
+		elseif(array_key_exists($name, $this::$files))
+			return new ModelFile($this, $name);
 		elseif(array_key_exists($name, $this::$relationships)) {
 			$res = $this->getRelation($name);
 			if($res instanceof \Coxis\Core\Collection)
@@ -76,24 +72,23 @@ abstract class Model {
 				$lang = $arguments[0];
 			return $this->getVar($what, $lang);
 		}
-		else {
-			if(array_key_exists($name, $this::$relationships)) {
-				return $this->getRelation($name);
-			}
-		}
+		elseif(array_key_exists($name, $this::$relationships))
+			return $this->getRelation($name);
 	}
 	
 	/* INIT AND MODEL CONFIGURATION */
-	final public static function _autoload() {
+	public static function _autoload() {
 		if(static::getClassName() == 'coxis\core\model')
 			return;
 		static::loadModel();
+		static::configure();
+		static::post_configure();
 	}
 	
 	protected static function configure() {}
 
-	private static function post_configure() {
-		foreach(static::getProperties() as $property=>$params) {
+	protected static function post_configure() {
+		foreach(static::$properties as $property=>$params) {
 			if(isset($params['multiple']))
 				static::$properties[$property]['type'] = 'array';
 			if(!isset($params['type']))
@@ -104,34 +99,30 @@ abstract class Model {
 	}
 
 	public function loadDefault() {
-		foreach(static::getProperties() as $property=>$params)
+		foreach(static::getProperties() as $property=>$params) {
 			if(isset($params['default']))
 				$this->$property = $params['default'];
 			elseif($params['type'] == 'array')
 				$this->$property = array();
 			else
 				$this->$property = '';
+		}
+				
+		return $this;
 	}
 	
 	public static function loadModel() {
-		if(!isset(static::$meta['order_by']))
-			static::$meta['order_by'] = 'id DESC';
-	
 		$properties = static::$properties;
 		foreach($properties as $k=>$v)
 			if(is_int($k)) {
-				$properties[$v] = array();
-				unset($properties[$k]);
+				static::$properties = 
+					Tools::array_before(static::$properties, $k) +
+					array($v => array()) +
+					Tools::array_after(static::$properties, $k);
 			}
-		static::$properties = $properties;
-		
-		static::addProperty('id', array('type' => 'text', 'editable'=>false, 'required'=>false));
 					
 		static::loadBehaviors();
-		static::loadRelationships();
 		static::loadFiles();
-		static::configure();
-		static::post_configure();
 	}
 	
 	public static function loadBehaviors() {
@@ -148,24 +139,12 @@ abstract class Model {
 		$model_files = static::$files;
 		
 		if(is_array($model_files))
-			foreach($model_files as $file => $params)
-				#multiple
-				if(isset($params['multiple']) && $params['multiple'])
-					static::addProperty('filename_'.$file, array('type' => 'array', 'default'=>array(), 'editable'=>false, 'required'=>false));
-				#single
-				else
+			foreach($model_files as $file => $params) {
+				if(isset($params['multiple']) && $params['multiple']) #multiple
+					static::addProperty('filename_'.$file, array('type' => 'array', 'editable'=>false, 'required'=>false));
+				else #single
 					static::addProperty('filename_'.$file, array('type' => 'text', 'editable'=>false, 'required'=>false));
-	}
-	
-	public static function loadRelationships() {
-		$model_relationships = static::$relationships;
-		
-		if(is_array($model_relationships))
-			foreach($model_relationships as $relationship => $params)
-				if($params['type'] == 'belongsTo') {
-					$rel = static::relationData(static::getClassName(), $relationship);
-					static::addProperty($rel['link'], array('type' => 'integer', 'required' => (isset($params['required']) && $params['required']), 'editable'=>false));
-				}
+			}
 	}
 	
 	/* MISC */
@@ -208,8 +187,7 @@ abstract class Model {
 			$model->configure();
 			return $model;
 		}
-		else
-			return null;
+		return null;
 	}
 	
 	public static function isI18N() {
@@ -246,8 +224,6 @@ abstract class Model {
 		
 		return $this;
 	}
-
-
 	
 	public static function addProperty($property, $params) {
 		static::$properties[$property] = $params;
@@ -311,17 +287,24 @@ abstract class Model {
 			$filter = static::$properties[$name]['setFilter'];
 			$value = call_user_func_array($filter, array($value));
 		}
-		if(isset(static::$properties[$name]['i18n']) && static::$properties[$name]['i18n']) {
-			if(!$lang)
-				$lang = Config::get('locale');
-			if($lang == 'all')
-				foreach($value as $one => $v)
-					$this->data['properties'][$name][$one] = $v;
+		if(isset(static::$properties[$name])) {
+			if(isset(static::$properties[$name]['i18n']) && static::$properties[$name]['i18n']) {
+				if(!$lang)
+					$lang = Config::get('locale');
+				if($lang == 'all')
+					foreach($value as $one => $v)
+						$this->data['properties'][$name][$one] = $v;
+				else
+					$this->data['properties'][$name][$lang] = $value;
+			}
 			else
-				$this->data['properties'][$name][$lang] = $value;
+				$this->data['properties'][$name] = $value;
+		}
+		elseif(isset(static::$files[$name])) {
+			$this->data['_files'][$name] = $value;
 		}
 		else
-			$this->data['properties'][$name] = $value;
+			$this->data[$name] = $value;
 	}
 	
 	/* VALIDATION */
@@ -355,22 +338,39 @@ abstract class Model {
 		return $validator;
 	}
 	
-	public function isValid($file) {
+	public function isValid() {
 		return $this->getValidator()->errors();
 	}
 	
 	public function errors() {
+		#before validation
+		foreach(static::$behaviors as $behavior => $params)
+			if($params)
+				Event::trigger('behaviors_presave_'.$behavior, $this);
+				
 		$data = $this->getVars();
-		foreach(static::$files as $file=>$params)
+		foreach(static::$files as $file=>$params) {
 			if(isset($this->data[$file]['tmp_name']) && $this->data[$file]['tmp_name'])
 				$data[$file] = $this->data[$file]['tmp_name'];
 			else
 				$data[$file] = 'web/'.$this->$file->get();
+		}
 		
-		return $this->getValidator()->errors($data);
+		#validation
+		$errors = $this->getValidator()->errors($data);
+		
+		#after validation
+		
+		
+		return $errors;
 	}
 	
-	public function _save($force=false) {
+	/* PERSISTENCE */
+	public function save($values=null, $force=false) {
+		#set $values if any
+		if($values)
+			$this->set($values);
+		
 		if(!$force) {
 			#validate params and files
 			if($errors = $this->errors()) {
@@ -380,30 +380,16 @@ abstract class Model {
 				throw $e;
 			}
 		}
-			
-		$this->move_files();
-	}
-	
-	/* PERSISTENCE */
-	public function save($values=null, $force=false) {
-		#set $values if any
-		if($values)
-			$this->set($values);
-			
-		$this->pre_save();
-		$this->_save($force);
+		
+		#before save
+		$this->dosave();#save
+		#after save
 
 		return $this;
 	}
-	
-	public function pre_save() {
-		#handle behaviors	
-		$model_behaviors = static::$behaviors;
-		foreach($model_behaviors as $behavior => $params)
-			if($params)
-				Event::trigger('behaviors_presave_'.$behavior, $this);
-		
-		Event::trigger('presave_'.$this->getClassName(), $this);
+
+	public function dosave() {
+		$this->move_files();
 	}
 	
 	public function destroy() {
@@ -412,20 +398,42 @@ abstract class Model {
 	}
 	
 	/* FILES */
+	#getvalidator
+		#???
+	#errors
+		#???
+		
+	#loadModel
+		#loadFiles
+		
+	#__get()
+	#setAttribute
+	
+	#save / move_files
+	
+	#hasFile
+	
+	/*
+	*/
+	
+	#todo
+	#loadFiles: behavior?
+	//~ Actualite::get_truc(function($model) {
+	//~ });
+	//~ Actualite::set_truc(function($model, $value) {
+	//~ });
+	//~ Actualite::onSave(function($model) {
+	//~ });
+	//~ Actualite::call_hasFile(function($model) {
+	//~ });
+	
 	public function move_files() {
-		$model_files = static::$files;
 		if(isset($this->data['_files']) && is_array($this->data['_files']))
 			foreach($this->data['_files'] as $file=>$arr)
 				if($this->hasFile($file) && is_uploaded_file($arr['tmp_name'])) {
 					$path = _WEB_DIR_.'/'.$this->$file->dir().'/'.$arr['name'];
 					$this->$file->add($arr['tmp_name'], $path);
 				}
-	}
-	
-	public function setFiles($files) {
-		$this->_files = $files;
-				
-		return $this;
 	}
 	
 	public function hasFile($file) {

@@ -28,7 +28,7 @@ class Controller {
 			HTML::code('<link rel="canonical" href="'.$canonical.'">');
 	}
 
-	public function run($action, $params, $showView=false) {
+	public function run($action, $params=array(), $showView=false) {
 		$this->view = $action.'.php';
 		if(($actionName=$action) != 'configure')
 			$actionName = $action.'Action';

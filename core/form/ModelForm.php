@@ -121,9 +121,7 @@ class ModelForm extends Form {
 			$data = $res;
 			
 		$this->model
-			->set($data)
-			->setFiles($this->files)
-			->pre_save();
+			->set(array_merge($data, $this->files));
 		
 		return array_merge(parent::my_errors(), $this->model->errors());
 	}
@@ -145,7 +143,7 @@ class ModelForm extends Form {
 			$group = $this;
 			
 		if(is_a($group, 'Coxis\Core\Form\ModelForm') || is_subclass_of($group, 'Coxis\Core\Form\ModelForm'))
-			$group->model->_save();
+			$group->model->dosave();
 			
 		if(is_subclass_of($group, 'Coxis\Core\Form\AbstractGroup'))
 			foreach($group->widgets as $name=>$widget)

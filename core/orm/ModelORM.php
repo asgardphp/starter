@@ -2,6 +2,50 @@
 namespace Coxis\Core\ORM;
 
 abstract class ModelORM extends \Coxis\Core\Model {
+	public static function _autoload() {
+		if(static::getClassName() == 'coxis\core\orm\modelorm')
+			return;
+		static::loadModel();
+		parent::configure();
+		parent::post_configure();
+	}
+	
+	public static function loadModel() {
+		if(!isset(static::$meta['order_by']))
+			static::$meta['order_by'] = 'id DESC';
+		
+		static::$properties = array_merge(
+			array('id' => 
+				array(
+					'type' => 'text', 
+					'editable'=>false, 
+					'required'=>false,
+					'orm'	=>	array(
+						'type'	=>	'int(11)',
+						'auto_increment'	=>	true,
+						'key'	=>	'PRI',
+						'nullable'	=>	false,
+					),
+				)), 
+			static::$properties
+		);
+		
+		parent::loadModel();
+		static::loadRelationships();
+	}
+	
+	public static function loadRelationships() {
+		$model_relationships = static::$relationships;
+		
+		if(is_array($model_relationships))
+			foreach($model_relationships as $relationship => $params)
+				#todo and hasOne ?
+				if($params['type'] == 'belongsTo') {
+					$rel = static::relationData(static::getClassName(), $relationship);
+					static::addProperty($rel['link'], array('type' => 'integer', 'required' => (isset($params['required']) && $params['required']), 'editable'=>false));
+				}
+	}
+	
 	public static function getORM() {
 		return new ORM(static::getClassName());
 	}
@@ -67,6 +111,7 @@ abstract class ModelORM extends \Coxis\Core\Model {
 	
 	/* IMPLEMENTS */
 	public function loadFromID($id) {
+		//~ d(static::getORM()->where(array('id' => $id))->dal()->buildSQL());
 		$res = static::getORM()->where(array('id' => $id))->dal()->first();
 		if($res) {
 			$this->set($res);
@@ -75,9 +120,9 @@ abstract class ModelORM extends \Coxis\Core\Model {
 		return false;
 	}
 	
-	public function _save($force=false) {
-		parent::_save($force);
-		
+	public function dosave() {
+		parent::dosave();
+	
 		$vars = $this->getVars();
 		
 		#apply filters before saving
@@ -106,6 +151,7 @@ abstract class ModelORM extends \Coxis\Core\Model {
 			}
 		}
 		
+		//Persist i18n
 		$values = array();
 		$i18n = array();
 		foreach($vars as $p => $v) {
@@ -116,6 +162,7 @@ abstract class ModelORM extends \Coxis\Core\Model {
 				$values[$p] = $v;
 		}
 		
+		//Persist
 		$orm = static::getORM();
 		//new
 		if(!isset($this->id))
@@ -126,6 +173,7 @@ abstract class ModelORM extends \Coxis\Core\Model {
 				$this->id = $orm->insert($values);
 		}		
 		
+		//Persist i18n
 		foreach($i18n as $lang=>$values) {
 			$dal = new DAL(static::getTranslationTable());
 			if(!$dal->where(array('id'=>$this->id, 'locale'=>$lang))->update($values))

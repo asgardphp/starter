@@ -27,6 +27,28 @@ class Tools {
 		'Dimanche'=>'Dimanche',
 	);
 	
+	public static function array_before($arr, $i) {
+		$res = array();
+		foreach($arr as $k=>$v) {
+			if($k === $i)
+				return $res;
+			$res[$k] = $v;
+		}
+		return $res;
+	}
+	
+	public static function array_after($arr, $i) {
+		$res = array();
+		$do = false;
+		foreach($arr as $k=>$v) {
+			if($do)
+				$res[$k] = $v;
+			if($k === $i)
+				$do = true;
+		}
+		return $res;
+	}
+	
 	public static function truncateHTML($html, $maxLength, $trailing='...') {
 		$html = trim($html);
 		$printedLength = 0;

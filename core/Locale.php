@@ -3,7 +3,6 @@ namespace Coxis\Core;
 
 class Locale {
 	private static $default = 'en';
-	private static $locale = 'en';
 	public static $locales = array();
 
 	public static function setDefault($locale) {
@@ -11,13 +10,13 @@ class Locale {
 	}
 
 	public static function setLocale($locale) {
-		static::$locale = $locale;
+		Config::set('locale', $locale);
 	}
 
 	public static function _autoload() {
 		static::setLocale(Config::get('locale'));
 	
-		include_once('vendors/yaml/sfYamlParser.php');
+		require_once('vendors/yaml/sfYamlParser.php');
 		
 		if(\Coxis\Core\Config::get('phpcache'))
 			static::$locales = \Coxis\Core\Cache::get('locales');
@@ -33,8 +32,9 @@ class Locale {
 	}
 
 	public static function translate($key, $params=array()) {
-		if(isset(static::$locales[static::$locale][$key]) && static::$locales[static::$locale][$key])
-			$str = static::$locales[static::$locale][$key];
+		$locale = Config::get('locale');
+		if(isset(static::$locales[$locale][$key]) && static::$locales[$locale][$key])
+			$str = static::$locales[$locale][$key];
 		elseif(isset(static::$locales[static::$default][$key]) && static::$locales[static::$default][$key])
 			$str = static::$locales[static::$default][$key];
 		else
@@ -49,9 +49,8 @@ class Locale {
 	public static function importLocales($dir) {
 		foreach(glob($dir.'/*') as $lang_dir) {
 			$lang = basename($lang_dir);
-			foreach(glob($lang_dir.'/*') as $file) {
+			foreach(glob($lang_dir.'/*') as $file)
 				static::import($lang, $file);
-			}
 		}
 	}
 	

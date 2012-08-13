@@ -20,7 +20,6 @@ class BundlesManager {
 	public static $hooks_table = array();
 	public static $filters_table = array();
 	public static $directories = array('bundles', 'app');
-	public static $bundles = array();
 	public static $load_routes = true;
 	
 	public static function loadBundle($bundle) {
@@ -86,9 +85,11 @@ class BundlesManager {
 	}
 	
 	public static function getBundles() {
+		$bundles = array();
 		foreach(static::$directories as $dir)
 			foreach(glob($dir.'/*') as $bundlepath)
-				static::$bundles[] = $bundlepath;
+				$bundles[] = $bundlepath;
+		return $bundles;
 	}
 	
 	public static function loadBundles() {
@@ -105,13 +106,13 @@ class BundlesManager {
 			}
 		}
 		
-		static::getBundles();
+		$bundles = static::getBundles();
 		
-		foreach(static::$bundles as $bundle)
+		foreach($bundles as $bundle)
 			Autoloader::preloadDir($bundle.'/libs');
-		foreach(static::$bundles as $bundle)
+		foreach($bundles as $bundle)
 			static::loadBundle($bundle);
-		foreach(static::$bundles as $bundle)
+		foreach($bundles as $bundle)
 			if(file_exists($bundle.'/bundle.php'))
 				include($bundle.'/bundle.php');
 			

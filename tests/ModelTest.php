@@ -5,24 +5,9 @@ require_once(dirname(__FILE__).'/../coxis.php');
 BundlesManager::$directories[] = 'tests/app';
 Coxis::load();
 
-class CoxisTest extends PHPUnit_Framework_TestCase {
+class ModelTest extends PHPUnit_Framework_TestCase {
 	public function setUp(){
-		$host = Config::get('database', 'host');
-		$user = Config::get('database', 'user');
-		$pwd = Config::get('database', 'password');
-		$db = Config::get('database', 'database');
-		//~ $cmd = 'mysql -h '.$host.' -u '.$user.' -p'.$pwd.' '.$db.' < tests/coxis3.sql';
-		$cmd = 'mysql -h '.$host.' -u '.$user.' '.$db.' < tests/coxis.sql';
-		exec($cmd);
-		#test database
-			//~ load it at start
-				//~ create test schema like dev schema
-					#php definitions
-						#don't need migrations for test
-					#sql definitions
-						#may be optionnaly supported later
-				//~ data: fixtures
-					#yml <=> sql tables
+		DB::import('tests/coxis.sql');
 	}
 
 	public function tearDown(){}
