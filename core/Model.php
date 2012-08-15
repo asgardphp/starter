@@ -20,7 +20,7 @@ abstract class Model {
 	public function __construct($param='') {
 		if(is_array($param))
 			$this->loadDefault()
-			       ->loadFromArray($param);
+			       ->set($param);
 		elseif($param != '')
 			$this->loadFromID($param);
 		else
@@ -44,6 +44,7 @@ abstract class Model {
 			else
 				return $res;
 		}
+		throw new \Exception('The attribute "'.$name.'" does not exist for model "'.$this->getClassName().'"');
 	}
 	
 	public function __isset($name) {
@@ -74,6 +75,10 @@ abstract class Model {
 		}
 		elseif(array_key_exists($name, $this::$relationships))
 			return $this->getRelation($name);
+		throw new \Exception('The method "'.$name.'" does not exist for model "'.$this->getClassName().'"');
+	}
+	
+	public static function __callStatic($name, $arguments) {
 	}
 	
 	/* INIT AND MODEL CONFIGURATION */
@@ -81,11 +86,11 @@ abstract class Model {
 		if(static::getClassName() == 'coxis\core\model')
 			return;
 		static::loadModel();
-		static::configure();
+		//~ static::configure();
 		static::post_configure();
 	}
 	
-	protected static function configure() {}
+	//~ protected static function configure() {}
 
 	protected static function post_configure() {
 		foreach(static::$properties as $property=>$params) {
@@ -149,11 +154,17 @@ abstract class Model {
 	
 	/* MISC */
 	public function set($vars) {
+	//~ static $i;
+	//~ if($i++>0) {
+	//~ $this->date_debut = '06/08/2012';
+	//~ d($this->data);
+	//~ d($vars);
+	//~ }
 		$props = $this->getProperties();
 		foreach($vars as $k=>$v) {
-			if(isset($props[$k]) && $props[$k]['type'] == 'date')
-				$this->$k = Date::fromDatetime($v);
-			else
+			//~ if(isset($props[$k]) && $props[$k]['type'] == 'date')
+				//~ $this->$k = Date::fromDatetime($v);
+			//~ else
 				$this->$k = $v;
 		}
 				
@@ -190,39 +201,14 @@ abstract class Model {
 		return null;
 	}
 	
+	public function configure() {
+	}
+	
 	public static function isI18N() {
 		foreach(static::$properties as $prop)
 			if(isset($prop['i18n']) && $prop['i18n'])
 				return true;
 		return false;
-	}
-	
-	public function loadFromArray($cols) {
-		foreach($cols as $col=>$value) {
-			if(isset(static::$properties[$col]['filter'])) {
-				$filter = static::$properties[$col]['filter']['from'];
-				$this->$col = $model::$filter($value);
-			}
-			elseif(isset(static::$properties[$col]['type'])) {
-				if(static::$properties[$col]['type'] === 'array') {#php, seriously.. == 'array'
-					try {
-						$this->$col = unserialize($value);
-					} catch(\ErrorException $e) {
-						$this->$col = array($value);
-					}
-					if(!is_array($this->$col))
-						$this->$col = array();
-				}
-				elseif(static::$properties[$col]['type'] === 'date')
-					$this->$col = \Coxis\Core\Tools\Date::fromDatetime($value);
-				else
-					$this->$col = $value;
-			}
-			else
-				$this->$col = $value;
-		}
-		
-		return $this;
 	}
 	
 	public static function addProperty($property, $params) {
@@ -272,6 +258,8 @@ abstract class Model {
 		}
 		elseif(isset($this->data['properties'][$name])) 
 			$res = $this->data['properties'][$name];
+		else
+			throw new \Exception('The var "'.$name.'" does not exist for model "'.$this->getClassName().'"');
 		
 		if($res === null && method_exists($this, 'fetch'))
 			$res = $this->fetch($name, $lang);
@@ -287,6 +275,11 @@ abstract class Model {
 			$filter = static::$properties[$name]['setFilter'];
 			$value = call_user_func_array($filter, array($value));
 		}
+		
+		#todo create a hook for date type
+		if(isset(static::$properties[$name]) && (static::$properties[$name]['type'] == 'date' || static::$properties[$name]['type'] == 'datetime'))
+			$value = Date::fromDate($value);
+			
 		if(isset(static::$properties[$name])) {
 			if(isset(static::$properties[$name]['i18n']) && static::$properties[$name]['i18n']) {
 				if(!$lang)
@@ -428,12 +421,16 @@ abstract class Model {
 	//~ });
 	
 	public function move_files() {
+		//~ d($this->data['_files']);
 		if(isset($this->data['_files']) && is_array($this->data['_files']))
-			foreach($this->data['_files'] as $file=>$arr)
+			foreach($this->data['_files'] as $file=>$arr) {
+				if(!isset($arr['tmp_name']))
+					continue;
 				if($this->hasFile($file) && is_uploaded_file($arr['tmp_name'])) {
 					$path = _WEB_DIR_.'/'.$this->$file->dir().'/'.$arr['name'];
 					$this->$file->add($arr['tmp_name'], $path);
 				}
+			}
 	}
 	
 	public function hasFile($file) {

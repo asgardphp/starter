@@ -112,8 +112,10 @@ class ModelFile {
 			}
 		}
 		else {
-			FileManager::unlink(_WEB_DIR_.'/'.$path);
-			ImageCache::clearFile($path);
+			if($path) {
+				FileManager::unlink(_WEB_DIR_.'/'.$path);
+				ImageCache::clearFile($path);
+			}
 		}
 		$file_property = 'filename_'.$this->file;
 		$this->$file_property = '';

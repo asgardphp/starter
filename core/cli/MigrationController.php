@@ -93,6 +93,7 @@ class MigrationController extends CLIController {
 		if(!static::uptodate())
 			die('You must run all migrations before using diff.');
 			
+		FileManager::mkdir('migrations');
 		echo 'Running diff..'."\n";
 	
 		$bundles = BundlesManager::getBundles();
@@ -145,6 +146,12 @@ class MigrationController extends CLIController {
 								break;
 							case 'date':
 								$prop['orm']['type'] = 'datetime';
+								break;
+							case 'datetime':
+								$prop['orm']['type'] = 'datetime';
+								break;
+							case 'email':
+								$prop['orm']['type'] = 'varchar(255)';
 								break;
 							default:
 								die('Cannot convert '.$prop['type'].' type');

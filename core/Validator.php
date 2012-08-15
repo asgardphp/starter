@@ -11,7 +11,7 @@ class Validator {
 			$as = $params[0];
 			$as_value = $params[1][$as];
 			if($value !== $as_value) {
-				$msg = $validator->getMessage('same', $attribute, 'The field ":attribute" must be same as ":as".');
+				$msg = $validator->getMessage('same', $attribute, __('The field ":attribute" must be same as ":as".'));
 				return Validator::format($msg, array(
 					'attribute'	=>	$attribute,
 					'as'	=>	$as,
@@ -21,7 +21,7 @@ class Validator {
 		
 		static::register('integer', function($attribute, $value, $params, $validator) {
 			if(!preg_match('/[0-9]+/', $value)) {
-				$msg = $validator->getMessage('integer', $attribute, 'The field ":attribute" must be an integer.');
+				$msg = $validator->getMessage('integer', $attribute, __('The field ":attribute" must be an integer.'));
 				return Validator::format($msg, array(
 					'attribute'	=>	$attribute,
 				));
@@ -33,7 +33,7 @@ class Validator {
 			if(!$required)
 				return false;
 			if(!($value !== null && $value !== '')) {
-				$msg = $validator->getMessage('required', $attribute, 'The field ":attribute" is required.');
+				$msg = $validator->getMessage('required', $attribute, __('The field ":attribute" is required.'));
 				return Validator::format($msg, array(
 					'attribute'	=>	$attribute,
 				));
@@ -42,7 +42,7 @@ class Validator {
 		
 		static::register('email', function($attribute, $value, $params, $validator) {
 			if(!filter_var($value, FILTER_VALIDATE_EMAIL)) {
-				$msg = $validator->getMessage('email', $attribute, 'The field ":attribute" must be a valid e-mail address.');
+				$msg = $validator->getMessage('email', $attribute, __('The field ":attribute" must be a valid e-mail address.'));
 				return Validator::format($msg, array(
 					'attribute'	=>	$attribute,
 				));
@@ -53,7 +53,7 @@ class Validator {
 			try {
 				$mime = mime_content_type($value['tmp_name']);
 				if(!in_array($mime, array('image/jpeg', 'image/png', 'image/gif'))) {
-					$msg = $validator->getMessage('image', $attribute, 'The file ":attribute" must be an image.');
+					$msg = $validator->getMessage('image', $attribute, __('The file ":attribute" must be an image.'));
 					return Validator::format($msg, array(
 						'attribute'	=>	$attribute,
 					));
@@ -65,9 +65,24 @@ class Validator {
 			$msg = false;
 			//~ d($value);
 			if(!$value)
-				$msg = $validator->getMessage('filerequired', $attribute, 'The file ":attribute" is required.');
+				$msg = $validator->getMessage('filerequired', $attribute, __('The file ":attribute" is required.'));
 			elseif(!file_exists($value))
-				$msg = $validator->getMessage('fileexists', $attribute, 'The file ":attribute" does not exist.');
+				$msg = $validator->getMessage('fileexists', $attribute, __('The file ":attribute" does not exist.'));
+			if($msg)
+				return Validator::format($msg, array(
+					'attribute'	=>	$attribute,
+				));
+		});
+		
+		static::register('unique', function($attribute, $value, $params, $validator) {
+			$in = $params[0];
+			$loadby = 'loadBy'.$attribute;
+			if(!$in::$loadby($value))
+				return;
+			elseif(isset($params['id']) && $params['id'] == $in::$loadby($value)->id)
+				return;
+			
+			$msg = $validator->getMessage('unique', $attribute, __('The field ":attribute" must be unique.'));
 			if($msg)
 				return Validator::format($msg, array(
 					'attribute'	=>	$attribute,
@@ -100,7 +115,7 @@ class Validator {
 						list($rule, $params) = explode(':', $v);
 					} catch(\ErrorException $e) {
 						$rule = $v;
-						$paramas = array();
+						$params = array();
 					}
 					$constrains[$attribute] = array();
 					$constrains[$attribute][$rule] = $params;
@@ -184,10 +199,11 @@ class Validator {
 	}
 	
 	public function error($rule, $callback, $attribute, $val, $params) {
-		if(!isset(static::$rules[$rule]))
-			return false;
-		if(!$callback)
+		if(!$callback) {
+			if(!isset(static::$rules[$rule]))
+				return false;
 			$callback = static::$rules[$rule];
+		}
 		$result = call_user_func_array($callback, array($attribute, $val, $params, $this));
 		
 		return $result;

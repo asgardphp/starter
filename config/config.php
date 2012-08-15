@@ -16,7 +16,7 @@ $config = array(
 		)
 	),
 	'dev'	=>	array(
-		//~ 'phpcache'	=>	false,
-		'phpcache'	=>	true,
+		'phpcache'	=>	false,
+		//~ 'phpcache'	=>	true,
 	),
 );

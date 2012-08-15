@@ -21,7 +21,7 @@ class ModelForm extends Form {
 			if(isset($properties['editable']) && !$properties['editable'])
 				continue;
 			if(!$model->isNew())
-				$widget_params['default'] = $model->raw($name);
+				$widget_params['default'] = $model->$name;
 			if($properties['type'] == 'boolean')
 				$widget_params['type'] = 'boolean';
 			if(isset($properties['in']))
