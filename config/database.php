@@ -1,4 +1,4 @@
-<?php 
+<?php
 $config = array(
 	'dev' => array(
 		'database' => array(
