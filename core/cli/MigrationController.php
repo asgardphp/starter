@@ -29,6 +29,7 @@ class MigrationController extends CLIController {
 	}
 
 	public function migrateAction($request) {
+		Router::run('Coxis\Core\Cli\DB', 'backup', $request);
 		echo 'Migrating...'."\n";
 		$migrations = static::todo();
 		//~ d($migrations);
@@ -172,7 +173,11 @@ class MigrationController extends CLIController {
 		$down = static::diff($oldSchemas, $newSchemas);
 		//~ d($down);
 		
-		static::addMigration($up, $down);
+		if(isset($request[0]))
+			$filename = $request[0];
+		else
+			$filename = 'diff';
+		static::addMigration($up, $down, $filename);
 		//~ die('TODO');
 	}
 	
@@ -214,7 +219,7 @@ class MigrationController extends CLIController {
 		return $migrations;
 	}
 	
-	private static function addMigration($up, $down) {
+	private static function addMigration($up, $down, $filename='diff') {
 		if(!$up)
 			return;
 		if(!is_array($up))
@@ -226,7 +231,7 @@ class MigrationController extends CLIController {
 		foreach($down as $k=>$v)
 			$down[$k] = static::tabs($v, 2);
 			
-		$filename = 'diff';
+		//~ $filename = 'diff';
 		$i = static::current()+1;
 			
 		$migration = '<?php

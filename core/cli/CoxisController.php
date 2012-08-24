@@ -11,6 +11,18 @@ class CoxisController extends CLIController {
 		echo 'here';
 	}
 	
+	public function backupfilesAction($request) {
+		if(isset($request[0]))
+			$output = $request[0];
+		else
+			$output = 'backup/files/'.time().'.zip';
+		echo 'Dumping files into '.$output;
+		
+		$path = 'web/upload';
+		FileManager::mkdir(dirname($output));
+		Tools::zip($path, $output);
+	}
+	
 	public function setAction($request) {
 		die('TODO');
 		$config = file_get_contents(_PROJECT_DIR_.'/config.php');

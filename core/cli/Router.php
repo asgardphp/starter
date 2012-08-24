@@ -19,7 +19,8 @@ class Router {
 		'build'	=>	'coxis:build',	#build bundles from build.yml
 		
 		'dump'	=>	'db:dump',	#dump data into data.yml
-		'backup'	=>	'db:backup',	#dump data into default yml file
+		'backup-db'	=>	'db:backup',	#dump data into default yml file
+		'backup-files'	=>	'coxis:backupfiles',	#dump data into default yml file
 		'load-all'	=>	'db:loadAll',	#load all data (including bundles), usually for startup
 		'load'	=>	'db:load',	#load specific data file
 		
