@@ -10,6 +10,7 @@ class JeuController extends Controller {
 		$participant = new Participant();
 		$participant->jeu_id = $this->jeu->id;
 		$this->form = new ModelForm($participant);
+		unset($this->form->jeu);
 		$this->form->accepter = new Widget(array(
 			'validation'	=>	'required',
 			'messages'	=>	array(
@@ -19,14 +20,17 @@ class JeuController extends Controller {
 		$this->form->prev_email = new Widget();
 		$this->form->code_barre = new Widget();
 		$jeu = $this->jeu;
+		$this->form->magasin->params['validation']['custom'] = function($attr,$val,$params) use($jeu) {
+			// d($attr,$val,$params);
+			if($jeu->magasins()->count() && !$val)
+				return 'Vous devez choisir un magasin.';
+		};
 		$this->form->email->params['validation'] = array(
 			'custom'	=>	function($attribute, $value, $params, $validator) use($jeu) {
 				$data = $params[0];
 				$prev_email = $data['email'];
-				//~ $prev_email = $data['prev_email'];
 				$code_barre = $data['code_barre'];
 				
-				//~ if(empty($prev_email) || empty($code_barre))
 				if(empty($code_barre))
 					return null;
 				
@@ -62,6 +66,7 @@ class JeuController extends Controller {
 			$this->form->save();
 			Response::send();
 		} catch(\Coxis\Core\Form\FormException $e) {
+			// d($this->form->getModel());
 			Response::setCode(500)->setContent(implode("\n", $e->errors))->send();
 		}
 		$this->view = false;

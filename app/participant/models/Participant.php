@@ -1,13 +1,18 @@
 <?php
 class Participant extends \Coxis\Core\ORM\ModelORM {
-	//~ public static function _autoload() {
-		//~ parent::_autoload();
-		//~ static::$properties['magasin']['validation'] = function($attribute, $value, $params, $validator) {
-			//~ d($attribute, $value, $params, $validator);
+	// public static function _autoload() {
+		// parent::_autoload();
+		// static::$properties['magasin']['validation'] = function($attribute, $value, $params, $validator) {
+		// 	d($attribute, $value, $params, $validator);
 			
-			//~ return 'Erreur champ '.$attribute;
-		//~ };
-	//~ }
+		// 	return 'Erreur champ '.$attribute;
+		// };
+		// static::$messages['magasin'] = array(
+		// 	'custom'	=>	function($a,$b,$c) {
+		// 		d($a,$b,$c);
+		// 	},
+		// );
+	// }
 	
 	public static $properties = array(
 			'civilite'	=>	array(
@@ -66,10 +71,18 @@ class Participant extends \Coxis\Core\ORM\ModelORM {
 		'nom'	=>	array(
 			'required'	=>	'Le champ "nom" est requis.',
 		),
+		// 'magasin'	=>	array(
+		// 	'custom'	=>	array('Participant', 'checkMagasin'),
+		// ),
 		//~ 'email'	=>	array(
 			//~ 'unique'	=>	'Cette adresse email est déjà utilisée.',
 		//~ ),
 	);
+
+	// public static function checkMagasin($a, $b, $c) {
+	// 	d($a, $b, $c);
+		// 'Le champ "magasin" est requis.'
+	// }
 	
 	public function __toString() {
 		return $this->nom.' '.$this->prenom;
