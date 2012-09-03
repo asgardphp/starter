@@ -10,6 +10,9 @@ class Participant extends \Coxis\Core\ORM\ModelORM {
 	//~ }
 	
 	public static $properties = array(
+			'civilite'	=>	array(
+				'in'		=>	array('M', 'Mme', 'Mlle')
+			),
 			'nom'	=>	array(
 					),
 			'prenom'	=>	array(
@@ -17,7 +20,10 @@ class Participant extends \Coxis\Core\ORM\ModelORM {
 			'adresse'	=>	array(
 					),
 			'code_postal'	=>	array(
-					),
+				'type'	=>	'integer',
+				'length'	=> 5,
+				'exact_length'	=> 5,
+			),
 			'ville'	=>	array(
 					),
 			'pays'	=>	array(
@@ -31,9 +37,9 @@ class Participant extends \Coxis\Core\ORM\ModelORM {
 					),
 			'reponse'	=>	array(
 					),
-			'magasin'	=>	array(
-				'required'	=>	false,
-			),
+			// 'magasin'	=>	array(
+			// 	'required'	=>	false,
+			// ),
 	);
 	
 	public static $files = array(	
@@ -43,7 +49,11 @@ class Participant extends \Coxis\Core\ORM\ModelORM {
 		'jeu'	=>	array(
 			'type'	=>	'belongsTo',
 			'model'	=>	'jeu',
-		)
+		),
+		'magasin'	=>	array(
+			'type'	=>	'belongsTo',
+			'model'	=>	'magasin',
+		),
 	);
 	
 	public static $behaviors = array(	
@@ -62,6 +72,6 @@ class Participant extends \Coxis\Core\ORM\ModelORM {
 	);
 	
 	public function __toString() {
-		return $this->nom;
+		return $this->nom.' '.$this->prenom;
 	}
 }

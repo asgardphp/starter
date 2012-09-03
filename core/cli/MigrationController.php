@@ -106,6 +106,15 @@ class MigrationController extends CLIController {
 		
 		$newSchemas = array();
 		$oldSchemas = array();
+		$tables = DB::query('SHOW TABLES')->all();
+		foreach($tables as $k=>$v) {
+			// $tables[$k] = get(array_values($v), 0);
+			$table = get(array_values($v), 0);
+			$oldSchemas[$table] = static::tableSchema($table);
+		}
+		// d($oldSchemas);
+		// foreach($tables as $table)
+		// 		$oldSchemas[$class] = static::tableSchema($class::getTable());
 		foreach(get_declared_classes() as $class) {
 			//~ if($class instanceof Coxis\Core\ORM\ModelORM) {
 			if(is_subclass_of($class, 'Coxis\Core\ORM\ModelORM')) {
@@ -115,17 +124,11 @@ class MigrationController extends CLIController {
 				
 				$schema = array();
 				
-				$oldSchemas[$class] = static::tableSchema($class::getTable());
+				// $oldSchemas[$class] = static::tableSchema($class::getTable());
 				
 				foreach($class::$properties as $name=>$prop) {
 					if(!isset($prop['orm']))
 						$prop['orm'] = array();
-					//~ if($name == 'id') {
-						//~ $prop['orm']['type'] = 'int(11)';
-						//~ $prop['orm']['auto_increment'] = true;
-						//~ $prop['orm']['key'] = 'PRI';
-						//~ $prop['orm']['nullable'] = false;
-					//~ }
 					if(isset($prop['i18n']) && $prop['i18n'])
 						continue;
 					if(!isset($prop['orm']['type'])) {
@@ -134,7 +137,7 @@ class MigrationController extends CLIController {
 						switch($prop['type']) {
 							case 'integer':
 								if(isset($prop['length']))
-									$prop['orm']['type'] = 'int('.$prop['lenght'].')';
+									$prop['orm']['type'] = 'int('.$prop['length'].')';
 								else
 									$prop['orm']['type'] = 'int(11)';
 								break;
@@ -167,13 +170,43 @@ class MigrationController extends CLIController {
 						$prop['orm']['auto_increment'] = false;
 					$schema[$name] = $prop['orm'];
 				}
+
+				foreach($class::$relationships as $relation=>$params) {
+					$rel = \Coxis\Core\ORM\ModelORM::relationData($class, $relation);
+					if($rel['type'] == 'HMABT') {
+						$arr = array(
+							$rel['link_a']	=>	array(
+								'type'	=>	'int(11)',
+								'nullable'	=>	false,
+								'auto_increment'	=>	false,
+								'default'	=>	null,
+								'key'	=>	null,
+							),
+							$rel['link_b']	=>	array(
+								'type'	=>	'int(11)',
+								'nullable'	=>	false,
+								'auto_increment'	=>	false,
+								'default'	=>	null,
+								'key'	=>	null,
+							),
+						);
+						$table_name = $rel['join_table'];
+						$newSchemas[$table_name] = $arr;
+					}
+				}
 					
-				$newSchemas[$class] = $schema;
+				$newSchemas[$class::getTable()] = $schema;
 			}
 		}
 		
 		$oldSchemas = array_filter($oldSchemas);
 			
+			// d($newSchemas);
+			// d($oldSchemas);
+			// d(array_keys($newSchemas));
+			// d(array_keys($oldSchemas));
+			// d($newSchemas, $oldSchemas);
+
 		$up = static::diff($newSchemas, $oldSchemas);
 		//~ d($up);
 		$down = static::diff($oldSchemas, $newSchemas);
@@ -187,7 +220,8 @@ class MigrationController extends CLIController {
 		$migrations = array();
 		$migration = '';
 		foreach($newSchemas as $class=>$schema) {
-			$table = $class::getTable();
+			// $table = $class::getTable();
+			$table = $class;
 			if(!in_array($class, array_keys($oldSchemas))) {
 				$migration = static::buildTableFor($class, $newSchemas[$class]);
 				$migrations[] = $migration;
@@ -333,7 +367,8 @@ class '.$filename.'_'.$i.' {
 	
 	private static function buildTableFor($class, $definition) {
 		//~ d($class);
-		$table = $class::getTable();
+		// $table = $class::getTable();
+		$table = $class;
 		//~ d(_ENV_);
 		//~ d($definition);
 		

@@ -270,9 +270,6 @@ abstract class ModelORM extends \Coxis\Core\Model {
 				return $model::where(array('id' => $this->$link))->first();
 			case 'hasMany':
 			case 'HMABT':
-				if($this->isNew())
-					return array();
-					
 				$collection = new CollectionORM($this, $name);
 				return $collection;
 			default:	
@@ -292,5 +289,36 @@ abstract class ModelORM extends \Coxis\Core\Model {
 			if(isset($this->data['properties'][$name][$lang]))
 				return $this->data['properties'][$name][$lang];
 		}
+	}
+
+	public function setAttribute($name, $value, $lang=null) {
+		#todo convert objects to ids
+		if(isset(static::$relationships[$name])) {
+			// d($name );
+			$rel = static::relationData(static::getClassName(), $name);
+			// d($rel);
+			if($rel['type'] == 'hasMany') {
+				// $this->$rel['link'] = $value;
+				$this->data[$name] = $value;
+			}
+			elseif($rel['type'] == 'belongsTo') {
+				$this->$rel['link'] = $value;
+			}
+			elseif($rel['type'] == 'HMABT') {
+				// $this->$rel['link'] = $value;
+				$this->data[$name] = $value;
+			}
+			// if($name == )
+			// d($name, $value, $_POST, $this);
+			// if(static::$relationships[$name][''])
+			#belongsTo
+			// $article->categorie = 4 / Categorie;
+			#hasMany
+			// $article->commentaires = array(1,2,3) / array(.., .., ..)
+			#HMABT
+			// $article->commentaires = array(1,2,3) / array(.., .., ..)
+		}
+		else
+			return parent::setAttribute($name, $value, $lang);
 	}
 }

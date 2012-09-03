@@ -16,6 +16,7 @@ class JeuAdminController extends \Coxis\Bundles\Admin\Libs\Controller\ModelAdmin
 	
 	public function formConfigure($model) {
 		$form = new \Coxis\Bundles\Admin\Libs\Form\AdminModelForm($model, $this);
+		unset($form->participants);
 		
 		return $form;
 	}
@@ -30,7 +31,7 @@ class JeuAdminController extends \Coxis\Bundles\Admin\Libs\Controller\ModelAdmin
 			$q = $this->jeu->participants();
 			//~ d($q->get());
 			if($_POST['magasin'])
-				$q->where(array('magasin'=>$_POST['magasin']));
+				$q->where(array('magasin_id'=>$_POST['magasin']));
 			if($_POST['type'] == 'Gagants')
 				$q->where(array('reponse'=>$this->jeu->bonne_reponse));
 			$all = $q->get();

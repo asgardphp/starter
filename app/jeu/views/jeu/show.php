@@ -45,7 +45,7 @@
 	}
 	input[type="image"] {
 		margin-left:130px;
-		margin-top:15px;
+		margin-top:0px;
 	}
 	
 	#form2 {
@@ -109,6 +109,8 @@
 			<div style="text-align:center; margin-bottom:5px;">
 				<strong>Remplissez ce formulaire et répondez à la question ci-contre</strong> <span style="font-size:9px; font-style:italic">(*champs obligatoires)</span>
 			</div>
+			<?php $civilite = $form->civilite->radio() ?>
+			<label>Civilité*</label> M. <?php $civilite->next()->input() ?> Mme. <?php $civilite->next()->input() ?> Mlle. <?php $civilite->next()->input() ?><br/>
 			<label>Nom*</label> <?php $form->nom->input() ?><br/>
 			<label>Prénom*</label> <?php $form->prenom->input() ?><br/>
 			<label>Adresse*</label> <?php $form->adresse->input() ?><br/>
@@ -117,7 +119,7 @@
 			<label>Pays*</label> <?php $form->pays->input() ?><br/>
 			<label>E-mail*</label> <?php $form->email->input() ?><br/>
 			<label>Téléphone*</label> <?php $form->telephone->input() ?><br/>
-			<div style="text-align:center; padding-top:10px;">
+			<div style="text-align:center; padding-top:5px;">
 				<?php $form->accepter->checkbox() ?> <span style="font-size:12px;">J'ai lu et j'accepte le règlement du jeu</span>
 			</div>
 			<input type="image" src="<?php echo $jeu->valider ?>"/>
@@ -126,6 +128,7 @@
 		<div id="form2">
 			<div style="text-align:center;"><strong><?php echo $jeu->question ?>*</strong></div>
 			<select style="width:280px; margin-top:5px;" name="participant[reponse]">
+				<option value="">Votre réponse</option>
 				<?php foreach(explode("\n", $jeu->reponses) as $reponse): ?>
 				<option><?php echo $reponse ?></option>
 				<?php endforeach ?>
@@ -136,8 +139,9 @@
 		<div id="form3">
 			<div style="text-align:center;"><strong><?php echo $jeu->question_magasin ?>*</strong></div>
 			<select style="width:280px; margin-top:5px;" name="participant[magasin]">
-				<?php foreach(explode("\n", $jeu->magasins) as $magasin): ?>
-				<option><?php echo $magasin ?></option>
+				<option value="">Votre magasin</option>
+				<?php foreach($jeu->magasins as $magasin): ?>
+				<option value="<?php echo $magasin->id ?>"><?php echo $magasin ?></option>
 				<?php endforeach ?>
 			</select>
 		</div>

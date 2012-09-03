@@ -43,7 +43,7 @@ class Autoloader {
 		if(class_exists($class))
 			return;
 		
-		$dir = dirname($class);
+		$dir = str_replace('\\', DIRECTORY_SEPARATOR, Importer::dirname($class));
 		Importer::_import($class, array('into'=>$dir));
 	}
 }

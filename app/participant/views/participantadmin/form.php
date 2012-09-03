@@ -14,6 +14,7 @@
 					
 					<?php
 					$form->start()
+						->def('civilite')
 						->def('nom')
 						->def('prenom')
 						->def('adresse')

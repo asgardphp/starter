@@ -28,9 +28,9 @@ class Jeu extends \Coxis\Core\ORM\ModelORM {
 					'question_magasin'	=>	array(
 								'required'	=>	false,
 							),
-					'magasins'	=>	array(
-								'required'	=>	false,
-							),
+					// 'magasins'	=>	array(
+					// 			'required'	=>	false,
+					// 		),
 			);
 	
 	public static $files = array(	
@@ -68,7 +68,11 @@ class Jeu extends \Coxis\Core\ORM\ModelORM {
 		'participants'	=>	array(
 			'type'	=>	'hasMany',
 			'model'	=>	'participant',
-		)
+		),
+		'magasins'	=>	array(
+			'type'	=>	'HMABT',
+			'model'	=>	'magasin',
+		),
 	);
 	
 	public static $behaviors = array(	

@@ -34,7 +34,7 @@
 										<tr>
 											<th width="10"><input type="checkbox" class="check_all" /></th>
 											<th>Créée le</th>
-											<th>Titre</th>
+											<th>Participant</th>
 											<td>&nbsp;</td>
 										</tr>
 									</thead>

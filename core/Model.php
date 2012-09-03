@@ -181,7 +181,7 @@ abstract class Model {
 	}
 	
 	public static function getModelName() {
-		return basename(static::getClassName());
+		return Importer::basename(static::getClassName());
 	}
 	
 	public function isNew() {
@@ -256,10 +256,18 @@ abstract class Model {
 			if(isset($this->data['properties'][$name][$lang]))
 				$res = $this->data['properties'][$name][$lang];
 		}
-		elseif(isset($this->data['properties'][$name])) 
-			$res = $this->data['properties'][$name];
-		else
-			throw new \Exception('The var "'.$name.'" does not exist for model "'.$this->getClassName().'"');
+		else {
+			try {
+				$res = $this->data['properties'][$name];
+			} catch(\ErrorException $e) {
+				throw new \Exception('The var "'.$name.'" does not exist for model "'.$this->getClassName().'"');
+			}
+		}
+		
+		//~ elseif(isset($this->data['properties'][$name])) 
+			//~ $res = $this->data['properties'][$name];
+		//~ else
+			//~ throw new \Exception('The var "'.$name.'" does not exist for model "'.$this->getClassName().'"');
 		
 		if($res === null && method_exists($this, 'fetch'))
 			$res = $this->fetch($name, $lang);
@@ -435,5 +443,13 @@ abstract class Model {
 	
 	public function hasFile($file) {
 		return array_key_exists($file, static::$files);
+	}
+
+	public function properties() {
+		return static::$properties;
+	}
+
+	public function property($name) {
+		return static::$properties[$name];
 	}
 }

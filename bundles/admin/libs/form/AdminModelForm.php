@@ -58,7 +58,9 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 			foreach($all as $one)
 				$choices[$one->id] = $one->__toString();
 				
-			if(get($this->model->relationships(), $widget, 'required'))
+			// d($this->model->$widget);
+			$model = $this->model;
+			if(get($model::$relationships, $widget, 'required'))
 				$label .= '*';
 			else
 				$choices = array(''=>'Choisir') + $choices;

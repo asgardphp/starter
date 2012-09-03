@@ -10,8 +10,8 @@
 					<p>
 						<?php if($jeu->magasins): ?>
 						<select name="magasin" class="styled">
-							<?php foreach(explode("\r\n", $jeu->magasins) as $magasin): ?>
-								<option value="">Tous</option>
+							<option value="">Tous</option>
+							<?php foreach($jeu->magasins as $magasin): ?>
 								<option><?php echo $magasin ?></option>
 							<?php endforeach ?>
 						</select><br/>

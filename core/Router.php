@@ -37,7 +37,7 @@ class Router {
 	}
 	
 	public static function run($controllerName, $actionName, $params=array(), $src=null, $showView=true) {
-		$controllerName = ucfirst(strtolower($controllerName));
+		$controllerName = ucfirst($controllerName);
 		$controllerClassName = $controllerName.'Controller';
 		$controller = new $controllerClassName();
 		return static::runAction($controller, $actionName, $params, $src, $showView);

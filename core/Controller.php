@@ -63,7 +63,7 @@ class Controller {
 	private function showView($view, $_args) {
 		$reflection = new \ReflectionObject($this);
 		$dir = dirname($reflection->getFileName());
-		$_viewfile = $dir.'/../views/'.strtolower(preg_replace('/Controller$/i', '', basename(get_class($this)))).'/'.$view;
+		$_viewfile = $dir.'/../views/'.strtolower(preg_replace('/Controller$/i', '', Importer::basename(get_class($this)))).'/'.$view;
 		
 		unset($dir);
 		unset($reflection);
