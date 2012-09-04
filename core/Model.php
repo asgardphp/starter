@@ -197,6 +197,8 @@ abstract class Model {
 		return false;
 	}
 	
+	#todo put into ORM?
+	#todo rename
 	public function loadFromArray($cols) {
 		foreach($cols as $col=>$value) {
 			if(isset(static::$properties[$col]['filter'])) {
