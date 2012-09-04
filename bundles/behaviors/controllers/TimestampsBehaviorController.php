@@ -14,8 +14,8 @@ class TimestampsBehaviorController extends Controller {
 	@Hook('behaviors_load_timestamps')
 	**/
 	public function behaviors_load_timestampsAction($model) {
-		$model::addProperty('created_at', array('type' => 'date', 'required' => false, 'editable' => false));
-		$model::addProperty('updated_at', array('type' => 'date', 'required' => false, 'editable' => false));
+		$model::addProperty('created_at', array('type' => 'datetime', 'required' => false, 'editable' => false));
+		$model::addProperty('updated_at', array('type' => 'datetime', 'required' => false, 'editable' => false));
 	}
 	
 	/**
@@ -23,10 +23,10 @@ class TimestampsBehaviorController extends Controller {
 	**/
 	public function behaviors_presave_timestampsAction($model) {
 		if($model->isNew()) {
-			$model->created_at = new Date();
-			$model->updated_at = new Date();
+			$model->created_at = new \Coxis\Core\Tools\Datetime();
+			$model->updated_at = new \Coxis\Core\Tools\Datetime();
 		}
 		elseif(!$model->isNew())
-			$model->updated_at = new Date();
+			$model->updated_at = new \Coxis\Core\Tools\Datetime();
 	}
 }

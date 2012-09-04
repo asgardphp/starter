@@ -8,6 +8,7 @@ if(\Coxis\Core\Config::get('error_display'))
 function url_for($what, $params=array(), $relative=true) {
 	return \Coxis\Core\URL::url_for($what, $params, $relative);
 }
+\Coxis\Core\Locale::load();
 BundlesManager::loadBundles();
 //User Session
 User::start();

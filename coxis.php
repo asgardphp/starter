@@ -9,9 +9,7 @@ define('_WEB_DIR_', 'web');#todo: remove..
 
 /* UTILS */
 function d() {
-	while(ob_get_level()){
-		ob_end_clean();
-	}
+	while(ob_get_level()){ ob_end_clean(); }
 		
 	if(php_sapi_name() != 'cli')
 		echo '<pre>';
@@ -23,7 +21,7 @@ function d() {
 	\Coxis\Core\Error::print_backtrace('', debug_backtrace());
 	exit();
 }
-function get() {	
+function get() {
 	$args = func_get_args();
 	$result = array_shift($args);
 	foreach($args as $key)
@@ -74,11 +72,15 @@ set_exception_handler(function ($e) {
 	}
 	send($result);
 });
+//~ echo $a;
 register_shutdown_function(function () {
 	chdir(dirname(__FILE__));//wtf?
+	#todo get the full backtrace for shutdown errors
 	if($e=error_get_last()) {
+		while(ob_get_level()){ ob_end_clean(); }
+		//~ var_dump(debug_backtrace());die();
 		$result = \Coxis\Core\Error::report("($e[type]) $e[message]<br>
-			$e[file] ($e[line])", array(array('file'=>$e['file'], 'line'=>$e['line'])));
+			$e[file] ($e[line])".debug_backtrace(), array(array('file'=>$e['file'], 'line'=>$e['line'])));
 		send($result);
 	}
 });

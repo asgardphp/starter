@@ -304,10 +304,13 @@ class DAL {
 	
 	public function delete() {
 		$where = '';
+		
+		$table = get(array_keys($this->tables), 0);
+		
 		if($where = static::processConditions($this->where))
 			$where = ' WHERE '.$where;
 	
-		$sql = 'DELETE FROM '.$this->table.$where;
+		$sql = 'DELETE FROM '.$table.$where;
 		
 		return $this->db->query($sql)->affected();
 	}

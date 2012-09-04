@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Core {
+namespace Coxis\Core;
 
 class FrontController extends Controller {
 	public function mainAction() {
@@ -9,6 +9,12 @@ class FrontController extends Controller {
 			else
 				define('_ENV_', 'prod');
 	
+		/* CONFIG */
+		import('Coxis\Core\Config');
+		\Coxis\Core\Config::loadConfigDir('config');
+		if(\Coxis\Core\Config::get('error_display'))
+			\Coxis\Core\Error::display(true);
+
 		/* WEB RESOURCES */
 		$this->getResource();
 		
@@ -43,7 +49,7 @@ class FrontController extends Controller {
 			exit();
 		}
 		else {
-			$finfo = new finfo(FILEINFO_MIME);
+			$finfo = new \finfo(FILEINFO_MIME);
 			$mime = $finfo->file(getcwd().'/'.$file);
 		}
 		
@@ -91,5 +97,4 @@ class FrontController extends Controller {
 			}
 		}
 	}
-}
 }

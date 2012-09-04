@@ -1,4 +1,5 @@
 <?php
+<<<<<<< HEAD
 class DefaultController extends Controller {
 	/**
 	@Route('')

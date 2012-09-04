@@ -25,11 +25,11 @@
 					<?php Flash::showAll() ?>
 					<form action="login" method="post">
 						<p>
-							<label><?php echp __('Username:') ?></label> <br />
+							<label><?php echo __('Username:') ?></label> <br />
 							<input type="text" class="text" name="username"/>
 						</p>
 						<p>
-							<label><?php echp __('Password:') ?></label> <br />
+							<label><?php echo __('Password:') ?></label> <br />
 							<input type="password" class="text" name="password"/> (<a href="forgotten"><?php echo __('Password forgotten?') ?></a>)
 						</p>
 						<p>

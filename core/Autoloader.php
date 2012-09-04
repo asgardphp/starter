@@ -38,7 +38,12 @@ class Autoloader {
 	}
 	
 	public static function loadClass($class) {
-		$dir = dirname($class);
+		if(function_exists('__autoload'))
+			__autoload($class);
+		if(class_exists($class))
+			return;
+		
+		$dir = str_replace('\\', DIRECTORY_SEPARATOR, Importer::dirname($class));
 		Importer::_import($class, array('into'=>$dir));
 	}
 }

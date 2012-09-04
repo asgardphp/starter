@@ -6,7 +6,6 @@ abstract class ModelORM extends \Coxis\Core\Model {
 		if(static::getClassName() == 'coxis\core\orm\modelorm')
 			return;
 		static::loadModel();
-		parent::configure();
 		parent::post_configure();
 	}
 	
@@ -99,6 +98,7 @@ abstract class ModelORM extends \Coxis\Core\Model {
 			if(method_exists($orm, $name))
 				return call_user_func_array(array($orm, $name), $arguments);
 		}
+		throw new \Exception('The method "'.$name.'" does not exist for model "'.static::getClassName().'"');
 	}
 	
 	public static function getTable() {
@@ -114,10 +114,41 @@ abstract class ModelORM extends \Coxis\Core\Model {
 		//~ d(static::getORM()->where(array('id' => $id))->dal()->buildSQL());
 		$res = static::getORM()->where(array('id' => $id))->dal()->first();
 		if($res) {
-			$this->set($res);
+			$this->loadFromArray($res);
 			return true;
 		}
 		return false;
+	}
+	
+	public function loadFromArray($cols) {
+		//~ d($cols);
+		foreach($cols as $col=>$value) {
+			if(isset(static::$properties[$col]['filter'])) {
+				$filter = static::$properties[$col]['filter']['from'];
+				$this->data['properties'][$col] = $model::$filter($value);
+			}
+			elseif(isset(static::$properties[$col]['type'])) {
+				if(static::$properties[$col]['type'] === 'array') {#php, seriously.. == 'array'
+					try {
+						$this->data['properties'][$col] = unserialize($value);
+					} catch(\ErrorException $e) {
+						$this->data['properties'][$col] = array($value);
+					}
+					if(!is_array($this->$col))
+						$this->data['properties'][$col] = array();
+				}
+				elseif(static::$properties[$col]['type'] === 'date')
+					$this->data['properties'][$col] = \Coxis\Core\Tools\Date::fromDatetime($value);
+				elseif(static::$properties[$col]['type'] === 'datetime')
+					$this->data['properties'][$col] = \Coxis\Core\Tools\Datetime::fromDatetime($value);
+				else
+					$this->data['properties'][$col] = $value;
+			}
+			else
+				$this->data['properties'][$col] = $value;
+		}
+		
+		return $this;
 	}
 	
 	public function dosave() {
@@ -134,7 +165,7 @@ abstract class ModelORM extends \Coxis\Core\Model {
 			elseif(isset(static::$properties[$col]['type'])) {
 				if(static::$properties[$col]['type']=='array')
 					$vars[$col] = serialize($var);
-				elseif(static::$properties[$col]['type']=='date')
+				elseif(static::$properties[$col]['type']=='date' || static::$properties[$col]['type']=='datetime')
 					$vars[$col] = $var->datetime();
 			}
 		}
@@ -169,6 +200,7 @@ abstract class ModelORM extends \Coxis\Core\Model {
 			$this->id = $orm->insert($values);
 		//existing
 		elseif(sizeof($vars) > 0) {
+			//~ d($values, $this->data);
 			if(!$orm->where(array('id'=>$this->id))->update($values))
 				$this->id = $orm->insert($values);
 		}		
@@ -238,9 +270,6 @@ abstract class ModelORM extends \Coxis\Core\Model {
 				return $model::where(array('id' => $this->$link))->first();
 			case 'hasMany':
 			case 'HMABT':
-				if($this->isNew())
-					return array();
-					
 				$collection = new CollectionORM($this, $name);
 				return $collection;
 			default:	
@@ -260,5 +289,36 @@ abstract class ModelORM extends \Coxis\Core\Model {
 			if(isset($this->data['properties'][$name][$lang]))
 				return $this->data['properties'][$name][$lang];
 		}
+	}
+
+	public function setAttribute($name, $value, $lang=null) {
+		#todo convert objects to ids
+		if(isset(static::$relationships[$name])) {
+			// d($name );
+			$rel = static::relationData(static::getClassName(), $name);
+			// d($rel);
+			if($rel['type'] == 'hasMany') {
+				// $this->$rel['link'] = $value;
+				$this->data[$name] = $value;
+			}
+			elseif($rel['type'] == 'belongsTo') {
+				$this->$rel['link'] = $value;
+			}
+			elseif($rel['type'] == 'HMABT') {
+				// $this->$rel['link'] = $value;
+				$this->data[$name] = $value;
+			}
+			// if($name == )
+			// d($name, $value, $_POST, $this);
+			// if(static::$relationships[$name][''])
+			#belongsTo
+			// $article->categorie = 4 / Categorie;
+			#hasMany
+			// $article->commentaires = array(1,2,3) / array(.., .., ..)
+			#HMABT
+			// $article->commentaires = array(1,2,3) / array(.., .., ..)
+		}
+		else
+			return parent::setAttribute($name, $value, $lang);
 	}
 }
