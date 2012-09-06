@@ -82,31 +82,14 @@ abstract class Model {
 			return;
 		static::loadModel();
 		static::configure();
-		static::post_configure();
 	}
 	
 	protected static function configure() {}
 
-	protected static function post_configure() {
-		foreach(static::$properties as $property=>$params) {
-			if(isset($params['multiple']))
-				static::$properties[$property]['type'] = 'array';
-			if(!isset($params['type']))
-				static::$properties[$property]['type'] = 'text';
-			if(!isset($params['required']))
-				static::$properties[$property]['required'] = true;
-		}
-	}
-
 	public function loadDefault() {
-		foreach(static::getProperties() as $property=>$params) {
-			if(isset($params['default']))
-				$this->$property = $params['default'];
-			elseif($params['type'] == 'array')
-				$this->$property = array();
-			else
-				$this->$property = '';
-		}
+
+		foreach(static::getProperties() as $name=>$property)
+			$this->$name = $property->getDefault();
 				
 		return $this;
 	}
@@ -120,7 +103,9 @@ abstract class Model {
 					array($v => array()) +
 					Tools::array_after(static::$properties, $k);
 			}
-					
+		foreach(static::$properties as $k=>$params)
+			static::addProperty($k, $params);
+
 		static::loadBehaviors();
 		static::loadFiles();
 	}
@@ -149,15 +134,17 @@ abstract class Model {
 	
 	/* MISC */
 	public function set($vars) {
-		$props = $this->getProperties();
-		foreach($vars as $k=>$v) {
-			if(isset($props[$k]) && $props[$k]['type'] == 'date')
-				$this->$k = Date::fromDatetime($v);
+		foreach($vars as $k=>$v)
+			if(static::hasProperty($k))
+				$this->$k = static::property($k)->set($v);
 			else
 				$this->$k = $v;
-		}
 				
 		return $this;
+	}
+
+	public function hasProperty($name) {
+		return isset(static::$properties[$name]);
 	}
 	
 	public function raw($name) {
@@ -192,47 +179,47 @@ abstract class Model {
 	
 	public static function isI18N() {
 		foreach(static::$properties as $prop)
-			if(isset($prop['i18n']) && $prop['i18n'])
+			if($prop->i18n)
 				return true;
 		return false;
 	}
 	
 	public function loadFromArray($cols) {
 		foreach($cols as $col=>$value) {
-			if(isset(static::$properties[$col]['filter'])) {
-				$filter = static::$properties[$col]['filter']['from'];
+			if(!static::hasProperty($col))
+				$this->$col = $value;
+			elseif(static::property($col)->filter) {
+				$filter = static::property($col)->filter['from'];
 				$this->$col = $model::$filter($value);
 			}
-			elseif(isset(static::$properties[$col]['type'])) {
-				if(static::$properties[$col]['type'] === 'array') {#php, seriously.. == 'array'
-					try {
-						$this->$col = unserialize($value);
-					} catch(\ErrorException $e) {
-						$this->$col = array($value);
-					}
-					if(!is_array($this->$col))
-						$this->$col = array();
-				}
-				elseif(static::$properties[$col]['type'] === 'date')
-					$this->$col = \Coxis\Core\Tools\Date::fromDatetime($value);
-				else
-					$this->$col = $value;
-			}
 			else
-				$this->$col = $value;
+				$this->$col = static::property($col)->unserialize($value);
 		}
 		
 		return $this;
 	}
 	
 	public static function addProperty($property, $params) {
-		static::$properties[$property] = $params;
+		if(!isset($params['required']))
+			$params['required'] = true;
+		#todo multiple values - not atomic.. ?
+		// if(isset($params['multiple']) && $params['multiple'])
+		// 	$params[$property]['type'] = 'array';
+		if(!isset($params['type']))
+			$params['type'] = 'text';
+
+		$propertyClass = $params['type'].'Property';
+		#todo full class namespace
+
+		static::$properties[$property] = new $propertyClass($params);
 	}
 	
+	#todo deprecated use property() instead
 	public static function getProperty($prop) {
 		return get(static::getProperties(), $prop);
 	}
 
+	#todo deprecated use properties() instead
 	public static function getProperties() {
 		return static::$properties;
 	}
@@ -257,7 +244,7 @@ abstract class Model {
 	
 	public function getVar($name, $lang=null) {
 		$res = null;
-		if(isset(static::$properties[$name]['i18n']) && static::$properties[$name]['i18n']) {
+		if(static::property($name)->i18n) {
 			if(!$lang)
 				$lang = Config::get('locale');
 			if($lang == 'all') {
@@ -283,12 +270,13 @@ abstract class Model {
 	}
 	
 	public function setAttribute($name, $value, $lang=null) {
-		if(isset(static::$properties[$name]['setFilter'])) {
-			$filter = static::$properties[$name]['setFilter'];
-			$value = call_user_func_array($filter, array($value));
-		}
-		if(isset(static::$properties[$name])) {
-			if(isset(static::$properties[$name]['i18n']) && static::$properties[$name]['i18n']) {
+		if(static::hasProperty($name)) {
+			if(static::property($name)->setFilter) {
+				$filter = static::property($name)->setFilter;
+				$value = call_user_func_array($filter, array($value));
+			}
+
+			if(static::property($name)->i18n) {
 				if(!$lang)
 					$lang = Config::get('locale');
 				if($lang == 'all')
@@ -300,22 +288,18 @@ abstract class Model {
 			else
 				$this->data['properties'][$name] = $value;
 		}
-		elseif(isset(static::$files[$name])) {
+		elseif(isset(static::$files[$name]))
 			$this->data['_files'][$name] = $value;
-		}
 		else
 			$this->data[$name] = $value;
 	}
 	
 	/* VALIDATION */
 	public function getValidator() {
-		$constrains = static::$properties;
-		foreach($constrains as $attribute=>$attribute_constrains)
-			foreach($attribute_constrains as $rule=>$params)
-				if($rule === 'type') {
-					$constrains[$attribute][$params] = array();
-					unset($constrains[$attribute]['type']);
-				}
+		$constrains = array();
+		foreach(static::$properties as $name=>$property)
+			$constrains[$name] = $property->getRules();
+
 		foreach(static::$files as $file=>$params) {
 			$res = $params;
 			if(isset($params['required'])) {
@@ -436,6 +420,14 @@ abstract class Model {
 				}
 	}
 	
+	public static function properties() {
+		return static::$properties;
+	}
+	
+	public static function property($name) {
+		return static::$properties[$name];
+	}
+
 	public function hasFile($file) {
 		return array_key_exists($file, static::$files);
 	}

@@ -58,6 +58,7 @@ class i18nTest extends PHPUnit_Framework_TestCase {
 	
 	#translation
 	public function test6() {
+		Locale::importLocales('tests/locales');
 		$this->assertEquals(__('Hello :name!', array('name' => 'Michel')), 'Bonjour Michel !');
 	}
 }

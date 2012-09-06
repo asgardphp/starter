@@ -7,7 +7,6 @@ abstract class ModelORM extends \Coxis\Core\Model {
 			return;
 		static::loadModel();
 		parent::configure();
-		parent::post_configure();
 	}
 	
 	public static function loadModel() {
@@ -127,15 +126,16 @@ abstract class ModelORM extends \Coxis\Core\Model {
 		
 		#apply filters before saving
 		foreach($vars as $col => $var) {
-			if(isset(static::$properties[$col]['filter'])) {
-				$filter = static::$properties[$col]['filter']['to'];
+			if(static::property($col)->filter) {
+				$filter = static::property($col)->filter['to'];
 				$vars[$col] = static::$filter($var);
 			}
-			elseif(isset(static::$properties[$col]['type'])) {
-				if(static::$properties[$col]['type']=='array')
-					$vars[$col] = serialize($var);
-				elseif(static::$properties[$col]['type']=='date')
-					$vars[$col] = $var->datetime();
+			else {
+				if(static::property($col)->i18n)
+					foreach($var as $k=>$v)
+						$vars[$col][$k] = static::property($col)->serialize($v);
+				else
+					$vars[$col] = static::property($col)->serialize($var);
 			}
 		}
 		
@@ -155,7 +155,7 @@ abstract class ModelORM extends \Coxis\Core\Model {
 		$values = array();
 		$i18n = array();
 		foreach($vars as $p => $v) {
-			if(isset(static::$properties[$p]['i18n']) && static::$properties[$p]['i18n'])
+			if(static::property($p)->i18n)
 				foreach($v as $lang=>$lang_value)
 					$i18n[$lang][$p] = $lang_value;
 			else
@@ -249,7 +249,7 @@ abstract class ModelORM extends \Coxis\Core\Model {
 	}
 	
 	public function fetch($name, $lang=null) {
-		if(isset(static::$properties[$name]['i18n']) && static::$properties[$name]['i18n']) {
+		if(static::property($name)->i18n) {
 			if(!($res = $this->getI18N($lang)))
 				return null;
 			unset($res['id']);

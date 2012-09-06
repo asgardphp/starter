@@ -40,7 +40,7 @@ class Actualite extends \Coxis\Core\ORM\ModelORM {
 	
 	public static $behaviors = array(
 		'slugify' => true,
-		//~ 'sortable' => true,
+		'sortable' => true,
 	);
 		
 	public static $meta = array();
