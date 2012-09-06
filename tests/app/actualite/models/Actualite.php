@@ -16,15 +16,22 @@ class Actualite extends \Coxis\Core\ORM\ModelORM {
 		'test'	=>	array(
 			'i18n'	=>	true,
 		),
-	);
-	
-	public static $files = array(	
 		'image' => array(
+			'type'	=>	'file',
 			'dir'	=>	'actualite/',
-			'type'	=>	'image',
+			'filetype'	=>	'image',
 			'required'	=>	false,
 			//~ 'multiple'	=>	true,
 		),
+	);
+	
+	public static $files = array(	
+	// 	'image' => array(
+	// 		'dir'	=>	'actualite/',
+	// 		'type'	=>	'image',
+	// 		'required'	=>	false,
+	// 		//~ 'multiple'	=>	true,
+	// 	),
 	);
 	
 	public static $relationships = array(

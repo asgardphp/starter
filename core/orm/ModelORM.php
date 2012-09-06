@@ -5,6 +5,7 @@ abstract class ModelORM extends \Coxis\Core\Model {
 	public static function _autoload() {
 		if(static::getClassName() == 'coxis\core\orm\modelorm')
 			return;
+		// static::trigger('loadModel', array(get_called_class(), 'loadModel'), array(get_called_class()));
 		static::loadModel();
 		parent::configure();
 	}

@@ -64,9 +64,12 @@ class Validator {
 		static::register('filerequired', function($attribute, $value, $params, $validator) {
 			$msg = false;
 			//~ d($value);
+			// d($attribute, $value);
+			// $value = $value[''];
 			if(!$value)
 				$msg = $validator->getMessage('filerequired', $attribute, 'The file ":attribute" is required.');
-			elseif(!file_exists($value))
+			// elseif(!file_exists($value))
+			elseif(!$value->exists())
 				$msg = $validator->getMessage('fileexists', $attribute, 'The file ":attribute" does not exist.');
 			if($msg)
 				return Validator::format($msg, array(

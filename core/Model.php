@@ -6,16 +6,17 @@ class ModelException extends \Exception {
 }
 
 abstract class Model {
-	protected $data = array(
+	#public for behaviors
+	public $data = array(
 		'properties'	=>	array(),
 		#todo with others like files, relationships, ..
 	);
-	public static $meta = array();
-	public static $properties = array();
-	public static $files = array();
-	public static $relationships = array();
-	public static $behaviors = array();
-	public static $messages = array();
+	// public static $meta = array();
+	// public static $properties = array();
+	// public static $files = array();
+	// public static $relationships = array();
+	// public static $behaviors = array();
+	// public static $messages = array();
 	
 	public function __construct($param='') {
 		if(is_array($param))
@@ -33,16 +34,18 @@ abstract class Model {
 	}
 	
 	public function __get($name) {
-		if(in_array($name, array_keys(static::$properties)))
+		if(static::hasProperty($name))
 			return $this->getVar($name);
-		elseif(array_key_exists($name, $this::$files))
-			return new ModelFile($this, $name);
 		elseif(array_key_exists($name, $this::$relationships)) {
 			$res = $this->getRelation($name);
 			if($res instanceof \Coxis\Core\Collection)
 				return $res->get();
 			else
 				return $res;
+		}
+		elseif(isset(static::$meta['hooks']['get'][$name])) {
+			$hook = static::$meta['hooks']['get'][$name];
+			return $hook($this);
 		}
 	}
 	
@@ -54,12 +57,28 @@ abstract class Model {
 		unset($this->data['properties'][$name]);
 	}
 
+	#todo late static binding does not work
+	/*public static function __callStatic($name, $arguments) {
+		if(isset(static::$meta['hooks']['staticcall'][$name])) {
+			$hook = static::$meta['hooks']['staticcall'][$name];
+			return call_user_func_array($hook, array_merge(array($this), $arguments));
+		}
+	}*/
+
 	public function __call($name, $arguments) {
 		//called when setting or getting a related model
 		$todo = substr($name, 0, 3);
 		$what = strtolower(substr($name, 3));
 		
-		if($todo=='set') {
+		if(isset(static::$meta['hooks']['call'][$name])) {
+			$hook = static::$meta['hooks']['call'][$name];
+			return call_user_func_array($hook, array_merge(array($this), $arguments));
+		}
+		// elseif(isset(static::$meta['hooks']['staticcall'][$name])) {
+		// 	$hook = static::$meta['hooks']['staticcall'][$name];
+		// 	return call_user_func_array($hook, array_merge(array($this), $arguments));
+		// }
+		elseif($todo=='set') {
 			$value = $arguments[0];
 			$lang = null;
 			if(isset($arguments[1]))
@@ -74,14 +93,24 @@ abstract class Model {
 		}
 		elseif(array_key_exists($name, $this::$relationships))
 			return $this->getRelation($name);
+
+		throw new Exception('Method '.$name.' does not exist for model '.static::getModelName());
 	}
 	
 	/* INIT AND MODEL CONFIGURATION */
 	public static function _autoload() {
 		if(static::getClassName() == 'coxis\core\model')
 			return;
+		// static::trigger('loadModel', array(get_called_class(), 'loadModel'), array(get_called_class()));
 		static::loadModel();
 		static::configure();
+	}
+
+	protected static function trigger($name, $cb, $args=array()) {
+		static::triggerBefore($name, $args);
+		call_user_func_array($cb, $args);
+		static::triggerOn($name, $args);
+		static::triggerAfter($name, $args);
 	}
 	
 	protected static function configure() {}
@@ -107,7 +136,6 @@ abstract class Model {
 			static::addProperty($k, $params);
 
 		static::loadBehaviors();
-		static::loadFiles();
 	}
 	
 	public static function loadBehaviors() {
@@ -120,30 +148,15 @@ abstract class Model {
 				Event::trigger('behaviors_load_'.$behavior, static::getClassName());
 	}
 	
-	public static function loadFiles() {
-		$model_files = static::$files;
-		
-		if(is_array($model_files))
-			foreach($model_files as $file => $params) {
-				if(isset($params['multiple']) && $params['multiple']) #multiple
-					static::addProperty('filename_'.$file, array('type' => 'array', 'editable'=>false, 'required'=>false));
-				else #single
-					static::addProperty('filename_'.$file, array('type' => 'text', 'editable'=>false, 'required'=>false));
-			}
-	}
-	
 	/* MISC */
 	public function set($vars) {
 		foreach($vars as $k=>$v)
-			if(static::hasProperty($k))
-				$this->$k = static::property($k)->set($v);
-			else
-				$this->$k = $v;
+			$this->$k = $v;
 				
 		return $this;
 	}
 
-	public function hasProperty($name) {
+	public static function hasProperty($name) {
 		return isset(static::$properties[$name]);
 	}
 	
@@ -211,7 +224,7 @@ abstract class Model {
 		$propertyClass = $params['type'].'Property';
 		#todo full class namespace
 
-		static::$properties[$property] = new $propertyClass($params);
+		static::$properties[$property] = new $propertyClass(get_called_class(), $property, $params);
 	}
 	
 	#todo deprecated use property() instead
@@ -281,15 +294,20 @@ abstract class Model {
 					$lang = Config::get('locale');
 				if($lang == 'all')
 					foreach($value as $one => $v)
-						$this->data['properties'][$name][$one] = $v;
+						// $this->data['properties'][$name][$one] = $v;
+						$this->data['properties'][$name][$one] = static::property($name)->set($v);
 				else
-					$this->data['properties'][$name][$lang] = $value;
+					// $this->data['properties'][$name][$lang] = $value;
+					$this->data['properties'][$name][$lang] = static::property($name)->set($value);
 			}
 			else
-				$this->data['properties'][$name] = $value;
+				// $this->data['properties'][$name] = $value;
+				$this->data['properties'][$name] = static::property($name)->set($value);
 		}
-		elseif(isset(static::$files[$name]))
-			$this->data['_files'][$name] = $value;
+		elseif(isset(static::$meta['hooks']['set'][$name])) {
+			$hook = static::$meta['hooks']['set'][$name];
+			$hook($this, $value);
+		}
 		else
 			$this->data[$name] = $value;
 	}
@@ -300,7 +318,7 @@ abstract class Model {
 		foreach(static::$properties as $name=>$property)
 			$constrains[$name] = $property->getRules();
 
-		foreach(static::$files as $file=>$params) {
+		/*foreach(static::$files as $file=>$params) {
 			$res = $params;
 			if(isset($params['required'])) {
 				$res['filerequired'] = $params['required'];
@@ -313,9 +331,12 @@ abstract class Model {
 			unset($res['dir']);
 			unset($res['multiple']);
 			$constrains[$file] = $res;
-		}
+		}*/
 		
-		$messages = static::$messages;
+		if(isset(static::$messages))
+			$messages = static::$messages;
+		else
+			$messages = array();
 		
 		$validator = new Validator($constrains, $messages);
 
@@ -323,7 +344,7 @@ abstract class Model {
 	}
 	
 	public function isValid() {
-		return $this->getValidator()->errors();
+		return !$this->errors();
 	}
 	
 	public function errors() {
@@ -333,13 +354,14 @@ abstract class Model {
 				Event::trigger('behaviors_presave_'.$behavior, $this);
 				
 		$data = $this->getVars();
-		foreach(static::$files as $file=>$params) {
-			if(isset($this->data[$file]['tmp_name']) && $this->data[$file]['tmp_name'])
-				$data[$file] = $this->data[$file]['tmp_name'];
-			else
-				$data[$file] = 'web/'.$this->$file->get();
-		}
-		
+		// foreach(static::$files as $file=>$params) {
+		// 	if(isset($this->data['_files'][$file]['tmp_name']) && $this->data['_files'][$file]['tmp_name'])
+		// 		$data[$file] = $this->data['_files'][$file]['tmp_name'];
+		// 	else
+		// 		$data[$file] = 'web/'.$this->$file->get();
+		// }
+		// d($data);
+
 		#validation
 		$errors = $this->getValidator()->errors($data);
 		
@@ -372,52 +394,36 @@ abstract class Model {
 		return $this;
 	}
 
+	public static function triggerBefore($what, $args=array()) {
+		if(isset(static::$meta['hooks']['before'][$what])) {
+			$hook = static::$meta['hooks']['before'][$what];
+			call_user_func_array($hook, $args);
+		}
+	}
+
+	public static function triggerOn($what, $args=array()) {
+		if(isset(static::$meta['hooks']['on'][$what])) {
+			$hook = static::$meta['hooks']['on'][$what];
+			call_user_func_array($hook, $args);
+		}
+	}
+
+	public static function triggerAfter($what, $args=array()) {
+		if(isset(static::$meta['hooks']['after'][$what])) {
+			$hook = static::$meta['hooks']['after'][$what];
+			call_user_func_array($hook, $args);
+		}
+	}
+
 	public function dosave() {
-		$this->move_files();
+		// $this->move_files();
+		$this->triggerOn('save', array($this));
 	}
 	
 	public function destroy() {
-		foreach(static::$files as $name=>$v)
-			$this->$name->delete();
-	}
-	
-	/* FILES */
-	#getvalidator
-		#???
-	#errors
-		#???
-		
-	#loadModel
-		#loadFiles
-		
-	#__get()
-	#setAttribute
-	
-	#save / move_files
-	
-	#hasFile
-	
-	/*
-	*/
-	
-	#todo
-	#loadFiles: behavior?
-	//~ Actualite::get_truc(function($model) {
-	//~ });
-	//~ Actualite::set_truc(function($model, $value) {
-	//~ });
-	//~ Actualite::onSave(function($model) {
-	//~ });
-	//~ Actualite::call_hasFile(function($model) {
-	//~ });
-	
-	public function move_files() {
-		if(isset($this->data['_files']) && is_array($this->data['_files']))
-			foreach($this->data['_files'] as $file=>$arr)
-				if($this->hasFile($file) && is_uploaded_file($arr['tmp_name'])) {
-					$path = _WEB_DIR_.'/'.$this->$file->dir().'/'.$arr['name'];
-					$this->$file->add($arr['tmp_name'], $path);
-				}
+		// foreach(static::$files as $name=>$v)
+		// 	$this->$name->delete();
+		$this->triggerOn('destroy', array($this));
 	}
 	
 	public static function properties() {
@@ -428,7 +434,31 @@ abstract class Model {
 		return static::$properties[$name];
 	}
 
-	public function hasFile($file) {
-		return array_key_exists($file, static::$files);
+	public static function hookGet($what, $cb) {
+		static::$meta['hooks']['get'][$what] = $cb;
+	}
+
+	public static function hookSet($what, $cb) {
+		static::$meta['hooks']['set'][$what] = $cb;
+	}
+
+	public static function hookCall($what, $cb) {
+		static::$meta['hooks']['call'][$what] = $cb;
+	}
+
+	public static function hookStaticCall($what, $cb) {
+		static::$meta['hooks']['staticcall'][$what] = $cb;
+	}
+
+	public static function before($what, $cb) {
+		static::$meta['hooks']['before'][$what] = $cb;
+	}
+
+	public static function on($what, $cb) {
+		static::$meta['hooks']['on'][$what] = $cb;
+	}
+
+	public static function after($what, $cb) {
+		static::$meta['hooks']['after'][$what] = $cb;
 	}
 }

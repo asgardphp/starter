@@ -17,11 +17,6 @@ class ModelTest extends PHPUnit_Framework_TestCase {
 		// d($article);
 	}
 
-	public function test01() {
-		$article = new \Coxis\Tests\App\Article\Models\Article(1);
-		
-	}
-
 	#model errors
 	public function test1() {
 		$this->setExpectedException('Coxis\Core\ModelException');

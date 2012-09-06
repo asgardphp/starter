@@ -1,8 +1,12 @@
 <?php
 class BaseProperty {
+	protected $model = null;
+	protected $name = null;
 	protected $params = array();
 
-	function __construct($params) {
+	function __construct($model, $name, $params) {
+		$this->model = $model;
+		$this->name = $name;
 		$this->params = $params;
 	}
 
@@ -10,6 +14,10 @@ class BaseProperty {
 		if(!isset($this->params[$name]))
 			return null;
 		return $this->params[$name];
+	}
+
+	public function getName() {
+		return $this->name;
 	}
 
 	public function getParams() {
