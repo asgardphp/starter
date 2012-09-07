@@ -37,7 +37,7 @@ class FilesBehaviorController extends \Coxis\Core\Controller {
 	}
 
 	/**
-	@Hook('behaviors_load_sortable')
+	@Hook('behaviors_load_files')
 	**/
 	public function behaviors_load_filesAction($modelName) {
 		$modelName::hookCall('hasFile', function($model, $file) {

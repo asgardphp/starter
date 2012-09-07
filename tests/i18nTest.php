@@ -18,21 +18,22 @@ class i18nTest extends PHPUnit_Framework_TestCase {
 	public function test1() {
 		$com = new \Coxis\Tests\App\Actualite\Models\Commentaire(2);
 		$actu = $com->actualite;
-		$this->assertEquals($actu->test, 'Bonjour');
+		$this->assertEquals('Bonjour', $actu->test);
 	}
     
 	#save french text
 	public function test2() {
 		$com = new \Coxis\Tests\App\Actualite\Models\Commentaire(2);
 		$actu = $com->actualite;
-		$this->assertEquals($actu->getTest('fr'), 'Bonjour');
+		$this->assertEquals('Bonjour', $actu->getTest('fr'));
 	}
     
 	#get english text
 	public function test3() {
 		$com = new \Coxis\Tests\App\Actualite\Models\Commentaire(2);
 		$actu = $com->actualite;
-		$this->assertEquals($actu->getTest('en'), 'Hello');
+		// d($actu->data['properties']);
+		$this->assertEquals('Hello', $actu->getTest('en'));
 	}
     
 	#get all

@@ -36,7 +36,7 @@ class FilesTest extends PHPUnit_Framework_TestCase {
 		// d($actualite);
 		$actualite->save();
 		// d($actualite);
-		$this->assertTrue(file_exists('C:\Users\leyou\Documents\projects\coxis3\web\upload\actualite\test.jpg'));
+		$this->assertTrue(file_exists('C:\Users\leyou\Documents\projects\coxis3\web\upload\actualite\test.jpg'), "Upload of test.jpg failed");
 	}
 }
 ?>

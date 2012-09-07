@@ -10,7 +10,7 @@ abstract class Model {
 	public $data = array(
 		'properties'	=>	array(),
 	);
-	
+
 	public function __construct($param='') {
 		if(is_array($param))
 			$this->loadDefault()
@@ -50,6 +50,15 @@ abstract class Model {
 		unset($this->data['properties'][$name]);
 	}
 
+	public static function __callStatic($name, $arguments) {
+		if(isset(static::$meta['hooks']['callstatic'][$name])) {
+			$hook = static::$meta['hooks']['callstatic'][$name];
+			return call_user_func_array($hook, $arguments);
+		}
+
+		throw new \Exception('Static method '.$name.' does not exist for model '.static::getModelName());
+	}
+
 	public function __call($name, $arguments) {
 		//called when setting or getting a related model
 		$todo = substr($name, 0, 3);
@@ -57,6 +66,10 @@ abstract class Model {
 		
 		if(isset(static::$meta['hooks']['call'][$name])) {
 			$hook = static::$meta['hooks']['call'][$name];
+			return call_user_func_array($hook, array_merge(array($this), $arguments));
+		}
+		elseif(isset(static::$meta['hooks']['callstatic'][$name])) {
+			$hook = static::$meta['hooks']['callstatic'][$name];
 			return call_user_func_array($hook, array_merge(array($this), $arguments));
 		}
 		elseif($todo=='set') {
@@ -90,7 +103,6 @@ abstract class Model {
 	protected static function configure() {}
 
 	public function loadDefault() {
-
 		foreach(static::properties() as $name=>$property)
 			$this->$name = $property->getDefault();
 				
@@ -114,10 +126,8 @@ abstract class Model {
 	
 	public static function loadBehaviors() {
 		Event::trigger('behaviors_pre_load', static::getClassName());
-	
-		$model_behaviors = static::$behaviors;
 		
-		foreach($model_behaviors as $behavior => $params)
+		foreach(static::$behaviors as $behavior => $params)
 			if($params)
 				Event::trigger('behaviors_load_'.$behavior, static::getClassName());
 	}
@@ -238,8 +248,13 @@ abstract class Model {
 		elseif(isset($this->data['properties'][$name])) 
 			$res = $this->data['properties'][$name];
 		
-		if($res === null && method_exists($this, 'fetch'))
-			$res = $this->fetch($name, $lang);
+		// if($res === null && method_exists($this, 'fetch'))
+		try {
+			$tmp = $this->fetch($name, $lang);
+			if($tmp)
+				$res = $tmp;
+			// return $res;
+		} catch(\Exception $e) {}
 		
 		if(Coxis::get('in_view') && is_string($res))
 			return HTML::sanitize($res);
@@ -328,36 +343,9 @@ abstract class Model {
 			}
 		}
 		
-		#before save
-		$this->dosave();#save
-		#after save
+		$this->trigger('save', null, array($this));
 
 		return $this;
-	}
-
-	public static function triggerBefore($what, $args=array()) {
-		if(isset(static::$meta['hooks']['before'][$what])) {
-			$hook = static::$meta['hooks']['before'][$what];
-			call_user_func_array($hook, $args);
-		}
-	}
-
-	public static function triggerOn($what, $args=array()) {
-		if(isset(static::$meta['hooks']['on'][$what])) {
-			$hook = static::$meta['hooks']['on'][$what];
-			call_user_func_array($hook, $args);
-		}
-	}
-
-	public static function triggerAfter($what, $args=array()) {
-		if(isset(static::$meta['hooks']['after'][$what])) {
-			$hook = static::$meta['hooks']['after'][$what];
-			call_user_func_array($hook, $args);
-		}
-	}
-
-	public function dosave() {
-		$this->triggerOn('save', array($this));
 	}
 	
 	public function destroy() {
@@ -372,9 +360,28 @@ abstract class Model {
 		return static::$properties[$name];
 	}
 
-	protected static function trigger($name, $cb, $args=array()) {
+	public static function triggerBefore($what, $args=array()) {
+		if(isset(static::$meta['hooks']['before'][$what]))
+			foreach(static::$meta['hooks']['before'][$what] as $hook) 
+				call_user_func_array($hook, $args);
+	}
+
+	public static function triggerOn($what, $args=array()) {
+		if(isset(static::$meta['hooks']['on'][$what]))
+			foreach(static::$meta['hooks']['on'][$what] as $hook)
+				call_user_func_array($hook, $args);
+	}
+
+	public static function triggerAfter($what, $args=array()) {
+		if(isset(static::$meta['hooks']['after'][$what]))
+			foreach(static::$meta['hooks']['after'][$what] as $hook) 
+				call_user_func_array($hook, $args);
+	}
+
+	protected static function trigger($name, $cb=null, $args=array()) {
 		static::triggerBefore($name, $args);
-		call_user_func_array($cb, $args);
+		if($cb)
+			call_user_func_array($cb, $args);
 		static::triggerOn($name, $args);
 		static::triggerAfter($name, $args);
 	}
@@ -391,19 +398,19 @@ abstract class Model {
 		static::$meta['hooks']['call'][$what] = $cb;
 	}
 
-	public static function hookStaticCall($what, $cb) {
-		static::$meta['hooks']['staticcall'][$what] = $cb;
+	public static function hookCallStatic($what, $cb) {
+		static::$meta['hooks']['callstatic'][$what] = $cb;
 	}
 
 	public static function before($what, $cb) {
-		static::$meta['hooks']['before'][$what] = $cb;
+		static::$meta['hooks']['before'][$what][] = $cb;
 	}
 
 	public static function on($what, $cb) {
-		static::$meta['hooks']['on'][$what] = $cb;
+		static::$meta['hooks']['on'][$what][] = $cb;
 	}
 
 	public static function after($what, $cb) {
-		static::$meta['hooks']['after'][$what] = $cb;
+		static::$meta['hooks']['after'][$what][] = $cb;
 	}
 }

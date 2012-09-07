@@ -1,7 +1,8 @@
 <?php
 namespace Coxis\Tests\App\Article\Models;
 
-class Article extends \Coxis\Core\ORM\ModelORM {
+// class Article extends \Coxis\Core\ORM\ModelORM {
+class Article extends \Coxis\Core\Model {
 	public static $properties = array(
 		'title',
 	);
