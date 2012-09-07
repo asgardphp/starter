@@ -2,6 +2,32 @@
 namespace Coxis\Bundles\Behaviors\Controllers;
 
 class FilesBehaviorController extends \Coxis\Core\Controller {
+	public static function _autoload() {
+		Validator::register('filerequired', function($attribute, $value, $params, $validator) {
+			$msg = false;
+			if(!$value)
+				$msg = $validator->getMessage('filerequired', $attribute, 'The file ":attribute" is required.');
+			elseif(!$value->exists())
+				$msg = $validator->getMessage('fileexists', $attribute, 'The file ":attribute" does not exist.');
+			if($msg)
+				return Validator::format($msg, array(
+					'attribute'	=>	$attribute,
+				));
+		});
+		
+		Validator::register('image', function($attribute, $value, $params, $validator) {
+			try {
+				$mime = mime_content_type($value['tmp_name']);
+				if(!in_array($mime, array('image/jpeg', 'image/png', 'image/gif'))) {
+					$msg = $validator->getMessage('image', $attribute, 'The file ":attribute" must be an image.');
+					return Validator::format($msg, array(
+						'attribute'	=>	$attribute,
+					));
+				}
+			} catch(\ErrorException $e) {}
+		});
+	}
+
 	/**
 	@Hook('behaviors_pre_load')
 	**/
@@ -14,52 +40,14 @@ class FilesBehaviorController extends \Coxis\Core\Controller {
 	@Hook('behaviors_load_sortable')
 	**/
 	public function behaviors_load_filesAction($modelName) {
-		// $model_files = $modelName::$files;
-		// if(is_array($model_files))
-		// 	foreach($model_files as $file => $params) {
-		// 		if(isset($params['multiple']) && $params['multiple']) #multiple
-		// 			$modelName::addProperty('filename_'.$file, array('type' => 'array', 'editable'=>false, 'required'=>false));
-		// 		else #single
-		// 			$modelName::addProperty('filename_'.$file, array('type' => 'text', 'editable'=>false, 'required'=>false));
-		// 	}
-
-		$getfile = function($model, $file) {
-			return new ModelFile($model, $file);
-		};
-		$setfile = function($model, $file, $value) {
-			$model->data['_files'][$file] = $value;
-		};
-
-		foreach($modelName::$files as $file=>$params) {
-			$modelName::hookGet($file, function($model) use($getfile, $file) {
-				return $getfile($model, $file);
-			});
-
-			$modelName::hookSet($file, function($model, $value) use($setfile, $file) {
-				return $setfile($model, $file, $value);
-			});
-		}
-
 		$modelName::hookCall('hasFile', function($model, $file) {
-			return array_key_exists($file, $model::$files);
+			return $model::hasProperty($file) && $model::property($file)->type == 'file';
 		});
 
 		$modelName::on('save', function($model) {
-						// d($model->data['_files']);
 			foreach($model::properties() as $property)
 				if($property->type == 'file')
-					// d($model->{$property->getName()}, $property->getName(), $property);
 					$model->{$property->getName()}->save();
-
-			/*if(isset($model->data['_files']) && is_array($model->data['_files']))
-				foreach($model->data['_files'] as $file=>$arr)
-					if($model->hasFile($file)
-						// && is_uploaded_file($arr['tmp_name'])
-						) {
-						#todo should not use the name of the uploaded file, file injection
-						$path = _WEB_DIR_.'/'.$model->$file->dir().'/'.$arr['name'];
-						$model->$file->add($arr['tmp_name'], $path);
-					}*/
 		});
 
 		$modelName::on('destroy', function($model) {

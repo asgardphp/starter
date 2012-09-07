@@ -9,14 +9,7 @@ abstract class Model {
 	#public for behaviors
 	public $data = array(
 		'properties'	=>	array(),
-		#todo with others like files, relationships, ..
 	);
-	// public static $meta = array();
-	// public static $properties = array();
-	// public static $files = array();
-	// public static $relationships = array();
-	// public static $behaviors = array();
-	// public static $messages = array();
 	
 	public function __construct($param='') {
 		if(is_array($param))
@@ -57,14 +50,6 @@ abstract class Model {
 		unset($this->data['properties'][$name]);
 	}
 
-	#todo late static binding does not work
-	/*public static function __callStatic($name, $arguments) {
-		if(isset(static::$meta['hooks']['staticcall'][$name])) {
-			$hook = static::$meta['hooks']['staticcall'][$name];
-			return call_user_func_array($hook, array_merge(array($this), $arguments));
-		}
-	}*/
-
 	public function __call($name, $arguments) {
 		//called when setting or getting a related model
 		$todo = substr($name, 0, 3);
@@ -74,16 +59,12 @@ abstract class Model {
 			$hook = static::$meta['hooks']['call'][$name];
 			return call_user_func_array($hook, array_merge(array($this), $arguments));
 		}
-		// elseif(isset(static::$meta['hooks']['staticcall'][$name])) {
-		// 	$hook = static::$meta['hooks']['staticcall'][$name];
-		// 	return call_user_func_array($hook, array_merge(array($this), $arguments));
-		// }
 		elseif($todo=='set') {
 			$value = $arguments[0];
 			$lang = null;
 			if(isset($arguments[1]))
 				$lang = $arguments[1];
-			$this->setAttribute($what, $value, $lang);
+			return $this->setAttribute($what, $value, $lang);
 		}
 		elseif($todo=='get') {
 			$lang = null;
@@ -94,7 +75,7 @@ abstract class Model {
 		elseif(array_key_exists($name, $this::$relationships))
 			return $this->getRelation($name);
 
-		throw new Exception('Method '.$name.' does not exist for model '.static::getModelName());
+		throw new \Exception('Method '.$name.' does not exist for model '.static::getModelName());
 	}
 	
 	/* INIT AND MODEL CONFIGURATION */
@@ -105,19 +86,12 @@ abstract class Model {
 		static::loadModel();
 		static::configure();
 	}
-
-	protected static function trigger($name, $cb, $args=array()) {
-		static::triggerBefore($name, $args);
-		call_user_func_array($cb, $args);
-		static::triggerOn($name, $args);
-		static::triggerAfter($name, $args);
-	}
 	
 	protected static function configure() {}
 
 	public function loadDefault() {
 
-		foreach(static::getProperties() as $name=>$property)
+		foreach(static::properties() as $name=>$property)
 			$this->$name = $property->getDefault();
 				
 		return $this;
@@ -176,6 +150,7 @@ abstract class Model {
 	public function isNew() {
 		return !(isset($this->data['properties']['id']) && $this->data['properties']['id']);
 	}
+
 	public static function create($values=array()) {
 		$m = new static($values);
 		return $m->save();
@@ -225,16 +200,6 @@ abstract class Model {
 		#todo full class namespace
 
 		static::$properties[$property] = new $propertyClass(get_called_class(), $property, $params);
-	}
-	
-	#todo deprecated use property() instead
-	public static function getProperty($prop) {
-		return get(static::getProperties(), $prop);
-	}
-
-	#todo deprecated use properties() instead
-	public static function getProperties() {
-		return static::$properties;
 	}
 	
 	public static function getAttributes() {
@@ -294,14 +259,11 @@ abstract class Model {
 					$lang = Config::get('locale');
 				if($lang == 'all')
 					foreach($value as $one => $v)
-						// $this->data['properties'][$name][$one] = $v;
 						$this->data['properties'][$name][$one] = static::property($name)->set($v);
 				else
-					// $this->data['properties'][$name][$lang] = $value;
 					$this->data['properties'][$name][$lang] = static::property($name)->set($value);
 			}
 			else
-				// $this->data['properties'][$name] = $value;
 				$this->data['properties'][$name] = static::property($name)->set($value);
 		}
 		elseif(isset(static::$meta['hooks']['set'][$name])) {
@@ -317,21 +279,6 @@ abstract class Model {
 		$constrains = array();
 		foreach(static::$properties as $name=>$property)
 			$constrains[$name] = $property->getRules();
-
-		/*foreach(static::$files as $file=>$params) {
-			$res = $params;
-			if(isset($params['required'])) {
-				$res['filerequired'] = $params['required'];
-				unset($res['required']);
-			}
-			if(isset($params['type'])) {
-				$res[$params['type']] = null;
-				unset($res['type']);
-			}
-			unset($res['dir']);
-			unset($res['multiple']);
-			$constrains[$file] = $res;
-		}*/
 		
 		if(isset(static::$messages))
 			$messages = static::$messages;
@@ -349,18 +296,12 @@ abstract class Model {
 	
 	public function errors() {
 		#before validation
+		#todo use model hooks
 		foreach(static::$behaviors as $behavior => $params)
 			if($params)
 				Event::trigger('behaviors_presave_'.$behavior, $this);
 				
 		$data = $this->getVars();
-		// foreach(static::$files as $file=>$params) {
-		// 	if(isset($this->data['_files'][$file]['tmp_name']) && $this->data['_files'][$file]['tmp_name'])
-		// 		$data[$file] = $this->data['_files'][$file]['tmp_name'];
-		// 	else
-		// 		$data[$file] = 'web/'.$this->$file->get();
-		// }
-		// d($data);
 
 		#validation
 		$errors = $this->getValidator()->errors($data);
@@ -416,13 +357,10 @@ abstract class Model {
 	}
 
 	public function dosave() {
-		// $this->move_files();
 		$this->triggerOn('save', array($this));
 	}
 	
 	public function destroy() {
-		// foreach(static::$files as $name=>$v)
-		// 	$this->$name->delete();
 		$this->triggerOn('destroy', array($this));
 	}
 	
@@ -432,6 +370,13 @@ abstract class Model {
 	
 	public static function property($name) {
 		return static::$properties[$name];
+	}
+
+	protected static function trigger($name, $cb, $args=array()) {
+		static::triggerBefore($name, $args);
+		call_user_func_array($cb, $args);
+		static::triggerOn($name, $args);
+		static::triggerAfter($name, $args);
 	}
 
 	public static function hookGet($what, $cb) {

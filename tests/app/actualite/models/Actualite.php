@@ -1,7 +1,6 @@
 <?php
 namespace Coxis\Tests\App\Actualite\Models;
 
-//~ class Actualite extends \Coxis\Core\Model {
 class Actualite extends \Coxis\Core\ORM\ModelORM {
 	public static $properties = array(
 		'titre',
@@ -23,15 +22,6 @@ class Actualite extends \Coxis\Core\ORM\ModelORM {
 			'required'	=>	false,
 			//~ 'multiple'	=>	true,
 		),
-	);
-	
-	public static $files = array(	
-	// 	'image' => array(
-	// 		'dir'	=>	'actualite/',
-	// 		'type'	=>	'image',
-	// 		'required'	=>	false,
-	// 		//~ 'multiple'	=>	true,
-	// 	),
 	);
 	
 	public static $relationships = array(

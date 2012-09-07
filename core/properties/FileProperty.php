@@ -1,7 +1,6 @@
 <?php
 class FileProperty extends BaseProperty {
 	public function getRules() {
-		// d();
 		$rules = parent::getRules();
 		if(isset($rules['required'])) {
 			$rules['filerequired'] = $rules['required'];
@@ -9,25 +8,20 @@ class FileProperty extends BaseProperty {
 		}
 		unset($rules['dir']);
 		unset($rules['multiple']);
-		// $rules['date'] = true;
 
 		return $rules;
 	}
 
 	public function getDefault() {
-		d();
-		return new Date;
+		return new ModelFile($this->model, $this->name, null);
 	}
 
 	public function serialize($obj) {
-		// d($obj->name);
 		return $obj->name;
 	}
 
 	public function unserialize($str) {
-		// return new ModelFile($this->model, $this->name, $str);
-		d();
-		// return Date::fromDatetime($str);
+		return new ModelFile($this->model, $this->name, $str);
 	}
 
 	public function set($val) {
@@ -35,10 +29,7 @@ class FileProperty extends BaseProperty {
 			$file = new ModelFile($this->model, $this->name, $val['name'], $val['tmp_name']);
 		else
 			$file = new ModelFile($this->model, $this->name, $val);
-		// d($file);
 		return $file;
-		// d($val);
-		// return Date::fromDatetime($val);
 	}
 
 	public function get() {
