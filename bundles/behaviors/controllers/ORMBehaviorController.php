@@ -14,175 +14,72 @@ class ORMBehaviorController extends \Coxis\Core\Controller {
 	@Hook('behaviors_load_orm')
 	**/
 	public function behaviors_load_ormAction($modelName) {
-		$modelName::hookCallStatic('loadRelationships', function() use($modelName) {
-			return ORMHandler::loadRelationships($modelName);
-		});
-
 		$modelName::hookCallStatic('getTable', function() use($modelName) {
-			return Config::get('database', 'prefix').$modelName::getModelName();
+			return ORMHandler::getTable($modelName);
 		});
 
 		$ormHandler = new ORMHandler($modelName);
 
-		$modelName::hookCallStatic('orderBy', function($by) use($ormHandler) {
-			return $ormHandler->orderBy($by);
+		$modelName::on('construct', function($model, $id) use($ormHandler) {
+			$ormHandler->construct($model, $id);
 		});
 
-		$modelName::hookCallStatic('where', function($conditions) use($ormHandler) {
-			return $ormHandler->where($conditions);
+		#Article::load(2)
+		$modelName::hookCallStatic('load', function($id) use($ormHandler) {
+			return $ormHandler->load($id);
 		});
 
+		#Article::destroyOne(2)
 		$modelName::hookCallStatic('destroyOne', function($id) use($ormHandler) {
 			return $ormHandler->destroyOne($id);
 		});
 
-		$modelName::hookCallStatic('getORM', function() use($ormHandler) {
-			return $ormHandler->getORM();
-		});
-
-		$modelName::hookCallStatic('getTranslationTable', function() use($ormHandler) {
-			return $ormHandler->getTranslationTable();
-		});
-
-		$modelName::hookCall('myORM', function($model) use($ormHandler) {
-			return $ormHandler->myORM($model);
-		});
-
-		$modelName::hookCall('getI18N', function($model, $lang) use($ormHandler) {
-			return $ormHandler->getI18N($model, $lang);
-		});
-
-		$modelName::hookCall('loadFromID', function($model, $id) use($ormHandler) {
-			$res = $ormHandler->getORM()->where(array('id' => $id))->dal()->first();
-			if($res) {
-				$model->set($res);
-				return true;
-			}
-			return false;
-		});
-
-		$modelName::hookCall('fetch', function($model, $name, $lang=null) use($ormHandler) {
-			return $ormHandler->fetch($model, $name, $lang);
-		});
-
-		$modelName::hookCall('getRelation', function($model, $name) use($ormHandler) {
-			$rel = ORMHandler::relationData($model, $name);
-			$relation_type = $rel['type'];
-			$relmodel = $rel['model'];
-			
-			switch($relation_type) {
-				case 'hasOne':
-					if($model->isNew())
-						return null;
-						
-					$link = $rel['link'];
-					return $relmodel::where(array($link => $model->id))->first();
-				case 'belongsTo':
-					if($model->isNew())
-						return null;
-						
-					$link = $rel['link'];
-					return $relmodel::where(array('id' => $model->$link))->first();
-				case 'hasMany':
-				case 'HMABT':
-					if($model->isNew())
-						return array();
-						
-					$collection = new CollectionORM($model, $name);
-					return $collection;
-				default:	
-					throw new \Exception('Relation '.$relation_type.' does not exist.');
-			}
-		});
-
-		$modelName::on('destroy', function($model) use($modelName) {
+		#$article->destroy()
+		$modelName::on('destroy', function($model) use($ormHandler) {
 			//todo delete all cascade models and files
-			return $model->myORM()->delete();
+			$ormHandler->destroy($model);
 		});
 
-		$modelName::on('save', function($model) use($modelName) {
-			$vars = $model->getVars();
-			
-			#apply filters before saving
-			foreach($vars as $col => $var) {
-				if($modelName::property($col)->filter) {
-					$filter = $modelName::property($col)->filter['to'];
-					$vars[$col] = $modelName::$filter($var);
-				}
-				else {
-					if($modelName::property($col)->i18n)
-						foreach($var as $k=>$v)
-							$vars[$col][$k] = $modelName::property($col)->serialize($v);
-					else
-						$vars[$col] = $modelName::property($col)->serialize($var);
-				}
-			}
-			
-			//Persist local id field
-			foreach($modelName::$relationships as $relationship => $params) {
-				if(!isset($model->data[$relationship]))
-					continue;
-				$rel = $modelName::relationData($model, $relationship);
-				$type = $rel['type'];
-				if($type == 'belongsTo') {
-					$link = $rel['link'];
-					$vars[$link] = $model->data[$relationship];
-				}
-			}
-			
-			//Persist i18n
-			$values = array();
-			$i18n = array();
-			foreach($vars as $p => $v) {
-				if($modelName::property($p)->i18n)
-					foreach($v as $lang=>$lang_value)
-						$i18n[$lang][$p] = $lang_value;
-				else
-					$values[$p] = $v;
-			}
-			
-			//Persist
-			$orm = $modelName::getORM();
-			//new
-			if(!isset($model->id))
-				$model->id = $orm->insert($values);
-			//existing
-			elseif(sizeof($vars) > 0) {
-				if(!$orm->where(array('id'=>$model->id))->update($values))
-					$model->id = $orm->insert($values);
-			}		
-			
-			//Persist i18n
-			foreach($i18n as $lang=>$values) {
-				$dal = new DAL($modelName::getTranslationTable());
-				if(!$dal->where(array('id'=>$model->id, 'locale'=>$lang))->update($values))
-					$dal->insert(
-						array_merge(
-							$values, 
-							array(
-								'locale'=>$lang,
-								'id'=>$model->id,
-							)
-						)
-					);
-			}
+		#$article->save()
+		$modelName::on('save', function($model) use($ormHandler) {
+			$ormHandler->save($model);
+		});
+
+		#$article->isNew()
+		$modelName::hookCall('isNew', function($model) use($ormHandler) {
+			return $ormHandler->isNew($model);
+		});
 		
-			//Persist relationships
-			foreach($modelName::$relationships as $relationship => $params) {
-				if(!isset($model->data[$relationship]))
-					continue;
-				$rel = $modelName::relationData($model, $relationship);
-				$type = $rel['type'];
-					
-				if($type == 'hasOne') {
-					$relation_model = $rel['model'];
-					$link = $rel['link'];
-					$relation_model::where(array($link => $model->id))->update(array($link => 0));
-					$relation_model::where(array('id' => $model->data[$relationship]))->update(array($link => $model->id));
-				}
-				elseif($type == 'hasMany' || $type == 'HMABT')
-					$model->$relationship()->sync($model->data[$relationship]);
+		#$article->title
+		$modelName::on('get', function($model, $name, $lang, $res) use($ormHandler) {
+			if($res === null)
+				return ORMHandler::fetch($model, $name, $lang);
+			return $res;
+		});
+
+		#Article::where() / ::limit() / ::orderBy() / ..
+		$modelName::on('__callStatic', function($name, $args) use($ormHandler) {
+			return $ormHandler->callStatic($name, $args);
+		});
+
+		#Relations
+		$modelName::hookCall('relation', function($model, $name) use($ormHandler) {
+			return $ormHandler->relation($model, $name);
+		});
+
+		$modelName::on('__get', function($model, $name) use($ormHandler) {
+			if(array_key_exists($name, $model::$relationships)) {
+				$res = $model->relation($name);
+				if($res instanceof \Coxis\Core\Collection)
+					return $res->get();
+				else
+					return $res;
 			}
+		});
+
+		$modelName::on('__call', function($model, $name) use($ormHandler) {
+			if(array_key_exists($name, $model::$relationships))
+				return $model->relation($name);
 		});
 	}
 }

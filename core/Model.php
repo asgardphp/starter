@@ -12,34 +12,33 @@ abstract class Model {
 	);
 
 	public function __construct($param='') {
-		if(is_array($param))
-			$this->loadDefault()
-			       ->loadFromArray($param);
-		elseif($param != '')
-			$this->loadFromID($param);
-		else
-			$this->loadDefault();
+		$this->_is_loaded = false;
+		$this->triggerOn('construct', array($this, $param));
+		if(!$this->_is_loaded) {
+			if(is_array($param))
+				$this->loadDefault()->set($param);
+			else
+				$this->loadDefault();
+		}
 	}
 	
 	/* MAGIC METHODS */
 	public function __set($name, $value) {
-		$this->setAttribute($name, $value);
+		$this->set($name, $value);
 	}
 	
 	public function __get($name) {
-		if(static::hasProperty($name))
-			return $this->getVar($name);
-		elseif(array_key_exists($name, $this::$relationships)) {
-			$res = $this->getRelation($name);
-			if($res instanceof \Coxis\Core\Collection)
-				return $res->get();
-			else
-				return $res;
-		}
+		$res = static::triggerOn('__get', array($this, $name), true);
+		if($res !== null)
+			return $res;
+		elseif(static::hasProperty($name))
+			return $this->get($name);
 		elseif(isset(static::$meta['hooks']['get'][$name])) {
 			$hook = static::$meta['hooks']['get'][$name];
 			return $hook($this);
 		}
+		elseif(isset($this->data[$name]))
+			return $this->data[$name];
 	}
 	
 	public function __isset($name) {
@@ -51,51 +50,38 @@ abstract class Model {
 	}
 
 	public static function __callStatic($name, $arguments) {
-		if(isset(static::$meta['hooks']['callstatic'][$name])) {
-			$hook = static::$meta['hooks']['callstatic'][$name];
-			return call_user_func_array($hook, $arguments);
+		if(isset(static::$meta['hooks']['callstatic'][$name]))
+			return call_user_func_array(static::$meta['hooks']['callstatic'][$name], $arguments);
+		else {
+			$res = static::triggerOn('__callStatic', array($name, $arguments), true);
+			if($res !== null)
+				return $res;
 		}
 
 		throw new \Exception('Static method '.$name.' does not exist for model '.static::getModelName());
 	}
 
 	public function __call($name, $arguments) {
-		//called when setting or getting a related model
-		$todo = substr($name, 0, 3);
-		$what = strtolower(substr($name, 3));
-		
-		if(isset(static::$meta['hooks']['call'][$name])) {
-			$hook = static::$meta['hooks']['call'][$name];
-			return call_user_func_array($hook, array_merge(array($this), $arguments));
+		if(isset(static::$meta['hooks']['call'][$name])) 
+			return call_user_func_array(static::$meta['hooks']['call'][$name], array_merge(array($this), $arguments));
+		elseif(isset(static::$meta['hooks']['callstatic'][$name]))
+			return call_user_func_array(static::$meta['hooks']['callstatic'][$name], array_merge(array($this), $arguments));
+		else {
+			$res = static::triggerOn('__call', array($this, $name, $arguments), true);
+			if($res !== null)
+				return $res;
+			$res = static::triggerOn('__callStatic', array($name, $arguments), true);
+			if($res !== null)
+				return $res;
 		}
-		elseif(isset(static::$meta['hooks']['callstatic'][$name])) {
-			$hook = static::$meta['hooks']['callstatic'][$name];
-			return call_user_func_array($hook, array_merge(array($this), $arguments));
-		}
-		elseif($todo=='set') {
-			$value = $arguments[0];
-			$lang = null;
-			if(isset($arguments[1]))
-				$lang = $arguments[1];
-			return $this->setAttribute($what, $value, $lang);
-		}
-		elseif($todo=='get') {
-			$lang = null;
-			if(isset($arguments[0]))
-				$lang = $arguments[0];
-			return $this->getVar($what, $lang);
-		}
-		elseif(array_key_exists($name, $this::$relationships))
-			return $this->getRelation($name);
 
 		throw new \Exception('Method '.$name.' does not exist for model '.static::getModelName());
 	}
 	
 	/* INIT AND MODEL CONFIGURATION */
 	public static function _autoload() {
-		if(static::getClassName() == 'coxis\core\model')
+		if(static::getClassName() == 'Coxis\Core\Model')
 			return;
-		// static::trigger('loadModel', array(get_called_class(), 'loadModel'), array(get_called_class()));
 		static::loadModel();
 		static::configure();
 	}
@@ -132,69 +118,9 @@ abstract class Model {
 				Event::trigger('behaviors_load_'.$behavior, static::getClassName());
 	}
 	
-	/* MISC */
-	public function set($vars) {
-		foreach($vars as $k=>$v)
-			$this->$k = $v;
-				
-		return $this;
-	}
-
+	/* PROPERTIES */
 	public static function hasProperty($name) {
 		return isset(static::$properties[$name]);
-	}
-	
-	public function raw($name) {
-		return $this->data['properties'][$name];
-	}
-	
-	public static function getClassName() {
-		return strtolower(get_called_class());
-		#todo move strtolower to getModelName
-	}
-	
-	public static function getModelName() {
-		return basename(static::getClassName());
-	}
-	
-	public function isNew() {
-		return !(isset($this->data['properties']['id']) && $this->data['properties']['id']);
-	}
-
-	public static function create($values=array()) {
-		$m = new static($values);
-		return $m->save();
-	}
-	
-	public static function load($id) {
-		$model = new static;
-		if($model->loadFromID($id)) {
-			$model->configure();
-			return $model;
-		}
-		return null;
-	}
-	
-	public static function isI18N() {
-		foreach(static::$properties as $prop)
-			if($prop->i18n)
-				return true;
-		return false;
-	}
-	
-	public function loadFromArray($cols) {
-		foreach($cols as $col=>$value) {
-			if(!static::hasProperty($col))
-				$this->$col = $value;
-			elseif(static::property($col)->filter) {
-				$filter = static::property($col)->filter['from'];
-				$this->$col = $model::$filter($value);
-			}
-			else
-				$this->$col = static::property($col)->unserialize($value);
-		}
-		
-		return $this;
 	}
 	
 	public static function addProperty($property, $params) {
@@ -212,81 +138,44 @@ abstract class Model {
 		static::$properties[$property] = new $propertyClass(get_called_class(), $property, $params);
 	}
 	
-	public static function getAttributes() {
-		return array_keys(static::$properties);
+	public static function property($name) {
+		return static::$properties[$name];
 	}
 	
-	public function getVars() {
-		$attrs = $this->getAttributes();
-		$vars = array();
-		
-		foreach($attrs as $attr) {
-			if(!isset($this->data['properties'][$attr]))
-				$vars[$attr] = '';
-			else
-				$vars[$attr] = $this->data['properties'][$attr];
-		}
-		
-		return $vars;
+	public static function properties() {
+		return static::$properties;
 	}
-	
-	public function getVar($name, $lang=null) {
-		$res = null;
-		if(static::property($name)->i18n) {
-			if(!$lang)
-				$lang = Config::get('locale');
-			if($lang == 'all') {
-				$langs = Config::get('locales');
-				$res = array();
-				foreach($langs as $lang)
-					$res[$lang] = $this->getVar($name, $lang);
-				return $res;
-			}
-			if(isset($this->data['properties'][$name][$lang]))
-				$res = $this->data['properties'][$name][$lang];
-		}
-		elseif(isset($this->data['properties'][$name])) 
-			$res = $this->data['properties'][$name];
-		
-		// if($res === null && method_exists($this, 'fetch'))
-		try {
-			$tmp = $this->fetch($name, $lang);
-			if($tmp)
-				$res = $tmp;
-			// return $res;
-		} catch(\Exception $e) {}
-		
-		if(Coxis::get('in_view') && is_string($res))
-			return HTML::sanitize($res);
-		else
-			return $res;
-	}
-	
-	public function setAttribute($name, $value, $lang=null) {
-		if(static::hasProperty($name)) {
-			if(static::property($name)->setFilter) {
-				$filter = static::property($name)->setFilter;
-				$value = call_user_func_array($filter, array($value));
-			}
 
-			if(static::property($name)->i18n) {
-				if(!$lang)
-					$lang = Config::get('locale');
-				if($lang == 'all')
-					foreach($value as $one => $v)
-						$this->data['properties'][$name][$one] = static::property($name)->set($v);
-				else
-					$this->data['properties'][$name][$lang] = static::property($name)->set($value);
+	/* PERSISTENCY */
+	public function save($values=null, $force=false) {
+		#set $values if any
+		if($values)
+			$this->set($values);
+		
+		if(!$force) {
+			#validate params and files
+			if($errors = $this->errors()) {
+				$msg = implode('<br>'."\n", $errors);
+				$e = new ModelException($msg);
+				$e->errors = $errors;
+				throw $e;
 			}
-			else
-				$this->data['properties'][$name] = static::property($name)->set($value);
 		}
-		elseif(isset(static::$meta['hooks']['set'][$name])) {
-			$hook = static::$meta['hooks']['set'][$name];
-			$hook($this, $value);
-		}
-		else
-			$this->data[$name] = $value;
+		
+		if(!$this->trigger('save', null, array($this)))
+			throw new \Exception('Cannot save non-persistent models');
+
+		return $this;
+	}
+	
+	public function destroy() {
+		if(!$this->trigger('destroy', array($this)))
+			throw new \Exception('Cannot destroy non-persistent models');
+	}
+
+	public static function create($values=array()) {
+		$m = new static($values);
+		return $m->save();
 	}
 	
 	/* VALIDATION */
@@ -316,7 +205,7 @@ abstract class Model {
 			if($params)
 				Event::trigger('behaviors_presave_'.$behavior, $this);
 				
-		$data = $this->getVars();
+		$data = $this->toArray();
 
 		#validation
 		$errors = $this->getValidator()->errors($data);
@@ -326,64 +215,173 @@ abstract class Model {
 		
 		return $errors;
 	}
+
+	/* MISC */
+	public static function isI18N() {
+		foreach(static::$properties as $prop)
+			if($prop->i18n)
+				return true;
+		return false;
+	}
 	
-	/* PERSISTENCE */
-	public function save($values=null, $force=false) {
-		#set $values if any
-		if($values)
-			$this->set($values);
-		
-		if(!$force) {
-			#validate params and files
-			if($errors = $this->errors()) {
-				$msg = implode('<br>'."\n", $errors);
-				$e = new ModelException($msg);
-				$e->errors = $errors;
-				throw $e;
+	#todo remove
+	public static function getClassName() {
+		return get_called_class();
+	}
+	
+	public static function getModelName() {
+		return basename(strtolower(static::getClassName()));
+	}
+	
+	public function get($name, $arg1=null, $arg2=null) {
+		$lang = null;
+		$raw = 0;	#0 auto; 1 raw; 2 sanitize
+		if(is_int($arg1))
+			$raw = $arg1;
+		else {
+			$lang = $arg1;
+			if(is_int($arg2))
+				$raw = $arg2;
+		}
+
+		$res = null;
+		if(static::property($name)->i18n) {
+			if(!$lang)
+				$lang = Config::get('locale');
+			if($lang == 'all') {
+				$langs = Config::get('locales');
+				$res = array();
+				foreach($langs as $lang)
+					$res[$lang] = $this->get($name, $lang);
+				return $res;
 			}
+			if(isset($this->data['properties'][$name][$lang]))
+				$res = $this->data['properties'][$name][$lang];
+		}
+		elseif(isset($this->data['properties'][$name])) 
+			$res = $this->data['properties'][$name];
+
+		$res = static::triggerOn('get', array($this, $name, $lang, $res), true);
+		
+		#todo put this into a behavior, with filter()
+		if(is_string($res)) {
+			if($raw === 2)
+				return HTML::sanitize($res);
+			elseif($raw == 0 && Coxis::get('in_view'))
+				return HTML::sanitize($res);
 		}
 		
-		$this->trigger('save', null, array($this));
+		return $res;
+	}
+	
+	public function set($name, $value=null, $lang=null) {
+		if(is_array($name)) {
+			$vars = $name;
+			foreach($vars as $k=>$v)
+				$this->$k = $v;
+		}
+		else {
+			if(static::hasProperty($name)) {
+				if(static::property($name)->setFilter) {
+					$filter = static::property($name)->setFilter;
+					$value = call_user_func_array($filter, array($value));
+				}
 
+				if(static::property($name)->i18n) {
+					if(!$lang)
+						$lang = Config::get('locale');
+					if($lang == 'all')
+						foreach($value as $one => $v)
+							$this->data['properties'][$name][$one] = static::property($name)->set($v);
+					else
+						$this->data['properties'][$name][$lang] = static::property($name)->set($value);
+				}
+				else
+					$this->data['properties'][$name] = static::property($name)->set($value);
+			}
+			elseif(isset(static::$meta['hooks']['set'][$name])) {
+				$hook = static::$meta['hooks']['set'][$name];
+				$hook($this, $value);
+			}
+			else
+				$this->data[$name] = $value;
+		}
+				
 		return $this;
 	}
-	
-	public function destroy() {
-		$this->triggerOn('destroy', array($this));
+
+	public function raw($name, $lang=null) {
+		if($lang)
+			return $this->get($name, $lang, 1);
+		else
+			return $this->get($name, 1);
 	}
 	
-	public static function properties() {
-		return static::$properties;
+	public function toArray() {
+		$attrs = $this->propertyNames();
+		$vars = array();
+		
+		foreach($attrs as $attr) {
+			if(!isset($this->data['properties'][$attr]))
+				$vars[$attr] = null;
+			else
+				$vars[$attr] = $this->data['properties'][$attr];
+		}
+		
+		return $vars;
 	}
 	
-	public static function property($name) {
-		return static::$properties[$name];
+	public static function propertyNames() {
+		return array_keys(static::$properties);
 	}
 
-	public static function triggerBefore($what, $args=array()) {
-		if(isset(static::$meta['hooks']['before'][$what]))
-			foreach(static::$meta['hooks']['before'][$what] as $hook) 
-				call_user_func_array($hook, $args);
+	/* HOOKS */
+
+	public static function triggerBefore($what, $args=array(), $return=false) {
+		if(isset(static::$meta['hooks']['before'][$what])) {
+			foreach(static::$meta['hooks']['before'][$what] as $hook) {
+				$res = call_user_func_array($hook, $args);
+				if($return && $res)
+					return $res;
+			}
+			if(!$return)
+				return true;
+		}
 	}
 
-	public static function triggerOn($what, $args=array()) {
-		if(isset(static::$meta['hooks']['on'][$what]))
-			foreach(static::$meta['hooks']['on'][$what] as $hook)
-				call_user_func_array($hook, $args);
+	public static function triggerOn($what, $args=array(), $return=false) {
+		if(isset(static::$meta['hooks']['on'][$what])) {
+			foreach(static::$meta['hooks']['on'][$what] as $hook) {
+				$res = call_user_func_array($hook, $args);
+				#return asked for so return it
+				if($return && $res)
+					return $res;
+			}
+			#at least one hook was executed, and no result asked for, so return true
+			if(!$return)
+				return true;
+		}
 	}
 
-	public static function triggerAfter($what, $args=array()) {
-		if(isset(static::$meta['hooks']['after'][$what]))
-			foreach(static::$meta['hooks']['after'][$what] as $hook) 
-				call_user_func_array($hook, $args);
+	public static function triggerAfter($what, $args=array(), $return=false) {
+		if(isset(static::$meta['hooks']['after'][$what])) {
+			foreach(static::$meta['hooks']['after'][$what] as $hook) {
+				$res = call_user_func_array($hook, $args);
+				if($return && $res)
+					return $res;
+			}
+			if(!$return)
+				return true;
+		}
 	}
 
 	protected static function trigger($name, $cb=null, $args=array()) {
-		static::triggerBefore($name, $args);
+		$res = static::triggerBefore($name, $args);
 		if($cb)
 			call_user_func_array($cb, $args);
-		static::triggerOn($name, $args);
-		static::triggerAfter($name, $args);
+		$res |= static::triggerOn($name, $args);
+		$res |= static::triggerAfter($name, $args);
+		return $res;
 	}
 
 	public static function hookGet($what, $cb) {

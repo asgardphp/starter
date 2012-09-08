@@ -18,39 +18,39 @@ class ORMHandler {
 				'nullable'	=>	false,
 			),
 		));
-		$modelName::loadRelationships();
+		static::loadRelationships($modelName);
+	}
+	
+	public function isNew($model) {
+		return !(isset($model->data['properties']['id']) && $model->data['properties']['id']);
 	}
 
-	public function __call($name, $args) {
-		// if(strpos($name, 'loadBy') === 0) {
-		// 	preg_match('/^loadBy(.*)/', $name, $matches);
-		// 	$property = $matches[1];
-		// 	$val = $arguments[0];
-		// 	return $this->getORM()->where(array($property => $val))->first();
-		// }
-		// else {
-			$orm = $this->getORM();
-			// if(method_exists($orm, $name))
-				return call_user_func_array(array($orm, $name), $args);
-		// }
-	}
-
-	public function loadFromID($id) {
-		$res = $this->getORM()->where(array('id' => $id))->dal()->first();
-		if($res) {
-			$this->set($res);
-			return true;
-		}
-		return false;
+	public function load($id) {
+		$modelName = $this->model;
+		$model = new $modelName($id);
+		if($model->isNew())
+			return null;
+		return $model;
 	}
 	
 	public function getORM() {
 		return new ORM($this->model);
 	}
 	
-	public function getTranslationTable() {
-		$model =  $this->model;
+	public static function myORM($model) {
+		if($model->isNew())
+			return $this->getORM();
+		else
+			return $this->getORM()->where(array('id' => $model->id));
+	}
+	
+	public static function getTranslationTable($model) {
+		// $model =  $this->model;
 		return $model::getTable().'_translation';
+	}
+
+	public static function getTable($modelName) {
+		return Config::get('database', 'prefix').$modelName::getModelName();
 	}
 	
 	public static function relationData($model, $name) {
@@ -90,24 +90,10 @@ class ORMHandler {
 				}
 	}
 	
-	public static function myORM($model) {
-		if($model->isNew())
-			return static::getORM();
-		else
-			return static::getORM()->where(array('id' => $model->id));
-	}
-	
 	public static function getI18N($model, $lang) {
-		$dal = new DAL($model->getTranslationTable());
+		$dal = new DAL(static::getTranslationTable($model));
 		return $dal->where(array('id' => $model->id))->where(array('locale'=>$lang))->first();
 	}
-	
-	// public static function destroy($model) {
-		// parent::destroy();
-		
-	// 	//todo delete all cascade models and files
-	// 	return $model->myORM()->delete();
-	// }
 	
 	public function destroyOne($id) {
 		$modelName = $this->model;
@@ -117,17 +103,161 @@ class ORMHandler {
 	}
 	
 	public static function fetch($model, $name, $lang=null) {
-		// d();
 		if($model::property($name)->i18n) {
-			if(!($res = $model->getI18N($lang)))
+			if(!($res = static::getI18N($model, $lang)))
 				return null;
 			unset($res['id']);
 			unset($res['locale']);
 			foreach($res as $k=>$v)
-				$model->{'set'.$k}($v, $lang);
+				$model->set($k, $v, $lang);
 				
 			if(isset($model->data['properties'][$name][$lang]))
 				return $model->data['properties'][$name][$lang];
+		}
+	}
+
+	public function relation($model, $name) {
+		$rel = ORMHandler::relationData($model, $name);
+		$relation_type = $rel['type'];
+		$relmodel = $rel['model'];
+		
+		switch($relation_type) {
+			case 'hasOne':
+				if($model->isNew())
+					return null;
+					
+				$link = $rel['link'];
+				return $relmodel::where(array($link => $model->id))->first();
+			case 'belongsTo':
+				if($model->isNew())
+					return null;
+					
+				$link = $rel['link'];
+				return $relmodel::where(array('id' => $model->$link))->first();
+			case 'hasMany':
+			case 'HMABT':
+				if($model->isNew())
+					return array();
+					
+				return new CollectionORM($model, $name);
+				return $model->collection($name);
+			default:	
+				throw new \Exception('Relation '.$relation_type.' does not exist.');
+		}
+	}
+
+	public function callStatic($name, $args) {	
+		if(strpos($name, 'loadBy') === 0) {
+			preg_match('/^loadBy(.*)/', $name, $matches);
+			$property = $matches[1];
+			$val = $args[0];
+			return $this->getORM()->where(array($property => $val))->first();
+		}
+		else {
+			if(method_exists('Coxis\Core\ORM\ORM', $name)) {
+				$orm = $this->getORM();
+				return call_user_func_array(array($orm, $name), $args);
+			}
+		}
+	}
+
+	public function construct($model, $id) {
+		if(!is_int($id))
+			return;
+
+		$res = $this->getORM()->where(array('id' => $id))->dal()->first();
+		if($res) {
+			$model->set($res);
+			$model->_is_loaded = true;
+		}
+	}
+
+	public function destroy($model) {
+		return static::myORM($model)->delete();
+	}
+
+	public function save($model) {
+		$vars = $model->toArray();
+		
+		#apply filters before saving
+		foreach($vars as $col => $var) {
+			if($model::property($col)->filter) {
+				$filter = $model::property($col)->filter['to'];
+				$vars[$col] = $model::$filter($var);
+			}
+			else {
+				if($model::property($col)->i18n)
+					foreach($var as $k=>$v)
+						$vars[$col][$k] = $model::property($col)->serialize($v);
+				else
+					$vars[$col] = $model::property($col)->serialize($var);
+			}
+		}
+		
+		//Persist local id field
+		foreach($model::$relationships as $relationship => $params) {
+			if(!isset($model->data[$relationship]))
+				continue;
+			$rel = $model::relationData($model, $relationship);
+			$type = $rel['type'];
+			if($type == 'belongsTo') {
+				$link = $rel['link'];
+				$vars[$link] = $model->data[$relationship];
+			}
+		}
+		
+		//Persist i18n
+		$values = array();
+		$i18n = array();
+		foreach($vars as $p => $v) {
+			if($model::property($p)->i18n)
+				foreach($v as $lang=>$lang_value)
+					$i18n[$lang][$p] = $lang_value;
+			else
+				$values[$p] = $v;
+		}
+
+		//Persist
+		$orm = $this->getORM();
+		//new
+		if(!isset($model->id) || !$model->id)
+			$model->id = $orm->insert($values);
+		//existing
+		elseif(sizeof($vars) > 0) {
+			if(!$orm->where(array('id'=>$model->id))->update($values))
+				$model->id = $orm->insert($values);
+		}		
+		
+		//Persist i18n
+		foreach($i18n as $lang=>$values) {
+			$dal = new DAL(static::getTranslationTable($model));
+			if(!$dal->where(array('id'=>$model->id, 'locale'=>$lang))->update($values))
+				$dal->insert(
+					array_merge(
+						$values, 
+						array(
+							'locale'=>$lang,
+							'id'=>$model->id,
+						)
+					)
+				);
+		}
+	
+		//Persist relationships
+		foreach($model::$relationships as $relationship => $params) {
+			if(!isset($model->data[$relationship]))
+				continue;
+			$rel = $model::relationData($model, $relationship);
+			$type = $rel['type'];
+				
+			if($type == 'hasOne') {
+				$relation_model = $rel['model'];
+				$link = $rel['link'];
+				$relation_model::where(array($link => $model->id))->update(array($link => 0));
+				$relation_model::where(array('id' => $model->data[$relationship]))->update(array($link => $model->id));
+			}
+			elseif($type == 'hasMany' || $type == 'HMABT')
+				$model->$relationship()->sync($model->data[$relationship]);
 		}
 	}
 }

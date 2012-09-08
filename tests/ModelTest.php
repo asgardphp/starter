@@ -60,5 +60,16 @@ class ModelTest extends PHPUnit_Framework_TestCase {
 		$this->assertTrue(is_array($authors));
 		$this->assertInstanceOf('Coxis\Tests\App\Actualite\Models\Author', $authors[0]);
 	}
+    
+	#load
+	public function test6() {
+		$article = \Coxis\Tests\App\Article\Models\Article::load(1);
+	}
+    
+	#loadBy
+	public function test7() {
+		$article = \Coxis\Tests\App\Article\Models\Article::loadByTitle('Introduction');
+		$this->assertEquals($article->id, 2);
+	}
 }
 ?>
