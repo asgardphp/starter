@@ -14,72 +14,81 @@ class ORMBehaviorController extends \Coxis\Core\Controller {
 	@Hook('behaviors_load_orm')
 	**/
 	public function behaviors_load_ormAction($modelName) {
-		$modelName::hookCallStatic('getTable', function() use($modelName) {
-			return ORMHandler::getTable($modelName);
+		#todo rename filter as there is now variable to filter
+		$modelName::filterOn('callStatic', function($chain, $name, $args) use($modelName) {
+			if($name == 'getTable') {
+				$chain->found = true;
+				return ORMHandler::getTable($modelName);
+			}
 		});
 
 		$ormHandler = new ORMHandler($modelName);
 
-		$modelName::on('construct', function($model, $id) use($ormHandler) {
+		$modelName::filterOn('callStatic', function($chain, $name, $args) use($ormHandler) {
+			$res = null;
+			#Article::load(2)
+			if($name == 'load')
+				$res = $ormHandler->load($args[0]);#id
+			#Article::destroyOne(2)
+			elseif($name == 'destroyOne')
+				return $ormHandler->destroyOne($args[0]);#id
+			#Article::where() / ::limit() / ::orderBy() / ..
+			else
+				$res = $ormHandler->callStatic($name, $args);
+			if($res !== null) {
+				$chain->found = true;
+				return $res;
+			}
+		});
+
+		$modelName::filterOn('call', function($chain, $model, $name, $args) use($ormHandler) {
+			$res = null;
+			#$article->isNew()
+			if($name == 'isNew')
+				$res = $ormHandler->isNew($model);
+			#Relations
+			elseif($name == 'relation')
+				$res = $ormHandler->relation($model, $args[0]);#relation name
+			elseif(array_key_exists($name, $model::$relationships))
+				return $model->relation($name);
+			if($res !== null) {
+				$chain->found = true;
+				return $res;
+			}
+		});
+
+
+		$modelName::filterOn('construct', function($chain, $model, $id) use($ormHandler) {
 			$ormHandler->construct($model, $id);
 		});
 
-		#Article::load(2)
-		$modelName::hookCallStatic('load', function($id) use($ormHandler) {
-			return $ormHandler->load($id);
-		});
-
-		#Article::destroyOne(2)
-		$modelName::hookCallStatic('destroyOne', function($id) use($ormHandler) {
-			return $ormHandler->destroyOne($id);
-		});
-
 		#$article->destroy()
-		$modelName::on('destroy', function($model) use($ormHandler) {
+		$modelName::filterOn('destroy', function($chain, $model) use($ormHandler) {
 			//todo delete all cascade models and files
 			$ormHandler->destroy($model);
 		});
 
 		#$article->save()
-		$modelName::on('save', function($model) use($ormHandler) {
+		$modelName::filterOn('save', function($chain, $model) use($ormHandler) {
 			$ormHandler->save($model);
-		});
-
-		#$article->isNew()
-		$modelName::hookCall('isNew', function($model) use($ormHandler) {
-			return $ormHandler->isNew($model);
 		});
 		
 		#$article->title
-		$modelName::on('get', function($model, $name, $lang, $res) use($ormHandler) {
-			if($res === null)
-				return ORMHandler::fetch($model, $name, $lang);
-			return $res;
+		$modelName::filterAfter('get', function($chain, $model, $name, $lang, &$res) {
+			$res = ORMHandler::fetch($model, $name, $lang);
+			if($res !== null)
+				$chain->stop();
 		});
 
-		#Article::where() / ::limit() / ::orderBy() / ..
-		$modelName::on('__callStatic', function($name, $args) use($ormHandler) {
-			return $ormHandler->callStatic($name, $args);
-		});
-
-		#Relations
-		$modelName::hookCall('relation', function($model, $name) use($ormHandler) {
-			return $ormHandler->relation($model, $name);
-		});
-
-		$modelName::on('__get', function($model, $name) use($ormHandler) {
+		$modelName::filterBefore('get', function($chain, $model, $name, $lang, &$res) {
 			if(array_key_exists($name, $model::$relationships)) {
-				$res = $model->relation($name);
-				if($res instanceof \Coxis\Core\Collection)
-					return $res->get();
+				$rel = $model->relation($name);
+				if($rel instanceof \Coxis\Core\Collection)
+					$res = $rel->get();
 				else
-					return $res;
+					$res = $rel;
+				$chain->stop();
 			}
-		});
-
-		$modelName::on('__call', function($model, $name) use($ormHandler) {
-			if(array_key_exists($name, $model::$relationships))
-				return $model->relation($name);
 		});
 	}
 }

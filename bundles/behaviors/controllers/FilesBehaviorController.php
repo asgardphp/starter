@@ -40,17 +40,18 @@ class FilesBehaviorController extends \Coxis\Core\Controller {
 	@Hook('behaviors_load_files')
 	**/
 	public function behaviors_load_filesAction($modelName) {
-		$modelName::hookCall('hasFile', function($model, $file) {
-			return $model::hasProperty($file) && $model::property($file)->type == 'file';
+		$modelName::filterOn('call', function($chain, $model, $name, $file) {
+			if($name == 'hasFile')
+				return $model::hasProperty($file) && $model::property($file)->type == 'file';
 		});
 
-		$modelName::on('save', function($model) {
+		$modelName::filterOn('save', function($chain, $model) {
 			foreach($model::properties() as $property)
 				if($property->type == 'file')
 					$model->{$property->getName()}->save();
 		});
 
-		$modelName::on('destroy', function($model) {
+		$modelName::filterOn('destroy', function($chain, $model) {
 			foreach($model::$files as $name=>$v)
 				$this->$name->delete();
 		});

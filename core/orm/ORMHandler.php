@@ -117,7 +117,7 @@ class ORMHandler {
 	}
 
 	public function relation($model, $name) {
-		$rel = ORMHandler::relationData($model, $name);
+		$rel = static::relationData($model, $name);
 		$relation_type = $rel['type'];
 		$relmodel = $rel['model'];
 		
@@ -139,8 +139,8 @@ class ORMHandler {
 				if($model->isNew())
 					return array();
 					
-				return new CollectionORM($model, $name);
-				return $model->collection($name);
+				$collection = new CollectionORM($model, $name);
+				return $collection;
 			default:	
 				throw new \Exception('Relation '.$relation_type.' does not exist.');
 		}

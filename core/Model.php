@@ -10,10 +10,12 @@ abstract class Model {
 	public $data = array(
 		'properties'	=>	array(),
 	);
+	public $_is_loaded;
 
 	public function __construct($param='') {
 		$this->_is_loaded = false;
-		$this->triggerOn('construct', array($this, $param));
+		// $this->triggerOn('construct', array($this, $param));
+		$this->filter('construct', null, array($this, $param));
 		if(!$this->_is_loaded) {
 			if(is_array($param))
 				$this->loadDefault()->set($param);
@@ -26,19 +28,9 @@ abstract class Model {
 	public function __set($name, $value) {
 		$this->set($name, $value);
 	}
-	
+
 	public function __get($name) {
-		$res = static::triggerOn('__get', array($this, $name), true);
-		if($res !== null)
-			return $res;
-		elseif(static::hasProperty($name))
-			return $this->get($name);
-		elseif(isset(static::$meta['hooks']['get'][$name])) {
-			$hook = static::$meta['hooks']['get'][$name];
-			return $hook($this);
-		}
-		elseif(isset($this->data[$name]))
-			return $this->data[$name];
+		return $this->get($name);
 	}
 	
 	public function __isset($name) {
@@ -50,32 +42,32 @@ abstract class Model {
 	}
 
 	public static function __callStatic($name, $arguments) {
-		if(isset(static::$meta['hooks']['callstatic'][$name]))
-			return call_user_func_array(static::$meta['hooks']['callstatic'][$name], $arguments);
-		else {
-			$res = static::triggerOn('__callStatic', array($name, $arguments), true);
-			if($res !== null)
-				return $res;
-		}
+		$chain = new FilterChain();
+		$chain->found = false;
 
-		throw new \Exception('Static method '.$name.' does not exist for model '.static::getModelName());
+		$res = static::filterChain($chain, 'callStatic', null, array($name, $arguments));
+
+		if(!$chain->found)
+			throw new \Exception('Static method '.$name.' does not exist for model '.static::getModelName());
+
+		return $res;
 	}
 
 	public function __call($name, $arguments) {
-		if(isset(static::$meta['hooks']['call'][$name])) 
-			return call_user_func_array(static::$meta['hooks']['call'][$name], array_merge(array($this), $arguments));
-		elseif(isset(static::$meta['hooks']['callstatic'][$name]))
-			return call_user_func_array(static::$meta['hooks']['callstatic'][$name], array_merge(array($this), $arguments));
-		else {
-			$res = static::triggerOn('__call', array($this, $name, $arguments), true);
-			if($res !== null)
-				return $res;
-			$res = static::triggerOn('__callStatic', array($name, $arguments), true);
-			if($res !== null)
-				return $res;
+		$chain = new FilterChain;
+		$chain->found = false;
+
+		$res = static::filterChain($chain, 'call', null, array($this, $name, $arguments));
+
+		if(!$chain->found) {
+			try {
+				return static::__callStatic($name, $arguments);
+			} catch(\Exception $e) {
+				throw new \Exception('Method '.$name.' does not exist for model '.static::getModelName());
+			}
 		}
 
-		throw new \Exception('Method '.$name.' does not exist for model '.static::getModelName());
+		return $res;
 	}
 	
 	/* INIT AND MODEL CONFIGURATION */
@@ -162,15 +154,17 @@ abstract class Model {
 			}
 		}
 		
-		if(!$this->trigger('save', null, array($this)))
-			throw new \Exception('Cannot save non-persistent models');
+		$this->filter('save', null, array($this));
+		// if(!$this->filter('save', null, array($this)))
+		// 	throw new \Exception('Cannot save non-persistent models');
 
 		return $this;
 	}
 	
 	public function destroy() {
-		if(!$this->trigger('destroy', array($this)))
-			throw new \Exception('Cannot destroy non-persistent models');
+		$this->filter('destroy', null, array($this));
+		// if(!$this->filter('destroy', null, array($this)))
+		// 	throw new \Exception('Cannot destroy non-persistent models');
 	}
 
 	public static function create($values=array()) {
@@ -194,7 +188,7 @@ abstract class Model {
 		return $validator;
 	}
 	
-	public function isValid() {
+	public function valid() {
 		return !$this->errors();
 	}
 	
@@ -207,13 +201,51 @@ abstract class Model {
 				
 		$data = $this->toArray();
 
-		#validation
-		$errors = $this->getValidator()->errors($data);
-		
-		#after validation
-		
+		$errors = null;
+		$model = $this;
+		$this->filter('validation', function($chain, $data, &$errors) use($model) {
+			$errors = $model->getValidator()->errors($data);
+		}, array($data), $errors);
 		
 		return $errors;
+	}
+
+	#cannot use references with get_func_args
+	protected static function filter($name, $cb=null, $args=array(), &$filter1=null, &$filter2=null, &$filter3=null, &$filter4=null, &$filter5=null, &$filter6=null,
+		&$filter7=null, &$filter8=null, &$filter9=null, &$filter10=null) {
+		return static::filterChain(new FilterChain, $name, $cb, $args, $filter1, $filter2, $filter3, $filter4, $filter5, $filter6,
+			$filter7, $filter8, $filter9, $filter10);
+	}
+
+	#cannot use references with get_func_args
+	protected static function filterChain($chain, $name, $cb=null, $args=array(), &$filter1=null, &$filter2=null, &$filter3=null, &$filter4=null, &$filter5=null, &$filter6=null,
+		&$filter7=null, &$filter8=null, &$filter9=null, &$filter10=null) {
+		if(count(func_get_args()) > 14)
+			throw new \Exception("filter() can only accept up to 13 arguments");
+
+#todo filter -> hook
+#below
+
+// Actualite::hook('call', 'before', function() {});
+// Hook::addHook('models', 'actualite', 'call', 'before', function() {});
+
+// Actualie::trigger('call', function() {});
+// Hook::trigger('models', 'actualite', 'call', function() {});
+// Actualie::trigger('call', 'before', function() {});
+// Hook::trigger('models', 'actualite', 'call', 'before', function() {});
+// Actualie::trigger('call', 'before');
+// Hook::trigger('models', 'actualite', 'call', 'before');
+
+		#todo remove filter calls
+		$chain->calls = array_merge(
+			isset(static::$meta['filters']['before'][$name]) ? static::$meta['filters']['before'][$name]:array(),
+			$cb !== null ? array($cb):array(),
+			isset(static::$meta['filters']['on'][$name]) ? static::$meta['filters']['on'][$name]:array(),
+			isset(static::$meta['filters']['after'][$name]) ? static::$meta['filters']['after'][$name]:array()
+		);
+
+		$filters = array(&$filter1, &$filter2, &$filter3, &$filter4, &$filter5, &$filter6, &$filter7, &$filter8, &$filter9, &$filter10);
+		return $chain->run($args, $filters);
 	}
 
 	/* MISC */
@@ -232,45 +264,16 @@ abstract class Model {
 	public static function getModelName() {
 		return basename(strtolower(static::getClassName()));
 	}
-	
-	public function get($name, $arg1=null, $arg2=null) {
-		$lang = null;
-		$raw = 0;	#0 auto; 1 raw; 2 sanitize
-		if(is_int($arg1))
-			$raw = $arg1;
-		else {
-			$lang = $arg1;
-			if(is_int($arg2))
-				$raw = $arg2;
-		}
 
-		$res = null;
-		if(static::property($name)->i18n) {
-			if(!$lang)
-				$lang = Config::get('locale');
-			if($lang == 'all') {
-				$langs = Config::get('locales');
-				$res = array();
-				foreach($langs as $lang)
-					$res[$lang] = $this->get($name, $lang);
-				return $res;
-			}
-			if(isset($this->data['properties'][$name][$lang]))
-				$res = $this->data['properties'][$name][$lang];
-		}
-		elseif(isset($this->data['properties'][$name])) 
-			$res = $this->data['properties'][$name];
+	public function raw($name, $lang=null) {
+		$res = $this->get($name, $lang);
 
-		$res = static::triggerOn('get', array($this, $name, $lang, $res), true);
-		
-		#todo put this into a behavior, with filter()
 		if(is_string($res)) {
 			if($raw === 2)
 				return HTML::sanitize($res);
 			elseif($raw == 0 && Coxis::get('in_view'))
 				return HTML::sanitize($res);
 		}
-		
 		return $res;
 	}
 	
@@ -309,12 +312,34 @@ abstract class Model {
 				
 		return $this;
 	}
+	
+	public function get($name, $lang=null) {
+		$res = null;
+		#todo go for data[$name] if orm fetch failed
+		static::filter('get', function($chain, $model, $name, $lang, &$res) {
+			if($model::hasProperty($name)) {
+				if($model::property($name)->i18n) {
+					if(!$lang)
+						$lang = Config::get('locale');
+					if($lang == 'all') {
+						$langs = Config::get('locales');
+						$res = array();
+						foreach($langs as $lang)
+							$res[$lang] = $model->get($name, $lang);
+					}
+					elseif(isset($model->data['properties'][$name][$lang]))
+						$res = $model->data['properties'][$name][$lang];
+				}
+				elseif(isset($model->data['properties'][$name])) 
+					$res = $model->data['properties'][$name];
+			}
+			elseif(isset($model->data[$name]))
+				$res = $model->data[$name];
+			if($res)
+				$chain->stop();
+		}, array($this, $name, $lang), $res);
 
-	public function raw($name, $lang=null) {
-		if($lang)
-			return $this->get($name, $lang, 1);
-		else
-			return $this->get($name, 1);
+		return $res;
 	}
 	
 	public function toArray() {
@@ -336,79 +361,15 @@ abstract class Model {
 	}
 
 	/* HOOKS */
-
-	public static function triggerBefore($what, $args=array(), $return=false) {
-		if(isset(static::$meta['hooks']['before'][$what])) {
-			foreach(static::$meta['hooks']['before'][$what] as $hook) {
-				$res = call_user_func_array($hook, $args);
-				if($return && $res)
-					return $res;
-			}
-			if(!$return)
-				return true;
-		}
+	public static function filterBefore($what, $cb) {
+		static::$meta['filters']['before'][$what][] = $cb;
 	}
-
-	public static function triggerOn($what, $args=array(), $return=false) {
-		if(isset(static::$meta['hooks']['on'][$what])) {
-			foreach(static::$meta['hooks']['on'][$what] as $hook) {
-				$res = call_user_func_array($hook, $args);
-				#return asked for so return it
-				if($return && $res)
-					return $res;
-			}
-			#at least one hook was executed, and no result asked for, so return true
-			if(!$return)
-				return true;
-		}
+	
+	public static function filterOn($what, $cb) {
+		static::$meta['filters']['on'][$what][] = $cb;
 	}
-
-	public static function triggerAfter($what, $args=array(), $return=false) {
-		if(isset(static::$meta['hooks']['after'][$what])) {
-			foreach(static::$meta['hooks']['after'][$what] as $hook) {
-				$res = call_user_func_array($hook, $args);
-				if($return && $res)
-					return $res;
-			}
-			if(!$return)
-				return true;
-		}
-	}
-
-	protected static function trigger($name, $cb=null, $args=array()) {
-		$res = static::triggerBefore($name, $args);
-		if($cb)
-			call_user_func_array($cb, $args);
-		$res |= static::triggerOn($name, $args);
-		$res |= static::triggerAfter($name, $args);
-		return $res;
-	}
-
-	public static function hookGet($what, $cb) {
-		static::$meta['hooks']['get'][$what] = $cb;
-	}
-
-	public static function hookSet($what, $cb) {
-		static::$meta['hooks']['set'][$what] = $cb;
-	}
-
-	public static function hookCall($what, $cb) {
-		static::$meta['hooks']['call'][$what] = $cb;
-	}
-
-	public static function hookCallStatic($what, $cb) {
-		static::$meta['hooks']['callstatic'][$what] = $cb;
-	}
-
-	public static function before($what, $cb) {
-		static::$meta['hooks']['before'][$what][] = $cb;
-	}
-
-	public static function on($what, $cb) {
-		static::$meta['hooks']['on'][$what][] = $cb;
-	}
-
-	public static function after($what, $cb) {
-		static::$meta['hooks']['after'][$what][] = $cb;
+	
+	public static function filterAfter($what, $cb) {
+		static::$meta['filters']['after'][$what][] = $cb;
 	}
 }
