@@ -14,7 +14,7 @@ class CollectionORM extends ORM implements \Coxis\Core\Collection {
 		$relationships = $model::$relationships;
 		$this->relation = $relationships[$relation_name];
 		
-		$rel = ModelORM::relationData($model, $relation_name);
+		$rel = ORMHandler::relationData($model, $relation_name);
 		$relation_type = $rel['type'];
 		$relation_model = $rel['model'];
 		

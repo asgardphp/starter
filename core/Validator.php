@@ -48,31 +48,6 @@ class Validator {
 				));
 			}
 		});
-		
-		static::register('image', function($attribute, $value, $params, $validator) {
-			try {
-				$mime = mime_content_type($value['tmp_name']);
-				if(!in_array($mime, array('image/jpeg', 'image/png', 'image/gif'))) {
-					$msg = $validator->getMessage('image', $attribute, 'The file ":attribute" must be an image.');
-					return Validator::format($msg, array(
-						'attribute'	=>	$attribute,
-					));
-				}
-			} catch(\ErrorException $e) {}
-		});
-		
-		static::register('filerequired', function($attribute, $value, $params, $validator) {
-			$msg = false;
-			//~ d($value);
-			if(!$value)
-				$msg = $validator->getMessage('filerequired', $attribute, 'The file ":attribute" is required.');
-			elseif(!file_exists($value))
-				$msg = $validator->getMessage('fileexists', $attribute, 'The file ":attribute" does not exist.');
-			if($msg)
-				return Validator::format($msg, array(
-					'attribute'	=>	$attribute,
-				));
-		});
 	}
 	
 	public static function format($msg, $params) {

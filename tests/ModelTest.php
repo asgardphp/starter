@@ -12,6 +12,11 @@ class ModelTest extends PHPUnit_Framework_TestCase {
 
 	public function tearDown(){}
 
+	public function test0() {
+		$article = new \Coxis\Tests\App\Article\Models\Article(1);
+		// d($article);
+	}
+
 	#model errors
 	public function test1() {
 		$this->setExpectedException('Coxis\Core\ModelException');
@@ -54,6 +59,17 @@ class ModelTest extends PHPUnit_Framework_TestCase {
 		$authors = $article->authors;
 		$this->assertTrue(is_array($authors));
 		$this->assertInstanceOf('Coxis\Tests\App\Actualite\Models\Author', $authors[0]);
+	}
+    
+	#load
+	public function test6() {
+		$article = \Coxis\Tests\App\Article\Models\Article::load(1);
+	}
+    
+	#loadBy
+	public function test7() {
+		$article = \Coxis\Tests\App\Article\Models\Article::loadByTitle('Introduction');
+		$this->assertEquals($article->id, 2);
 	}
 }
 ?>

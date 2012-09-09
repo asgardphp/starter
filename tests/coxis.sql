@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS `arpa_actualite` (
   `position` int(11) NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `filename_image` text,
+  `image` text,
   `commentaire_id` int(1) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=44 ;
@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS `arpa_actualite` (
 -- Dumping data for table `arpa_actualite`
 --
 
-INSERT INTO `arpa_actualite` (`id`, `titre`, `date`, `lieu`, `introduction`, `contenu`, `slug`, `position`, `created_at`, `updated_at`, `filename_image`, `commentaire_id`) VALUES
+INSERT INTO `arpa_actualite` (`id`, `titre`, `date`, `lieu`, `introduction`, `contenu`, `slug`, `position`, `created_at`, `updated_at`, `image`, `commentaire_id`) VALUES
 (2, 'JOURNEE MONDIALE DE LA VOIX', '', '', 'sdfgm', '<p>\r\n	Cette ann&eacute;e la Journ&eacute;e Mondiale de la Voix se tiendra le lundi 16 avril 2012 &agrave; l&rsquo;Ecole Sup&eacute;rieure d&rsquo;Audiovisuel de Toulouse.</p>\r\n', 'journee-mondiale-de-la-voix', 1, '2010-11-00 15:37:00', '0000-00-00 00:00:00', 'img2.jpg', 2),
 (17, 'JOURNEE MONDIALE DE LA VOIX', '', '', 'sdfgm', '<p>\r\n	Cette ann&eacute;e la Journ&eacute;e Mondiale de la Voix se tiendra le lundi 16 avril 2012 &agrave; l&rsquo;Ecole Sup&eacute;rieure d&rsquo;Audiovisuel de Toulouse.</p>\r\n', 'journee-mondiale-de-la-voix-3', 0, '2013-11-00 15:37:00', '2012-07-21 13:52:21', 'Chrysanthemum_24.jpg', 2),
 (18, 'JOURNEE MONDIALE DE LA VOIX', '', '', 'sdfgm', '<p>\r\n	Cette ann&eacute;e la Journ&eacute;e Mondiale de la Voix se tiendra le lundi 16 avril 2012 &agrave; l&rsquo;Ecole Sup&eacute;rieure d&rsquo;Audiovisuel de Toulouse.</p>\r\n', 'journee-mondiale-de-la-voix-4', 2, '2016-06-00 15:37:00', '0000-00-00 00:00:00', 'img2.jpg', 0),

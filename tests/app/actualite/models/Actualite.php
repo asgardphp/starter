@@ -1,8 +1,8 @@
 <?php
 namespace Coxis\Tests\App\Actualite\Models;
 
-//~ class Actualite extends \Coxis\Core\Model {
-class Actualite extends \Coxis\Core\ORM\ModelORM {
+// class Actualite extends \Coxis\Core\ORM\ModelORM {
+class Actualite extends \Coxis\Core\Model {
 	public static $properties = array(
 		'titre',
 		'date'    =>    array(
@@ -16,12 +16,10 @@ class Actualite extends \Coxis\Core\ORM\ModelORM {
 		'test'	=>	array(
 			'i18n'	=>	true,
 		),
-	);
-	
-	public static $files = array(	
 		'image' => array(
+			'type'	=>	'file',
 			'dir'	=>	'actualite/',
-			'type'	=>	'image',
+			'filetype'	=>	'image',
 			'required'	=>	false,
 			//~ 'multiple'	=>	true,
 		),
@@ -40,7 +38,7 @@ class Actualite extends \Coxis\Core\ORM\ModelORM {
 	
 	public static $behaviors = array(
 		'slugify' => true,
-		//~ 'sortable' => true,
+		'sortable' => true,
 	);
 		
 	public static $meta = array();

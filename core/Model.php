@@ -6,44 +6,30 @@ class ModelException extends \Exception {
 }
 
 abstract class Model {
-	protected $data = array(
+	#public for behaviors
+	public $data = array(
 		'properties'	=>	array(),
-		#todo with others like files, relationships, ..
 	);
-	public static $meta = array();
-	public static $properties = array();
-	public static $files = array();
-	public static $relationships = array();
-	public static $behaviors = array();
-	public static $messages = array();
-	
+	public $_is_loaded;
+
 	public function __construct($param='') {
-		if(is_array($param))
-			$this->loadDefault()
-			       ->loadFromArray($param);
-		elseif($param != '')
-			$this->loadFromID($param);
-		else
-			$this->loadDefault();
+		$this->_is_loaded = false;
+		$this->trigger('construct', null, array($this, $param));
+		if(!$this->_is_loaded) {
+			if(is_array($param))
+				$this->loadDefault()->set($param);
+			else
+				$this->loadDefault();
+		}
 	}
 	
 	/* MAGIC METHODS */
 	public function __set($name, $value) {
-		$this->setAttribute($name, $value);
+		$this->set($name, $value);
 	}
-	
+
 	public function __get($name) {
-		if(in_array($name, array_keys(static::$properties)))
-			return $this->getVar($name);
-		elseif(array_key_exists($name, $this::$files))
-			return new ModelFile($this, $name);
-		elseif(array_key_exists($name, $this::$relationships)) {
-			$res = $this->getRelation($name);
-			if($res instanceof \Coxis\Core\Collection)
-				return $res->get();
-			else
-				return $res;
-		}
+		return $this->get($name);
 	}
 	
 	public function __isset($name) {
@@ -54,318 +40,93 @@ abstract class Model {
 		unset($this->data['properties'][$name]);
 	}
 
+	public static function __callStatic($name, $arguments) {
+		$chain = new HookChain();
+		$res = static::triggerChain($chain, 'callStatic', null, array($name, $arguments));
+		if(!$chain->executed)
+			throw new \Exception('Static method '.$name.' does not exist for model '.static::getModelName());
+
+		return $res;
+	}
+
 	public function __call($name, $arguments) {
-		//called when setting or getting a related model
-		$todo = substr($name, 0, 3);
-		$what = strtolower(substr($name, 3));
-		
-		if($todo=='set') {
-			$value = $arguments[0];
-			$lang = null;
-			if(isset($arguments[1]))
-				$lang = $arguments[1];
-			$this->setAttribute($what, $value, $lang);
+		$chain = new HookChain;
+		$res = static::triggerChain($chain, 'call', null, array($this, $name, $arguments));
+		if(!$chain->executed) {
+			try {
+				return static::__callStatic($name, $arguments);
+			} catch(\Exception $e) {
+				throw new \Exception('Method '.$name.' does not exist for model '.static::getModelName());
+			}
 		}
-		elseif($todo=='get') {
-			$lang = null;
-			if(isset($arguments[0]))
-				$lang = $arguments[0];
-			return $this->getVar($what, $lang);
-		}
-		elseif(array_key_exists($name, $this::$relationships))
-			return $this->getRelation($name);
+
+		return $res;
 	}
 	
 	/* INIT AND MODEL CONFIGURATION */
 	public static function _autoload() {
-		if(static::getClassName() == 'coxis\core\model')
+		if(get_called_class() == 'Coxis\Core\Model')
 			return;
-		static::loadModel();
-		static::configure();
-		static::post_configure();
-	}
-	
-	protected static function configure() {}
 
-	protected static function post_configure() {
-		foreach(static::$properties as $property=>$params) {
-			if(isset($params['multiple']))
-				static::$properties[$property]['type'] = 'array';
-			if(!isset($params['type']))
-				static::$properties[$property]['type'] = 'text';
-			if(!isset($params['required']))
-				static::$properties[$property]['required'] = true;
-		}
-	}
-
-	public function loadDefault() {
-		foreach(static::getProperties() as $property=>$params) {
-			if(isset($params['default']))
-				$this->$property = $params['default'];
-			elseif($params['type'] == 'array')
-				$this->$property = array();
-			else
-				$this->$property = '';
-		}
-				
-		return $this;
-	}
-	
-	public static function loadModel() {
 		$properties = static::$properties;
-		foreach($properties as $k=>$v)
+		foreach($properties as $k=>$v) {
 			if(is_int($k)) {
 				static::$properties = 
 					Tools::array_before(static::$properties, $k) +
 					array($v => array()) +
 					Tools::array_after(static::$properties, $k);
 			}
-					
-		static::loadBehaviors();
-		static::loadFiles();
-	}
-	
-	public static function loadBehaviors() {
-		Event::trigger('behaviors_pre_load', static::getClassName());
-	
-		$model_behaviors = static::$behaviors;
-		
-		foreach($model_behaviors as $behavior => $params)
-			if($params)
-				Event::trigger('behaviors_load_'.$behavior, static::getClassName());
-	}
-	
-	public static function loadFiles() {
-		$model_files = static::$files;
-		
-		if(is_array($model_files))
-			foreach($model_files as $file => $params) {
-				if(isset($params['multiple']) && $params['multiple']) #multiple
-					static::addProperty('filename_'.$file, array('type' => 'array', 'editable'=>false, 'required'=>false));
-				else #single
-					static::addProperty('filename_'.$file, array('type' => 'text', 'editable'=>false, 'required'=>false));
-			}
-	}
-	
-	/* MISC */
-	public function set($vars) {
-		$props = $this->getProperties();
-		foreach($vars as $k=>$v) {
-			if(isset($props[$k]) && $props[$k]['type'] == 'date')
-				$this->$k = Date::fromDatetime($v);
-			else
-				$this->$k = $v;
 		}
+		foreach(static::$properties as $k=>$params)
+			static::addProperty($k, $params);
+
+		Event::trigger('behaviors_pre_load', get_called_class());
+		
+		foreach(static::$behaviors as $behavior => $params)
+			if($params)
+				Event::trigger('behaviors_load_'.$behavior, get_called_class());
+
+		static::configure();
+	}
+	
+	protected static function configure() {}
+
+	public function loadDefault() {
+		foreach(static::properties() as $name=>$property)
+			$this->$name = $property->getDefault();
 				
 		return $this;
 	}
 	
-	public function raw($name) {
-		return $this->data['properties'][$name];
-	}
-	
-	public static function getClassName() {
-		return strtolower(get_called_class());
-		#todo move strtolower to getModelName
-	}
-	
-	public static function getModelName() {
-		return basename(static::getClassName());
-	}
-	
-	public function isNew() {
-		return !(isset($this->data['properties']['id']) && $this->data['properties']['id']);
-	}
-	public static function create($values=array()) {
-		$m = new static($values);
-		return $m->save();
-	}
-	
-	public static function load($id) {
-		$model = new static;
-		if($model->loadFromID($id)) {
-			$model->configure();
-			return $model;
-		}
-		return null;
-	}
-	
-	public static function isI18N() {
-		foreach(static::$properties as $prop)
-			if(isset($prop['i18n']) && $prop['i18n'])
-				return true;
-		return false;
-	}
-	
-	public function loadFromArray($cols) {
-		foreach($cols as $col=>$value) {
-			if(isset(static::$properties[$col]['filter'])) {
-				$filter = static::$properties[$col]['filter']['from'];
-				$this->$col = $model::$filter($value);
-			}
-			elseif(isset(static::$properties[$col]['type'])) {
-				if(static::$properties[$col]['type'] === 'array') {#php, seriously.. == 'array'
-					try {
-						$this->$col = unserialize($value);
-					} catch(\ErrorException $e) {
-						$this->$col = array($value);
-					}
-					if(!is_array($this->$col))
-						$this->$col = array();
-				}
-				elseif(static::$properties[$col]['type'] === 'date')
-					$this->$col = \Coxis\Core\Tools\Date::fromDatetime($value);
-				else
-					$this->$col = $value;
-			}
-			else
-				$this->$col = $value;
-		}
-		
-		return $this;
+	/* PROPERTIES */
+	public static function hasProperty($name) {
+		return isset(static::$properties[$name]);
 	}
 	
 	public static function addProperty($property, $params) {
-		static::$properties[$property] = $params;
+		if(!isset($params['required']))
+			$params['required'] = true;
+		#todo multiple values - not atomic.. ?
+		// if(isset($params['multiple']) && $params['multiple'])
+		// 	$params[$property]['type'] = 'array';
+		if(!isset($params['type']))
+			$params['type'] = 'text';
+
+		$propertyClass = $params['type'].'Property';
+		#todo full class namespace
+
+		static::$properties[$property] = new $propertyClass(get_called_class(), $property, $params);
 	}
 	
-	public static function getProperty($prop) {
-		return get(static::getProperties(), $prop);
+	public static function property($name) {
+		return static::$properties[$name];
 	}
-
-	public static function getProperties() {
+	
+	public static function properties() {
 		return static::$properties;
 	}
-	
-	public static function getAttributes() {
-		return array_keys(static::$properties);
-	}
-	
-	public function getVars() {
-		$attrs = $this->getAttributes();
-		$vars = array();
-		
-		foreach($attrs as $attr) {
-			if(!isset($this->data['properties'][$attr]))
-				$vars[$attr] = '';
-			else
-				$vars[$attr] = $this->data['properties'][$attr];
-		}
-		
-		return $vars;
-	}
-	
-	public function getVar($name, $lang=null) {
-		$res = null;
-		if(isset(static::$properties[$name]['i18n']) && static::$properties[$name]['i18n']) {
-			if(!$lang)
-				$lang = Config::get('locale');
-			if($lang == 'all') {
-				$langs = Config::get('locales');
-				$res = array();
-				foreach($langs as $lang)
-					$res[$lang] = $this->getVar($name, $lang);
-				return $res;
-			}
-			if(isset($this->data['properties'][$name][$lang]))
-				$res = $this->data['properties'][$name][$lang];
-		}
-		elseif(isset($this->data['properties'][$name])) 
-			$res = $this->data['properties'][$name];
-		
-		if($res === null && method_exists($this, 'fetch'))
-			$res = $this->fetch($name, $lang);
-		
-		if(Coxis::get('in_view') && is_string($res))
-			return HTML::sanitize($res);
-		else
-			return $res;
-	}
-	
-	public function setAttribute($name, $value, $lang=null) {
-		if(isset(static::$properties[$name]['setFilter'])) {
-			$filter = static::$properties[$name]['setFilter'];
-			$value = call_user_func_array($filter, array($value));
-		}
-		if(isset(static::$properties[$name])) {
-			if(isset(static::$properties[$name]['i18n']) && static::$properties[$name]['i18n']) {
-				if(!$lang)
-					$lang = Config::get('locale');
-				if($lang == 'all')
-					foreach($value as $one => $v)
-						$this->data['properties'][$name][$one] = $v;
-				else
-					$this->data['properties'][$name][$lang] = $value;
-			}
-			else
-				$this->data['properties'][$name] = $value;
-		}
-		elseif(isset(static::$files[$name])) {
-			$this->data['_files'][$name] = $value;
-		}
-		else
-			$this->data[$name] = $value;
-	}
-	
-	/* VALIDATION */
-	public function getValidator() {
-		$constrains = static::$properties;
-		foreach($constrains as $attribute=>$attribute_constrains)
-			foreach($attribute_constrains as $rule=>$params)
-				if($rule === 'type') {
-					$constrains[$attribute][$params] = array();
-					unset($constrains[$attribute]['type']);
-				}
-		foreach(static::$files as $file=>$params) {
-			$res = $params;
-			if(isset($params['required'])) {
-				$res['filerequired'] = $params['required'];
-				unset($res['required']);
-			}
-			if(isset($params['type'])) {
-				$res[$params['type']] = null;
-				unset($res['type']);
-			}
-			unset($res['dir']);
-			unset($res['multiple']);
-			$constrains[$file] = $res;
-		}
-		
-		$messages = static::$messages;
-		
-		$validator = new Validator($constrains, $messages);
 
-		return $validator;
-	}
-	
-	public function isValid() {
-		return $this->getValidator()->errors();
-	}
-	
-	public function errors() {
-		#before validation
-		foreach(static::$behaviors as $behavior => $params)
-			if($params)
-				Event::trigger('behaviors_presave_'.$behavior, $this);
-				
-		$data = $this->getVars();
-		foreach(static::$files as $file=>$params) {
-			if(isset($this->data[$file]['tmp_name']) && $this->data[$file]['tmp_name'])
-				$data[$file] = $this->data[$file]['tmp_name'];
-			else
-				$data[$file] = 'web/'.$this->$file->get();
-		}
-		
-		#validation
-		$errors = $this->getValidator()->errors($data);
-		
-		#after validation
-		
-		
-		return $errors;
-	}
-	
-	/* PERSISTENCE */
+	/* PERSISTENCY */
 	public function save($values=null, $force=false) {
 		#set $values if any
 		if($values)
@@ -381,62 +142,205 @@ abstract class Model {
 			}
 		}
 		
-		#before save
-		$this->dosave();#save
-		#after save
+		$chain = new HookChain;
+		$this->triggerChain($chain, 'save', null, array($this));
+		if(!$chain->executed)
+			throw new \Exception('Cannot save non-persistent models');
 
 		return $this;
 	}
-
-	public function dosave() {
-		$this->move_files();
-	}
 	
 	public function destroy() {
-		foreach(static::$files as $name=>$v)
-			$this->$name->delete();
+		$chain = new HookChain;
+		$this->triggerChain($chain, 'destroy', null, array($this));
+		if(!$chain->executed)
+			throw new \Exception('Cannot destroy non-persistent models');
+	}
+
+	public static function create($values=array()) {
+		$m = new static($values);
+		return $m->save();
 	}
 	
-	/* FILES */
-	#getvalidator
-		#???
-	#errors
-		#???
+	/* VALIDATION */
+	public function getValidator() {
+		$constrains = array();
+		foreach(static::$properties as $name=>$property)
+			$constrains[$name] = $property->getRules();
 		
-	#loadModel
-		#loadFiles
+		if(isset(static::$messages))
+			$messages = static::$messages;
+		else
+			$messages = array();
 		
-	#__get()
-	#setAttribute
+		$validator = new Validator($constrains, $messages);
+
+		return $validator;
+	}
 	
-	#save / move_files
+	public function valid() {
+		return !$this->errors();
+	}
 	
-	#hasFile
+	public function errors() {
+		#before validation
+		#todo use model hooks
+		foreach(static::$behaviors as $behavior => $params)
+			if($params)
+				Event::trigger('behaviors_presave_'.$behavior, $this);
+				
+		$data = $this->toArray();
+
+		$errors = null;
+		$model = $this;
+		$this->trigger('validation', function($chain, $data, &$errors) use($model) {
+			$errors = $model->getValidator()->errors($data);
+		}, array($data), $errors);
+		
+		return $errors;
+	}
+
+	/* MISC */
+	public static function isI18N() {
+		foreach(static::$properties as $prop)
+			if($prop->i18n)
+				return true;
+		return false;
+	}
 	
-	/*
-	*/
+	public static function getModelName() {
+		return basename(strtolower(get_called_class()));
+	}
+
+	public function raw($name, $lang=null) {
+		#todo xss
+		$res = $this->get($name, $lang);
+
+		if(is_string($res)) {
+			if($raw === 2)
+				return HTML::sanitize($res);
+			elseif($raw == 0 && Coxis::get('in_view'))
+				return HTML::sanitize($res);
+		}
+		return $res;
+	}
 	
-	#todo
-	#loadFiles: behavior?
-	//~ Actualite::get_truc(function($model) {
-	//~ });
-	//~ Actualite::set_truc(function($model, $value) {
-	//~ });
-	//~ Actualite::onSave(function($model) {
-	//~ });
-	//~ Actualite::call_hasFile(function($model) {
-	//~ });
-	
-	public function move_files() {
-		if(isset($this->data['_files']) && is_array($this->data['_files']))
-			foreach($this->data['_files'] as $file=>$arr)
-				if($this->hasFile($file) && is_uploaded_file($arr['tmp_name'])) {
-					$path = _WEB_DIR_.'/'.$this->$file->dir().'/'.$arr['name'];
-					$this->$file->add($arr['tmp_name'], $path);
+	public function set($name, $value=null, $lang=null) {
+		if(is_array($name)) {
+			$vars = $name;
+			foreach($vars as $k=>$v)
+				$this->$k = $v;
+		}
+		else {
+			if(static::hasProperty($name)) {
+				if(static::property($name)->setHook) {
+					$hook = static::property($name)->setHook;
+					$value = call_user_func_array($hook, array($value));
 				}
+
+				if(static::property($name)->i18n) {
+					if(!$lang)
+						$lang = Config::get('locale');
+					if($lang == 'all')
+						foreach($value as $one => $v)
+							$this->data['properties'][$name][$one] = static::property($name)->set($v);
+					else
+						$this->data['properties'][$name][$lang] = static::property($name)->set($value);
+				}
+				else
+					$this->data['properties'][$name] = static::property($name)->set($value);
+			}
+			elseif(isset(static::$meta['hooks']['set'][$name])) {
+				$hook = static::$meta['hooks']['set'][$name];
+				$hook($this, $value);
+			}
+			else
+				$this->data[$name] = $value;
+		}
+				
+		return $this;
 	}
 	
-	public function hasFile($file) {
-		return array_key_exists($file, static::$files);
+	public function get($name, $lang=null) {
+		if(!$lang)
+			$lang = Config::get('locale');
+
+		$res = null;
+		#todo go for data[$name] only if orm fetch failed
+		static::trigger('get', function($chain, $model, $name, $lang, &$res) {
+			if($model::hasProperty($name)) {
+				if($model::property($name)->i18n) {
+					if($lang == 'all') {
+						$langs = Config::get('locales');
+						$res = array();
+						foreach($langs as $lang)
+							$res[$lang] = $model->get($name, $lang);
+					}
+					elseif(isset($model->data['properties'][$name][$lang]))
+						$res = $model->data['properties'][$name][$lang];
+				}
+				elseif(isset($model->data['properties'][$name])) 
+					$res = $model->data['properties'][$name];
+			}
+			elseif(isset($model->data[$name]))
+				$res = $model->data[$name];
+			if($res)
+				$chain->stop();
+		}, array($this, $name, $lang), $res);
+
+		return $res;
+	}
+	
+	public function toArray() {
+		$attrs = $this->propertyNames();
+		$vars = array();
+		
+		foreach($attrs as $attr) {
+			if(!isset($this->data['properties'][$attr]))
+				$vars[$attr] = null;
+			else
+				$vars[$attr] = $this->data['properties'][$attr];
+		}
+		
+		return $vars;
+	}
+	
+	public static function propertyNames() {
+		return array_keys(static::$properties);
+	}
+
+	/* HOOKS */
+	#cannot use references with get_func_args
+	protected static function trigger($name, $cb=null, $args=array(), &$filter1=null, &$filter2=null, &$filter3=null, &$filter4=null, &$filter5=null, &$filter6=null,
+		&$filter7=null, &$filter8=null, &$filter9=null, &$filter10=null) {
+		return \Coxis\Core\Hook::trigger(array('models', get_called_class(), $name), $cb, $args, $filter1, $filter2, $filter3, $filter4, $filter5, $filter6, $filter7,
+			$filter8, $filter9, $filter10);
+	}
+
+	#cannot use references with get_func_args
+	protected static function triggerChain($chain, $name, $cb=null, $args=array(), &$filter1=null, &$filter2=null, &$filter3=null, &$filter4=null, &$filter5=null, &$filter6=null,
+		&$filter7=null, &$filter8=null, &$filter9=null, &$filter10=null) {
+		return \Coxis\Core\Hook::triggerChain($chain, array('models', get_called_class(), $name), $cb, $args, $filter1, $filter2, $filter3, $filter4, $filter5, $filter6, $filter7,
+			$filter8, $filter9, $filter10);
+	}
+
+	public static function hook() {
+		$args = array_merge(array('models', get_called_class()), func_get_args());
+		return call_user_func_array(array('Coxis\Core\Hook', 'hook'), $args);
+	}
+
+	public static function hookOn() {
+		$args = array_merge(array('models', get_called_class()), func_get_args());
+		return call_user_func_array(array('Coxis\Core\Hook', 'hookOn'), $args);
+	}
+
+	public static function hookBefore() {
+		$args = array_merge(array('models', get_called_class()), func_get_args());
+		return call_user_func_array(array('Coxis\Core\Hook', 'hookBefore'), $args);
+	}
+
+	public static function hookAfter() {
+		$args = array_merge(array('models', get_called_class()), func_get_args());
+		return call_user_func_array(array('Coxis\Core\Hook', 'hookBefore'), $args);
 	}
 }
