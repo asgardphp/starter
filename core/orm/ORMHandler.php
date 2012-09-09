@@ -85,7 +85,7 @@ class ORMHandler {
 			foreach($model_relationships as $relationship => $params)
 				#todo and hasOne ?
 				if($params['type'] == 'belongsTo') {
-					$rel = ORMHandler::relationData($model::getClassName(), $relationship);
+					$rel = ORMHandler::relationData($model, $relationship);
 					$model::addProperty($rel['link'], array('type' => 'integer', 'required' => (isset($params['required']) && $params['required']), 'editable'=>false));
 				}
 	}
@@ -103,6 +103,8 @@ class ORMHandler {
 	}
 	
 	public static function fetch($model, $name, $lang=null) {
+		if(!$model::hasProperty($name))
+			return;
 		if($model::property($name)->i18n) {
 			if(!($res = static::getI18N($model, $lang)))
 				return null;

@@ -14,8 +14,8 @@ class ORMBehaviorController extends \Coxis\Core\Controller {
 	@Hook('behaviors_load_orm')
 	**/
 	public function behaviors_load_ormAction($modelName) {
-		#todo rename filter as there is now variable to filter
-		$modelName::filterOn('callStatic', function($chain, $name, $args) use($modelName) {
+		#todo rename hook as there is now variable to hook
+		$modelName::hookOn('callStatic', function($chain, $name, $args) use($modelName) {
 			if($name == 'getTable') {
 				$chain->found = true;
 				return ORMHandler::getTable($modelName);
@@ -24,7 +24,7 @@ class ORMBehaviorController extends \Coxis\Core\Controller {
 
 		$ormHandler = new ORMHandler($modelName);
 
-		$modelName::filterOn('callStatic', function($chain, $name, $args) use($ormHandler) {
+		$modelName::hookOn('callStatic', function($chain, $name, $args) use($ormHandler) {
 			$res = null;
 			#Article::load(2)
 			if($name == 'load')
@@ -41,7 +41,7 @@ class ORMBehaviorController extends \Coxis\Core\Controller {
 			}
 		});
 
-		$modelName::filterOn('call', function($chain, $model, $name, $args) use($ormHandler) {
+		$modelName::hookOn('call', function($chain, $model, $name, $args) use($ormHandler) {
 			$res = null;
 			#$article->isNew()
 			if($name == 'isNew')
@@ -58,29 +58,29 @@ class ORMBehaviorController extends \Coxis\Core\Controller {
 		});
 
 
-		$modelName::filterOn('construct', function($chain, $model, $id) use($ormHandler) {
+		$modelName::hookOn('construct', function($chain, $model, $id) use($ormHandler) {
 			$ormHandler->construct($model, $id);
 		});
 
 		#$article->destroy()
-		$modelName::filterOn('destroy', function($chain, $model) use($ormHandler) {
+		$modelName::hookOn('destroy', function($chain, $model) use($ormHandler) {
 			//todo delete all cascade models and files
 			$ormHandler->destroy($model);
 		});
 
 		#$article->save()
-		$modelName::filterOn('save', function($chain, $model) use($ormHandler) {
+		$modelName::hookOn('save', function($chain, $model) use($ormHandler) {
 			$ormHandler->save($model);
 		});
 		
 		#$article->title
-		$modelName::filterAfter('get', function($chain, $model, $name, $lang, &$res) {
+		$modelName::hookAfter('get', function($chain, $model, $name, $lang, &$res) {
 			$res = ORMHandler::fetch($model, $name, $lang);
 			if($res !== null)
 				$chain->stop();
 		});
 
-		$modelName::filterBefore('get', function($chain, $model, $name, $lang, &$res) {
+		$modelName::hookBefore('get', function($chain, $model, $name, $lang, &$res) {
 			if(array_key_exists($name, $model::$relationships)) {
 				$rel = $model->relation($name);
 				if($rel instanceof \Coxis\Core\Collection)
