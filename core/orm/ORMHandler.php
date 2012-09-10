@@ -37,7 +37,7 @@ class ORMHandler {
 		return new ORM($this->model);
 	}
 	
-	public static function myORM($model) {
+	public function myORM($model) {
 		if($model->isNew())
 			return $this->getORM();
 		else
@@ -97,8 +97,10 @@ class ORMHandler {
 	
 	public function destroyOne($id) {
 		$modelName = $this->model;
-		if($model = $modelName::load($id))
-			return $model->destroy();
+		if($model = $modelName::load($id)) {
+			$model->destroy();
+			return true;
+		}
 		return false;
 	}
 	
@@ -164,8 +166,7 @@ class ORMHandler {
 	}
 
 	public function construct($model, $id) {
-		if(!is_int($id))
-			return;
+		$id = (int)$id;
 
 		$res = $this->getORM()->where(array('id' => $id))->dal()->first();
 		if($res) {

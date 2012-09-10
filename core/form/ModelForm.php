@@ -11,42 +11,33 @@ class ModelForm extends Form {
 		$this->model = $model;
 	
 		$widgets = array();
-		foreach($model->getProperties() as $name=>$properties) {
+		foreach($model->properties() as $name=>$properties) {
 			if(isset($params['only']))
 				if(!in_array($name, $params['only']))
 					continue;
 		
 			$widget_params = array();
 
-			if(isset($properties['editable']) && !$properties['editable'])
+			if($properties->editable === false)
 				continue;
 			if(!$model->isNew())
 				$widget_params['default'] = $model->$name;
-			if($properties['type'] == 'boolean')
-				$widget_params['type'] = 'boolean';
-			if(isset($properties['in']))
-				foreach($properties['in'] as $v)
+			if($properties->type == 'boolean')
+				$widget_params->type = 'boolean';
+			elseif($properties->type == 'file')
+				$widget_params['type'] = 'file';
+			if($properties->in) {
+				$widget_params['choices'][] = 'Choisir';#todo i18n
+				foreach($properties->in as $v)
 					$widget_params['choices'][$v] = $v;
-				//~ $widget_params['choices'] = $properties['in'];
-			if(isset($properties['multiple']) && $properties['multiple'])
+			}
+			if($properties->multiple)
 				$widget_params['multiple'] = true;
-				
+
 			$widgets[$name] = new Widget($widget_params);
 		}
 		
-		$modelName = $model->getClassName();
-		
-		foreach($modelName::$files as $name=>$file) {
-			if(isset($params['only']))
-				if(!in_array($name, $params['only']))
-					continue;
-					
-			$widget_params = array('type'=>'file');
-			//~ $widget_params = array('type'=>'text');
-			$widgets[$name] = new Widget($widget_params);
-		}
-		
-		foreach($modelName::$relationships as $name=>$relation) {
+		foreach($model::$relationships as $name=>$relation) {
 			if(isset($params['only']))
 				if(!in_array($name, $params['only']))
 					continue;
@@ -70,7 +61,7 @@ class ModelForm extends Form {
 			}
 			elseif($relation['type'] == 'HMABT' || $relation['type'] == 'hasMany') {
 				$defaults = array();
-				foreach($this->model->getRelation($name)->all() as $r)
+				foreach($this->model->$name as $r)
 					$defaults[] = $r->id;
 				$widget_params = array(
 					//~ 'type'	=>	'integer',
@@ -122,8 +113,7 @@ class ModelForm extends Form {
 		if($res)
 			$data = $res;
 			
-		$this->model
-			->set(array_merge($data, $this->files));
+		$this->model->set(array_merge($data, $this->files));
 		
 		return array_merge(parent::my_errors(), $this->model->errors());
 	}
@@ -145,7 +135,7 @@ class ModelForm extends Form {
 			$group = $this;
 			
 		if(is_a($group, 'Coxis\Core\Form\ModelForm') || is_subclass_of($group, 'Coxis\Core\Form\ModelForm'))
-			$group->model->dosave();
+			$group->model->save();
 			
 		if(is_subclass_of($group, 'Coxis\Core\Form\AbstractGroup'))
 			foreach($group->widgets as $name=>$widget)

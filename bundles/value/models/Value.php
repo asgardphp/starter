@@ -1,7 +1,7 @@
 <?php
 namespace Coxis\Bundles\Value\Models;
 
-class Value extends \Coxis\Core\ORM\ModelORM {
+class Value extends \Coxis\Core\Model {
 	public static $stored = array();
 
 	public function __toString() {
@@ -15,12 +15,11 @@ class Value extends \Coxis\Core\ORM\ModelORM {
 		),
 	);
 	
-	public static $files = array();
 	public static $relationships = array();
 	public static $behaviors = array();
 	public static $meta = array();
 	
-	public static function get($name) {
+	public static function fetch($name) {
 		if(isset(static::$stored[$name]))
 			$value = static::$stored[$name];
 		else
@@ -32,10 +31,10 @@ class Value extends \Coxis\Core\ORM\ModelORM {
 	}
 
 	public static function val($name) {
-		return static::get($name)->value;
+		return static::fetch($name)->value;
 	}
 
 	public static function rawVal($name) {
-		return static::get($name)->raw('value');
+		return static::fetch($name)->raw('value');
 	}
 }
