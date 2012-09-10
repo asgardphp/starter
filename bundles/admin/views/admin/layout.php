@@ -14,6 +14,9 @@
 	</style>
 	<!--[if lt IE 8]><style type="text/css" media="all">@import url("../bundles/admin/css/ie.css");</style><![endif]-->
 	<script type="text/javascript" src="../js/jquery.js"></script>
+			<script src="http://code.jquery.com/ui/1.8.22/jquery-ui.min.js" type="text/javascript"></script>
+			<link rel="stylesheet" href="http://code.jquery.com/ui/1.8.22/themes/base/jquery-ui.css" type="text/css" media="all" />
+			<link rel="stylesheet" href="http://static.jquery.com/ui/css/demo-docs-theme/ui.theme.css" type="text/css" media="all" />
 </head>
 <body>
 	<div id="hld">

@@ -48,7 +48,8 @@ class ORM {
 		
 		$rows = $this->dal->get();
 		foreach($rows as $row) {
-			$models[] = new $current_model($row);
+			$new = new $current_model();
+			$models[] = $new->set($row);
 			$ids[] = $row['id'];
 		}
 		

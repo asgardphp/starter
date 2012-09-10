@@ -23,10 +23,10 @@ class TimestampsBehaviorController extends Controller {
 	**/
 	public function behaviors_presave_timestampsAction($model) {
 		if($model->isNew()) {
-			$model->created_at = new Date();
-			$model->updated_at = new Date();
+			$model->created_at = new \Coxis\Core\Tools\Datetime();
+			$model->updated_at = new \Coxis\Core\Tools\Datetime();
 		}
 		elseif(!$model->isNew())
-			$model->updated_at = new Date();
+			$model->updated_at = new \Coxis\Core\Tools\Datetime();
 	}
 }

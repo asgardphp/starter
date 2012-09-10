@@ -1,4 +1,6 @@
 <?php
+namespace Coxis\Core\Cli;
+
 abstract class CLIController {
 	public function run($action, $params=array(), $showView=false) {
 		$this->view = $action.'.php';

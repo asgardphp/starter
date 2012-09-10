@@ -21,7 +21,7 @@ class ModelForm extends Form {
 			if(isset($properties['editable']) && !$properties['editable'])
 				continue;
 			if(!$model->isNew())
-				$widget_params['default'] = $model->raw($name);
+				$widget_params['default'] = $model->$name;
 			if($properties['type'] == 'boolean')
 				$widget_params['type'] = 'boolean';
 			if(isset($properties['in']))
@@ -62,7 +62,9 @@ class ModelForm extends Form {
 				$widget_params = array(
 					'type'	=>	'integer',
 					'choices'		=>	$ids,
-					'default'	=>	$model->$property_name,
+					// 'default'	=>	d($model->$property_name),
+					'default'	=>	($model->$property_name ? $model->$property_name->id:null),
+					// 'default'	=>	($model->$property_name ? d($property_name, $model->$property_name):null),
 				);
 				$widgets[$property_name] = new Widget($widget_params);
 			}

@@ -13,6 +13,7 @@ class Locale {
 		Config::set('locale', $locale);
 	}
 
+	public static function load(){}
 	public static function _autoload() {
 		static::setLocale(Config::get('locale'));
 	

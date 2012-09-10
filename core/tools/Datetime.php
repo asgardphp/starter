@@ -1,9 +1,9 @@
 <?php
 namespace Coxis\Core\Tools;
 
-class Date extends Time {
+class Datetime extends Time {
 	public function __toString() {
-		return $this->format('d/m/Y');
+		return $this->format('d/m/Y H:i:s');
 	}
 	
 	public static function fromDatetime($v) {

@@ -15,10 +15,12 @@ class FrontController extends CLIController {
 
 		$args = static::parseArgs($argv);
 		
-		if(isset($args['env']))
-			define('_ENV_', $args['env']);
-		else
-			define('_ENV_', 'dev');
+		if(!defined('_ENV_')) {
+			if(isset($args['env']))
+				define('_ENV_', $args['env']);
+			else
+				define('_ENV_', 'dev');
+		}
 				
 		/* CONFIG */
 		\Coxis\Core\Config::loadConfigDir('config');
