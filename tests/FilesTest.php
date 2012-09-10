@@ -14,14 +14,14 @@ class FilesTest extends PHPUnit_Framework_TestCase {
 
 	public function test0() {
 		try {
-			unlink('C:\Users\leyou\Documents\projects\coxis3\web\upload\actualite\test.jpg');
+			unlink('web\upload\actualite\test.jpg');
 		} catch(\Exception $e) {}
 		$actualite = new \Coxis\Tests\App\Actualite\Models\Actualite(2);
 		// d();
 		// d(actualite::$properties);
 		// d($actualite);
 		$file = array(
-			'tmp_name' => 'C:\Users\leyou\Documents\projects\coxis3\tests\test.jpg',
+			'tmp_name' => 'tests\test.jpg',
 			'name' => 'test.jpg',
 			'type' => 'image/png',
 			'size'	=>	'10',
@@ -36,7 +36,7 @@ class FilesTest extends PHPUnit_Framework_TestCase {
 		// d($actualite);
 		$actualite->save();
 		// d($actualite);
-		$this->assertTrue(file_exists('C:\Users\leyou\Documents\projects\coxis3\web\upload\actualite\test.jpg'), "Upload of test.jpg failed");
+		$this->assertTrue(file_exists('web\upload\actualite\test.jpg'), "Upload of test.jpg failed");
 	}
 }
 ?>
