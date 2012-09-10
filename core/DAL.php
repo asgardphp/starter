@@ -272,14 +272,14 @@ class DAL {
 		
 		$table = get(array_keys($this->tables), 0);
 			
-		$set = array();
+		$vals = array();
 		foreach($values as $k=>$v)
-			$set[] = static::replace('`'.$k.'`=?', $v);
+			$set[] = '`'.$k.'`=?';
 		$set = ' SET '.implode(', ', $set);
 	
 		$sql = 'UPDATE '.$table.$set.$where;
 		
-		return $this->db->query($sql)->affected();
+		return $this->db->query($sql, array_values($values))->affected();
 	}
 	
 	public function insert($values) {
@@ -292,14 +292,12 @@ class DAL {
 		$vals = array();
 		foreach($values as $k=>$v)
 			$columns[] = '`'.$k.'`';
-		foreach($values as $k=>$v)
-			$vals[] = "'".$v."'";
 		
-		$str = ' ('.implode(', ', $columns).') VALUES ('.implode(', ', $vals).')';
+		$str = ' ('.implode(', ', $columns).') VALUES ('.implode(', ', array_fill(0, sizeof($values), '?')).')';
 	
 		$sql = 'INSERT INTO '.$table.$str;
 		
-		return $this->db->query($sql)->id();
+		return $this->db->query($sql, array_values($values))->id();
 	}
 	
 	public function delete() {

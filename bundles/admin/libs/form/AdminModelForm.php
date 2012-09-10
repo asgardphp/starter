@@ -13,22 +13,22 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 	}
 	
 	public function def($widget, $options=array()) {
-		$properties = $this->model->getProperty($widget);
+		$properties = $this->model->property($widget);
 		
-		$modelName = $this->model->getClassName();
+		$model = $this->model;
 		
-		if(isset($properties['in']))
+		if($properties->in)
 			$this->select($widget, $options);
-		elseif($properties['type'] === 'boolean')
+		elseif($properties->type === 'boolean')
 			$this->checkbox($widget, $options);
-		elseif($properties['type'] === 'date')
+		elseif($properties->type === 'date')
 			$this->input($widget, array_merge($options, array('class'=>'text date_picker')));
 		elseif($this->model->hasFile($widget)) {
 			$file = $this->model->$widget->params();
 			$this->file($widget, $options);
 		}
 		else {
-			$relationships = $modelName::$relationships;
+			$relationships = $model::$relationships;
 			if(isset($relationships[$widget]))
 				$this->relation($widget, $options);
 			else
@@ -191,9 +191,9 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 	
 	public function file($widget, $options=array()) {
 		$label = $this->prepareLabel($widget, $options);
-			
-		if($this->$widget->params['type'] != 'file')
-			throw new \Exception($widget.' should be a file.');
+		
+		// if($this->$widget->params['type'] != 'file')
+		// 	throw new \Exception($widget.' should be a file.');
 		
 		$path = $this->model->$widget->get();
 		$optional = !$this->model->$widget->required();

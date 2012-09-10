@@ -15,8 +15,7 @@ class SortableBehaviorController extends \Coxis\Core\Controller {
 	*/
 	public function behaviors_coxisadmin_sortableAction($admin_controller) {
 		$admin_controller .= 'Controller';
-		//~ $modelName = strtolower(basename($admin_controller::getModel()));
-		$modelName = strtolower($admin_controller::getModel());
+		$modelName = $admin_controller::getModel();
 		
 		try {
 			$admin_controller::addHook(array(
@@ -51,7 +50,7 @@ class SortableBehaviorController extends \Coxis\Core\Controller {
 	}
 	
 	public function sortableactionsAction($model) {
-		return '<a href="'.url_for('coxis_'.$model->getClassName().'_promote', array('id' => $model->id), false).'">'.__('Promote').'</a> | <a href="'.url_for('coxis_'.$model->getClassName().'_demote', array('id' => $model->id), false).'">'.__('Demote').'</a> | ';
+		return '<a href="'.url_for('coxis_'.get_class($model).'_promote', array('id' => $model->id), false).'">'.__('Promote').'</a> | <a href="'.url_for('coxis_'.get_class($model).'_demote', array('id' => $model->id), false).'">'.__('Demote').'</a> | ';
 	}
 
 	public function promoteAction($request) {

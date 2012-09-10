@@ -124,9 +124,9 @@ class CoxisController extends CLIController {
 			
 			static::copyDir(_GENERATOR_DIR_.'/base_bundle/', 'app/'.$bundle['name'].'/');
 			static::processDir('app/'.$bundle['name'], $bundle, $bundle_filenames);
-		}
 		
-		\Coxis\Core\Autoloader::preloadDir('app/'.$bundle['name'].'/models');
+			\Coxis\Core\Autoloader::preloadDir('app/'.$bundle['name'].'/models');
+		}
 		
 		foreach($bundles as $bundle) {		
 			$bundle_filenames = array(
@@ -141,9 +141,10 @@ class CoxisController extends CLIController {
 			
 			if(!isset($bundle['coxis_admin']['form']['display'])) {
 				$bundle['coxis_admin']['form']['display'] = array_merge(
-					array_keys($modelName::getProperties()),
-					array_keys($modelName::$relationships),
-					array_keys($modelName::$files)
+					array_keys($modelName::properties()),
+					array_keys($modelName::$relationships)
+					// ,
+					// array_keys($modelName::$files)
 				);
 			}
 			

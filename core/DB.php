@@ -36,10 +36,10 @@ class DB {
 		exec($cmd);
 	}
 
-	public static function query($sql) {
+	public static function query($sql, $args=array()) {
 		$instance = static::getInstance();
 	
-		return new Query($instance->db, $sql);
+		return new Query($instance->db, $sql, $args);
 	}
 
 	public function id() {
@@ -66,10 +66,15 @@ class Query {
 	private $db;
 	private $rsc;
 
-	public function __construct($db, $sql) {
+	public function __construct($db, $sql, $args=array()) {
 		$this->db = $db;
 		try {
-			$rsc = $db->query($sql);
+			if($args) {
+				$rsc = $db->prepare($sql);
+				$rsc->execute($args);
+			}
+			else
+				$rsc = $db->query($sql);
 			$this->rsc = $rsc;
 		} catch(\PDOException $e) {
 			throw new DBException($e->getMessage().'<br/>'."\n".'SQL: '.$sql);

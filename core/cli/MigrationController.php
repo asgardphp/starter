@@ -99,11 +99,9 @@ class MigrationController extends CLIController {
 	
 		$bundles = BundlesManager::getBundles();
 		
-		foreach($bundles as $bundle) {
-			foreach(glob($bundle.'/models/*.php') as $model) {
+		foreach($bundles as $bundle)
+			foreach(glob($bundle.'/models/*.php') as $model)
 				include($model);
-			}
-		}
 		
 		$newSchemas = array();
 		$oldSchemas = array();
@@ -118,8 +116,9 @@ class MigrationController extends CLIController {
 		// 		$oldSchemas[$class] = static::tableSchema($class::getTable());
 		foreach(get_declared_classes() as $class) {
 			//~ if($class instanceof Coxis\Core\ORM\ModelORM) {
-			if(is_subclass_of($class, 'Coxis\Core\ORM\ModelORM')) {
-				if($class::getModelName() == 'modelorm')
+			if(is_subclass_of($class, 'Coxis\Core\Model')) {
+				if(isset($class::$behaviors['orm']) && $class::$behaviors['orm'] == true)
+				if($class == 'Coxis\Core\Model')
 					continue;
 				$class::_autoload();
 				
@@ -128,52 +127,56 @@ class MigrationController extends CLIController {
 				// $oldSchemas[$class] = static::tableSchema($class::getTable());
 				
 				foreach($class::$properties as $name=>$prop) {
-					if(!isset($prop['orm']))
-						$prop['orm'] = array();
-					if(isset($prop['i18n']) && $prop['i18n'])
+					if(!$prop->orm)
+						$neworm = array();
+					else
+						$neworm = $prop->orm;
+					if($prop->i18n)
 						continue;
-					if(!isset($prop['orm']['type'])) {
+					if(!isset($prop->orm['type'])) {
 						#match type
 						#and length
-						switch($prop['type']) {
+						switch($prop->type) {
 							case 'integer':
-								if(isset($prop['length']))
-									$prop['orm']['type'] = 'int('.$prop['length'].')';
+								if($prop->length)
+									$neworm['type'] = 'int('.$prop->length.')';
 								else
-									$prop['orm']['type'] = 'int(11)';
+									$neworm['type'] = 'int(11)';
 								break;
 							case 'text':
-								if(isset($prop['length']))
-									$prop['orm']['type'] = 'varchar('.$prop['length'].')';
+								if($prop->length)
+									$neworm['type'] = 'varchar('.$prop->length.')';
 								else
-									$prop['orm']['type'] = 'text';
+									$neworm['type'] = 'text';
 								break;
 							case 'date':
-								$prop['orm']['type'] = 'datetime';
+								$neworm['type'] = 'date';
 								break;
 							case 'datetime':
-								$prop['orm']['type'] = 'datetime';
+								$neworm['type'] = 'datetime';
 								break;
 							case 'email':
-								$prop['orm']['type'] = 'varchar(255)';
+								$neworm['type'] = 'varchar(255)';
+							case 'file':
+								$neworm['type'] = 'varchar(255)';
 								break;
 							default:
-								die('Cannot convert '.$prop['type'].' type');
+								throw new \Exception('Cannot convert '.$prop->type.' type');
 						}
 					}
-					if(!isset($prop['orm']['default']))
-						$prop['orm']['default'] = false;
-					if(!isset($prop['orm']['nullable']))
-						$prop['orm']['nullable'] = false;
-					if(!isset($prop['orm']['key']))
-						$prop['orm']['key'] = '';
-					if(!isset($prop['orm']['auto_increment']))
-						$prop['orm']['auto_increment'] = false;
-					$schema[$name] = $prop['orm'];
+					if(!isset($prop->orm['default']))
+						$neworm['default'] = false;
+					if(!isset($prop->orm['nullable']))
+						$neworm['nullable'] = false;
+					if(!isset($prop->orm['key']))
+						$neworm['key'] = '';
+					if(!isset($prop->orm['auto_increment']))
+						$neworm['auto_increment'] = false;
+					$schema[$name] = $prop->orm = $neworm;
 				}
 
 				foreach($class::$relationships as $relation=>$params) {
-					$rel = \Coxis\Core\ORM\ModelORM::relationData($class, $relation);
+					$rel = \Coxis\Core\ORM\ORMHandler::relationData($class, $relation);
 					if($rel['type'] == 'HMABT') {
 						$arr = array(
 							$rel['link_a']	=>	array(
@@ -195,7 +198,7 @@ class MigrationController extends CLIController {
 						$newSchemas[$table_name] = $arr;
 					}
 				}
-					
+
 				$newSchemas[$class::getTable()] = $schema;
 			}
 		}
