@@ -1,22 +1,70 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 	</head>
 	<body>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
+		<link rel="stylesheet"  href="http://jquerymobile.com/test/css/themes/default/jquery.mobile.css" /> 
+		<script src="http://code.jquery.com/mobile/1.1.1/jquery.mobile-1.1.1.min.js"></script>
+		<script>
+		function footer () {
+			// alert((window.pageYOffset + window.innerHeight - 218));
+  	// 		document.getElementById('footer').style.top = (window.pageYOffset + window.innerHeight - 218) + 'px';
+  	// 		document.getElementById('footer').style.top = (window.pageYOffset + window.innerHeight - 218) + 'px';
+		}
+		// window.onscroll = function() {
+		// 	footer();
+		// };
+		$(function() {
+			function open(e) {
+				console.log('open');
+				$(e).find('ul').css('display', 'block');
+				$(e).find('.morceau img').attr('src', 'img/fleche_bas.png');
+				footer();
+			}
+			function close(e) {
+				console.log('close');
+				// console.log('aa');
+				$('#menu ul').css('display', 'none');
+				$(e).find('ul').css('display', 'none');
+				// console.log('test', e, $(e).find('ul'));
+				$(e).find('.morceau img').attr('src', 'img/fleche_droite.png');
+				footer();
+			}
+			open($('#menu > li').get(0));
+			$('.morceau').unbind('click').click(function(e) {
+				// e.stopPropagation();
+				var e = $(e.currentTarget);
+				if(e.parent().find('ul').css('display') == 'none')
+					open(e.parent());
+				else
+					close(e.parent());
+				// return;
+			});
+		});
+		</script>
 		<style>
 		* {
 			padding:0;
 			margin:0;
 		}
+		body {
+			overflow:hidden;
+			/*width:961px;*/
+			/*background-position:-50px 0;
+			background-image:url(img/paper-bg.png);
+			background-repeat:repeat-y;*/
+		}
 		#container {
 			font-family:Helvetica;
 			width:961px;
+			/*min-height:1110px;*/
 			background-position:-50px 0;
 			background-image:url(img/paper-bg.png);
 			background-repeat:repeat-y;
 			position:relative;
 			overflow:hidden;
+			/*overflow-y:visible;*/
 		}
 		#synthese {
 			list-style-type: none;
@@ -48,6 +96,82 @@
 		.margin li {
 			margin-bottom:30px;
 		}
+
+		#menu {
+			color:#e00973;
+			/*padding-bottom:30px;*/
+			/*padding-bottom:160px;*/
+			background-image:url(img/menu_bg.png);
+			background-position:top right;
+			background-repeat: repeat-y;
+		}
+		.morceau {
+			background-image:url(img/bar_recette.png);
+			width:669px;
+			height:104px;
+			font-size:55px;
+			color:white;
+			padding-top:40px;
+			padding-left:300px;
+			margin-bottom:-12px;
+			z-index:10px;
+			position:relative;
+			cursor:pointer;
+		}
+		.morceau img {
+			float:right;
+			margin-right:50px;
+			margin-top:10px;
+		}
+		#menu > li {
+			/*padding-bottom:80px;*/
+		}
+		#menu > li:first-child {
+			/*padding-top:50px;*/
+		}
+		#menu li li {
+			border:10px solid red;
+			width:870px;
+			font-size:50px;
+			padding-top:30px;
+			padding-left:50px;
+			position:relative;
+			cursor:pointer;
+		}
+		#menu li li:last-child {
+			padding-bottom:60px;
+		}
+		#menu li li .sep {
+			margin-top:40px;
+			margin-left:-20px;
+		}
+		.croix {
+			position:absolute;
+			top:20px;
+			right:0px;
+		}
+
+		#footer {
+			background-image:url(img/footer_black.png);
+			/*position:absolute;
+			bottom:0;
+			left:0;*/
+			width:881px;
+			height:188px;
+			color:#fffffd;
+			font-size:55px;
+			padding:30px 0 0 80px;
+		}
+		#footer img {
+			margin-right:60px;
+			margin-top:10px;
+		}
+
+		.ui-page {
+			background-position:-50px 0;
+			background-image:url(img/paper-bg.png);
+			background-repeat:repeat-y;
+		}
 		</style>
 		<div id="container">
 			<div style="height:350px">
@@ -56,60 +180,14 @@
 				<img style="position:absolute; left:290px; top:150px;" src="img/recettes.png"/>
 				<img style="position:absolute; right:40px; top:150px;" src="img/retour.png"/>
 			</div>
-<style>
-#menu {
-	color:#e00973;
-	padding-bottom:160px;
-	background-image:url(img/menu_bg.png);
-	background-position:top right;
-	background-repeat: repeat-y;
-}
-.morceau {
-	background-image:url(img/bar_recette.png);
-	width:669px;
-	height:104px;
-	font-size:55px;
-	color:white;
-	padding-top:40px;
-	padding-left:300px;
-	margin-bottom:-12px;
-	z-index:10px;
-	position:relative;
-}
-.morceau img {
-	float:right;
-	margin-right:50px;
-	margin-top:10px;
-}
-#menu > li {
-	padding-bottom:80px;
-}
-#menu > li:first-child {
-	/*padding-top:50px;*/
-}
-#menu li li {
-	width:870px;
-	font-size:50px;
-	padding-top:30px;
-	padding-left:50px;
-	position:relative;
-}
-#menu li li .sep {
-	margin-top:40px;
-}
-.croix {
-	position:absolute;
-	top:20px;
-	right:0px;
-}
-</style>
+
 			<ul id="menu">
 				<li>
 					<div class="morceau">
-						<img src="img/fleche_bas.png"/>
+						<img src="img/fleche_droite.png"/>
 						LA JOUE
 					</div>
-					<ul>
+					<ul style="display:none">
 						<li>
 							Joue de boeuf en daube<br/>
 							<img src="img/croix.png" class="croix"/>
@@ -131,7 +209,7 @@
 						<img src="img/fleche_droite.png"/>
 						LA LANGUE
 					</div>
-					<ul>
+					<ul style="display:none">
 						<li>
 							Joue de boeuf en daube<br/>
 							<img src="img/croix.png" class="croix"/>
@@ -149,29 +227,14 @@
 					</ul>
 				</li>
 			</ul>
-<style>
-#footer {
-	background-image:url(img/footer_black.png);
-	position:fixed;
-	bottom:0;
-	left:0;
-	width:881px;
-	height:188px;
-	color:#fffffd;
-	font-size:55px;
-	padding:30px 0 0 80px;
-}
-#footer img {
-	margin-right:60px;
-	margin-top:10px;
-}
-</style>
-			<div id="footer">
+
+			<div id="footer" data-position="fixed" data-tap-toggle="false">
 				<img src="img/boeuf_rose.png"/>
 				<img src="img/veau.png"/>
 				<img src="img/porc.png"/>
 				<img src="img/agneau.png"/>
 			</div>
 		</div>
+		<div class='ui-loader ui-body-a ui-corner-all'><span class='ui-icon ui-icon-loading spin'></span><h1></h1></div>
 	</body>
 </html>
