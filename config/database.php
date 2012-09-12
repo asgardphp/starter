@@ -24,7 +24,7 @@ $config = array(
 		'database' => array(
 			'host'			=>	'localhost',
 			'user'	=>	'root',
-			'password'	=>	'',
+			'password'	=>	'a9z8e7',
 			'database'	=>	'recettes',
 			'prefix'		=>	'',
 		),

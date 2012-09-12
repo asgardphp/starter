@@ -1,0 +1,193 @@
+* {
+	padding:0;
+	margin:0;
+}
+body {
+	overflow:hidden;
+}
+
+#home {
+	width:957px;
+	height:1120px;
+	background-image:url(img/bg.jpg);
+	position:relative;
+}
+#home #top {
+	width: 458px;
+	height:213px;
+	position:absolute;
+	top:20px;
+	left:50px;
+	background-image:url(img/top.png);
+	font-size:50px;
+	text-align:center;
+	font-family:53px;
+	padding-left:300px;
+	padding-top:20px;
+	padding-right:100px;
+}
+#home #bottom {
+	position:absolute;
+	bottom:20px;
+	left:90px;
+}
+
+#recette {
+	font-family:Helvetica;
+	width:960px;
+	background-position:-50px 0;
+	background-image:url(img/paper-bg.png);
+	background-repeat:repeat-y;
+	position:relative;
+	overflow:hidden;
+}
+#recette #synthese {
+	list-style-type: none;
+	margin-left:20px;
+	margin-top:30px;
+}
+#recette #synthese li {
+	float:left;
+	width:170px;
+	height:120px;
+	text-align:center;
+	position:relative;
+}
+#recette #synthese img {
+	margin-bottom:10px;
+}
+#recette #synthese span {
+	font-size:35px;
+}
+#recette #content {
+	margin-left:30px;
+	width:900px;
+}
+#recette .stars {
+	list-style-image: url(img/star.png);
+	margin-left:100px;
+	font-size:45px;
+}
+#recette .margin li {
+	margin-bottom:30px;
+}
+#recette #footer {
+	display:block;
+	background-image:url(img/footer_button.png);
+	width:881px;
+	height:103px;
+	color:#fffffd;
+	font-size:55px;
+	padding:30px 0 0 80px;
+	text-decoration:none;
+}
+
+#liste {
+	font-family:Helvetica;
+	width:960px;
+	position:relative;
+	overflow:hidden;
+}
+#liste #synthese {
+	list-style-type: none;
+	margin-left:20px;
+	margin-top:30px;
+}
+#liste #synthese li {
+	float:left;
+	width:170px;
+	height:120px;
+	text-align:center;
+	position:relative;
+}
+#liste #synthese img {
+	margin-bottom:10px;
+}
+#liste #synthese span {
+	font-size:35px;
+}
+#liste #content {
+	margin-left:30px;
+	width:900px;
+}
+#liste .stars {
+	list-style-image: url(img/star.png);
+	margin-left:100px;
+	font-size:45px;
+}
+#liste .margin li {
+	margin-bottom:30px;
+}
+
+#liste #menu a {
+	color:#e00973;
+	font-weight:normal;
+	text-decoration:none;
+}
+#liste #menu {
+	color:#e00973;
+}
+#liste .morceau {
+	background-image:url(img/bar_recette.png);
+	background-repeat:no-repeat;
+	height:104px;
+	font-size:55px;
+	color:white;
+	padding-top:40px;
+	padding-left:300px;
+	margin-bottom:-12px;
+	position:relative;
+	cursor:pointer;
+	z-index:10;
+}
+#liste .morceau img {
+	float:right;
+	margin-right:50px;
+	margin-top:10px;
+}
+#liste #menu li li {
+	background-image:url(img/menu_bg.png);
+	background-position:top right;
+	background-repeat: repeat-y;
+	width:910px;
+	font-size:50px;
+	padding-top:30px;
+	padding-left:50px;
+	position:relative;
+	cursor:pointer;
+}
+#liste #menu li li span {
+	display:block;
+	width:780px;
+}
+#liste #menu li li:last-child {
+	padding-bottom:60px;
+}
+#liste #menu li li .sep {
+	margin-top:40px;
+	margin-left:-25px;
+}
+#liste .croix {
+	position:absolute;
+	top:20px;
+	right:40px;
+}
+
+#liste #footer {
+	background-image:url(img/footer_black.png);
+	width:881px;
+	height:153px;
+	color:#fffffd;
+	font-size:55px;
+	padding:30px 0 0 80px;
+}
+#liste #footer img {
+	margin-right:60px;
+	margin-top:-10px;
+}
+
+#liste.ui-page {
+	background-position:-50px 0;
+	background-image:url(img/paper-bg.png);
+	background-repeat:repeat-y;
+}
