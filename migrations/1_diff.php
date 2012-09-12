@@ -2,47 +2,61 @@
 class diff_1 {
 	public static function up() {
 		Schema::create('administrator', function($table) {	
+			$table->add('username', 'varchar(100)');	
+			$table->add('password', 'varchar(100)');	
 			$table->add('id', 'int(11)')
 				->autoincrement()
 				->primary();	
-			$table->add('username', 'varchar(100)');	
-			$table->add('password', 'varchar(100)');	
-			$table->add('created_at', 'datetime');	
-			$table->add('updated_at', 'datetime');
+			$table->add('created_at', 'date');	
+			$table->add('updated_at', 'date');
 		});
 
 		Schema::create('value', function($table) {	
-			$table->add('id', 'int(11)')
-				->autoincrement()
-				->primary();	
 			$table->add('key', 'text');	
 			$table->add('value', 'text');	
-			$table->add('created_at', 'datetime');	
-			$table->add('updated_at', 'datetime');
-		});
-
-		Schema::create('jeu', function($table) {	
 			$table->add('id', 'int(11)')
 				->autoincrement()
 				->primary();	
+			$table->add('created_at', 'date');	
+			$table->add('updated_at', 'date');
+		});
+
+		Schema::create('morceau_recette', function($table) {	
+			$table->add('recette_id', 'int(11)');	
+			$table->add('morceau_id', 'int(11)');
+		});
+
+		Schema::create('morceau', function($table) {	
+			$table->add('nom', 'text');	
+			$table->add('animal', 'text');	
+			$table->add('description', 'text');	
+			$table->add('position', 'int(11)');	
+			$table->add('id', 'int(11)')
+				->autoincrement()
+				->primary();	
+			$table->add('created_at', 'date');	
+			$table->add('updated_at', 'date');
+		});
+
+		Schema::create('recette', function($table) {	
 			$table->add('titre', 'text');	
-			$table->add('couleur_de_fond', 'text');	
-			$table->add('adresse', 'text');	
-			$table->add('date_debut', 'text');	
-			$table->add('date_fin', 'text');	
-			$table->add('question', 'text');	
-			$table->add('reponses', 'text');	
-			$table->add('bonne_reponse', 'text');	
-			$table->add('codes_barres', 'text');	
-			$table->add('lien_optionnelle', 'text');	
-			$table->add('magasins', 'text');	
-			$table->add('created_at', 'datetime');	
-			$table->add('updated_at', 'datetime');	
-			$table->add('filename_image_de_fond', 'text');	
-			$table->add('filename_valider', 'text');	
-			$table->add('filename_reglement_du_jeu', 'text');	
-			$table->add('filename_pdf', 'text');	
-			$table->add('filename_image_optionnelle', 'text');
+			$table->add('complexite', 'text');	
+			$table->add('budget', 'text');	
+			$table->add('temps_de_preparation', 'text');	
+			$table->add('temps_de_cuisson', 'text');	
+			$table->add('type_de_plat', 'text');	
+			$table->add('ingredients', 'text');	
+			$table->add('preparation', 'text');	
+			$table->add('animal', 'text');	
+			$table->add('saison', 'text');	
+			$table->add('photo_small', 'varchar(255)');	
+			$table->add('photo_big', 'varchar(255)');	
+			$table->add('position', 'int(11)');	
+			$table->add('id', 'int(11)')
+				->autoincrement()
+				->primary();	
+			$table->add('created_at', 'date');	
+			$table->add('updated_at', 'date');
 		});
 	}
 	

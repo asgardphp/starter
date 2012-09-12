@@ -6,9 +6,9 @@ class FilesBehaviorController extends \Coxis\Core\Controller {
 		Validator::register('filerequired', function($attribute, $value, $params, $validator) {
 			$msg = false;
 			if(!$value)
-				$msg = $validator->getMessage('filerequired', $attribute, 'The file ":attribute" is required.');
+				$msg = $validator->getMessage('filerequired', $attribute, __('The file ":attribute" is required.'));
 			elseif(!$value->exists())
-				$msg = $validator->getMessage('fileexists', $attribute, 'The file ":attribute" does not exist.');
+				$msg = $validator->getMessage('fileexists', $attribute, __('The file ":attribute" does not exist.'));
 			if($msg)
 				return Validator::format($msg, array(
 					'attribute'	=>	$attribute,
@@ -19,7 +19,7 @@ class FilesBehaviorController extends \Coxis\Core\Controller {
 			try {
 				$mime = mime_content_type($value['tmp_name']);
 				if(!in_array($mime, array('image/jpeg', 'image/png', 'image/gif'))) {
-					$msg = $validator->getMessage('image', $attribute, 'The file ":attribute" must be an image.');
+					$msg = $validator->getMessage('image', $attribute, __('The file ":attribute" must be an image.'));
 					return Validator::format($msg, array(
 						'attribute'	=>	$attribute,
 					));
@@ -42,7 +42,7 @@ class FilesBehaviorController extends \Coxis\Core\Controller {
 	public function behaviors_load_filesAction($modelName) {
 		$modelName::hookOn('call', function($chain, $model, $name, $file) {
 			if($name == 'hasFile')
-				return $model::hasProperty($file) && $model::property($file)->type == 'file';
+				return $model::hasProperty($file[0]) && $model::property($file[0])->type == 'file';
 		});
 
 		$modelName::hookOn('save', function($chain, $model) {

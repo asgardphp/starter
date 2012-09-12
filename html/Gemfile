@@ -1,0 +1,4 @@
+group :development do
+  gem 'guard-livereload'
+  gem 'wdm', '~> 0.0.3'
+end
