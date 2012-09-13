@@ -183,6 +183,7 @@ class DAL {
 		$orderBy = '';
 		$leftjoin = '';
 		$rightjoin = '';
+		$innerjoin = '';
 		$limit = null;
 		
 		$tables = array();
@@ -248,8 +249,19 @@ class DAL {
 			}
 			$leftjoin .= ' LEFT JOIN '.$table.' ON '.static::processConditions($conditions);
 		}
+				
+		foreach($this->innerjoin as $tableName=>$conditions) {
+			$table = $tableName;
+			if(preg_match('/^([a-zA-Z]+).Translation /', $tableName, $matches)) {
+				$ref_table = $this->getTable($matches[1]);
+				$table = preg_replace('/^([a-zA-Z]+)/', $ref_table, $table);
+				$table = str_replace('.Translation', '_translation', $table);
+				#todo move it into ORM
+			}
+			$innerjoin .= ' INNER JOIN '.$table.' ON '.static::processConditions($conditions);
+		}
 	
-		return 'SELECT * FROM '.$sqltable.$rightjoin.$leftjoin.$where.$orderBy.$limit;
+		return 'SELECT * FROM '.$sqltable.$rightjoin.$leftjoin.$innerjoin.$where.$orderBy.$limit;
 	}
 	
 	public function first() {
