@@ -95,7 +95,7 @@ class ORM {
 						$currentmodel_idfield = $rel['link_a'];
 						$relationmodel_idfield = $rel['link_b'];
 
-						$orm = $relation_model::rightjoin(array(
+						$orm = $relation_model::innerjoin(array(
 							'arpa_actualite_commentaire b' => array(
 								'a.id = b.actualite_id',
 							),
@@ -167,6 +167,12 @@ class ORM {
 	
 	public function rightjoin($jointures) {
 		$this->dal->rightjoin($jointures);
+		
+		return $this;
+	}
+	
+	public function innerjoin($jointures) {
+		$this->dal->innerjoin($jointures);
 		
 		return $this;
 	}

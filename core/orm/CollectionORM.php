@@ -48,7 +48,7 @@ class CollectionORM extends ORM implements \Coxis\Core\Collection {
 				$currentmodel_idfield = $this->link_a;
 				$relationmodel_idfield = $this->link_b;
 				
-				$this->rightjoin(array(
+				$this->innerjoin(array(
 					$this->join_table.' b' => array(
 						'b.'.$currentmodel_idfield => $this->current_model->id,
 						'b.'.$relationmodel_idfield.' = a.id',

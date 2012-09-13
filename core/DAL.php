@@ -12,6 +12,7 @@ class DAL {
 	public $orderBy = null;
 	public $leftjoin = array();
 	public $rightjoin = array();
+	public $innerjoin = array();
 		
 	function __construct($tables) {
 		$this->db = DB::getInstance();
@@ -35,6 +36,12 @@ class DAL {
 			}
 			
 		$this->tables = $tables;
+		
+		return $this;
+	}
+	
+	public function innerjoin($jointures) {
+		$this->innerjoin = array_merge($this->innerjoin, $jointures);
 		
 		return $this;
 	}
