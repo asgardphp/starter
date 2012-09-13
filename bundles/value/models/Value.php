@@ -25,13 +25,17 @@ class Value extends \Coxis\Core\Model {
 		else
 			static::$stored[$name] = $value = static::loadByKey($name);
 		if(!$value)
-			$value = Value::create(array('key'=>$name));
-			
+			static::$stored[$name] = $value = static::create(array('key'=>$name));
+		
 		return $value;
 	}
 
 	public static function val($name) {
 		return static::fetch($name)->value;
+	}
+
+	public static function setVal($name, $val) {
+		return static::fetch($name)->save(array('value'=>$val));
 	}
 
 	public static function rawVal($name) {

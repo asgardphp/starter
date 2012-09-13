@@ -3,3 +3,4 @@ The field ":attribute" is required.: Le champ ":attribute" est requis.
 'The field ":attribute" must be a valid e-mail address.': Le champ ":attribute" doit être une adresse email valide.
 'The field ":attribute" must be an integer.': Le champ ":attribute" doit être un nombre.
 'The field ":attribute" must be :length characters.': Le champ ":attribute" doit faire :length caractères.
+The field ":attribute" is not correct.: Le champ ":attribute" n'est pas correct.

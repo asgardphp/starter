@@ -148,7 +148,7 @@ class SimpleAdminForm extends Form {
 		return $this;
 	}
 	
-	public function select($widget, $options=array(), $choices=array()) {
+	public function select($widget, $options=array(), $choices=null) {
 		if(!isset($options['label']))
 			$options['label'] = ucfirst(str_replace('_', ' ', $widget));
 			

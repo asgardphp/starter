@@ -141,7 +141,7 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 		return $label;
 	}
 	
-	public function select($widget, $options=array(), $choices=array()) {
+	public function select($widget, $options=array(), $choices=null) {
 		$label = $this->prepareLabel($widget, $options);
 			
 		AdminForm::select($this->$widget, $label, $options, $choices);

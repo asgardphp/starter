@@ -19,9 +19,18 @@ class Validator {
 			}
 		});
 		
+		static::register('equal', function($attribute, $value, $params, $validator) {
+			if($value !== $params[0]) {
+				$msg = $validator->getMessage('equal', $attribute, __('The field ":attribute" is not correct.'));
+				return Validator::format($msg, array(
+					'attribute'	=>	$attribute,
+				));
+			}
+		});
+		
 		static::register('exact_length', function($attribute, $value, $params, $validator) {
 			if(strlen($value) > $params[0]) {
-				$msg = $validator->getMessage('integer', $attribute, __('The field ":attribute" must be :length characters.'));
+				$msg = $validator->getMessage('exact_length', $attribute, __('The field ":attribute" must be :length characters.'));
 				return Validator::format($msg, array(
 					'attribute'	=>	$attribute,
 					'length'	=>	$params[0],
@@ -30,7 +39,7 @@ class Validator {
 		});
 		
 		static::register('integer', function($attribute, $value, $params, $validator) {
-			if(!preg_match('/[0-9]*/', $value)) {
+			if(!preg_match('/^[0-9]*$/', $value)) {
 				$msg = $validator->getMessage('integer', $attribute, __('The field ":attribute" must be an integer.'));
 				return Validator::format($msg, array(
 					'attribute'	=>	$attribute,
