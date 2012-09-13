@@ -46,6 +46,8 @@ namespace Coxis\Core {
 			$class = preg_replace('/^\\\+/', '', $class);
 			$alias = isset($params['as']) ? $params['as']:null;
 			$intoNamespace= isset($params['into']) ? $params['into']:null;
+#if($class == 'Coxis\Bundles\Behaviors\Controllers\ORMHandler')
+#d($class, $alias, $intoNamespace, $params['into']);
 			
 			if($intoNamespace == '.')
 				$intoNamespace = '';
@@ -75,19 +77,26 @@ namespace Coxis\Core {
 				}
 			}	
 			
-			if(static::loadClass($class)) {
+			if($res = static::loadClass($class)) {
+				if($res !== true)
+					$class = $res;
+#if($class == 'Coxis\Bundles\Behaviors\Controllers\ORMHandler')
+#d($class, class_exists($class));
 				#import as ..
 				if($alias !== false) {
 					if(!$alias)
 						$alias = ($intoNamespace ? $intoNamespace.'\\':'').static::basename($class);
-					if($class != $alias)
+					if($class != $alias) {
 						try {
 #if($class == 'Coxis\Core\BundlesManager')				
 #d(12, $alias, class_exists('Coxis\Core\BundlesManager', false));
+#if($class == 'Coxis\Bundles\Behaviors\Controllers\ORMHandler')
+#d($class, $alias);
 							class_alias($class, $alias);
 						} catch(\Exception $e) {
 							return false;
 						}
+					}
 				}
 					
 				return true;
@@ -236,8 +245,12 @@ namespace Coxis\Core {
 #	require_once($classes[0][1]);
 #d(static::basename($class), class_exists(static::basename($class), false), $classes[0][1]);
 #}
-						if(class_exists(static::basename($class), false))
-							return true;
+						if(class_exists(static::basename($class), false)) {
+							#if($class == 'Coxis\Bundles\Behaviors\Controllers\ORMHandler')
+							#	d($class, class_exists($class), static::basename($class));
+							return static::basename($class);							
+							#return true;
+						}
 						else {
 							#maybe the loaded class uses another namespace?
 #if($class == 'Controller')

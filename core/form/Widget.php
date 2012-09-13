@@ -75,7 +75,7 @@ class Widget extends WidgetHelper {
 		return $this;
 	}
 	
-	public function select($options=array(), $choices=array()) {
+	public function select($options=array(), $choices=null) {
 		$widget = $this->params;
 		$multiple = (isset($options['multiple']) && $options['multiple']);
 		
@@ -100,6 +100,13 @@ class Widget extends WidgetHelper {
 				$value = array();
 			else
 				$value = array($value);
+
+		if($choices===null) {
+			if(isset($widget['choices']))
+				$choices = $widget['choices'];
+			else
+				$choices = array();
+		}
 			
 		if($multiple) {
 			$params = array(
@@ -124,8 +131,6 @@ class Widget extends WidgetHelper {
 			$params = array_merge($options['attrs'], $params);
 				
 		$res = HTMLHelper::tag('select', $params)."\n";
-		if(!$choices && isset($widget['choices']))
-			$choices = $widget['choices'];
 
 		foreach($choices as $k=>$v) {
 			if(is_array($v)){

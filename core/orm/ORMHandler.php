@@ -166,7 +166,8 @@ class ORMHandler {
 	}
 
 	public function construct($model, $id) {
-		$id = (int)$id;
+		if(!ctype_digit($id))
+			return;
 
 		$res = $this->getORM()->where(array('id' => $id))->dal()->first();
 		if($res) {
@@ -250,7 +251,7 @@ class ORMHandler {
 		foreach($model::$relationships as $relationship => $params) {
 			if(!isset($model->data[$relationship]))
 				continue;
-			$rel = $model::relationData($model, $relationship);
+			$rel = ORMHandler::relationData($model, $relationship);
 			$type = $rel['type'];
 				
 			if($type == 'hasOne') {

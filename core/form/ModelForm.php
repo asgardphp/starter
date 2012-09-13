@@ -113,7 +113,10 @@ class ModelForm extends Form {
 		if($res)
 			$data = $res;
 			
-		$this->model->set(array_merge($data, $this->files));
+		$data = array_filter($data, function($v) {
+			return $v !== null;
+		});
+		$this->model->set($data);
 		
 		return array_merge(parent::my_errors(), $this->model->errors());
 	}

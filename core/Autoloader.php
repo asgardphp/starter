@@ -43,7 +43,12 @@ class Autoloader {
 		if(class_exists($class))
 			return;
 		
-		$dir = str_replace('\\', DIRECTORY_SEPARATOR, Importer::dirname($class));
+		$dir = str_replace('\\', DIRECTORY_SEPARATOR, $class);
+		$dir = Importer::dirname($dir);
+		$dir = str_replace(DIRECTORY_SEPARATOR, '\\', $dir);
+#		$dir = $class;
+#if($class == 'Coxis\Bundles\Behaviors\Controllers\ORMHandler')
+#d($class, $dir);
 		Importer::_import($class, array('into'=>$dir));
 	}
 }

@@ -160,7 +160,14 @@ class Form extends AbstractGroup {
 		
 		foreach($this->widgets as $widget) {
 			if($widget instanceof \Coxis\Core\Form\WidgetHelper) {
-				if($widget->params['type'] == 'boolean')
+				#todo move it into the widget?
+				if($widget->params['type'] == 'file') {
+					if(get($widget->val(), 'error') === 0)
+						$res[$widget->name] = $widget->val();
+					else
+						$res[$widget->name] = null;
+				}
+				elseif($widget->params['type'] == 'boolean')
 					$res[$widget->name] = (boolean)$widget->val();
 				else
 					$res[$widget->name] = $widget->val();
