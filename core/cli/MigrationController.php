@@ -157,8 +157,12 @@ class MigrationController extends CLIController {
 								break;
 							case 'email':
 								$neworm['type'] = 'varchar(255)';
+								break;
 							case 'file':
 								$neworm['type'] = 'varchar(255)';
+								break;
+							case 'boolean':
+								$neworm['type'] = 'int(1)';
 								break;
 							default:
 								throw new \Exception('Cannot convert '.$prop->type.' type');
