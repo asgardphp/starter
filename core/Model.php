@@ -209,7 +209,7 @@ abstract class Model {
 	}
 	
 	public static function getModelName() {
-		return basename(strtolower(get_called_class()));
+		return Tools::classBasename(strtolower(get_called_class()));
 	}
 
 	public function raw($name, $lang=null) {

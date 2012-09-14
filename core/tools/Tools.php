@@ -26,6 +26,10 @@ class Tools {
 		'Samedi'=>'Samedi',
 		'Dimanche'=>'Dimanche',
 	);
+
+	public static	function classBasename($class) {
+		return basename(str_replace('\\', DIRECTORY_SEPARATOR, $class));
+	}
 	
 	public static function zip($source, $destination) {
 	    if (!extension_loaded('zip') || !file_exists($source)) {
