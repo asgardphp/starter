@@ -166,7 +166,7 @@ class ORMHandler {
 	}
 
 	public function construct($model, $id) {
-		if(!ctype_digit($id))
+		if(!ctype_digit($id) && !is_int($id))
 			return;
 
 		$res = $this->getORM()->where(array('id' => $id))->dal()->first();
