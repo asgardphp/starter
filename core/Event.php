@@ -12,7 +12,7 @@ class Event {
 	}
 	
 	public static function addHook($hook, $callback) {
-		static::$hooks_table[$hook][] = $callback;
+		static::$hooks_table[strtolower($hook)][] = $callback;
 	}
 	
 	public static function addFilters($filters) {
@@ -22,10 +22,11 @@ class Event {
 	}
 	
 	public static function addFilter($filter, $callback) {
-		static::$filters_table[$filter][] = $callback;
+		static::$filters_table[strtolower($filter)][] = $callback;
 	}
 	
 	public static function filter($filterName, $p, $args=array()) {
+		$filterName = strtolower($filterName);
 		if(isset(static::$filters_table[$filterName]))
 			foreach(static::$filters_table[$filterName] as $filter)
 				#should not only check is_array
@@ -38,6 +39,7 @@ class Event {
 	}
 
 	public static function trigger($hookName, $args=null) {
+		$hookName = strtolower($hookName);
 		if(isset(static::$hooks_table[$hookName]))
 			foreach(static::$hooks_table[$hookName] as $hook)
 				#should not only check is_array
@@ -48,6 +50,7 @@ class Event {
 	}
 	
 	public static function trigger_show($hookName, $args=null) {
+		$hookName = strtolower($hookName);
 		if(isset(static::$hooks_table[$hookName]))
 			foreach(static::$hooks_table[$hookName] as $hook)
 				echo Router::run($hook['controller'], $hook['action'], $args);

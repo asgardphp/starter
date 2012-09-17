@@ -73,7 +73,7 @@ class SimpleAdminForm extends Form {
 				$label .= '*';
 				
 			$choices = array();
-			$all = $relation_model::find();
+			$all = $relation_model::all();
 			foreach($all as $one)
 				$choices[$one->id] = $one->__toString();
 			
@@ -97,7 +97,7 @@ class SimpleAdminForm extends Form {
 				$label .= '*';
 				
 			$choices = array();
-			$all = $relation_model::find();
+			$all = $relation_model::all();
 			foreach($all as $one)
 				$choices[$one->id] = $one->__toString();
 			
@@ -126,7 +126,7 @@ class SimpleAdminForm extends Form {
 				$label .= '*';
 				
 			$choices = array();
-			$all = $relation_model::find();
+			$all = $relation_model::all();
 			foreach($all as $one)
 				$choices[$one->id] = $one->__toString();
 			
@@ -225,8 +225,6 @@ class SimpleAdminForm extends Form {
 		if(get($this->model->getProperty($widget), 'required'))
 			$label .= '*';
 				
-		//~ d(BundlesManager::$routes);
-				
 		if($this->model->$widget->multiple()) {
 			if(!$this->model->isNew()):
 				$uid = Tools::randstr(10);
@@ -300,7 +298,7 @@ class SimpleAdminForm extends Form {
 				echo '<span>'.$options['nb'].'</span>';
 							
 			if(!$this->model->isNew() && $path && file_exists(_WEB_DIR_.'/'.$path)) {
-				if($this->model->$widget->type() == 'image') {
+				if($this->model->property($widget)->type == 'image') {
 					echo '<p>
 						<a href="../'.$path.'" rel="facebox"><img src="../'.ImageCache::src($path, 'admin_thumb').'" alt=""/></a>
 					</p>';

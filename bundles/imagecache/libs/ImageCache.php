@@ -18,7 +18,7 @@ class ImageCache {
 		if(is_array($preset)) {
 			if(!($presetName = array_search($preset, static::$presets))) {
 				$presetName = Tools::randstr();
-				$icbundle = file_get_contents('bundles/_imagecache/bundle.php');
+				$icbundle = file_get_contents('bundles/imagecache/bundle.php');
 				$arr = var_export($preset, true);
 				$arr = explode("\n", $arr);
 				$arr = str_replace('  ', "\t", $arr);
@@ -26,8 +26,8 @@ class ImageCache {
 				$preset_arr = "		ImageCache::addPreset('".$presetName."', 
 				".$arr."
 			);";
-				$icbundle = preg_replace('/[\s]+}[\s]+}/', "\n\n".$preset_arr."\n\t}\n}", $icbundle);
-				file_put_contents('bundles/_imagecache/bundle.php', $icbundle);
+				$icbundle .= "\n\n".$preset_arr;
+				file_put_contents('bundles/imagecache/bundle.php', $icbundle);
 			}
 		}
 		else

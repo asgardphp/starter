@@ -17,16 +17,27 @@ class FileProperty extends BaseProperty {
 	}
 
 	public function serialize($obj) {
-		return $obj->name;
+		if($this->multiple)
+			return serialize($obj->name);
+		else
+			return $obj->name;
 	}
 
 	public function unserialize($str) {
-		return new ModelFile($this->model, $this->name, $str);
+		if($this->multiple)
+			return new ModelFile($this->model, $this->name, unserialize($str));
+		else
+			return new ModelFile($this->model, $this->name, $str);
 	}
 
 	public function set($val) {
+		if($val instanceof \ModelFile)
+			return $val;
 		if(is_array($val))
 			$file = new ModelFile($this->model, $this->name, $val['name'], $val['tmp_name']);
+		#todo should use unserialize instead..
+		elseif($this->multiple)
+			$file = new ModelFile($this->model, $this->name, unserialize($val));
 		else
 			$file = new ModelFile($this->model, $this->name, $val);
 		return $file;

@@ -60,8 +60,12 @@ class ORMHandler {
 		$res = array();
 		$res['type'] = $relation['type'];
 		$res['model'] = $relation_model = $relation['model'];
-		if($res['type'] == 'hasMany')
-			$res['link'] = $model::getModelName().'_id';
+		if($res['type'] == 'hasMany') {
+			if(isset($relation['link']))
+				$res['link'] = $relation['link'];
+			else
+				$res['link'] = $model::getModelName().'_id';
+		}
 		elseif($res['type'] == 'HMABT') {
 			$res['link_a'] = $model::getModelName().'_id';
 			$res['link_b'] = $relation_model::getModelName().'_id';
@@ -71,9 +75,9 @@ class ORMHandler {
 				$res['join_table'] = Config::get('database', 'prefix').$relation_model::getModelName().'_'.$model::getModelName();
 		}
 		elseif($res['type'] == 'hasOne')
-			$res['link'] = $model::getModelName().'_id';
+			$res['link'] = $name.'_id';
 		elseif($res['type'] == 'belongsTo')
-			$res['link'] = $relation_model::getModelName().'_id';
+			$res['link'] = $name.'_id';
 		
 		return $res;
 	}
@@ -84,7 +88,7 @@ class ORMHandler {
 		if(is_array($model_relationships))
 			foreach($model_relationships as $relationship => $params)
 				#todo and hasOne ?
-				if($params['type'] == 'belongsTo') {
+				if($params['type'] == 'belongsTo' || $params['type'] == 'hasOne') {
 					$rel = ORMHandler::relationData($model, $relationship);
 					$model::addProperty($rel['link'], array('type' => 'integer', 'required' => (isset($params['required']) && $params['required']), 'editable'=>false));
 				}
@@ -130,6 +134,7 @@ class ORMHandler {
 				if($model->isNew())
 					return null;
 					
+				#todo bug?
 				$link = $rel['link'];
 				return $relmodel::where(array($link => $model->id))->first();
 			case 'belongsTo':
@@ -202,7 +207,7 @@ class ORMHandler {
 		foreach($model::$relationships as $relationship => $params) {
 			if(!isset($model->data[$relationship]))
 				continue;
-			$rel = $model::relationData($model, $relationship);
+			$rel = ORMHandler::relationData($model, $relationship);
 			$type = $rel['type'];
 			if($type == 'belongsTo') {
 				$link = $rel['link'];

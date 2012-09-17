@@ -14,6 +14,7 @@ class Email {
 		$this->from = $from;
 		$this->text = $text;
 		$this->html = $html;
+
 		$this->files = $files;
 	}
 

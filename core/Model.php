@@ -107,10 +107,12 @@ abstract class Model {
 		if(!isset($params['required']))
 			$params['required'] = true;
 		#todo multiple values - not atomic.. ?
-		// if(isset($params['multiple']) && $params['multiple'])
-		// 	$params[$property]['type'] = 'array';
-		if(!isset($params['type']))
-			$params['type'] = 'text';
+		if(!isset($params['type'])) {
+			if(isset($params['multiple']) && $params['multiple'])
+				$params['type'] = 'array';
+			else
+				$params['type'] = 'text';
+		}
 
 		$propertyClass = $params['type'].'Property';
 		#todo full class namespace
@@ -211,19 +213,6 @@ abstract class Model {
 	public static function getModelName() {
 		return Tools::classBasename(strtolower(get_called_class()));
 	}
-
-	public function raw($name, $lang=null) {
-		#todo xss
-		$res = $this->get($name, $lang);
-
-		if(is_string($res)) {
-			if($raw === 2)
-				return HTML::sanitize($res);
-			elseif($raw == 0 && Coxis::get('in_view'))
-				return HTML::sanitize($res);
-		}
-		return $res;
-	}
 	
 	public function set($name, $value=null, $lang=null) {
 		if(is_array($name)) {
@@ -260,8 +249,13 @@ abstract class Model {
 				
 		return $this;
 	}
+
+	public function raw($name, $lang=null) {
+		$res = $this->get($name, $lang, true);
+		return $res;
+	}
 	
-	public function get($name, $lang=null) {
+	public function get($name, $lang=null, $raw=false) {
 		if(!$lang)
 			$lang = Config::get('locale');
 
@@ -287,6 +281,10 @@ abstract class Model {
 			if($res)
 				$chain->stop();
 		}, array($this, $name, $lang), $res);
+
+		#todo innto a hook
+		if(is_string($res) && $raw && Coxis::get('in_view'))
+			return HTML::sanitize($res);
 
 		return $res;
 	}

@@ -22,15 +22,19 @@ class Widget extends WidgetHelper {
 		return $this;
 	}
 	
-	public function radio($options=array(), $choices=array()) {
+	public function radio($options=array(), $choices=null) {
+		if($choices !== null)
+			$this->params['choices'] = $choices;
 		if(!isset($this->params['choices']))
-			throw new Exception('No multiple choices available.');
+			throw new \Exception('No multiple choices available.');
 		return new Radio($this->dad, $this->name, $this->params, $this->value);
 	}
 	
-	public function checkboxes($options=array(), $choices=array()) {
+	public function checkboxes($options=array(), $choices=null) {
+		if($choices !== null)
+			$this->params['choices'] = $choices;
 		if(!isset($this->params['choices']))
-			throw new Exception('No multiple choices available.');
+			throw new \Exception('No multiple choices available.');
 		return new Checkboxes($this->dad, $this->name, $this->params, $this->value);
 	}
 	

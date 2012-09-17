@@ -2,7 +2,7 @@
 namespace Coxis\Bundles\Imagecache\Controllers;
 
 /**
-@Prefix('imagecache/')
+@Prefix('imagecache')
 */
 class ImageCacheController extends \Coxis\Core\Controller {
 	private function apply($img, $preset) {

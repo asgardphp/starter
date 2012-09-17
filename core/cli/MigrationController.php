@@ -6,7 +6,7 @@ class MigrationController extends CLIController {
 	private static function tableSchema($table) {
 		$structure = array();
 		try{
-			$res = DB::query('Describe '.$table)->all();
+			$res = DB::query('Describe `'.$table.'`')->all();
 		} catch(\Exception $e) {
 			return null;
 		}
@@ -102,7 +102,7 @@ class MigrationController extends CLIController {
 		foreach($bundles as $bundle)
 			foreach(glob($bundle.'/models/*.php') as $model)
 				include($model);
-		
+
 		$newSchemas = array();
 		$oldSchemas = array();
 		$tables = DB::query('SHOW TABLES')->all();
@@ -208,7 +208,6 @@ class MigrationController extends CLIController {
 		}
 		
 		$oldSchemas = array_filter($oldSchemas);
-			
 			// d($newSchemas);
 			// d($oldSchemas);
 			// d(array_keys($newSchemas));

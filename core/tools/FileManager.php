@@ -11,7 +11,7 @@ class FileManager {
 		$i=1;
 		while(file_exists($output))
 			$output = $filename.'_'.($i++).'.'.$ext;
-			
+
 		return $output;
 	}
 

@@ -19,8 +19,11 @@ class ModelFile {
 	public function exists() {
 		if($this->tmp_path)
 			$path = $this->tmp_path;
-		else
+		else {
+			if(!$this->get())
+				return false;
 			$path = 'web/'.$this->get();
+		}
 
 		return file_exists($path);
 	}

@@ -4,6 +4,8 @@ namespace Coxis\Bundles\Behaviors\Controllers;
 class FilesBehaviorController extends \Coxis\Core\Controller {
 	public static function _autoload() {
 		Validator::register('filerequired', function($attribute, $value, $params, $validator) {
+			if(!$params[0])
+				return;
 			$msg = false;
 			if(!$value)
 				$msg = $validator->getMessage('filerequired', $attribute, __('The file ":attribute" is required.'));
@@ -52,8 +54,9 @@ class FilesBehaviorController extends \Coxis\Core\Controller {
 		});
 
 		$modelName::hookOn('destroy', function($chain, $model) {
-			foreach($model::$files as $name=>$v)
-				$this->$name->delete();
+			foreach($model::properties() as $name=>$property)
+				if($property->type == 'file')
+					$model->$name->delete();
 		});
 	}
 }

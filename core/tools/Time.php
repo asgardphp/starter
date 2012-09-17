@@ -22,7 +22,16 @@ class Time {
 		return $this->format('d/m/Y');
 	}
 	
+	private static function escape($str) {
+		return '\\'.implode('\\', str_split($str));
+	}
+
+	#todo put i18n somewhere else, SoC
 	public function format($format) {
+		// d(static::escape('aaaa'));
+		$format = str_replace('F', static::escape(Tools::$months[date('F', $this->timestamp)]), $format);
+		// d($format);
+
 	//~ try {
 		return date($format, $this->timestamp);
 		//~ }catch(Exception $e){d($this->timestamp, $e);}

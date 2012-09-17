@@ -13,26 +13,27 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 	}
 	
 	public function def($widget, $options=array()) {
-		$properties = $this->model->property($widget);
-		
 		$model = $this->model;
 		
-		if($properties->in)
-			$this->select($widget, $options);
-		elseif($properties->type === 'boolean')
-			$this->checkbox($widget, $options);
-		elseif($properties->type === 'date')
-			$this->input($widget, array_merge($options, array('class'=>'text date_picker')));
-		elseif($this->model->hasFile($widget)) {
-			$file = $this->model->$widget->params();
-			$this->file($widget, $options);
+		if($this->model->hasProperty($widget)) {
+			$properties = $this->model->property($widget);
+			if($properties->in)
+				$this->select($widget, $options);
+			elseif($properties->type === 'boolean')
+				$this->checkbox($widget, $options);
+			elseif($properties->type === 'date')
+				$this->input($widget, array_merge($options, array('class'=>'text date_picker')));
+			elseif($this->model->hasFile($widget)) {
+				$file = $this->model->$widget->params();
+				$this->file($widget, $options);
+			}
+			else
+				$this->input($widget, $options);
 		}
 		else {
 			$relationships = $model::$relationships;
 			if(isset($relationships[$widget]))
 				$this->relation($widget, $options);
-			else
-				$this->input($widget, $options);
 		}
 			
 		return $this;
@@ -42,7 +43,7 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 		if(!isset($options['label']))
 			$options['label'] = ucfirst(str_replace('_', ' ', $relation));
 	
-		$modelName = $this->model->getClassName();
+		$modelName = get_class($this->model);
 	
 		$relationship = get($modelName::$relationships, $relation);
 		$relation_model = $relationship['model'];

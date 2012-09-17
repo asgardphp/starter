@@ -24,7 +24,13 @@ class ArrayProperty extends BaseProperty {
 		// return unserialize($str);
 	}
 
-	// public function set($val) {
-	// 	return Date::fromDatetime($val);
-	// }
+	public function set($val) {
+		if(is_array($val))
+			return $val;
+		try {
+			return unserialize($val);
+		} catch(\ErrorException $e) {
+			return (array)$val;
+		}
+	}
 }

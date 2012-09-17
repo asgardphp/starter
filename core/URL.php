@@ -83,15 +83,17 @@ class URL {
 			}
 		}
 		#route
-		else
-			foreach(BundlesManager::$routes as $route=>$route_params) {
+		else {
+			$what = strtolower($what);
+			foreach(BundlesManager::$routes as $route_params) {
 				$route = $route_params['route'];
-				if($route_params['name'] != null && $route_params['name'] == $what)
+				if($route_params['name'] != null && strtolower($route_params['name']) == $what)
 					if($relative)
 						return Router::buildRoute($route, $params);
 					else
 						return static::to(Router::buildRoute($route, $params));
 			}
+		}
 					
 		throw new \Exception('Route not found.');
 	}

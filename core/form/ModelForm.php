@@ -23,7 +23,7 @@ class ModelForm extends Form {
 			if(!$model->isNew())
 				$widget_params['default'] = $model->$name;
 			if($properties->type == 'boolean')
-				$widget_params->type = 'boolean';
+				$widget_params['default'] = 'boolean';
 			elseif($properties->type == 'file')
 				$widget_params['type'] = 'file';
 			if($properties->in) {
@@ -41,7 +41,7 @@ class ModelForm extends Form {
 			if(isset($params['only']))
 				if(!in_array($name, $params['only']))
 					continue;
-					
+		
 			$property_name = $name;
 			#todo why using _id instead of name?!
 			
@@ -71,7 +71,7 @@ class ModelForm extends Form {
 				$widgets[$property_name] = new Widget($widget_params);
 			}
 		}
-		
+
 		parent::__construct(
 			$model->getModelName(),
 			$params,
@@ -111,8 +111,7 @@ class ModelForm extends Form {
 		$data = $this->getData();
 		$res = $this->callback('pre_test', array($data));
 		if($res)
-			$data = $res;
-			
+			$data = $res;			
 		$data = array_filter($data, function($v) {
 			return $v !== null;
 		});
