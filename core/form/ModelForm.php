@@ -23,7 +23,7 @@ class ModelForm extends Form {
 			if(!$model->isNew())
 				$widget_params['default'] = $model->$name;
 			if($properties->type == 'boolean')
-				$widget_params['default'] = 'boolean';
+				$widget_params['type'] = 'boolean';
 			elseif($properties->type == 'file')
 				$widget_params['type'] = 'file';
 			if($properties->in) {
