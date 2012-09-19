@@ -132,9 +132,9 @@ class Form extends AbstractGroup {
 	}
 	
 	//todo should not pass this args here but when defining the form
-	public function start($action='', $method='post') {
+	public function start($action='', $method='post', $enctype='') {
 	//~ d($this->hasFile());
-		echo '<form action="'.$action.'" method="'.$method.'"'.($this->hasFile() ? ' enctype="multipart/form-data"':'').'>';
+		echo '<form action="'.$action.'" method="'.$method.'"'.($enctype ? ' '.$enctype:($this->hasFile() ? ' enctype="multipart/form-data"':'')).'>';
 		
 		return $this;
 	}

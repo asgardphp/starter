@@ -1,6 +1,7 @@
 <?php
 $config = array(
 	'all' => array(
+		'key'	=>	'coxis',
 		'admin'	=>	array(
 			'footer'	=>	'Si vous rencontrez une difficulté contactez-nous au ...'
 		),

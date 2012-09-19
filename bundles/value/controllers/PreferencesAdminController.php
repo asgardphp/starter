@@ -15,7 +15,7 @@ class PreferencesAdminController extends \Coxis\Bundles\Admin\Libs\Controller\Ad
 		$form->values = array();
 		$vars = array('name', 'email', 'head_script');
 		foreach($vars as $valueName) {
-			$value = Value::get($valueName);
+			$value = Value::fetch($valueName);
 			$a = new AdminModelForm($value, $this);
 			unset($a->key);
 			$form->values[$value->key] = $a;

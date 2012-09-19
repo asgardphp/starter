@@ -164,6 +164,9 @@ class MigrationController extends CLIController {
 							case 'boolean':
 								$neworm['type'] = 'int(1)';
 								break;
+							case 'array':
+								$neworm['type'] = 'text';
+								break;
 							default:
 								throw new \Exception('Cannot convert '.$prop->type.' type');
 						}
@@ -171,7 +174,7 @@ class MigrationController extends CLIController {
 					if(!isset($prop->orm['default']))
 						$neworm['default'] = false;
 					if(!isset($prop->orm['nullable']))
-						$neworm['nullable'] = false;
+						$neworm['nullable'] = true;
 					if(!isset($prop->orm['key']))
 						$neworm['key'] = '';
 					if(!isset($prop->orm['auto_increment']))

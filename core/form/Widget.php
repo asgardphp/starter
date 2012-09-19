@@ -250,13 +250,19 @@ class Widget extends WidgetHelper {
 		?>
 		<script>
 		//<![CDATA[
-			$(function(){CKEDITOR.replace( '<?php echo $this->getID() ?>'
-		<?php if(isset($options['config'])): ?>
-			, {
-					customConfig : '<?php echo $options['config'] ?>'
-				}
-		<?php endif ?>
-				)
+			$(function(){
+				var CKEDITOR_BASEPATH = '<?php echo URL::to('bundles/ckeditor/ckeditor/') ?>';
+				CKEDITOR.basePath = '<?php echo URL::to('bundles/ckeditor/ckeditor/') ?>';
+				var editor = CKEDITOR.instances['<?php echo $this->getID() ?>'];
+				if (editor)
+					editor.destroy(true);
+				CKEDITOR.replace('<?php echo $this->getID() ?>'
+					<?php if(isset($options['config'])): ?>
+						, {
+								customConfig : '<?php echo $options['config'] ?>'
+							}
+					<?php endif ?>
+				);
 			});
 		//]]>
 		</script>
