@@ -17,16 +17,16 @@ class ModelFile {
 	
 	public function exists() {
 		if($this->multiple()) {
-			$files = $this->absGet();
+			$files = $this->get(true);
 			foreach($this->tmp_file as $file)
-				$files[] = $file['path'];
+				$files[] = $file['tmp_name'];
 			foreach($files as $file)
 				if(!file_exists($file))
 					return false;
 		}
 		else {
 			if($this->tmp_file)
-				$path = $this->tmp_file;
+				$path = $this->tmp_file['tmp_name'];
 			else {
 				if(!$this->get())
 					return false;
