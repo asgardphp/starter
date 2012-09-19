@@ -96,9 +96,6 @@ class Widget extends WidgetHelper {
 		elseif(isset($widget['default']))
 			$value = $widget['default'];
 			
-		if(!is_array($value))
-			$value = HTML::sanitize($value);
-			
 		if($multiple && !is_array($value))
 			if(!$value)
 				$value = array();

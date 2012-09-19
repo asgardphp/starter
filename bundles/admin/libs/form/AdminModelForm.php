@@ -48,18 +48,20 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 		$relationship = get($modelName::$relationships, $relation);
 		$relation_model = $relationship['model'];
 		$widget = $relation;
-		
-		if($relationship['type'] == 'belongsTo' || $relationship['type'] == 'hasOne') {
-			echo '<p>';
-			$label = isset($options['label']) ? $options['label']:ucfirst($widget);
-			//~ d($widget);
 				
+		if(isset($options['choices']))
+			$choices = $options['choices'];
+		else {
 			$choices = array();
 			$all = $relation_model::all();
 			foreach($all as $one)
 				$choices[$one->id] = $one->__toString();
+		}
+		
+		if($relationship['type'] == 'belongsTo' || $relationship['type'] == 'hasOne') {
+			echo '<p>';
+			$label = isset($options['label']) ? $options['label']:ucfirst($widget);
 				
-			// d($this->model->$widget);
 			$model = $this->model;
 			if(get($model::$relationships, $widget, 'required'))
 				$label .= '*';
@@ -81,11 +83,6 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 			$label = isset($options['label']) ? $options['label']:ucfirst($relation);
 			if(get($this->model->relationships(), $widget, 'required'))
 				$label .= '*';
-				
-			$choices = array();
-			$all = $relation_model::all();
-			foreach($all as $one)
-				$choices[$one->id] = $one->__toString();
 			
 			$this->$widget->label($label);
 			echo '<br>';
@@ -106,11 +103,6 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 			$label = isset($options['label']) ? $options['label']:ucfirst($widget);
 			if(get($this->model->relationships(), $widget, 'required'))
 				$label .= '*';
-				
-			$choices = array();
-			$all = $relation_model::all();
-			foreach($all as $one)
-				$choices[$one->id] = $one->__toString();
 			
 			$this->$widget->label($label);
 			echo '<br>';
