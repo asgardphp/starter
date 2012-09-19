@@ -31,7 +31,7 @@ class SortableBehaviorController extends \Coxis\Core\Controller {
 				'action'			=>	'demote'
 			));
 		
-			\Coxis\Core\Event::$hooks_table['coxis_'.$modelName.'_actions'][] = array('controller' => '\Coxis\Bundles\Behaviors\Controllers\SortableBehavior', 'action' => 'sortableactions');
+			\Coxis\Core\Event::addHook('coxis_'.$modelName.'_actions', array('controller' => '\Coxis\Bundles\Behaviors\Controllers\SortableBehavior', 'action' => 'sortableactions'));
 		} catch(\Exception $e) {}#if the admincontroller does not exist for this model
 	}
 	
