@@ -36,7 +36,7 @@ class GeneralController extends \Coxis\Core\Controller {
 		
 		if($request['format']=='html') {
 			$output = Router::run('default', '_404');
-			$output = Event::filter('output', $output);
+			$output = Hook::hook('output', $output);
 			Response::setContent($output);
 		}
 		
@@ -52,23 +52,19 @@ class GeneralController extends \Coxis\Core\Controller {
 	}
 	
 	/**
-	@Filter('output')
+	@Hook('filter_output')
 	*/
-	public function preSendingAction($args) {
-		$this->view = false;
-		$content = $args[0];
+	public function preSendingAction($content) {
 		try {
 			$type = \Coxis\Core\Response::getHeader('Content-Type');
 			
 			if($type != 'text/html')
-				return $content;
+				return;
 		} catch(\Exception $e) {}
 			
 		if(is_array(\Coxis\Core\Coxis::get('layout'))
 			&& sizeof(\Coxis\Core\Coxis::get('layout')) >= 2 && $content !== null)
-			return \Coxis\Core\Router::run(\Coxis\Core\Coxis::get('layout', 0), \Coxis\Core\Coxis::get('layout', 1), $content, $this);
-		else
-			return $content;
+			$content = \Coxis\Core\Router::run(\Coxis\Core\Coxis::get('layout', 0), \Coxis\Core\Coxis::get('layout', 1), $content, $this);
 	}
 	
 	/**

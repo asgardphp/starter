@@ -35,7 +35,7 @@ function get() {
 function send($result) {
 	#todo Move this to response send
 	try {
-		\Coxis\Core\Event::trigger('end');
+		\Coxis\Core\Hook::trigger('end');
 	} catch(\Exception $e) {
 		Error::report($e->getMessage(), $e->getTrace());
 	}

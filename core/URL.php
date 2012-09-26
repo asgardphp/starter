@@ -7,21 +7,19 @@ class URL {
 	public static function get() {
 		if(!static::$url) {
 			if(isset($_SERVER['PATH_INFO']))
-				$request = $_SERVER['PATH_INFO'];
+				static::$url = $_SERVER['PATH_INFO'];
 			elseif(isset($_SERVER['ORIG_PATH_INFO']))
-				$request = $_SERVER['ORIG_PATH_INFO'];
+				static::$url = $_SERVER['ORIG_PATH_INFO'];
 			elseif(isset($_SERVER['REDIRECT_URL']))
-				$request = $_SERVER['REDIRECT_URL'];
+				static::$url = $_SERVER['REDIRECT_URL'];
 			else
-				$request = '';
-			$request = preg_replace('/^\//', '', $request);
-				
-			static::$url = $request;
+				static::$url = '';
+			static::$url = preg_replace('/^\//', '', static::$url);
 		}
+
+		\Coxis\Core\Hook::trigger('path_filter', static::$url);
 		
-		$request = Event::filter('path_filter', static::$url);
-		
-		return $request;
+		return static::$url;
 	}
 	
 	public static function current() {

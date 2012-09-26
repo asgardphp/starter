@@ -83,8 +83,8 @@ class Response {
 	}
 
 	public static function send() {
-		Event::trigger('output_'.static::$code);
-		Event::trigger('output');
+		\Coxis\Core\Hook::trigger('output_'.static::$code);
+		\Coxis\Core\Hook::trigger('output');
 		
 		$headers = array();
 		if(array_key_exists(static::$code, static::$codes))
@@ -94,11 +94,7 @@ class Response {
 		foreach(static::$headers as $k=>$v)
 			$headers[] = $k.': '.$v;
 		
-		//~ d(static::$content);
-		//~ d();
-		//~ throw new EndException(new Result($headers, static::$content));
 		send(new Result($headers, static::$content));
-		//~ throw new Exception();
 	}
 	
 	public static function redirect($url='', $relative=true) {

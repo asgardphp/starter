@@ -57,7 +57,6 @@ class ORMBehaviorController extends \Coxis\Core\Controller {
 			}
 		});
 
-
 		$modelName::hookOn('construct', function($chain, $model, $id) use($ormHandler) {
 			$ormHandler->construct($model, $id);
 		});

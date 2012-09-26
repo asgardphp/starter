@@ -11,6 +11,7 @@ class ORM {
 		
 		$this->dal = new \Coxis\Core\DAL(array($model::getTable() => 'a'));
 			
+		#todo buggy when the translation row does not exist (should reverse the leftjoin to rightjoin and a./t. tables)
 		if($model::isI18N()){
 			$this->leftjoin(array(
 				'a.Translation t'	=>	array(

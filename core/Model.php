@@ -14,7 +14,7 @@ abstract class Model {
 
 	public function __construct($param='') {
 		$this->_is_loaded = false;
-		$this->trigger('construct', null, array($this, $param));
+		$this->trigger('construct', array($this, $param));
 		if(!$this->_is_loaded) {
 			if(is_array($param))
 				$this->loadDefault()->set($param);
@@ -42,7 +42,7 @@ abstract class Model {
 
 	public static function __callStatic($name, $arguments) {
 		$chain = new HookChain();
-		$res = static::triggerChain($chain, 'callStatic', null, array($name, $arguments));
+		$res = static::triggerChain($chain, 'callStatic', array($name, $arguments));
 		if(!$chain->executed)
 			throw new \Exception('Static method '.$name.' does not exist for model '.static::getModelName());
 
@@ -51,7 +51,7 @@ abstract class Model {
 
 	public function __call($name, $arguments) {
 		$chain = new HookChain;
-		$res = static::triggerChain($chain, 'call', null, array($this, $name, $arguments));
+		$res = static::triggerChain($chain, 'call', array($this, $name, $arguments));
 		if(!$chain->executed) {
 			try {
 				return static::__callStatic($name, $arguments);
@@ -80,11 +80,13 @@ abstract class Model {
 		foreach(static::$properties as $k=>$params)
 			static::addProperty($k, $params);
 
-		Event::trigger('behaviors_pre_load', get_called_class());
+		// Event::trigger('behaviors_pre_load', get_called_class());
+		\Coxis\Core\Hook::trigger('behaviors_pre_load', get_called_class());
 		
 		foreach(static::$behaviors as $behavior => $params)
 			if($params)
-				Event::trigger('behaviors_load_'.$behavior, get_called_class());
+				// Event::trigger('behaviors_load_'.$behavior, get_called_class());
+				\Coxis\Core\Hook::trigger('behaviors_load_'.$behavior, get_called_class());
 
 		static::configure();
 	}
@@ -145,7 +147,7 @@ abstract class Model {
 		}
 		
 		$chain = new HookChain;
-		$this->triggerChain($chain, 'save', null, array($this));
+		$this->triggerChain($chain, 'save', array($this));
 		if(!$chain->executed)
 			throw new \Exception('Cannot save non-persistent models');
 
@@ -154,7 +156,7 @@ abstract class Model {
 	
 	public function destroy() {
 		$chain = new HookChain;
-		$this->triggerChain($chain, 'destroy', null, array($this));
+		$this->triggerChain($chain, 'destroy', array($this));
 		if(!$chain->executed)
 			throw new \Exception('Cannot destroy non-persistent models');
 	}
@@ -189,15 +191,15 @@ abstract class Model {
 		#todo use model hooks
 		foreach(static::$behaviors as $behavior => $params)
 			if($params)
-				Event::trigger('behaviors_presave_'.$behavior, $this);
+				\Coxis\Core\Hook::trigger('behaviors_presave_'.$behavior, $this);
 				
 		$data = $this->toArray();
 
 		$errors = null;
 		$model = $this;
-		$this->trigger('validation', function($chain, $data, &$errors) use($model) {
+		$this->trigger('validation', array($data), function($chain, $data, &$errors) use($model) {
 			$errors = $model->getValidator()->errors($data);
-		}, array($data), $errors);
+		}, $errors);
 		
 		return $errors;
 	}
@@ -261,7 +263,7 @@ abstract class Model {
 
 		$res = null;
 		#todo go for data[$name] only if orm fetch failed
-		static::trigger('get', function($chain, $model, $name, $lang, &$res) {
+		static::trigger('get', array($this, $name, $lang), function($chain, $model, $name, $lang, &$res) {
 			if($model::hasProperty($name)) {
 				if($model::property($name)->i18n) {
 					if($lang == 'all') {
@@ -280,7 +282,7 @@ abstract class Model {
 				$res = $model->data[$name];
 			if($res)
 				$chain->stop();
-		}, array($this, $name, $lang), $res);
+		}, $res);
 
 		#todo innto a hook
 		if(is_string($res) && $raw && Coxis::get('in_view'))
@@ -309,36 +311,35 @@ abstract class Model {
 
 	/* HOOKS */
 	#cannot use references with get_func_args
-	protected static function trigger($name, $cb=null, $args=array(), &$filter1=null, &$filter2=null, &$filter3=null, &$filter4=null, &$filter5=null, &$filter6=null,
+	protected static function trigger($name, $args=array(), $cb=null, &$filter1=null, &$filter2=null, &$filter3=null, &$filter4=null, &$filter5=null, &$filter6=null,
 		&$filter7=null, &$filter8=null, &$filter9=null, &$filter10=null) {
-		return \Coxis\Core\Hook::trigger(array('models', get_called_class(), $name), $cb, $args, $filter1, $filter2, $filter3, $filter4, $filter5, $filter6, $filter7,
+		return \Coxis\Core\Hook::trigger(array('models', get_called_class(), $name), $args, $cb, $filter1, $filter2, $filter3, $filter4, $filter5, $filter6, $filter7,
 			$filter8, $filter9, $filter10);
 	}
 
 	#cannot use references with get_func_args
-	protected static function triggerChain($chain, $name, $cb=null, $args=array(), &$filter1=null, &$filter2=null, &$filter3=null, &$filter4=null, &$filter5=null, &$filter6=null,
+	protected static function triggerChain($chain, $name, $args=array(), $cb=null, &$filter1=null, &$filter2=null, &$filter3=null, &$filter4=null, &$filter5=null, &$filter6=null,
 		&$filter7=null, &$filter8=null, &$filter9=null, &$filter10=null) {
-		return \Coxis\Core\Hook::triggerChain($chain, array('models', get_called_class(), $name), $cb, $args, $filter1, $filter2, $filter3, $filter4, $filter5, $filter6, $filter7,
+		return \Coxis\Core\Hook::triggerChain($chain, array('models', get_called_class(), $name), $args, $cb, $filter1, $filter2, $filter3, $filter4, $filter5, $filter6, $filter7,
 			$filter8, $filter9, $filter10);
 	}
 
 	public static function hook() {
-		$args = array_merge(array('models', get_called_class()), func_get_args());
-		return call_user_func_array(array('Coxis\Core\Hook', 'hook'), $args);
+		return call_user_func_array(array('Coxis\Core\Hook', 'hook'), func_get_args());
 	}
 
-	public static function hookOn() {
-		$args = array_merge(array('models', get_called_class()), func_get_args());
+	public static function hookOn($hookName, $cb) {
+		$args = array(array_merge(array('models', get_called_class()), array($hookName)), $cb);
 		return call_user_func_array(array('Coxis\Core\Hook', 'hookOn'), $args);
 	}
 
-	public static function hookBefore() {
-		$args = array_merge(array('models', get_called_class()), func_get_args());
+	public static function hookBefore($hookName, $cb) {
+		$args = array(array_merge(array('models', get_called_class()), array($hookName)), $cb);
 		return call_user_func_array(array('Coxis\Core\Hook', 'hookBefore'), $args);
 	}
 
-	public static function hookAfter() {
-		$args = array_merge(array('models', get_called_class()), func_get_args());
+	public static function hookAfter($hookName, $cb) {
+		$args = array(array_merge(array('models', get_called_class()), array($hookName)), $cb);
 		return call_user_func_array(array('Coxis\Core\Hook', 'hookBefore'), $args);
 	}
 }

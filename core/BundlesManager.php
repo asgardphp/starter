@@ -6,7 +6,6 @@ require_once('vendors/addendum/annotations.php');
 class Hook extends Annotation {}
 class Prefix extends Annotation {}
 class Priority extends Annotation {}
-class Filter extends Annotation {}
 class Route extends Annotation {
 	public $name;
 	public $requirements;
@@ -53,7 +52,6 @@ class BundlesManager {
 							static::$routes[] = array(
 								'route'	=>	$route,
 								'controller'		=>	static::formatControllerName($classname), 
-								//~ 'controller'		=>	$classname, 
 								'action'			=>	static::formatActionName($method),
 								'requirements'	=>	$method_reflection->getAnnotation('Route')->requirements,
 								'method'	=>	$method_reflection->getAnnotation('Route')->method,
@@ -69,15 +67,10 @@ class BundlesManager {
 							$priority *= 1000;
 							while(isset(BundlesManager::$hooks_table[$hook][$priority]))
 								$priority += 1;
-							BundlesManager::$hooks_table[$hook][$priority] = array(
-								'controller'=>static::formatControllerName($classname),
-								//~ 'controller'=>$classname,
-								'action'=>static::formatActionName($method)
-							);
-						}
-						if($method_reflection->getAnnotation('Filter')) {
-							$filter = $method_reflection->getAnnotation('Filter')->value;
-							static::$filters_table[$filter][] = array('controller'=>static::formatControllerName($classname), 'action'=>static::formatActionName($method));
+
+							$controller = static::formatControllerName($classname);
+							$action = static::formatActionName($method);
+							\Coxis\Core\Controller::hookOn($hook, array($controller, $action));
 						}
 					}
 				}
@@ -151,21 +144,14 @@ class BundlesManager {
 		
 		if(\Coxis\Core\Config::get('phpcache')) {
 			Event::addHook('end', function() {
-				//~ d(BundlesManager::$routes);
 				\Coxis\Core\Cache::set('routing/routes', BundlesManager::$routes);
 				\Coxis\Core\Cache::set('routing/hooks', BundlesManager::$hooks_table);
 				\Coxis\Core\Cache::set('routing/filters', BundlesManager::$filters_table);
 			});
 		}
 		//~ Router::$routes = BundlesManager::$routes; #todo
-		Event::addHooks(BundlesManager::$hooks_table);
-		Event::addFilters(BundlesManager::$filters_table);
-		
-		//~ d(BundlesManager::$bundles_routes);
-		//~ d(BundlesManager::$routes);
-		//~ d(Event::$hooks_table);
-		//~ die(var_export(Event::$hooks_table));
-		//~ die(var_export(BundlesManager::$filters_table));
+		Hook::hooks(BundlesManager::$hooks_table);
+		Hook::hooks(BundlesManager::$filters_table);
 	}
 	
 	private static function move_key($key, $pos, &$arr) {

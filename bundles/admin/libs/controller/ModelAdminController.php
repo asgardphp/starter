@@ -25,7 +25,8 @@ class ModelAdminController extends AdminParentController {
 		$model_behaviors = $model::$behaviors;
 		foreach($model_behaviors as $behavior => $params)
 			if($params)
-				\Coxis\Core\Event::trigger('behaviors_coxisadmin_'.$behavior, static::getControllerName());
+				// \Coxis\Core\Event::trigger('behaviors_coxisadmin_'.$behavior, static::getControllerName());
+				\Coxis\Core\Hook::trigger('behaviors_coxisadmin_'.$behavior, static::getControllerName());
 
 		if(static::$_models == null)
 			static::$_models = basename(strtolower(static::$_model.'s'));
@@ -37,7 +38,7 @@ class ModelAdminController extends AdminParentController {
 	}
 	
 	public static function getModel() {
-		return static::$_model;
+		return preg_replace('/^\\\/', '', static::$_model);
 	}
 	
 	public static function getIndexURL() {
@@ -68,7 +69,7 @@ class ModelAdminController extends AdminParentController {
 		}
 		
 		$conditions = array();
-		
+		#todo with new orm
 		#Search
 		if(isset($request['search']) && $request['search']) {
 			$conditions['or'] = array();
@@ -247,6 +248,9 @@ class ModelAdminController extends AdminParentController {
 		$hook['route'] = str_replace(':route', $hook['route'], \Coxis\Core\Router::getRouteFor(array(static::getControllerName(), 'hooks')));
 		$hook['controller'] = static::getControllerName();
 		$hook['action'] = 'hooks';
+		// d($hook);
+		#coxis_Coxis\App\Actualite\Models\Actualite_promote
+		#coxis_\\Coxis\\App\\Actualite\\Models\\Actualite_promote
 		\Coxis\Core\BundlesManager::$routes[] = $hook;
 	}
 	
@@ -263,7 +267,7 @@ class ModelAdminController extends AdminParentController {
 		$modelName::init();#todo not generic (generic for models actually..)
 		
 		$controller = static::getControllerName();
-		
+
 		#todo sort hooks routes
 		foreach(static::$_hooks as $hook) {
 			if($results = Router::matchWith($hook['route'], $request['route'])) {
@@ -271,7 +275,7 @@ class ModelAdminController extends AdminParentController {
 				$request['_controller'] = $controller;
 				$request['controller'] = $hook['controller'];
 				$request['action'] = $hook['action'];
-				return Router::run($hook['controller'], $hook['action'], $request, $this);
+				return Router::run($hook['controller'], $hook['action'], array($request), $this);
 			}
 		}
 		throw new \Exception(__('Controller hook does not exist!'));

@@ -20,12 +20,12 @@ class FrontController extends Controller {
 		
 		Coxis::load();
 
-		Event::trigger('start');
+		Hook::trigger('start');
 			
 		//Dispatch to target controller
 		$output = Router::dispatch($this);
-		
-		$output = Event::filter('output', $output);
+
+		Hook::trigger('filter_output', array(), null, $output);
 
 		//Send the response
 		Response::setContent($output)->send();

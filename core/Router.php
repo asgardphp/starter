@@ -10,10 +10,10 @@ class Router {
 			$controllerClassName = $controllerName.'Controller';
 			$controller = new $controllerClassName();
 			$actionName = static::$request['action'];
-			$params = static::$request;
+			$params = array(static::$request);
 			
 			static::runAction($controller, 'configure', $params, $src, false);
-			Event::trigger('beforeDispatchAction');
+			\Coxis\Core\Hook::trigger('beforeDispatchAction');
 			return static::runAction($controller, $actionName, $params, $src);
 		}
 		else

@@ -28,15 +28,29 @@ class Controller {
 			HTML::code('<link rel="canonical" href="'.$canonical.'">');
 	}
 
+	public static function hookOn($hookName, $cAction) {
+		$cAction = array_values($cAction);
+		$controller = $cAction[0];
+		$action = $cAction[1];
+		\Coxis\Core\Hook::hookOn($hookName, function($chain, $arg1, $arg2, $arg3, $arg4,
+			$arg5, $arg6, $arg7, $arg8, $arg9, $arg10) use($controller, $action) {
+			$args = array(&$arg1, &$arg2, &$arg3, &$arg4, &$arg5, &$arg6, &$arg7, &$arg8, &$arg9, &$arg10);
+			echo Router::run($controller, $action, $args);
+		});
+	}
+
 	public function run($action, $params=array(), $showView=false) {
 		$this->view = $action.'.php';
 		if(($actionName=$action) != 'configure')
 			$actionName = $action.'Action';
 		
+		if(!is_array($params))
+			$params = array($params);
+
 		ob_start();
-		$result = $this->$actionName($params);
+		$result = call_user_func_array(array($this, $actionName), $params);
 		$controllerBuffer =  ob_get_clean();
-		
+
 		if($controllerBuffer)
 			return $controllerBuffer;
 		elseif(!$showView)
@@ -64,10 +78,12 @@ class Controller {
 		$reflection = new \ReflectionObject($this);
 		$dir = dirname($reflection->getFileName());
 		$_viewfile = $dir.'/../views/'.strtolower(preg_replace('/Controller$/i', '', Importer::basename(get_class($this)))).'/'.$view;
+		if(!file_exists($_viewfile))
+			return null;
 		
 		unset($dir);
 		unset($reflection);
-		
+
 		foreach($_args as $_key=>$_value)
 			$$_key = $_value;#TODO, watchout keywords
 		
@@ -75,6 +91,7 @@ class Controller {
 		Coxis::set('in_view', true);
 		include($_viewfile);
 		Coxis::set('in_view', false);
+
 		return ob_get_clean();
 	}
 	

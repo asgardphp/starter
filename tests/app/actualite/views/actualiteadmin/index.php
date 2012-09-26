@@ -46,7 +46,7 @@
 												<td><?php echo $actualite->created_at ?></td>
 												<td><a href="<?php echo $this->url_for('edit', array('id'=>$actualite->id)) ?>"><?php echo $actualite ?></a></td>
 												<td class="actions">
-													<?php \Coxis\Core\Event::trigger_show('coxis_actualite_actions', $actualite) ?>
+													<?php \Coxis\Core\Hook::trigger('coxis_actualite_actions', $actualite) ?>
 													<a class="delete" href="<?php echo $this->url_for('delete', array('id'=>$actualite->id)) ?>">Supprimer</a>
 												</td>
 											</tr>
