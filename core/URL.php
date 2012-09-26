@@ -71,7 +71,7 @@ class URL {
 		if(is_array($what)) {
 			$controller = strtolower($what[0]);
 			$action = strtolower($what[1]);
-			foreach(BundlesManager::$routes as $route_params) {
+			foreach(Router::getRoutes() as $route_params) {
 				$route = $route_params['route'];
 				if(strtolower($route_params['controller']) == $controller && strtolower($route_params['action']) == $action)
 					if($relative)
@@ -83,7 +83,7 @@ class URL {
 		#route
 		else {
 			$what = strtolower($what);
-			foreach(BundlesManager::$routes as $route_params) {
+			foreach(Router::getRoutes() as $route_params) {
 				$route = $route_params['route'];
 				if($route_params['name'] != null && strtolower($route_params['name']) == $what)
 					if($relative)

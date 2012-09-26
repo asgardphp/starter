@@ -248,10 +248,7 @@ class ModelAdminController extends AdminParentController {
 		$hook['route'] = str_replace(':route', $hook['route'], \Coxis\Core\Router::getRouteFor(array(static::getControllerName(), 'hooks')));
 		$hook['controller'] = static::getControllerName();
 		$hook['action'] = 'hooks';
-		// d($hook);
-		#coxis_Coxis\App\Actualite\Models\Actualite_promote
-		#coxis_\\Coxis\\App\\Actualite\\Models\\Actualite_promote
-		\Coxis\Core\BundlesManager::$routes[] = $hook;
+		\Coxis\Core\Router::addRoute($hook);
 	}
 	
 	/**

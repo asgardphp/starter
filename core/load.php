@@ -12,4 +12,4 @@ function url_for($what, $params=array(), $relative=true) {
 BundlesManager::loadBundles();
 //User Session
 User::start();
-Router::parseRoutes(BundlesManager::$routes);
+Router::parseRoutes();

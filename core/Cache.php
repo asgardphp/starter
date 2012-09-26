@@ -11,9 +11,14 @@ class Cache {
 		}
 	}
 
-	public static function get($file) {
+	public static function get($file, $default=null) {
 		if(Config::get('cache', 'method') == 'apc') {
-			return apc_fetch(Config::get('key').'-'.$file);
+			$success = null;
+			$res = apc_fetch(Config::get('key').'-'.$file, $success);
+			if($success)
+				return $res;
+			else
+				return $default;
 		}
 		elseif(Config::get('cache', 'method') == 'file') {
 			try {
