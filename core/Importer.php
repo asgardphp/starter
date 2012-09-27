@@ -46,15 +46,9 @@ namespace Coxis\Core {
 			$class = preg_replace('/^\\\+/', '', $class);
 			$alias = isset($params['as']) ? $params['as']:null;
 			$intoNamespace= isset($params['into']) ? $params['into']:null;
-#if($class == 'Coxis\Bundles\Behaviors\Controllers\ORMHandler')
-#d($class, $alias, $intoNamespace, $params['into']);
 			
 			if($intoNamespace == '.')
 				$intoNamespace = '';
-		
-			//~ $path = static::class2path($class);
-			//~ if($class == 'Coxis\Core\Config')
-	//~ d($class, static::class2path($class), static::$preimported);
 			
 			if(isset(static::$preimported[$class])) {
 				if(static::_import(static::$preimported[$class], array('as'=>false))) {
@@ -80,18 +74,12 @@ namespace Coxis\Core {
 			if($res = static::loadClass($class)) {
 				if($res !== true)
 					$class = $res;
-#if($class == 'Coxis\Bundles\Behaviors\Controllers\ORMHandler')
-#d($class, class_exists($class));
 				#import as ..
 				if($alias !== false) {
 					if(!$alias)
 						$alias = ($intoNamespace ? $intoNamespace.'\\':'').static::basename($class);
 					if($class != $alias) {
 						try {
-#if($class == 'Coxis\Core\BundlesManager')				
-#d(12, $alias, class_exists('Coxis\Core\BundlesManager', false));
-#if($class == 'Coxis\Bundles\Behaviors\Controllers\ORMHandler')
-#d($class, $alias);
 							class_alias($class, $alias);
 						} catch(\Exception $e) {
 							return false;
@@ -110,13 +98,7 @@ namespace Coxis\Core {
 						$next = $base;
 					else
 						$next = str_replace(DIRECTORY_SEPARATOR, '\\', dirname($dir)).'\\'.$base;
-#d($params;
-#d($intoNamespace, $params);
-#$r = static::_import($next, array('into'=>$intoNamespace, 'as'=>$alias));
-#d(class_exists('Coxis\Core\Cli\BundlesManager', false), class_exists('Coxis\Core\BundlesManager', false));
-#return $r;
-#if($next == 'Coxis\Bundles\Controller')
-#d($next);
+
 					return static::_import($next, array('into'=>$intoNamespace, 'as'=>$alias));
 				}
 			
@@ -143,7 +125,6 @@ namespace Coxis\Core {
 			$namespace = strtolower(dirname($namespace));
 
 			if($namespace != '.')
-				#$path = str_replace('\\', DIRECTORY_SEPARATOR , $namespace).DIRECTORY_SEPARATOR ;
 				$path = $namespace.DIRECTORY_SEPARATOR;
 			else
 				$path = '';
@@ -215,53 +196,22 @@ namespace Coxis\Core {
 					
 					#remove, only for testing class loading
 					//~ return false;
-#if($class == 'Controller')					
-#d(Autoloader::$preloaded);
-
-#if($class == 'Controller')
-#	d(strtolower(static::basename($class)));
 					foreach(Autoloader::$preloaded as $v)
-#if($v[0] == 'controller')
-#d(strtolower(static::basename($class)), $v);
 						if(strtolower(static::basename($class)) == $v[0])
-							#if($class == 'Controller')
-						#		d(1,$v);
-#else
 							$classes[] = $v;
-#d($classes);		
-#if($class == 'Controller')
-#	d($classes);
 					if(sizeof($classes) == 1) {
 						$before = get_declared_classes();
 						static::loadClassFile($classes[0][1]);
-#require_once('core/Controller.php');
 						$after = get_declared_classes();
 						
 						$diff = array_diff($after, $before);
-#if($class == 'Controller')
-#d($diff, $after);
-
-#if($class == 'Controller')						{
-#	require_once($classes[0][1]);
-#d(static::basename($class), class_exists(static::basename($class), false), $classes[0][1]);
-#}
-						if(class_exists(static::basename($class), false)) {
-							#if($class == 'Coxis\Bundles\Behaviors\Controllers\ORMHandler')
-							#	d($class, class_exists($class), static::basename($class));
-							return static::basename($class);							
-							#return true;
-						}
+						if(class_exists(static::basename($class), false))
+							return static::basename($class);
 						else {
 							#maybe the loaded class uses another namespace?
-#if($class == 'Controller')
-#d($diff);
 							$res = array_values(preg_grep('/'.static::basename($class).'$/i', $diff));
 							try {
-#if($class == 'Controller')
-#d($res);
 								$loadedClass = $res[sizeof($res)-1];
-#if($class == 'Controller')
-#d($loadedClass, $class);
 								class_alias($loadedClass, $class);
 								return true;
 							} catch(\ErrorException $e) {
@@ -269,7 +219,10 @@ namespace Coxis\Core {
 							}
 						}
 					}
-					#if no or multiple classes, don't load
+					#if nmultiple classes, don't load
+					elseif(sizeof($classes) > 1)
+						throw new \Exception('There are multiple classes '.$class);
+					#if no class, don't load
 					else
 						return false;
 				}

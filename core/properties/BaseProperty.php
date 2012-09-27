@@ -28,25 +28,12 @@ class BaseProperty {
 		return '';
 	}
 
-	// public function isI18N() {
-	// 	return (isset($this->params['i18n']) && $this->params['i18n']);
-	// }
-
 	public function getRules() {
 		$res = $this->params;
-		// try {
 		$res[$res['type']] = true;
-// 	} catch(\Exception $e) {
-// d($this);
-// 	}
 		unset($res['type']);
+		unset($res['setHook']);
 		return $res;
-
-		/*$rules = array();
-		if(isset($this->params['length']))
-			$rules['length'] = $this->params['length'];
-
-		return $rules;*/
 	}
 
 	public function serialize($obj) {

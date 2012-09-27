@@ -21,6 +21,10 @@ class Router {
 		//~ 'search'	=>	'coxis:test',	#search for bundles
 		'import'	=>	'coxis:import',	#import bundle
 		'build'	=>	'coxis:build',	#build bundles from build.yml
+		'install'	=>	'coxis:install',	
+		'install-all'	=>	'coxis:installAll',	
+		'console'	=>	'coxis:console',	
+		'publish'	=>	'coxis:publish',	
 		
 		'dump'	=>	'db:dump',	#dump data into data.yml
 		'backup-db'	=>	'db:backup',	#dump data into default yml file

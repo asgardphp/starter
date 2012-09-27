@@ -22,4 +22,8 @@ class DateProperty extends BaseProperty {
 	public function set($val) {
 		return Date::fromDatetime($val);
 	}
+
+	public function getSQLType() {
+		return 'date';
+	}
 }

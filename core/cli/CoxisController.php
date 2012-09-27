@@ -2,13 +2,91 @@
 namespace Coxis\Core\Cli;
 
 #todo replace with a distributed architecture
-define('_GENERATOR_DIR_', 'C:\Users\leyou\Documents\projects\coxisgenerator');
 
 class CoxisController extends CLIController {
 	public function testAction($request) {
-		//~ d($request);
-		
 		echo 'here';
+	}
+
+	public function publishAction($request) {
+		$bundle = $request[0];
+		static::publishBundle($bundle);
+	}
+
+	public static function publishBundle($bundle) {
+		echo 'Publishing assets of bundle '.$bundle.'..'."\n";
+		$bundle_path = 'bundles\\'.$bundle.'\\';
+		if(file_exists($bundle_path.'web') && is_dir($bundle_path.'web'))
+			static::copyDir($bundle_path.'web', 'web/bundles/'.$bundle);
+	}
+
+	public function consoleAction($request) {
+		echo 'Starting console mode..'."\n";
+		echo 'Type quit to quit.'."\n";
+		$fh = fopen('php://stdin', 'r');
+		echo '>';
+		$cmd = fgets($fh, 1024);
+		while($cmd != "quit\r\n") {
+			$res = null;
+			if(!preg_match('/;$/', $cmd))
+				$cmd .= ';';
+
+			$worked = @eval('$res = '.$cmd);
+			if($worked !== null) {
+				$worked = @eval($cmd);
+				if($worked !== null)
+					echo 'Invalid command'."\n";
+			}
+			echo "\n".'Result: '.$res;
+			echo "\n";
+			echo '>';
+			$cmd = fgets($fh, 1024);
+		}
+		echo 'Quit..'."\n";
+	}
+
+	public function installAllAction($request) {
+		echo 'Installing all bundles..'."\n";
+		foreach(BundlesManager::getBundles() as $bundle)
+			static::installBundle($bundle);
+	}
+
+	public function installAction($request) {
+		$bundle = $request[0];
+
+		echo 'Installing '.$bundle.'..'."\n";
+
+		$bundle_path = 'bundles\\'.$bundle.'\\';
+
+		if(!(file_exists($bundle_path) && is_dir($bundle_path))) {
+			#copy bundle files
+			#todo replace with distributed solution
+			if(file_exists('C:\Users\leyou\Documents\projects\coxisgenerator\bundles\\'.$bundle))
+				static::copyDir('C:\Users\leyou\Documents\projects\coxisgenerator\bundles\\'.$bundle, 'bundles\\'.$bundle);
+			else
+				die('Bundle '.$bundle.' does not exist.');
+		}
+
+		static::installBundle($bundle);
+	}
+
+	public static function installBundle($bundle) {
+		$bundle_path = 'bundles\\'.$bundle.'\\';
+
+		$yaml = new sfYamlParser();
+		if(file_exists($bundle_path.'data')) {
+			foreach(glob($bundle_path.'data\*') as $file) {
+				$raw = $yaml->parse(file_get_contents($file));
+				foreach($raw as $class=>$all)
+					foreach($all as $one) 
+						$class::create($one);
+			}
+		}
+
+		static::publishBundle($bundle);
+
+		if(file_exists($bundle_path.'install.php'))
+			include(file_exists($bundle_path.'install.php'));
 	}
 	
 	public function backupfilesAction($request) {
@@ -37,7 +115,6 @@ class CoxisController extends CLIController {
 	public function buildAction($request) {
 		$input = $request[0];
 	
-		//~ include('vendors/yaml/sfYamlParser.php');
 		$yaml = new sfYamlParser();
 		$raw = $yaml->parse(file_get_contents($input));
 		$bundles = array();
@@ -104,11 +181,6 @@ class CoxisController extends CLIController {
 			foreach($bundle['model']['properties'] as $property => $params)
 				if(!isset($bundle['coxis_admin']['form']['fields'][$property]))
 					$bundle['coxis_admin']['form']['fields'][$property] = array();
-			//~ if(is_array($bundle['coxis_admin']['form']['fields']))
-				//~ foreach($bundle['coxis_admin']['form']['fields'] as $key=>$params) {
-					//~ if(!isset($params['type']))
-						//~ $bundle['coxis_admin']['form']['fields'][$key]['type'] = 'text';
-				//~ }
 			
 			$bundles[$bundle_name] = $bundle;
 		}
@@ -122,7 +194,7 @@ class CoxisController extends CLIController {
 				'_modeladmin' =>	$bundle['model']['meta']['name'].'admin',
 			);
 			
-			static::copyDir(_GENERATOR_DIR_.'/base_bundle/', 'app/'.$bundle['name'].'/');
+			static::copyDir('core/cli/base_bundle/', 'app/'.$bundle['name'].'/');
 			static::processDir('app/'.$bundle['name'], $bundle, $bundle_filenames);
 		
 			\Coxis\Core\Autoloader::preloadDir('app/'.$bundle['name'].'/models');
@@ -143,18 +215,14 @@ class CoxisController extends CLIController {
 				$bundle['coxis_admin']['form']['display'] = array_merge(
 					array_keys($modelName::properties()),
 					array_keys($modelName::$relationships)
-					// ,
-					// array_keys($modelName::$files)
 				);
 			}
 			
-			static::copyDir(_GENERATOR_DIR_.'/base_bundle2/', 'app/'.$bundle['name'].'/');
+			static::copyDir('core/cli/base_bundle2/', 'app/'.$bundle['name'].'/');
 			static::processDir('app/'.$bundle['name'], $bundle, $bundle_filenames);
 		}
 			
 		echo "\n\n".'Bundles created: '.implode(', ', array_keys($bundles));
-			
-		//~ build_db();
 	}
  
 	public static function promptConfirmation($msg) {
@@ -186,15 +254,13 @@ class CoxisController extends CLIController {
 	    $dir = opendir($src); 
 		if(!file_exists($dst))
 			mkdir($dst, 0777, true);
-	    while(false !== ( $file = readdir($dir)) ) { 
-		if (( $file != '.' ) && ( $file != '..' )) { 
-		    if ( is_dir($src . '/' . $file) ) { 
-			static::copyDir($src . '/' . $file,$dst . '/' . $file); 
-		    } 
-		    else { 
-			copy($src . '/' . $file,$dst . '/' . $file); 
-		    } 
-		} 
+	    while(false !== ($file = readdir($dir))) { 
+			if ($file != '.' && $file != '..') { 
+			    if(is_dir($src.'/'.$file))
+					static::copyDir($src.'/'.$file,$dst.'/'.$file);
+			    else
+					copy($src.'/'.$file,$dst.'/'.$file);
+			} 
 	    } 
 	    closedir($dir); 
 	} 
@@ -208,42 +274,25 @@ class CoxisController extends CLIController {
 				if(strpos($filename, '.pre')!==false)
 					static::processFile($dir.'/'.$filename, $bundle, $bundle_filenames);
 			}
-			else {
-			//~ die($filename);
+			else 
 				static::processDir($dir.'/'.$filename, $bundle, $bundle_filenames);
-			}
-			//~ echo $filename."\n";
 			$filename2 = str_replace('.pre', '', $filename);
-			if(isset($bundle_filenames[$filename2])) {
-				//~ echo $bundle_filenames[$filename];
+			if(isset($bundle_filenames[$filename2])) 
 				static::myrename($dir.'/'.$filename, $dir.'/'.$bundle_filenames[$filename2]);
-			}
-			elseif($filename != $filename2) {
+			elseif($filename != $filename2)
 				static::myrename($dir.'/'.$filename, $dir.'/'.$filename2);
-			}
 		}
 	}
 	
 	public static function processFile($file_path, $bundle) {
-	//~ var_dump($bundle['model']['files']);die();
-	//~ echo strpos($file_path, '_Model.php')."\n";
-		//~ echo '--'."\n";
 		ob_start();
 		include($file_path);
 		$content = ob_get_contents();
 		ob_end_clean();
-		//~ echo '----'."\n";
-	//~ echo $file_path."\n";
-		//~ if(strpos($file_path, '_Model.php') > 0)
-			//~ die('-'.$content);
-		//~ die($file_path);
-		//~ if(strpos($file_path, 'Actualite.php'))
-			//~ die($content);
+
 		$content = str_replace('<%', '<?php', $content);
 		$content = str_replace('%>', '?>', $content);
-		//~ $fp = fopen($file_path, 'w+');
-		//~ fwrite($fp, $content);
-		//~ fclose($fp);
+
 		file_put_contents($file_path, $content);
 	}
 	

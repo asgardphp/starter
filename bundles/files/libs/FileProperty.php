@@ -12,6 +12,10 @@ class FileProperty extends BaseProperty {
 		return $rules;
 	}
 
+	public function getSQLType() {
+		return 'varchar(255)';
+	}
+
 	public function getDefault() {
 		return new ModelFile($this->model, $this->name, null);
 	}

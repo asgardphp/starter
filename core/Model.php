@@ -10,12 +10,12 @@ abstract class Model {
 	public $data = array(
 		'properties'	=>	array(),
 	);
-	public $_is_loaded;
 
 	public function __construct($param='') {
-		$this->_is_loaded = false;
-		$this->trigger('construct', array($this, $param));
-		if(!$this->_is_loaded) {
+		$chain = new HookChain();
+		$chain->found = false;
+		$this->triggerChain($chain, 'construct', array($this, $param));
+		if(!$chain->found) {
 			if(is_array($param))
 				$this->loadDefault()->set($param);
 			else
@@ -42,8 +42,9 @@ abstract class Model {
 
 	public static function __callStatic($name, $arguments) {
 		$chain = new HookChain();
+		$chain->found = false;
 		$res = static::triggerChain($chain, 'callStatic', array($name, $arguments));
-		if(!$chain->executed)
+		if(!$chain->found)
 			throw new \Exception('Static method '.$name.' does not exist for model '.static::getModelName());
 
 		return $res;
@@ -51,8 +52,9 @@ abstract class Model {
 
 	public function __call($name, $arguments) {
 		$chain = new HookChain;
+		$chain->found = false;
 		$res = static::triggerChain($chain, 'call', array($this, $name, $arguments));
-		if(!$chain->executed) {
+		if(!$chain->found) {
 			try {
 				return static::__callStatic($name, $arguments);
 			} catch(\Exception $e) {
@@ -76,16 +78,17 @@ abstract class Model {
 					array($v => array()) +
 					Tools::array_after(static::$properties, $k);
 			}
+			else
+				if(is_string($v))
+					static::$properties[$k] = array('type'=>$v);
 		}
 		foreach(static::$properties as $k=>$params)
 			static::addProperty($k, $params);
 
-		// Event::trigger('behaviors_pre_load', get_called_class());
 		\Coxis\Core\Hook::trigger('behaviors_pre_load', get_called_class());
 		
 		foreach(static::$behaviors as $behavior => $params)
 			if($params)
-				// Event::trigger('behaviors_load_'.$behavior, get_called_class());
 				\Coxis\Core\Hook::trigger('behaviors_load_'.$behavior, get_called_class());
 
 		static::configure();

@@ -27,17 +27,19 @@ class ORMBehaviorController extends \Coxis\Core\Controller {
 		$modelName::hookOn('callStatic', function($chain, $name, $args) use($ormHandler) {
 			$res = null;
 			#Article::load(2)
-			if($name == 'load')
-				$res = $ormHandler->load($args[0]);#id
-			#Article::destroyOne(2)
-			elseif($name == 'destroyOne')
-				return $ormHandler->destroyOne($args[0]);#id
-			#Article::where() / ::limit() / ::orderBy() / ..
-			else
-				$res = $ormHandler->callStatic($name, $args);
-			if($res !== null) {
+			if($name == 'load') {
 				$chain->found = true;
-				return $res;
+				return $ormHandler->load($args[0]);#id
+			}
+			#Article::destroyOne(2)
+			elseif($name == 'destroyOne') {
+				$chain->found = true;
+				return $ormHandler->destroyOne($args[0]);#id
+			}
+			#Article::where() / ::limit() / ::orderBy() / ..
+			else {
+				$chain->found = true;
+				return $ormHandler->callStatic($name, $args);
 			}
 		});
 
@@ -46,6 +48,9 @@ class ORMBehaviorController extends \Coxis\Core\Controller {
 			#$article->isNew()
 			if($name == 'isNew')
 				$res = $ormHandler->isNew($model);
+			#$article->isOld()
+			elseif($name == 'isOld')
+				$res = $ormHandler->isOld($model);
 			#Relations
 			elseif($name == 'relation')
 				$res = $ormHandler->relation($model, $args[0]);#relation name
@@ -58,7 +63,7 @@ class ORMBehaviorController extends \Coxis\Core\Controller {
 		});
 
 		$modelName::hookOn('construct', function($chain, $model, $id) use($ormHandler) {
-			$ormHandler->construct($model, $id);
+			$ormHandler->construct($chain, $model, $id);
 		});
 
 		#$article->destroy()

@@ -1,14 +1,14 @@
 <?php
 class BuildTools {
 	public static function outputPHP($value) {
-		return var_export($value, true);
-		//~ if($value===true)
-			//~ return 'true';
-		//~ elseif($value===false)
-			//~ return 'false';
-		//~ elseif(is_array($value))
-			//~ return '?';
-		//~ else
-			//~ return "'".str_replace("'", "\'", $value)."'";
+		if(is_array($value) && $value === array_values($value)) {
+			$res = 'array('."\n";
+			foreach($value as $v)
+				$res .= "\t".static::outputPHP($v).",\n";
+			$res .= ');';
+			return $res;
+		}
+		else
+			return var_export($value, true);
 	}
 }

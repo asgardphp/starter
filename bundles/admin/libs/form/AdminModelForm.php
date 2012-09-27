@@ -128,7 +128,7 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 		else
 			$label = $options['label'];
 		
-		if(get($this->model->getProperty($widget), 'required'))
+		if($this->model->property($widget)->required)
 			$label .= '*';
 			
 		return $label;

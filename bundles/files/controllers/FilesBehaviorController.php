@@ -47,6 +47,21 @@ class FilesBehaviorController extends \Coxis\Core\Controller {
 				return $model::hasProperty($file[0]) && $model::property($file[0])->type == 'file';
 		});
 
+		$modelName::hookOn('callStatic', function($chain, $name, $args) use($modelName) {
+			$res = null;
+			#Article::files()
+			if($name == 'files') {
+				$res = array();
+				foreach($modelName::properties() as $name=>$property)
+					if($property->type == 'file')
+						$res[$name] = $property;
+			}
+			if($res !== null) {
+				$chain->found = true;
+				return $res;
+			}
+		});
+
 		$modelName::hookBefore('save', function($chain, $model) {
 			foreach($model::properties() as $name=>$property)
 				if($property->type == 'file')
