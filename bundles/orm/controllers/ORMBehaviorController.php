@@ -62,6 +62,15 @@ class ORMBehaviorController extends \Coxis\Core\Controller {
 			}
 		});
 
+		$modelName::hookBefore('validation', function($chain, $model, &$data, &$errors) {
+			foreach($model::$relationships as $name=>$relation) {
+				if(isset($model->data[$name]))
+					$data[$name] = $model->data[$name];
+				else
+					$data[$name] = $model->$name;#todo only use ids and not models
+			}
+		});
+
 		$modelName::hookOn('construct', function($chain, $model, $id) use($ormHandler) {
 			$ormHandler->construct($chain, $model, $id);
 		});

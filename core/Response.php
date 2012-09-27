@@ -83,18 +83,14 @@ class Response {
 
 	public static function send($result=null) {
 		if($result) {
-			try {
-				\Coxis\Core\Event::trigger('end');
-			} catch(\Exception $e) {
-				\Coxis\Core\Error::report($e->getMessage(), $e->getTrace());
-			}
+			\Coxis\Core\Hook::trigger('end');
 			\Coxis\Core\Response::sendHeaders($result->headers);
 			echo $result->content;
 			exit();
 		}
 
-		Event::trigger('output_'.static::$code);
-		Event::trigger('output');
+		\Coxis\Core\Hook::trigger('output_'.static::$code);
+		\Coxis\Core\Hook::trigger('output');
 		
 		$headers = array();
 		if(array_key_exists(static::$code, static::$codes))

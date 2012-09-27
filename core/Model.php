@@ -203,10 +203,10 @@ abstract class Model {
 		$data = $this->toArray();
 
 		$errors = null;
-		$model = $this;
-		$this->trigger('validation', array($data), function($chain, $data, &$errors) use($model) {
+		// $model = $this;
+		$this->trigger('validation', array($this), function($chain, $model, $data, &$errors) {
 			$errors = $model->getValidator()->errors($data);
-		}, $errors);
+		}, $data, $errors);
 		
 		return $errors;
 	}
