@@ -13,8 +13,19 @@ class Validator {
 			if($value !== $as_value) {
 				$msg = $validator->getMessage('same', $attribute, __('The field ":attribute" must be same as ":as".'));
 				return Validator::format($msg, array(
-					'attribute'	=>	$attribute,
+					'attribute'	=>	str_replace('_', ' ', $attribute),
 					'as'	=>	$as,
+				));
+			}
+		});
+
+		static::register('unique', function($attribute, $value, $params, $validator) {
+			$modelName = get_class($validator->model);
+			if($modelName::where(array($attribute => $value))->count() > 0) {
+				$msg = $validator->getMessage('unique', $attribute, __('":value" is already used.'));
+				return Validator::format($msg, array(
+					'attribute'	=>	str_replace('_', ' ', $attribute),
+					'value'	=>	$value,
 				));
 			}
 		});
@@ -23,7 +34,7 @@ class Validator {
 			if($value !== $params[0]) {
 				$msg = $validator->getMessage('equal', $attribute, __('The field ":attribute" is not correct.'));
 				return Validator::format($msg, array(
-					'attribute'	=>	$attribute,
+					'attribute'	=>	str_replace('_', ' ', $attribute),
 				));
 			}
 		});
@@ -32,7 +43,7 @@ class Validator {
 			if(strlen($value) > $params[0]) {
 				$msg = $validator->getMessage('exact_length', $attribute, __('The field ":attribute" must be :length characters.'));
 				return Validator::format($msg, array(
-					'attribute'	=>	$attribute,
+					'attribute'	=>	str_replace('_', ' ', $attribute),
 					'length'	=>	$params[0],
 				));
 			}
@@ -42,7 +53,7 @@ class Validator {
 			if(!preg_match('/^[0-9]*$/', $value)) {
 				$msg = $validator->getMessage('integer', $attribute, __('The field ":attribute" must be an integer.'));
 				return Validator::format($msg, array(
-					'attribute'	=>	$attribute,
+					'attribute'	=>	str_replace('_', ' ', $attribute),
 				));
 			}
 		});
@@ -51,10 +62,10 @@ class Validator {
 			$required = $params[0];
 			if(!$required)
 				return false;
-			if(!($value !== null && $value !== '')) {
+			if($value === null || $value === '') {
 				$msg = $validator->getMessage('required', $attribute, __('The field ":attribute" is required.'));
 				return Validator::format($msg, array(
-					'attribute'	=>	$attribute,
+					'attribute'	=>	str_replace('_', ' ', $attribute),
 				));
 			}
 		});
@@ -63,7 +74,7 @@ class Validator {
 			if(!filter_var($value, FILTER_VALIDATE_EMAIL)) {
 				$msg = $validator->getMessage('email', $attribute, __('The field ":attribute" must be a valid e-mail address.'));
 				return Validator::format($msg, array(
-					'attribute'	=>	$attribute,
+					'attribute'	=>	str_replace('_', ' ', $attribute),
 				));
 			}
 		});
@@ -109,9 +120,9 @@ class Validator {
 					$callback = $params;
 					$params = array();
 				}
-				elseif(isset(static::$rules[$rule]))
-					if(!is_array($params))
-						$params = array($params);
+				// elseif(isset(static::$rules[$rule]))
+				// 	if(!is_array($params))
+				// 		$params = array($params);
 					
 				$res[$attribute][] = array(
 					'rule'	=>	$rule, 
@@ -137,8 +148,11 @@ class Validator {
 				$data[$key] = null;
 		
 		$errors = array();
-		foreach($data as $attribute=>$val)
-			$errors[] = $this->attributeError($attribute, $val, $data);
+		foreach($data as $attribute=>$val) {
+			$res = $this->attributeError($attribute, $val, $data);
+			if($res)
+				$errors[$attribute][] = $res;
+		}
 		
 		return array_filter($errors);
 	}
@@ -166,9 +180,7 @@ class Validator {
 			$callback = $constrain['callback'];
 			$params = $constrain['params'];
 			
-			if(!is_array($params))
-				$params = array($params);
-			$params = array_merge($params, array($data));
+			$params = array($params, $data);
 			$msg = $this->error($rule, $callback, $attribute, $val, $params);
 			
 			if($msg)

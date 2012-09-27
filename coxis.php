@@ -32,17 +32,6 @@ function get() {
 	
 	return $result;
 }
-function send($result) {
-	#todo Move this to response send
-	try {
-		\Coxis\Core\Event::trigger('end');
-	} catch(\Exception $e) {
-		Error::report($e->getMessage(), $e->getTrace());
-	}
-	\Coxis\Core\Response::sendHeaders($result->headers);
-	echo $result->content;
-	exit();
-}
 function __($key, $params=array()) {
 	return \Coxis\Core\Locale::translate($key, $params);
 }
@@ -61,7 +50,7 @@ set_error_handler(function ($errno, $errstr, $errfile, $errline) {
 set_exception_handler(function ($e) {
 	if($e instanceof \ErrorException) {
 		$msg = '('.$e->getCode().') '.$e->getMessage().'<br>'.$e->getFile().' ('.$e->getLine().')';
-		$result = Error::report($msg, $e->getTrace());
+		$result = \Coxis\Core\Error::report($msg, $e->getTrace());
 	}
 	else {
 		$first_trace = array(array(
@@ -70,17 +59,15 @@ set_exception_handler(function ($e) {
 		));
 		$result = \Coxis\Core\Error::report($e->getMessage(), array_merge($first_trace, $e->getTrace()));
 	}
-	send($result);
+	\Coxis\Core\Response::send($result);
 });
-//~ echo $a;
 register_shutdown_function(function () {
 	chdir(dirname(__FILE__));//wtf?
 	#todo get the full backtrace for shutdown errors
 	if($e=error_get_last()) {
 		while(ob_get_level()){ ob_end_clean(); }
-		//~ var_dump(debug_backtrace());die();
 		$result = \Coxis\Core\Error::report("($e[type]) $e[message]<br>
 			$e[file] ($e[line])".debug_backtrace(), array(array('file'=>$e['file'], 'line'=>$e['line'])));
-		send($result);
+		\Coxis\Core\Response::send($result);
 	}
 });

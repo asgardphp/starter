@@ -20,6 +20,8 @@ class DateProperty extends BaseProperty {
 	}
 
 	public function set($val) {
+		if(!$val)
+			return null;
 		return Date::fromDatetime($val);
 	}
 }

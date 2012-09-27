@@ -42,7 +42,7 @@ class Event {
 		$hookName = strtolower($hookName);
 		if(isset(static::$hooks_table[$hookName]))
 			foreach(static::$hooks_table[$hookName] as $hook)
-				#should not only check is_array
+				#todo should not only check is_array
 				if(is_array($hook))
 					Router::run($hook['controller'], $hook['action'], $args, null, false);
 				elseif(is_callable($hook))

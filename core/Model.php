@@ -137,7 +137,7 @@ abstract class Model {
 		if(!$force) {
 			#validate params and files
 			if($errors = $this->errors()) {
-				$msg = implode('<br>'."\n", $errors);
+				$msg = implode("\n", Tools::flateArray($errors));
 				$e = new ModelException($msg);
 				$e->errors = $errors;
 				throw $e;
@@ -167,8 +167,11 @@ abstract class Model {
 	/* VALIDATION */
 	public function getValidator() {
 		$constrains = array();
-		foreach(static::$properties as $name=>$property)
-			$constrains[$name] = $property->getRules();
+		$model = $this;
+		$this->trigger('constrains', function($chain, &$constrains) use($model) {
+			foreach($model::$properties as $name=>$property)
+				$constrains[$name] = $property->getRules();
+		}, array(), $constrains);
 		
 		if(isset(static::$messages))
 			$messages = static::$messages;
@@ -176,6 +179,7 @@ abstract class Model {
 			$messages = array();
 		
 		$validator = new Validator($constrains, $messages);
+		$validator->model = $this;
 
 		return $validator;
 	}
@@ -195,9 +199,9 @@ abstract class Model {
 
 		$errors = null;
 		$model = $this;
-		$this->trigger('validation', function($chain, $data, &$errors) use($model) {
+		$this->trigger('validation', function($chain, $model, &$data, &$errors) {
 			$errors = $model->getValidator()->errors($data);
-		}, array($data), $errors);
+		}, array($this), $data, $errors);
 		
 		return $errors;
 	}
@@ -283,7 +287,7 @@ abstract class Model {
 		}, array($this, $name, $lang), $res);
 
 		#todo innto a hook
-		if(is_string($res) && $raw && Coxis::get('in_view'))
+		if(is_string($res) && !$raw && Coxis::get('in_view'))
 			return HTML::sanitize($res);
 
 		return $res;

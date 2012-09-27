@@ -32,9 +32,9 @@ class Radio extends WidgetHelper implements \ArrayAccess {
 	
 	public function offsetSet($offset, $value) {
 		if(is_null($offset))
-			$this->params[] = $value;
+			$this->params['choices'][] = $value;
 		else
-			$this->params[$offset] = $value;
+			$this->params['choices'][$offset] = $value;
 	}
 
 	public function offsetExists($offset) {

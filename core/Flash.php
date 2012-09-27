@@ -41,26 +41,15 @@ class Flash {
 		static::showError();
 	}
 	
-	public static function flateArray($arr) {
-		$res = array();
-		foreach($arr as $k=>$v)
-			if(is_array($v))
-				$res = array_merge($res, static::flateArray($v));
-			else
-				$res[] = $v;
-				
-		return $res;
-	}
-	
 	public static function showSuccess() {
-		foreach(static::flateArray(static::$messages['success']) as $msg)
+		foreach(Tools::flateArray(static::$messages['success']) as $msg)
 			echo '<div class="message success"><p>'.$msg.'</p></div>'."\n";
 		static::$messages['success'] = array();	
 		static::persist();
 	}
 	
 	public static function showError() {
-		foreach(static::flateArray(static::$messages['error']) as $msg)
+		foreach(Tools::flateArray(static::$messages['error']) as $msg)
 			echo '<div class="message errormsg"><p>'.$msg.'</p></div>'."\n";
 		static::$messages['error'] = array();	
 		static::persist();

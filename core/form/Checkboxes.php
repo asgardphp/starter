@@ -1,7 +1,7 @@
 <?php
 namespace Coxis\Core\Form;
 
-class Checkboxes extends WidgetHelper implements \ArrayAccess {
+class Checkboxes extends WidgetHelper implements \ArrayAccess, \Iterator {
 	private $pos=0;
 	
 	function __construct($dad, $name, $params, $value) {
@@ -17,20 +17,36 @@ class Checkboxes extends WidgetHelper implements \ArrayAccess {
 		return $this;
 	}
 	
-	public function hasNext() {
-		return ($this->pos < sizeof($this->params['choices']));
-	}
-	
 	public function next() {
-		if($this->hasNext()) {
-			$keys = array_keys($this->params['choices']);
-			return new CheckboxInput($this, $keys[$this->pos++]);
-		}
-		else
-			return false;
+		$this->pos++;
 	}
+  
+    public function key()  {
+    	return $this->pos;
+    }
+  
+    public function valid() {
+		return ($this->pos < sizeof($this->params['choices']));
+    }
+  
+    public function current() {
+    	$keys = array_keys($this->params['choices']);
+		return new CheckboxInput($this, $keys[$this->pos]);
+    }
 	
-	//todo foreach($checkboxes as $box) ..
+	// public function hasNext() {
+	// 	return ($this->pos < sizeof($this->params['choices']));
+	// }
+	
+	// public function next() {
+	// 	if($this->hasNext()) {
+	// 		$keys = array_keys($this->params['choices']);
+	// 		return new CheckboxInput($this, $keys[$this->pos++]);
+	// 	}
+	// 	else
+	// 		return false;
+	// }
+	
 	//todo be able to print label directly : echo $box->label;
 	
 	public function offsetSet($offset, $value) {

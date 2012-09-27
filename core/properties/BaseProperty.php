@@ -34,19 +34,10 @@ class BaseProperty {
 
 	public function getRules() {
 		$res = $this->params;
-		// try {
 		$res[$res['type']] = true;
-// 	} catch(\Exception $e) {
-// d($this);
-// 	}
 		unset($res['type']);
+		unset($res['setHook']);
 		return $res;
-
-		/*$rules = array();
-		if(isset($this->params['length']))
-			$rules['length'] = $this->params['length'];
-
-		return $rules;*/
 	}
 
 	public function serialize($obj) {

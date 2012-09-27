@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Core\ORM;
+namespace Coxis\Bundles\ORM\Libs;
 
 class ORM {
 	private $model = null;

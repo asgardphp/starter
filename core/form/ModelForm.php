@@ -27,7 +27,7 @@ class ModelForm extends Form {
 			elseif($properties->type == 'file')
 				$widget_params['type'] = 'file';
 			if($properties->in) {
-				$widget_params['choices'][] = 'Choisir';#todo i18n
+				// $widget_params['choices'][] = 'Choisir';#todo i18n
 				foreach($properties->in as $v)
 					$widget_params['choices'][$v] = $v;
 			}
@@ -46,8 +46,9 @@ class ModelForm extends Form {
 			#todo why using _id instead of name?!
 			
 			$ids = array();
+			// $ids[] = 'Choisir';#todo i18n
 			foreach($relation['model']::all() as $v)
-				$ids[$v->id] = $v;
+				$ids[$v->id] = (string)$v;
 					
 			if($relation['type'] == 'hasOne' || $relation['type'] == 'belongsTo') {
 				$widget_params = array(
@@ -95,11 +96,13 @@ class ModelForm extends Form {
 				if(is_subclass_of($sub_widget, 'Coxis\Core\Form\AbstractGroup')) {
 					$widget_errors = $this->errors($sub_widget);
 					if(sizeof($widget_errors) > 0)
-						$errors[$name] = $widget_errors;
+						$errors[$sub_widget->name] = $widget_errors;
 				}
 			}
 		}
 		
+		$this->errors = $errors;
+
 		return $errors;
 	}
 	

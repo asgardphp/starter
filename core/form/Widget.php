@@ -22,7 +22,15 @@ class Widget extends WidgetHelper {
 		return $this;
 	}
 	
+	public function radioInput($value) {
+		$radios = $this->radio(array(), array($value=>$value));
+		// d($radios);
+		$radios[$value]->input();
+	}
+
+	#todo radio => radios
 	public function radio($options=array(), $choices=null) {
+		#todo options
 		if($choices !== null)
 			$this->params['choices'] = $choices;
 		if(!isset($this->params['choices']))
@@ -31,6 +39,7 @@ class Widget extends WidgetHelper {
 	}
 	
 	public function checkboxes($options=array(), $choices=null) {
+		#todo options
 		if($choices !== null)
 			$this->params['choices'] = $choices;
 		if(!isset($this->params['choices']))
@@ -132,7 +141,8 @@ class Widget extends WidgetHelper {
 			$params = array_merge($options['attrs'], $params);
 				
 		$res = HTMLHelper::tag('select', $params)."\n";
-
+		if(!$multiple)
+			$res .= '<option value="">'.__('Choose').'</option>'."\n";
 		foreach($choices as $k=>$v) {
 			if(is_array($v)){
 				$res .= HTMLHelper::tag('optgroup', array('label'	=>	$k))."\n";
@@ -304,5 +314,21 @@ class Widget extends WidgetHelper {
 		$res = HTMLHelper::tag('input', $params);
 		
 		echo $res;
+	}
+
+	public function getError() {
+		if(isset($this->dad->errors[$this->name]))
+			if(is_array($this->dad->errors[$this->name])) {
+				$res = '';
+				foreach($this->dad->errors[$this->name] as $error)
+					$res .= $error."<br/>\n";
+				return $res;
+			}
+			else
+				return $this->dad->errors[$this->name];
+	}
+
+	public function error() {
+		echo $this->getError();
 	}
 }

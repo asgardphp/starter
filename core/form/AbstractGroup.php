@@ -7,6 +7,7 @@ abstract class AbstractGroup implements \ArrayAccess, \Iterator {
 	public $data = array();
 	public $files = array();
 	protected $widgets = array();
+	public $errors = array();
 	
 	public function getWidgets() {
 		return $this->widgets;
@@ -194,6 +195,7 @@ abstract class AbstractGroup implements \ArrayAccess, \Iterator {
 			}
 		
 		$errors = array_merge($this->my_errors(), $errors);
+		$this->errors = $errors;
 		
 		return $errors;
 	}
@@ -212,7 +214,7 @@ abstract class AbstractGroup implements \ArrayAccess, \Iterator {
 				if(isset($widget->params['choices']))
 					$constrains[$name]['in']	=	array_keys($widget->params['choices']);
 			}
-			
+
 		$validator->setConstrains($constrains);
 		$validator->setMessages($messages);
 
@@ -264,6 +266,10 @@ abstract class AbstractGroup implements \ArrayAccess, \Iterator {
 		$this->widgets[$k] = $this->parseWidgets($v, $k);
 		
 		return $this;
+	}
+
+	public function __isset($name) {
+		return isset($this->widgets[$name]);
 	}
 	
 	/* IMPLEMENTS */

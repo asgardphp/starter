@@ -26,6 +26,24 @@ class Tools {
 		'Samedi'=>'Samedi',
 		'Dimanche'=>'Dimanche',
 	);
+	
+	public static function prependHttp($url) {
+	    if (!preg_match("~^(?:f|ht)tps?://~i", $url)) {
+	        $url = "http://" . $url;
+	    }
+	    return $url;
+	}
+
+	public static function flateArray($arr) {
+		$res = array();
+		foreach($arr as $k=>$v)
+			if(is_array($v))
+				$res = array_merge($res, static::flateArray($v));
+			else
+				$res[] = $v;
+				
+		return $res;
+	}
 
 	public static	function classBasename($class) {
 		return basename(str_replace('\\', DIRECTORY_SEPARATOR, $class));

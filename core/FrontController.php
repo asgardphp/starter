@@ -18,7 +18,7 @@ class FrontController extends Controller {
 		/* WEB RESOURCES */
 		$this->getResource();
 		
-		Coxis::load();
+		require_once('core/load.php');
 
 		Event::trigger('start');
 			

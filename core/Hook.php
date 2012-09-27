@@ -7,7 +7,7 @@ class Hook {
 	#cannot use references with get_func_args
 	public static function trigger($name, $cb=null, $args=array(), &$filter1=null, &$filter2=null, &$filter3=null, &$filter4=null, &$filter5=null, &$filter6=null,
 		&$filter7=null, &$filter8=null, &$filter9=null, &$filter10=null) {
-		return static::triggerChain(new hookChain, $name, $cb, $args, $filter1, $filter2, $filter3, $filter4, $filter5, $filter6,
+		return static::triggerChain(new \Coxis\Core\HookChain, $name, $cb, $args, $filter1, $filter2, $filter3, $filter4, $filter5, $filter6,
 			$filter7, $filter8, $filter9, $filter10);
 	}
 

@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Core\ORM;
+namespace Coxis\Bundles\ORM\Libs;
 
 class CollectionORM extends ORM implements \Coxis\Core\Collection {
 	private $current_model = null;

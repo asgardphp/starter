@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Bundles\Behaviors\Controllers;
+namespace Coxis\Bundles\ORM\Controllers;
 
 class ORMBehaviorController extends \Coxis\Core\Controller {
 	/**

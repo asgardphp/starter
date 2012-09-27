@@ -5,14 +5,14 @@ require_once 'core/Importer.php';
 
 class Autoloader {
 	public static $map = array(
-		//~ 'Somewhere'	=>	'there/somewhere.php',
+		// 'Somewhere'	=>	'there/somewhere.php',
 	);
 	public static $directories = array(
-		//~ 'foo\bar'	=>	'there',
-		//~ 'swift_'	=>	'swift',
+		// 'foo\bar'	=>	'there',
+		// 'swift_'	=>	'swift',
 	);
 	public static $preloaded = array(
-		//~ array('Somewhere', 'there/somewhere.php'),
+		// array('Somewhere', 'there/somewhere.php'),
 	);
 	
 	public static function map() {
@@ -46,9 +46,6 @@ class Autoloader {
 		$dir = str_replace('\\', DIRECTORY_SEPARATOR, $class);
 		$dir = Importer::dirname($dir);
 		$dir = str_replace(DIRECTORY_SEPARATOR, '\\', $dir);
-#		$dir = $class;
-#if($class == 'Coxis\Bundles\Behaviors\Controllers\ORMHandler')
-#d($class, $dir);
 		Importer::_import($class, array('into'=>$dir));
 	}
 }

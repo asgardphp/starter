@@ -2,8 +2,6 @@
 namespace Coxis\Core;
 
 class Coxis {
-	public static $libs = array();
-
 	private static $arrs = array();
 	
 	public static function set() {
@@ -30,9 +28,5 @@ class Coxis {
 				$result = $result[$key];
 		
 		return $result;
-	}
-	
-	public static function load() {
-		require_once('load.php');
 	}
 }

@@ -13,14 +13,12 @@ class Error {
 		ini_set('display_errors', $display);
 	}
 	
-	
-	//todo must be sure there is no error/exception here cause it's not catchable!
 	public static function report($msg, $backtrace=null) {
 		set_error_handler(function(){});
 	
 		if(ob_get_length() > 0)
 			ob_end_clean();
-		
+	
 		Response::setCode(500);
 				
 		ob_start();

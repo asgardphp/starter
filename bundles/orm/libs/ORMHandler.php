@@ -1,4 +1,6 @@
 <?php
+namespace Coxis\Bundles\ORM\Libs;
+
 class ORMHandler {
 	private $model;
 

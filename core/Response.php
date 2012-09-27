@@ -52,7 +52,6 @@ class Response {
 
 	public static function setContent($content) {
 		static::$content = $content;
-		
 		return static::getInstance();
 	}
 
@@ -82,7 +81,18 @@ class Response {
 			header($h);
 	}
 
-	public static function send() {
+	public static function send($result=null) {
+		if($result) {
+			try {
+				\Coxis\Core\Event::trigger('end');
+			} catch(\Exception $e) {
+				\Coxis\Core\Error::report($e->getMessage(), $e->getTrace());
+			}
+			\Coxis\Core\Response::sendHeaders($result->headers);
+			echo $result->content;
+			exit();
+		}
+
 		Event::trigger('output_'.static::$code);
 		Event::trigger('output');
 		
@@ -94,11 +104,7 @@ class Response {
 		foreach(static::$headers as $k=>$v)
 			$headers[] = $k.': '.$v;
 		
-		//~ d(static::$content);
-		//~ d();
-		//~ throw new EndException(new Result($headers, static::$content));
-		send(new Result($headers, static::$content));
-		//~ throw new Exception();
+		static::send(new Result($headers, static::$content));
 	}
 	
 	public static function redirect($url='', $relative=true) {
