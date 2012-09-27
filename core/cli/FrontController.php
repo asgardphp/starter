@@ -30,22 +30,9 @@ class FrontController extends CLIController {
 		BundlesManager::loadBundles();
 		
 		#todo remove
-		try {
-			while(ob_end_clean()){}
-		} catch(\Exception $e) {}
+		while(ob_get_level()){ ob_end_clean(); }
 		
-		//~ try {
-			#alias
-			if(strpos($route, ':') === false)
-				$route = Router::$routes[$route];
-			
-			list($controller, $action) = explode(':', $route);
-
-		//~ d($argv, $args);
-			Router::dispatch($controller, $action, $args);
-		//~ } catch(\Exception $e) {
-			//~ static::usage();
-		//~ }
+		\Coxis\Core\Cli\Router::dispatch($route, $args);
 	}
 	
 	public static function usage() {

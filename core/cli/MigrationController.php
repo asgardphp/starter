@@ -32,10 +32,7 @@ class MigrationController extends CLIController {
 		Router::run('Coxis\Core\Cli\DB', 'backup', $request);
 		echo 'Migrating...'."\n";
 		$migrations = static::todo();
-		//~ d($migrations);
-		//~ d('TODO');
-		
-		//~ d($migrations, $current);
+
 		if(!sizeof($migrations))
 			return;
 		
@@ -107,26 +104,21 @@ class MigrationController extends CLIController {
 		$oldSchemas = array();
 		$tables = DB::query('SHOW TABLES')->all();
 		foreach($tables as $k=>$v) {
-			// $tables[$k] = get(array_values($v), 0);
 			$table = get(array_values($v), 0);
 			$oldSchemas[$table] = static::tableSchema($table);
 		}
-		// d($oldSchemas);
-		// foreach($tables as $table)
-		// 		$oldSchemas[$class] = static::tableSchema($class::getTable());
 		foreach(get_declared_classes() as $class) {
-			//~ if($class instanceof Coxis\Core\ORM\ModelORM) {
 			if(is_subclass_of($class, 'Coxis\Core\Model')) {
-				if(isset($class::$behaviors['orm']) && $class::$behaviors['orm'] == true)
+				// if(!isset($class::$behaviors['orm']) || $class::$behaviors['orm'] != true)
+					// continue;
+				// if(isset($class::$behaviors['orm']) && $class::$behaviors['orm'] == true)
 				if($class == 'Coxis\Core\Model')
 					continue;
-				$class::_autoload();
+				$class::_autoload();#todo use Importer
 				
 				$schema = array();
 				
-				// $oldSchemas[$class] = static::tableSchema($class::getTable());
-				
-				foreach($class::$properties as $name=>$prop) {
+				foreach($class::properties() as $name=>$prop) {
 					if(!$prop->orm)
 						$neworm = array();
 					else
@@ -134,41 +126,18 @@ class MigrationController extends CLIController {
 					if($prop->i18n)
 						continue;
 					if(!isset($prop->orm['type'])) {
-						#match type
-						#and length
-						switch($prop->type) {
-							case 'integer':
-								if($prop->length)
-									$neworm['type'] = 'int('.$prop->length.')';
-								else
-									$neworm['type'] = 'int(11)';
-								break;
-							case 'text':
-								if($prop->length)
-									$neworm['type'] = 'varchar('.$prop->length.')';
-								else
-									$neworm['type'] = 'text';
-								break;
-							case 'date':
-								$neworm['type'] = 'date';
-								break;
-							case 'datetime':
-								$neworm['type'] = 'datetime';
-								break;
-							case 'email':
-								$neworm['type'] = 'varchar(255)';
-								break;
-							case 'file':
-								$neworm['type'] = 'varchar(255)';
-								break;
-							case 'boolean':
-								$neworm['type'] = 'int(1)';
-								break;
-							case 'array':
-								$neworm['type'] = 'text';
-								break;
-							default:
-								throw new \Exception('Cannot convert '.$prop->type.' type');
+						if(method_exists($prop, 'getSQLType'))
+							$neworm['type'] = $prop->getSQLType();
+						else {
+							#match type
+							#and length
+							switch($prop->type) {
+								case 'datetime':
+									$neworm['type'] = 'datetime';
+									break;
+								default:
+									throw new \Exception('Cannot convert '.$prop->type.' type');
+							}
 						}
 					}
 					if(!isset($prop->orm['default']))
@@ -206,28 +175,30 @@ class MigrationController extends CLIController {
 					}
 				}
 
+				uasort($schema, function($a, $b) {
+					if(!isset($a['position']))
+						return 1;
+					if(!isset($b['position']))
+						return -1;
+					if($a['position'] < $b['position'])
+						return 1;
+					return -1;
+				});
+
 				$newSchemas[$class::getTable()] = $schema;
 			}
 		}
 		
 		$oldSchemas = array_filter($oldSchemas);
-			// d($newSchemas);
-			// d($oldSchemas);
-			// d(array_keys($newSchemas));
-			// d(array_keys($oldSchemas));
-			// d($newSchemas, $oldSchemas);
 
 		$up = static::diff($newSchemas, $oldSchemas);
-		//~ d($up);
 		$down = static::diff($oldSchemas, $newSchemas);
-		//~ d($down);
 		
 		if(isset($request[0]))
 			$filename = $request[0];
 		else
 			$filename = 'diff';
 		static::addMigration($up, $down, $filename);
-		//~ die('TODO');
 	}
 	
 	private static function diff($newSchemas, $oldSchemas) {
@@ -299,7 +270,6 @@ class '.$filename.'_'.$i.' {
 	}
 	
 	private static function tabs($str, $tabs) {
-		//~ return $str;
 		return implode("\n".str_repeat("\t", $tabs), explode("\n", $str));
 	}
 	
@@ -308,17 +278,7 @@ class '.$filename.'_'.$i.' {
 		return $migration;
 	}
 	
-	//~ private static function _isset($arr, $key) {
-		//~ try {
-			//~ $arr[$key];
-			//~ return true;
-		//~ } catch(\ErrorException $e) {
-			//~ return false;
-		//~ }
-	//~ }
-	
 	private static function updateColumn($table, $col, $diff) {
-		//~ d($definition);
 		$migration = "\n\t\$table->col('$col')";
 		if(isset($diff['type']))
 			$migration .= "\n		->type('$diff[type]')";
@@ -333,14 +293,12 @@ class '.$filename.'_'.$i.' {
 			else
 				$migration .= "\n		->notAutoincrement()";
 		if(isset($diff['default'])) {
-		//~ if(static::_isset($diff, 'default')) {
 			if($diff['default'] === false)
 				$migration .= "\n		->def(false)";
 			else
 				$migration .= "\n		->def('$diff[default]')";
 		}
 		if(isset($diff['key'])) {
-		//~ if(static::_isset($diff, 'key')) {
 			if($diff['key']=='PRI')
 				$migration .= "\n		->primary()";
 			elseif($diff['key']=='UNI')
@@ -351,16 +309,12 @@ class '.$filename.'_'.$i.' {
 				$migration .= "\n		->dropIndex()";
 		}
 		$migration .= ";";
-		//~ if($col == 'lieu')
-			//~ d($diff, $migration);
 		
 		return $migration;
 	}
 	
 	private static function buildColumnFor($table, $col, $definition) {
-		//~ d($migration);
 		$migration = '';
-		//~ d($definition);
 		$migration = "\n\t\$table->add('$col', '$definition[type]')";
 		if($definition['nullable'])
 			$migration .= "\n		->nullable()";
@@ -380,22 +334,12 @@ class '.$filename.'_'.$i.' {
 	}
 	
 	private static function buildTableFor($class, $definition) {
-		//~ d($class);
-		// $table = $class::getTable();
 		$table = $class;
-		//~ d(_ENV_);
-		//~ d($definition);
 		
 		$migration = "Schema::create('$table', function(".'$table'.") {";
-		//~ $migration .= "\n";
-		//~ d($definition);
-		foreach($definition as $col=>$col_definition) {
-			//~ $migration .= "\t".'$table->add'."('$col', '$col_definition[type]');";
+		foreach($definition as $col=>$col_definition)
 			$migration .= "\t".static::buildColumnFor($table, $col, $col_definition);
-			//~ $migration .= "\n";
-		}
 		$migration .= "\n});";
-		//~ d($migration);
 		
 		return $migration;
 	}

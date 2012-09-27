@@ -35,7 +35,7 @@ class CollectionORM extends ORM implements \Coxis\Core\Collection {
 		
 		$this->reset();
 	}
-	
+
 	public function reset() {
 		parent::reset();
 		
@@ -119,6 +119,14 @@ class CollectionORM extends ORM implements \Coxis\Core\Collection {
 		}
 		
 		return $this;
+	}
+
+	public function create() {
+		$relModel = $this->relation['model'];
+		$new = new $relModel;
+		// $new->
+		d();
+		return $new;
 	}
 	
 	public function remove($ids) {

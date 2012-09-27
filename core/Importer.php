@@ -49,7 +49,7 @@ namespace Coxis\Core {
 			
 			if($intoNamespace == '.')
 				$intoNamespace = '';
-					
+
 			if(isset(static::$preimported[$class])) {
 				if(static::_import(static::$preimported[$class], array('as'=>false))) {
 					$toload = static::$preimported[$class];
@@ -98,6 +98,7 @@ namespace Coxis\Core {
 						$next = $base;
 					else
 						$next = str_replace(DIRECTORY_SEPARATOR, '\\', dirname($dir)).'\\'.$base;
+
 					return static::_import($next, array('into'=>$intoNamespace, 'as'=>$alias));
 				}
 			
@@ -124,7 +125,6 @@ namespace Coxis\Core {
 			$namespace = strtolower(dirname($namespace));
 
 			if($namespace != '.')
-				#$path = str_replace('\\', DIRECTORY_SEPARATOR , $namespace).DIRECTORY_SEPARATOR ;
 				$path = $namespace.DIRECTORY_SEPARATOR;
 			else
 				$path = '';
@@ -195,6 +195,8 @@ namespace Coxis\Core {
 						}
 					
 					#remove, only for testing class loading
+					// d();
+
 					foreach(Autoloader::$preloaded as $v)
 						if(strtolower(static::basename($class)) == $v[0])
 							$classes[] = $v;
@@ -204,8 +206,10 @@ namespace Coxis\Core {
 						$after = get_declared_classes();
 						
 						$diff = array_diff($after, $before);
+
 						if(class_exists(static::basename($class), false)) {
 							#return true;
+							#return static::basename($class);
 						}
 						else {
 							#maybe the loaded class uses another namespace?
@@ -219,7 +223,10 @@ namespace Coxis\Core {
 							}
 						}
 					}
-					#if no or multiple classes, don't load
+					#if nmultiple classes, don't load
+					elseif(sizeof($classes) > 1)
+						throw new \Exception('There are multiple classes '.$class);
+					#if no class, don't load
 					else
 						return false;
 				}

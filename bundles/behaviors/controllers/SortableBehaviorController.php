@@ -30,8 +30,10 @@ class SortableBehaviorController extends \Coxis\Core\Controller {
 				'controller'	=>	'SortableBehavior',
 				'action'			=>	'demote'
 			));
-		
-			\Coxis\Core\Event::addHook('coxis_'.$modelName.'_actions', array('controller' => '\Coxis\Bundles\Behaviors\Controllers\SortableBehavior', 'action' => 'sortableactions'));
+		d
+			\Coxis\Core\Controller::hookOn('coxis_'.$modelName.'_actions', array('controller' => '\Coxis\Bundles\Behaviors\Controllers\SortableBehavior', 'action' => 'sortableactions'));
+
+			// \Coxis\Core\Hook::hookOn('coxis_'.$modelName.'_actions', array('controller' => '\Coxis\Bundles\Behaviors\Controllers\SortableBehavior', 'action' => 'sortableactions'));
 		} catch(\Exception $e) {}#if the admincontroller does not exist for this model
 	}
 	
@@ -60,12 +62,6 @@ class SortableBehaviorController extends \Coxis\Core\Controller {
 		static::reset($modelName);
 		
 		try {
-			//~ $over_model = $modelName::findOne(array(
-				//~ 'conditions'	=>	array(
-					//~ 'position < ?'	=>	array($model->position),
-				//~ ),
-				//~ 'order_by'	=>	'position DESC'
-			//~ ));
 			$over_model = $modelName::where(array('position < ?'=>$model->position))->orderBy('position DESC')->first();
 			
 			$old = $model->position;
@@ -86,12 +82,6 @@ class SortableBehaviorController extends \Coxis\Core\Controller {
 		static::reset($modelName);
 		
 		try {
-			//~ $below_model = $modelName::findOne(array(
-				//~ 'conditions'	=>	array(
-					//~ 'position > ?'	=>	array($model->position),
-				//~ ),
-				//~ 'order_by'	=>	'position ASC'
-			//~ ));
 			$below_model = $modelName::where(array('position > ?'=>$model->position))->orderBy('position ASC')->first();
 			
 			$old = $model->position;
@@ -106,9 +96,6 @@ class SortableBehaviorController extends \Coxis\Core\Controller {
 	}
 	
 	public static function reset($modelName) {
-		//~ $all = $modelName::find(array(
-			//~ 'order_by'	=>	'position ASC'
-		//~ ));
 		$all = $modelName::orderBy('position ASC')->all();
 		
 		#reset positions

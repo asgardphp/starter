@@ -24,4 +24,8 @@ class DateProperty extends BaseProperty {
 			return null;
 		return Date::fromDatetime($val);
 	}
+
+	public function getSQLType() {
+		return 'date';
+	}
 }

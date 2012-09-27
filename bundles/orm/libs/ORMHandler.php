@@ -18,13 +18,18 @@ class ORMHandler {
 				'auto_increment'	=>	true,
 				'key'	=>	'PRI',
 				'nullable'	=>	false,
+				'position' => 1,
 			),
 		));
 		static::loadRelationships($modelName);
 	}
-	
+
 	public function isNew($model) {
 		return !(isset($model->data['properties']['id']) && $model->data['properties']['id']);
+	}
+
+	public function isOld($model) {
+		return !static::isNew($model);
 	}
 
 	public function load($id) {
@@ -172,14 +177,14 @@ class ORMHandler {
 		}
 	}
 
-	public function construct($model, $id) {
+	public function construct($chain, $model, $id) {
 		if(!ctype_digit($id) && !is_int($id))
 			return;
 
 		$res = $this->getORM()->where(array('id' => $id))->dal()->first();
 		if($res) {
 			$model->set($res);
-			$model->_is_loaded = true;
+			$chain->found = true;
 		}
 	}
 

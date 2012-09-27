@@ -7,21 +7,19 @@ class URL {
 	public static function get() {
 		if(!static::$url) {
 			if(isset($_SERVER['PATH_INFO']))
-				$request = $_SERVER['PATH_INFO'];
+				static::$url = $_SERVER['PATH_INFO'];
 			elseif(isset($_SERVER['ORIG_PATH_INFO']))
-				$request = $_SERVER['ORIG_PATH_INFO'];
+				static::$url = $_SERVER['ORIG_PATH_INFO'];
 			elseif(isset($_SERVER['REDIRECT_URL']))
-				$request = $_SERVER['REDIRECT_URL'];
+				static::$url = $_SERVER['REDIRECT_URL'];
 			else
-				$request = '';
-			$request = preg_replace('/^\//', '', $request);
-				
-			static::$url = $request;
+				static::$url = '';
+			static::$url = preg_replace('/^\//', '', static::$url);
 		}
+
+		\Coxis\Core\Hook::trigger('path_filter', static::$url);
 		
-		$request = Event::filter('path_filter', static::$url);
-		
-		return $request;
+		return static::$url;
 	}
 	
 	public static function current() {
@@ -73,7 +71,7 @@ class URL {
 		if(is_array($what)) {
 			$controller = strtolower($what[0]);
 			$action = strtolower($what[1]);
-			foreach(BundlesManager::$routes as $route_params) {
+			foreach(Router::getRoutes() as $route_params) {
 				$route = $route_params['route'];
 				if(strtolower($route_params['controller']) == $controller && strtolower($route_params['action']) == $action)
 					if($relative)
@@ -85,7 +83,7 @@ class URL {
 		#route
 		else {
 			$what = strtolower($what);
-			foreach(BundlesManager::$routes as $route_params) {
+			foreach(Router::getRoutes() as $route_params) {
 				$route = $route_params['route'];
 				if($route_params['name'] != null && strtolower($route_params['name']) == $what)
 					if($relative)

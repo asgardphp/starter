@@ -3,7 +3,7 @@ $config = array(
 	'all' => array(
 		'key'	=>	'coxis',
 		'admin'	=>	array(
-			'footer'	=>	'Si vous rencontrez une difficulté contactez-nous au ...'
+			'footer'	=>	''
 		),
 		'salt'	=>	'FCT7f6ew%^',
 		'imagecache'	=>	false,

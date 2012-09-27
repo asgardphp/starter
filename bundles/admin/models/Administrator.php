@@ -2,20 +2,20 @@
 namespace Coxis\Bundles\Admin\Models;
 
 class Administrator extends \Coxis\Core\Model {
-	#General
-	public function __toString() {
-		return $this->username;
-	}
-	
 	public static $properties = array(
 		'username'    => array(
 			'length'    =>    100,
 		),
 		'password'    => array(
 			'length'    =>    100,
-			'setfilter'  =>    array(array('administrator', 'hash')),
+			'setHook'  =>    array('administrator', 'hash'),
 		),
 	);
+
+	#General
+	public function __toString() {
+		return $this->username;
+	}
 
 	public static $behaviors = array();
 	public static $relationships = array();

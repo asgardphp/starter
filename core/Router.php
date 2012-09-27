@@ -3,6 +3,11 @@ namespace Coxis\Core;
 
 class Router {
 	public static $request;
+	private static $routes = array();
+
+	public static function addRoute($route) {
+		static::$routes[] = $route;
+	}
 
 	public static function dispatch($src=null) {
 		if(method_exists(static::$request['controller'].'Controller', static::$request['action'].'Action')) {
@@ -10,10 +15,10 @@ class Router {
 			$controllerClassName = $controllerName.'Controller';
 			$controller = new $controllerClassName();
 			$actionName = static::$request['action'];
-			$params = static::$request;
+			$params = array(static::$request);
 			
 			static::runAction($controller, 'configure', $params, $src, false);
-			Event::trigger('beforeDispatchAction');
+			\Coxis\Core\Hook::trigger('beforeDispatchAction');
 			return static::runAction($controller, $actionName, $params, $src);
 		}
 		else
@@ -109,7 +114,37 @@ class Router {
 		return $regex;
 	}
 
-	public static function parseRoutes($routes) {
+	public static function sortRoutes() {
+		usort(static::$routes, function($route1, $route2) {
+			$route1 = $route1['route'];
+			$route2 = $route2['route'];
+			
+			while(true) {
+				if(!$route1)
+					return 1;
+				if(!$route2)
+					return -1;
+				$c1 = substr($route1, 0, 1);
+				$c2 = substr($route2, 0, 1);
+				if($c1 == ':' && $c2 != ':')
+					return 1;
+				elseif($c1 != ':' && $c2 == ':')
+					return -1;
+				elseif($c1 != ':' && $c2 != ':') {
+					$route1 = substr($route1, 1);
+					$route2 = substr($route2, 1);
+				}
+				elseif($c1 == ':' && $c2 == ':') {
+					$route1 = preg_replace('/^:[a-zA-Z0-9_]+/', '', $route1);
+					$route2 = preg_replace('/^:[a-zA-Z0-9_]+/', '', $route2);
+				}
+			}
+		});
+	}
+
+	public static function parseRoutes() {
+		static::sortRoutes();
+
 		$url = URL::get();
 		
 		static::$request = array(
@@ -120,7 +155,7 @@ class Router {
 		);
 		
 		/* PARSE ALL ROUTES */
-		foreach($routes as $params) {
+		foreach(static::$routes as $params) {
 			$route = $params['route'];
 			$requirements = $params['requirements'];
 			$method = $params['method'];
@@ -195,10 +230,12 @@ class Router {
 	}
 	
 	public static function getRouteFor($what) {
-		foreach(BundlesManager::$routes as $route) {
-			if($route['controller'] == $what[0] && $route['action'] == $what[1]) {
+		foreach(static::$routes as $route)
+			if($route['controller'] == $what[0] && $route['action'] == $what[1])
 				return $route['route'];
-			}
-		}
+	}
+
+	public static function getRoutes() {
+		return static::$routes;
 	}
 }

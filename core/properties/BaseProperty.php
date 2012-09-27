@@ -28,10 +28,6 @@ class BaseProperty {
 		return '';
 	}
 
-	// public function isI18N() {
-	// 	return (isset($this->params['i18n']) && $this->params['i18n']);
-	// }
-
 	public function getRules() {
 		$res = $this->params;
 		$res[$res['type']] = true;

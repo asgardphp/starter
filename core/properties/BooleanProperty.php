@@ -6,6 +6,10 @@ class BooleanProperty extends BaseProperty {
 		return $rules;
 	}
 
+	public function getSQLType() {
+		return 'int(1)';
+	}
+
 	public function getDefault() {
 		return false;
 	}

@@ -7,6 +7,10 @@ class ArrayProperty extends BaseProperty {
 		return $rules;
 	}
 
+	public function getSQLType() {
+		return 'text';
+	}
+
 	public function getDefault() {
 		return array();
 	}

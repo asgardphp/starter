@@ -8,7 +8,11 @@ class Router {
 		'migration'	=>	'Coxis\Core\Cli\Migration',
 	);
 
-	public static $routes = array(
+	public static function addRoute($route, $action) {
+		static::$routes[$route] = $action;
+	}
+
+	private static $routes = array(
 		#move it to git
 		//~ 'init'	=>	'coxis:test',
 		#git clone https://leyou@bitbucket.org/leyou/coxis.git
@@ -17,6 +21,10 @@ class Router {
 		//~ 'search'	=>	'coxis:test',	#search for bundles
 		'import'	=>	'coxis:import',	#import bundle
 		'build'	=>	'coxis:build',	#build bundles from build.yml
+		'install'	=>	'coxis:install',	
+		'install-all'	=>	'coxis:installAll',	
+		'console'	=>	'coxis:console',	
+		'publish'	=>	'coxis:publish',	
 		
 		'dump'	=>	'db:dump',	#dump data into data.yml
 		'backup-db'	=>	'db:backup',	#dump data into default yml file
@@ -38,7 +46,17 @@ class Router {
 		$c->run($action, $params);
 	}
 
-	public static function dispatch($controller, $action, $args=array()) {
-		Router::run(static::$controllers[$controller], $action, $args);
+	public static function dispatch($route, $args=array()) {
+		#alias
+		if(strpos($route, ':') === false)
+			$route = static::$routes[$route];
+		
+		list($controller, $action) = explode(':', $route);
+
+		static::doDispatch($controller, $action, $args);
+	}
+
+	public static function doDispatch($controller, $action, $args=array()) {
+		static::run(static::$controllers[$controller], $action, $args);
 	}
 }

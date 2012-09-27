@@ -17,7 +17,7 @@ class ModelFile {
 	
 	public function exists() {
 		if($this->multiple()) {
-			$files = $this->get(true);
+			$files = $this->get(array(), true);
 			foreach($this->tmp_file as $file)
 				$files[] = $file['tmp_name'];
 			foreach($files as $file)
@@ -47,7 +47,7 @@ class ModelFile {
 		return $dir;
 	}
 	
-	public function get($absolute=false) {
+	public function get($default=null, $absolute=false) {
 		$dir = $this->dir($absolute);
 		$path = $this->name;
 		
@@ -59,12 +59,10 @@ class ModelFile {
 				$result[] = $dir.$filename;
 			return $result;
 		}
-		else {
-			if($path)
-				return $dir.$path;
-			else
-				return null;	
-		}
+		elseif($path)
+			return $dir.$path;
+		else
+			return $default;	
 	}
 	
 	public function save() {

@@ -26,7 +26,7 @@ class Locale {
 			static::importLocales('locales');
 		}
 		
-		\Coxis\Core\Event::addHook('end', function() {
+		\Coxis\Core\Hook::hookOn('end', function() {
 			if(\Coxis\Core\Config::get('phpcache'))
 				\Coxis\Core\Cache::set('locales', Locale::$locales);
 		});
@@ -48,11 +48,12 @@ class Locale {
 	}
 	
 	public static function importLocales($dir) {
-		foreach(glob($dir.'/*') as $lang_dir) {
-			$lang = basename($lang_dir);
-			foreach(glob($lang_dir.'/*') as $file)
-				static::import($lang, $file);
-		}
+		if(is_array(glob($dir.'/*')))
+			foreach(glob($dir.'/*') as $lang_dir) {
+				$lang = basename($lang_dir);
+				foreach(glob($lang_dir.'/*') as $file)
+					static::import($lang, $file);
+			}
 	}
 	
 	public static function import($lang, $file) {

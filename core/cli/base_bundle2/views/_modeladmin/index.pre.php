@@ -2,18 +2,18 @@
 				<div class="block_head">
 					<div class="bheadl"></div>
 					<div class="bheadr"></div>
-					<h2><a href="<?php echo $this->url_for('index') ?>"><?php echo ucfirst(static::$_models) ?></a></h2>
+					<h2><a href="<% echo $this->url_for('index') %>"><% echo ucfirst(static::$_models) %></a></h2>
 					<ul>
-						<li><a href="<?php echo $this->url_for('new') ?>">Ajouter</a></li>
+						<li><a href="<% echo $this->url_for('new') %>">Ajouter</a></li>
 					</ul>
-					<?php
+					<%
 					$searchForm->start('', 'get')
 					->search->input(array(
 						'class'	=>	'text',
 						'placeholder'	=>	'Search',
 					));
 					$searchForm->end();
-					?>
+					%>
 				</div>	
 				
 				<div class="block_content">
@@ -25,7 +25,7 @@
 						</div>	
 						<div class="block_content"> -->
 						
-							<?php \Coxis\Core\Flash::showAll() ?>
+							<% \Coxis\Core\Flash::showAll() %>
 						
 							<form action="" method="post">
 								<table cellpadding="0" cellspacing="0" width="100%" class="sortable">
@@ -40,17 +40,18 @@
 									</thead>
 									
 									<tbody>
-										<?php foreach($actualites as $actualite): ?>								
+										<%
+										foreach($<?php echo $bundle['model']['meta']['plural'] ?> as $<?php echo $bundle['model']['meta']['name'] ?>) { %>								
 											<tr>
-												<td><input type="checkbox" name="id[]" value="<?php echo $actualite->id ?>" /></td>
-												<td><?php echo $actualite->created_at ?></td>
-												<td><a href="<?php echo $this->url_for('edit', array('id'=>$actualite->id)) ?>"><?php echo $actualite ?></a></td>
+												<td><input type="checkbox" name="id[]" value="<% echo $<?php echo $bundle['model']['meta']['name'] ?>->id %>" /></td>
+												<td><% echo $<?php echo $bundle['model']['meta']['name'] ?>->created_at %></td>
+												<td><a href="<% echo $this->url_for('edit', array('id'=>$<?php echo $bundle['model']['meta']['name'] ?>->id)) %>"><% echo $<?php echo $bundle['model']['meta']['name'] ?> %></a></td>
 												<td class="actions">
-													<?php \Coxis\Core\Hook::trigger('coxis_actualite_actions', $actualite) ?>
-													<a class="delete" href="<?php echo $this->url_for('delete', array('id'=>$actualite->id)) ?>">Supprimer</a>
+													<% Event::trigger_show('coxis_<?php echo ucfirst($bundle['model']['meta']['name']) ?>_actions', $<?php echo $bundle['model']['meta']['name'] ?>) %>
+													<a class="delete" href="<% echo $this->url_for('delete', array('id'=>$<?php echo $bundle['model']['meta']['name'] ?>->id)) %>">Supprimer</a>
 												</td>
 											</tr>
-										<?php endforeach ?>
+										<% } %>
 									</tbody>
 									
 								</table>
@@ -62,16 +63,16 @@
 									<input type="submit" class="submit tiny" value="Appliquer" />
 								</div>		
 								
-								<?php
+								<%
 								if(isset($paginator))
 								if($paginator->getPages()>1) {
-								?>
+								%>
 								<div class="pagination right">
-									<?php $paginator->show() ?>
+									<% $paginator->show() %>
 								</div>
-								<?php
+								<%
 								}
-								?>
+								%>
 								
 							</form>
 						</div>		<!-- .block_content ends -->
@@ -86,8 +87,8 @@
 							<h2>Filtres</h2>
 						</div>	
 						<div class="block_content">
-							<?php
-							?>
+							<%
+							%>
 							
 						</div>		
 						

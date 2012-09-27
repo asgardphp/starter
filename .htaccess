@@ -22,8 +22,10 @@ Options +FollowSymLinks +ExecCGI
   #RewriteRule ^(.*)$ http://www.google.fr [R=301,L]
 
   #OPTIONAL - PERFORMANCE
-  #RewriteCond %{DOCUMENT_ROOT}euripides/coxis/web/$1 -f
-  #RewriteRule ^(.*)$ web/$1 [QSA,L]
+  RewriteCond %{DOCUMENT_ROOT}coxis3/web/$1 -f
+  RewriteRule ^(.*)$ web/$1 [QSA,L]
+  RewriteCond %{DOCUMENT_ROOT}coxis3/web/$1 -d
+  RewriteRule ^(.*)$ web/$1 [QSA,L]
   
   RewriteCond $1 !web/
   RewriteCond %{REQUEST_FILENAME} !index.php
