@@ -51,6 +51,8 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 				
 		if(isset($options['choices']))
 			$choices = $options['choices'];
+		elseif(isset($this->$widget->params['choices']))
+			$choices = $this->$widget->params['choices'];
 		else {
 			$choices = array();
 			$all = $relation_model::all();
@@ -65,10 +67,10 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 			$model = $this->model;
 			if(get($model::$relationships, $widget, 'required'))
 				$label .= '*';
-			else
-				$choices = array(''=>'Choisir') + $choices;
 		
 			$this->$widget->label($label);
+			if($this->$widget->getError())
+				echo '<span style="color:#f00">'.$this->$widget->getError().'</span>';
 			echo '<br>';
 			$this->$widget->select(
 				array(
@@ -85,6 +87,8 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 				$label .= '*';
 			
 			$this->$widget->label($label);
+			if($this->$widget->getError())
+				echo '<span style="color:#f00">'.$this->$widget->getError().'</span>';
 			echo '<br>';
 			$this->$widget->select(
 				array(
@@ -105,6 +109,8 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 				$label .= '*';
 			
 			$this->$widget->label($label);
+			if($this->$widget->getError())
+				echo '<span style="color:#f00">'.$this->$widget->getError().'</span>';
 			echo '<br>';
 			$this->$widget->select(
 				array(
@@ -196,7 +202,7 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 				$uid = Tools::randstr(10);
 				HTML::code_js("
 					$(function(){
-						multiple_upload('$uid', '".url_for(array(CoxisAdmin::getAdminControllerFor($this->model->getClassName()), 'addFile'), array('id' => $this->model->id, 'file' => $widget), false)."');
+						multiple_upload('$uid', '".$this->controller->url_for('addFile', array('id' => $this->model->id, 'file' => $widget), false)."');
 					});");
 				?>
 				<div class="block">
@@ -225,7 +231,7 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 								<img src="<?php echo URL::to('imagecache/admin_thumb/'.$one_path) ?>" alt=""/>
 								<ul>
 									<li class="view"><a href="<?php echo URL::to($one_path) ?>" rel="facebox">Voir</a></li>
-									<li class="delete"><a href="<?php echo url_for(array(CoxisAdmin::getAdminControllerFor($this->model->getClassName()), 'deleteFile'), array('id' => $this->model->id, 'pos' => $i, 'file' => $widget), false) ?>">Suppr.</a></li>
+									<li class="delete"><a href="<?php echo $this->controller->url_for('deleteFile', array('id' => $this->model->id, 'pos' => $i, 'file' => $widget), false) ?>">Suppr.</a></li>
 								</ul>
 							</li>
 							<?php
@@ -252,7 +258,7 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 			<?php endif;
 		}
 		else {
-			AdminForm::file($this->$widget, $options);
+			AdminForm::file($this->$widget, $label, $options);
 							
 			if(!$this->model->isNew() && $this->model->$widget->exists()) {
 				if($this->model->$widget->type() == 'image') {

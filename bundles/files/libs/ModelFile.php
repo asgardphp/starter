@@ -1,4 +1,6 @@
 <?php
+namespace Coxis\Bundles\Files\Libs;
+
 class ModelFile {
 	public $model;
 	public $params;
@@ -81,10 +83,10 @@ class ModelFile {
 			if($this->type() == 'image') {
 				if(!($format = $this->format()))
 					$format = IMAGETYPE_JPEG;
-				$filename = ImageManager::load($file['tmp_name'])->save($to, $format);
+				$filename = \Coxis\Core\Tools\ImageManager::load($file['tmp_name'])->save($to, $format);
 			}
 			else
-				$filename = FileManager::move_uploaded($file['tmp_name'], $to);
+				$filename = \Coxis\Core\Tools\FileManager::move_uploaded($file['tmp_name'], $to);
 			
 			if($this->multiple()) {
 				if(!is_array($this->name))
@@ -110,14 +112,14 @@ class ModelFile {
 		$path = $this->get();
 		if($this->multiple()) {
 			foreach($path as $file) {
-				FileManager::unlink(_WEB_DIR_.'/'.$file);
-				ImageCache::clearFile($path);
+				\Coxis\Core\Tools\FileManager::unlink(_WEB_DIR_.'/'.$file);
+				\Coxis\Bundles\Imagecache\Libs\ImageCache::clearFile($path);
 			}
 		}
 		else {
 			if($path) {
-				FileManager::unlink(_WEB_DIR_.'/'.$path);
-				ImageCache::clearFile($path);
+				\Coxis\Core\Tools\FileManager::unlink(_WEB_DIR_.'/'.$path);
+				\Coxis\Bundles\Imagecache\Libs\ImageCache::clearFile($path);
 			}
 		}
 		$this->name = null;

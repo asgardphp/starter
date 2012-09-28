@@ -18,11 +18,11 @@ class ORMBehaviorController extends \Coxis\Core\Controller {
 		$modelName::hookOn('callStatic', function($chain, $name, $args) use($modelName) {
 			if($name == 'getTable') {
 				$chain->found = true;
-				return ORMHandler::getTable($modelName);
+				return \Coxis\Bundles\ORM\Libs\ORMHandler::getTable($modelName);
 			}
 		});
 
-		$ormHandler = new ORMHandler($modelName);
+		$ormHandler = new \Coxis\Bundles\ORM\Libs\ORMHandler($modelName);
 
 		$modelName::hookOn('constrains', function($chain, &$constrains) use($modelName) {
 			foreach($modelName::$relationships as $name=>$relation) {
@@ -43,10 +43,17 @@ class ORMBehaviorController extends \Coxis\Core\Controller {
 				$chain->found = true;
 				return $ormHandler->destroyOne($args[0]);#id
 			}
+			#Article::orm()
+			elseif($name == 'orm') {
+				$chain->found = true;
+				return $ormHandler->getORM();
+			}
 			#Article::where() / ::limit() / ::orderBy() / ..
 			else {
-				$chain->found = true;
-				return $ormHandler->callStatic($name, $args);
+				$res = $ormHandler->callStatic($name, $args);
+				if($res)
+					$chain->found = true;
+				return $res;
 			}
 		});
 
@@ -95,19 +102,16 @@ class ORMBehaviorController extends \Coxis\Core\Controller {
 		
 		#$article->title
 		$modelName::hookAfter('get', function($chain, $model, $name, $lang, &$res) {
-			$res = ORMHandler::fetch($model, $name, $lang);
-			if($res !== null)
-				$chain->stop();
+			return \Coxis\Bundles\ORM\Libs\ORMHandler::fetch($model, $name, $lang);
 		});
 
 		$modelName::hookBefore('get', function($chain, $model, $name, $lang, &$res) {
 			if(array_key_exists($name, $model::$relationships)) {
 				$rel = $model->relation($name);
 				if($rel instanceof \Coxis\Core\Collection)
-					$res = $rel->get();
+					return $rel->get();
 				else
-					$res = $rel;
-				$chain->stop();
+					return $rel;
 			}
 		});
 	}

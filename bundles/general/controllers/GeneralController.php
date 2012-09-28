@@ -48,7 +48,7 @@ class GeneralController extends \Coxis\Core\Controller {
 	@Priority(-10)
 	*/
 	public function startAction() {
-		\Coxis\Core\Coxis::set('layout', array('Default', 'layout'));
+		\Coxis\Core\Coxis::set('layout', array('\Coxis\App\Standard\Controllers\Default', 'layout'));
 	}
 	
 	/**
@@ -56,9 +56,7 @@ class GeneralController extends \Coxis\Core\Controller {
 	*/
 	public function preSendingAction(&$content) {
 		try {
-			$type = \Coxis\Core\Response::getHeader('Content-Type');
-			
-			if($type != 'text/html')
+			if(get(\Coxis\Core\Router::getRequest(), 'format') != 'html')
 				return;
 		} catch(\Exception $e) {}
 			

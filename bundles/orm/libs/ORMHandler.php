@@ -52,12 +52,11 @@ class ORMHandler {
 	}
 	
 	public static function getTranslationTable($model) {
-		// $model =  $this->model;
 		return $model::getTable().'_translation';
 	}
 
 	public static function getTable($modelName) {
-		return Config::get('database', 'prefix').$modelName::getModelName();
+		return \Coxis\Core\Config::get('database', 'prefix').$modelName::getModelName();
 	}
 	
 	public static function relationData($model, $name) {
@@ -77,9 +76,9 @@ class ORMHandler {
 			$res['link_a'] = $model::getModelName().'_id';
 			$res['link_b'] = $relation_model::getModelName().'_id';
 			if($model::getModelName() < $relation_model::getModelName())
-				$res['join_table'] = Config::get('database', 'prefix').$model::getModelName().'_'.$relation_model::getModelName();
+				$res['join_table'] = \Coxis\Core\Config::get('database', 'prefix').$model::getModelName().'_'.$relation_model::getModelName();
 			else
-				$res['join_table'] = Config::get('database', 'prefix').$relation_model::getModelName().'_'.$model::getModelName();
+				$res['join_table'] = \Coxis\Core\Config::get('database', 'prefix').$relation_model::getModelName().'_'.$model::getModelName();
 		}
 		elseif($res['type'] == 'hasOne')
 			$res['link'] = $name.'_id';
@@ -102,7 +101,7 @@ class ORMHandler {
 	}
 	
 	public static function getI18N($model, $lang) {
-		$dal = new DAL(static::getTranslationTable($model));
+		$dal = new \Coxis\Core\DB\DAL(static::getTranslationTable($model));
 		return $dal->where(array('id' => $model->id))->where(array('locale'=>$lang))->first();
 	}
 	
@@ -155,7 +154,7 @@ class ORMHandler {
 				if($model->isNew())
 					return array();
 					
-				$collection = new CollectionORM($model, $name);
+				$collection = new \Coxis\Bundles\ORM\Libs\CollectionORM($model, $name);
 				return $collection;
 			default:	
 				throw new \Exception('Relation '.$relation_type.' does not exist.');
@@ -170,7 +169,7 @@ class ORMHandler {
 			return $this->getORM()->where(array($property => $val))->first();
 		}
 		else {
-			if(method_exists('Coxis\Core\ORM\ORM', $name)) {
+			if(method_exists('Coxis\Bundles\ORM\Libs\ORM', $name)) {
 				$orm = $this->getORM();
 				return call_user_func_array(array($orm, $name), $args);
 			}
@@ -246,7 +245,7 @@ class ORMHandler {
 		
 		//Persist i18n
 		foreach($i18n as $lang=>$values) {
-			$dal = new DAL(static::getTranslationTable($model));
+			$dal = new \Coxis\Core\DB\DAL(static::getTranslationTable($model));
 			if(!$dal->where(array('id'=>$model->id, 'locale'=>$lang))->update($values))
 				$dal->insert(
 					array_merge(
@@ -263,7 +262,7 @@ class ORMHandler {
 		foreach($model::$relationships as $relationship => $params) {
 			if(!isset($model->data[$relationship]))
 				continue;
-			$rel = ORMHandler::relationData($model, $relationship);
+			$rel = static::relationData($model, $relationship);
 			$type = $rel['type'];
 				
 			if($type == 'hasOne') {

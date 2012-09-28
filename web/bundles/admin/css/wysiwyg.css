@@ -1,0 +1,18 @@
+body {
+	font-family: Arial;
+	padding: 5px 0;
+	color: #5A5959;
+	font-size: 14px;
+}
+h4 {
+	display: block;
+	font-size: 17px;
+	color: #444343;
+	font-weight: bold;
+}
+h5 {
+	display: block;
+	font-size: 18px;
+	color: #EF8817;
+	font-weight: bold;
+}
