@@ -114,37 +114,7 @@ class Router {
 		return $regex;
 	}
 
-	public static function sortRoutes() {
-		usort(static::$routes, function($route1, $route2) {
-			$route1 = $route1['route'];
-			$route2 = $route2['route'];
-			
-			while(true) {
-				if(!$route1)
-					return 1;
-				if(!$route2)
-					return -1;
-				$c1 = substr($route1, 0, 1);
-				$c2 = substr($route2, 0, 1);
-				if($c1 == ':' && $c2 != ':')
-					return 1;
-				elseif($c1 != ':' && $c2 == ':')
-					return -1;
-				elseif($c1 != ':' && $c2 != ':') {
-					$route1 = substr($route1, 1);
-					$route2 = substr($route2, 1);
-				}
-				elseif($c1 == ':' && $c2 == ':') {
-					$route1 = preg_replace('/^:[a-zA-Z0-9_]+/', '', $route1);
-					$route2 = preg_replace('/^:[a-zA-Z0-9_]+/', '', $route2);
-				}
-			}
-		});
-	}
-
 	public static function parseRoutes() {
-		static::sortRoutes();
-
 		$url = URL::get();
 		
 		static::$request = array(

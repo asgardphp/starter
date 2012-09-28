@@ -29,7 +29,7 @@ namespace Coxis\Core {
 			if(!static::$load_routes)
 				\Coxis\Core\Autoloader::preloadDir($bundle.'/controllers');
 			else {
-				if(file_exists($bundle.'/controllers/'))
+				if(file_exists($bundle.'/controllers/')) {
 					foreach(glob($bundle.'/controllers/*.php') as $filename) {
 						$classname = \Coxis\Core\Importer::loadClassFile($filename);
 						
@@ -75,6 +75,7 @@ namespace Coxis\Core {
 							}
 						}
 					}
+				}
 			}
 		}
 		
@@ -110,10 +111,40 @@ namespace Coxis\Core {
 				foreach($hooks as $hook)
 					\Coxis\Core\Controller::hookOn($name, $hook);
 
+			if(static::$load_routes)
+				static::sortRoutes();
 			if(\Coxis\Core\Config::get('phpcache')) {
 				\Coxis\Core\Cache::set('routing/routes', static::$routes);
 				\Coxis\Core\Cache::set('routing/hooks', static::$hooks);
 			}
+		}
+
+		public static function sortRoutes() {
+			usort(static::$routes, function($route1, $route2) {
+				$route1 = $route1['route'];
+				$route2 = $route2['route'];
+				
+				while(true) {
+					if(!$route1)
+						return 1;
+					if(!$route2)
+						return -1;
+					$c1 = substr($route1, 0, 1);
+					$c2 = substr($route2, 0, 1);
+					if($c1 == ':' && $c2 != ':')
+						return 1;
+					elseif($c1 != ':' && $c2 == ':')
+						return -1;
+					elseif($c1 != ':' && $c2 != ':') {
+						$route1 = substr($route1, 1);
+						$route2 = substr($route2, 1);
+					}
+					elseif($c1 == ':' && $c2 == ':') {
+						$route1 = preg_replace('/^:[a-zA-Z0-9_]+/', '', $route1);
+						$route2 = preg_replace('/^:[a-zA-Z0-9_]+/', '', $route2);
+					}
+				}
+			});
 		}
 
 		private static function formatControllerName($controller) {

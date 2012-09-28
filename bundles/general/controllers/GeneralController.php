@@ -54,7 +54,7 @@ class GeneralController extends \Coxis\Core\Controller {
 	/**
 	@Hook('filter_output')
 	*/
-	public function preSendingAction($content) {
+	public function preSendingAction(&$content) {
 		try {
 			$type = \Coxis\Core\Response::getHeader('Content-Type');
 			
@@ -65,14 +65,5 @@ class GeneralController extends \Coxis\Core\Controller {
 		if(is_array(\Coxis\Core\Coxis::get('layout'))
 			&& sizeof(\Coxis\Core\Coxis::get('layout')) >= 2 && $content !== null)
 			$content = \Coxis\Core\Router::run(\Coxis\Core\Coxis::get('layout', 0), \Coxis\Core\Coxis::get('layout', 1), $content, $this);
-	}
-	
-	/**
-	@Hook('start')
-	*/
-	public function initAction($params) {
-		//~ \Coxis\Core\Tools\HTML::setTitle(\Coxis\Bundles\Value\Models\Value::val('name'));
-		//~ HTML::setDescription('');
-		//~ HTML::setKeywords('');
 	}
 }

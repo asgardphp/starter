@@ -20,12 +20,12 @@ class FrontController extends Controller {
 		
 		require_once('core/load.php');
 
-		Hook::trigger('start');
+		\Coxis\Core\Hook::trigger('start');
 			
 		//Dispatch to target controller
 		$output = Router::dispatch($this);
 
-		Hook::trigger('filter_output', array(), null, $output);
+		\Coxis\Core\Hook::trigger('filter_output', array(), null, $output);
 
 		//Send the response
 		Response::setContent($output)->send();

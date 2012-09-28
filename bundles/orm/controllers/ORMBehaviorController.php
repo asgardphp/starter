@@ -24,6 +24,13 @@ class ORMBehaviorController extends \Coxis\Core\Controller {
 
 		$ormHandler = new ORMHandler($modelName);
 
+		$modelName::hookOn('constrains', function($chain, &$constrains) use($modelName) {
+			foreach($modelName::$relationships as $name=>$relation) {
+				if(isset($relation['required']) && $relation['required'])
+					$constrains[$name]['required'] = true;
+			}
+		});
+
 		$modelName::hookOn('callStatic', function($chain, $name, $args) use($ormHandler) {
 			$res = null;
 			#Article::load(2)
@@ -55,7 +62,7 @@ class ORMBehaviorController extends \Coxis\Core\Controller {
 			elseif($name == 'relation')
 				$res = $ormHandler->relation($model, $args[0]);#relation name
 			elseif(array_key_exists($name, $model::$relationships))
-				return $model->relation($name);
+				$res = $model->relation($name);
 			if($res !== null) {
 				$chain->found = true;
 				return $res;
