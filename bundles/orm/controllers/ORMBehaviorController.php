@@ -43,30 +43,42 @@ class ORMBehaviorController extends \Coxis\Core\Controller {
 				$chain->found = true;
 				return $ormHandler->destroyOne($args[0]);#id
 			}
+			#Article::orm()
+			elseif($name == 'orm') {
+				$chain->found = true;
+				return $ormHandler->getORM();
+			}
 			#Article::where() / ::limit() / ::orderBy() / ..
 			else {
-				$chain->found = true;
-				return $ormHandler->callStatic($name, $args);
+				$res = $ormHandler->callStatic($name, $args);
+				if($res)
+					$chain->found = true;
+				return $res;
 			}
 		});
 
 		$modelName::hookOn('call', function($chain, $model, $name, $args) use($ormHandler) {
 			$res = null;
 			#$article->isNew()
-			if($name == 'isNew')
-				$res = $ormHandler->isNew($model);
-			#$article->isOld()
-			elseif($name == 'isOld')
-				$res = $ormHandler->isOld($model);
-			#Relations
-			elseif($name == 'relation')
-				$res = $ormHandler->relation($model, $args[0]);#relation name
-			elseif(array_key_exists($name, $model::$relationships))
-				$res = $model->relation($name);
-			if($res !== null) {
+			if($name == 'isNew') {
 				$chain->found = true;
-				return $res;
+				$res = $ormHandler->isNew($model);
 			}
+			#$article->isOld()
+			elseif($name == 'isOld') {
+				$chain->found = true;
+				$res = $ormHandler->isOld($model);
+			}
+			#Relations
+			elseif($name == 'relation') {
+				$chain->found = true;
+				$res = $ormHandler->relation($model, $args[0]);#relation name
+			}
+			elseif(array_key_exists($name, $model::$relationships)) {
+				$chain->found = true;
+				$res = $model->relation($name);
+			}
+			return $res;
 		});
 
 		$modelName::hookBefore('validation', function($chain, $model, &$data, &$errors) {
