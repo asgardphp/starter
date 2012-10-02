@@ -28,6 +28,18 @@ class FilesBehaviorController extends \Coxis\Core\Controller {
 				}
 			} catch(\ErrorException $e) {}
 		});
+		
+		Validator::register('allowed', function($attribute, $value, $params, $validator) {
+			if(!$value->exists())
+				return;
+			if(!in_array($value->extension(), $params[0])) {
+				$msg = $validator->getMessage('image', $attribute, __('This type of file is not allowed ":ext".'));
+				return Validator::format($msg, array(
+					'attribute'	=>	$attribute,
+					'ext'	=>	$value->extension(),
+				));
+			}
+		});
 	}
 
 	/**
@@ -43,8 +55,10 @@ class FilesBehaviorController extends \Coxis\Core\Controller {
 	**/
 	public function behaviors_load_filesAction($modelName) {
 		$modelName::hookOn('call', function($chain, $model, $name, $file) {
-			if($name == 'hasFile')
+			if($name == 'hasFile') {
+				$chain->found = true;
 				return $model::hasProperty($file[0]) && $model::property($file[0])->type == 'file';
+			}
 		});
 
 		$modelName::hookOn('callStatic', function($chain, $name, $args) use($modelName) {

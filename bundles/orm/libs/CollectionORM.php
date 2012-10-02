@@ -41,10 +41,9 @@ class CollectionORM extends ORM implements \Coxis\Core\Collection {
 		
 		switch($this->relation['type']) {
 			case 'hasMany':
-				$this->where(array($this->link.' = ?' => $this->current_model->id));
+				$this->where(array($this->link => $this->current_model->id));
 				break;
 			case 'HMABT':
-				$relation_model = $this->relation['model'];
 				$currentmodel_idfield = $this->link_a;
 				$relationmodel_idfield = $this->link_b;
 				
@@ -54,7 +53,6 @@ class CollectionORM extends ORM implements \Coxis\Core\Collection {
 						'b.'.$relationmodel_idfield.' = a.id',
 					)
 				));
-				
 				break;
 			default:
 				throw new \Exception('Collection only works with hasMany and HMABT');
