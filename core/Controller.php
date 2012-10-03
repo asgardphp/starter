@@ -40,7 +40,7 @@ class Controller {
 	}
 
 	public function run($action, $params=array(), $showView=false) {
-		$this->view = $action.'.php';
+		$this->view = null;
 		if(($actionName=$action) != 'configure')
 			$actionName = $action.'Action';
 		
@@ -57,32 +57,35 @@ class Controller {
 			return null;
 		elseif($result!==null)
 			return $result;
-		elseif($this->view)
-			return $this->showView($this->getView(), $this);
+		elseif($this->view !== false) {
+			if($this->view === null)
+				$this->setRelativeView($action.'.php');
+			return $this->showView($this->view, $this);
+		}
 		return null;
 	}
 	
 	private function component($controller, $action, $args=array()) {
 		echo Router::run($controller, $action, $args, $this);
 	}
+
+	public function noView() {
+		$this->view = false;
+	}
+	
+	public function setRelativeView($view) {
+		$reflection = new \ReflectionObject($this);
+		$dir = dirname($reflection->getFileName());
+		$this->setView($dir.'/../views/'.strtolower(preg_replace('/Controller$/i', '', Importer::basename(get_class($this)))).'/'.$view);
+	}
 	
 	public function setView($view) {
 		$this->view = $view;
 	}
-	
-	public function getView() {
-		return $this->view;
-	}
 		
-	private function showView($view, $_args) {
-		$reflection = new \ReflectionObject($this);
-		$dir = dirname($reflection->getFileName());
-		$_viewfile = $dir.'/../views/'.strtolower(preg_replace('/Controller$/i', '', Importer::basename(get_class($this)))).'/'.$view;
+	private function showView($_viewfile, $_args) {
 		if(!file_exists($_viewfile))
 			return null;
-		
-		unset($dir);
-		unset($reflection);
 
 		foreach($_args as $_key=>$_value)
 			$$_key = $_value;#TODO, watchout keywords
