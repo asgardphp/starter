@@ -9,7 +9,7 @@ class DefaultController extends \Coxis\Core\Controller {
 		echo 'Home';
 	}
 
-	public function _404Action($request) {
+	public function _404Action() {
 	}
 	
 	public function layoutAction($content) {
