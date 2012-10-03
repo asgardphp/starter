@@ -2,12 +2,12 @@
 if(!defined('_ENV_'))
 	define('_ENV_', 'test');
 require_once(dirname(__FILE__).'/../coxis.php');
-BundlesManager::$directories[] = 'tests/app';
+\Coxis\Core\BundlesManager::$directories[] = 'tests/app';
 require_once('core/load.php');
 
 class ModelTest extends PHPUnit_Framework_TestCase {
 	public function setUp(){
-		DB::import('tests/coxis.sql');
+		\Coxis\Core\DB\DB::import('tests/coxis.sql');
 	}
 
 	public function tearDown(){}
@@ -58,7 +58,7 @@ class ModelTest extends PHPUnit_Framework_TestCase {
 		$article = new \Coxis\Tests\App\Article\Models\Article(1);
 		$authors = $article->authors;
 		$this->assertTrue(is_array($authors));
-		$this->assertInstanceOf('Coxis\Tests\App\Actualite\Models\Author', $authors[0]);
+		$this->assertInstanceOf('Coxis\Tests\App\Article\Models\Author', $authors[0]);
 	}
     
 	#load

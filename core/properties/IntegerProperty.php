@@ -1,4 +1,6 @@
 <?php
+namespace Coxis\Core\Properties;
+
 class IntegerProperty extends BaseProperty {
 	public function getSQLType() {	
 		if($this->length)

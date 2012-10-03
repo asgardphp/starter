@@ -1,0 +1,152 @@
+/*
+Copyright (c) 2003-2011, CKSource - Frederico Knabben. All rights reserved.
+For licensing, see LICENSE.html or http://ckeditor.com/license
+*/
+
+
+#cke_editor_content input, #cke_editor_content textarea, #cke_editor_content select, #cke_editor_content option, #cke_editor_content optgroup, #cke_editor_content button, #cke_editor_content td, #cke_editor_content th {
+	font-size: 100%;
+}
+
+#cke_editor_content pre,
+#cke_editor_content code,
+#cke_editor_content kbd,
+#cke_editor_content samp,
+#cke_editor_content tt{
+  font-family: monospace,monospace;
+  font-size: 1em;
+}
+
+#cke_editor_content h1.samples {
+  color:#0782C1;
+  font-size:200%;
+  font-weight:normal;
+  margin: 0;
+  padding: 0;
+}
+
+#cke_editor_content h2.samples {
+  color:#000000;
+  font-size:130%;
+  margin: 0;
+  padding: 0;
+}
+
+#cke_editor_content p, #cke_editor_content blockquote, #cke_editor_content address, #cke_editor_content form, #cke_editor_content pre, #cke_editor_content dl, #cke_editor_content h1.samples, #cke_editor_content h2.samples {
+	margin-bottom:15px;
+}
+
+#cke_editor_content ul.samples {
+	margin-bottom:15px;
+}
+
+#cke_editor_content .clear {
+	clear:both;
+}
+
+#cke_editor_content fieldset
+{
+	margin: 0;
+	padding: 10px;
+}
+
+#cke_editor_content input, #cke_editor_content textarea {
+	color: #333333;
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+#cke_editor_content a.samples {
+	color:#189DE1;
+	text-decoration:none;
+}
+
+#cke_editor_content a.samples:hover {
+  text-decoration:underline;
+}
+
+#cke_editor_content form
+{
+	margin: 0;
+	padding: 0;
+}
+
+#cke_editor_content pre.samples
+{
+	background-color: #F7F7F7;
+	border: 1px solid #D7D7D7;
+	overflow: auto;
+	padding: 0.25em;
+}
+
+#cke_editor_content #alerts
+{
+	color: Red;
+}
+
+#cke_editor_content #footer hr
+{
+	margin: 10px 0 15px 0;
+	height: 1px;
+	border: solid 1px gray;
+	border-bottom: none;
+}
+
+#cke_editor_content #footer p
+{
+	margin: 0 10px 10px 10px;
+	float: left;
+}
+
+#cke_editor_content #footer #copy
+{
+	float: right;
+}
+
+#cke_editor_content #outputSample
+{
+	width: 100%;
+	table-layout: fixed;
+}
+
+#cke_editor_content #outputSample thead th
+{
+	color: #dddddd;
+	background-color: #999999;
+	padding: 4px;
+	white-space: nowrap;
+}
+
+#cke_editor_content #outputSample tbody th
+{
+	vertical-align: top;
+	text-align: left;
+}
+
+#cke_editor_content #outputSample pre
+{
+	margin: 0;
+	padding: 0;
+	white-space: pre; /* CSS2 */
+	white-space: -moz-pre-wrap; /* Mozilla*/
+	white-space: -o-pre-wrap; /* Opera 7 */
+	white-space: pre-wrap; /* CSS 2.1 */
+	white-space: pre-line; /* CSS 3 (and 2.1 as well, actually) */
+	word-wrap: break-word; /* IE */
+}
+
+#cke_editor_content .description {
+	border: 1px dotted #B7B7B7;
+	margin-bottom: 10px;
+	padding: 10px 10px 0;
+}
+
+#cke_editor_content label {
+	display: block;
+	margin-bottom:6px;
+}
+
+#cke_editor_content .cke_dialog label
+{
+	display: inline;
+	margin-bottom: auto;
+}

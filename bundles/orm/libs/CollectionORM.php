@@ -19,7 +19,7 @@ class CollectionORM extends ORM implements \Coxis\Core\Collection {
 		$relation_type = $rel['type'];
 		$relation_model = $rel['model'];
 		
-		parent::__construct($relation_model::getModelName());
+		parent::__construct($relation_model);
 		
 		switch($relation_type) {
 			case 'hasMany':

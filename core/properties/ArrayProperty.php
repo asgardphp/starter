@@ -1,4 +1,6 @@
 <?php
+namespace Coxis\Core\Properties;
+
 class ArrayProperty extends BaseProperty {
 	public function getRules() {
 		$rules = parent::getRules();

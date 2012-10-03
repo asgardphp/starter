@@ -3,11 +3,11 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<title>ARPA</title>
-	<?php HTML::show_title() ?>
-	<?php HTML::show_description() ?>
-	<?php HTML::show_keywords() ?>
-	<base href="<?php echo URL::base() ?>" />
-	<?php HTML::show_all() ?>
+	<?php \Coxis\Core\Tools\HTML::show_title() ?>
+	<?php \Coxis\Core\Tools\HTML::show_description() ?>
+	<?php \Coxis\Core\Tools\HTML::show_keywords() ?>
+	<base href="<?php echo \Coxis\Core\URL::base() ?>" />
+	<?php \Coxis\Core\Tools\HTML::show_all() ?>
 
 </head>
 <body>

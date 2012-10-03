@@ -1,5 +1,7 @@
 <?php
-class FileProperty extends BaseProperty {
+namespace Coxis\Bundles\Files\Libs;
+
+class FileProperty extends \Coxis\Core\Properties\BaseProperty {
 	public function getRules() {
 		$rules = parent::getRules();
 		if(isset($rules['required'])) {
@@ -17,7 +19,7 @@ class FileProperty extends BaseProperty {
 	}
 
 	public function getDefault() {
-		return new ModelFile($this->model, $this->name, null);
+		return new \Coxis\Bundles\Files\Libs\ModelFile($this->model, $this->name, null);
 	}
 
 	public function serialize($obj) {
@@ -29,21 +31,21 @@ class FileProperty extends BaseProperty {
 
 	public function unserialize($str) {
 		if($this->multiple)
-			return new ModelFile($this->model, $this->name, unserialize($str));
+			return new \Coxis\Bundles\Files\Libs\ModelFile($this->model, $this->name, unserialize($str));
 		else
-			return new ModelFile($this->model, $this->name, $str);
+			return new \Coxis\Bundles\Files\Libs\ModelFile($this->model, $this->name, $str);
 	}
 
 	public function set($val) {
 		if($val instanceof \ModelFile)
 			return $val;
 		if(is_array($val))
-			$file = new ModelFile($this->model, $this->name, null, $val);
+			$file = new \Coxis\Bundles\Files\Libs\ModelFile($this->model, $this->name, null, $val);
 		#todo should use unserialize instead..
 		elseif($this->multiple)
-			$file = new ModelFile($this->model, $this->name, unserialize($val));
+			$file = new \Coxis\Bundles\Files\Libs\ModelFile($this->model, $this->name, unserialize($val));
 		else
-			$file = new ModelFile($this->model, $this->name, $val);
+			$file = new \Coxis\Bundles\Files\Libs\ModelFile($this->model, $this->name, $val);
 		return $file;
 	}
 

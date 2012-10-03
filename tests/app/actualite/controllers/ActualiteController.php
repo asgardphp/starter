@@ -3,7 +3,7 @@ namespace Coxis\Tests\App\Actualite\Controllers;
 /**
 @Prefix('actualites')
 */
-class ActualiteController extends Controller {
+class ActualiteController extends \Coxis\Core\Controller {
 	/**
 	@Route('')
 	*/

@@ -1,4 +1,6 @@
 <?php
+namespace Coxis\Core\Properties;
+
 class BooleanProperty extends BaseProperty {
 	public function getRules() {
 		$rules = parent::getRules();

@@ -1,7 +1,7 @@
 <?php
 namespace Coxis\Bundles\Behaviors\Controllers;
 
-class SlugifyBehaviorController extends Controller {
+class SlugifyBehaviorController extends \Coxis\Core\Controller {
 	/**
 	@Hook('behaviors_load_slugify')
 	**/
@@ -14,11 +14,11 @@ class SlugifyBehaviorController extends Controller {
 	**/
 	public function behaviors_presave_slugifyAction($model) {
 		if($model->isNew())
-			$model->slug = Tools::slugify($model);
+			$model->slug = \Coxis\Core\Tools\Tools::slugify($model);
 		else {
 			$inc = 1;
 			do {
-				$model->slug = Tools::slugify($model).($inc < 2 ? '':'-'.$inc);
+				$model->slug = \Coxis\Core\Tools\Tools::slugify($model).($inc < 2 ? '':'-'.$inc);
 				$inc++;
 			}
 			while($model::where(array(

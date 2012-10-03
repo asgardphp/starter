@@ -70,13 +70,15 @@ abstract class Model {
 		if(get_called_class() == 'Coxis\Core\Model')
 			return;
 
+		\Coxis\Core\Hook::trigger('behaviors_pre_load', get_called_class());
+
 		$properties = static::$properties;
 		foreach($properties as $k=>$v) {
 			if(is_int($k)) {
 				static::$properties = 
-					Tools::array_before(static::$properties, $k) +
+					\Coxis\Core\Tools\Tools::array_before(static::$properties, $k) +
 					array($v => array()) +
-					Tools::array_after(static::$properties, $k);
+					\Coxis\Core\Tools\Tools::array_after(static::$properties, $k);
 			}
 			else
 				if(is_string($v))
@@ -84,8 +86,6 @@ abstract class Model {
 		}
 		foreach(static::$properties as $k=>$params)
 			static::addProperty($k, $params);
-
-		\Coxis\Core\Hook::trigger('behaviors_pre_load', get_called_class());
 		
 		foreach(static::$behaviors as $behavior => $params)
 			if($params)
@@ -107,7 +107,7 @@ abstract class Model {
 	public static function hasProperty($name) {
 		return isset(static::$properties[$name]);
 	}
-	
+
 	public static function addProperty($property, $params) {
 		if(!isset($params['required']))
 			$params['required'] = true;
@@ -119,8 +119,9 @@ abstract class Model {
 				$params['type'] = 'text';
 		}
 
-		$propertyClass = $params['type'].'Property';
-		#todo full class namespace
+		$propertyClass = static::trigger('propertyClass', array($params['type']), function($chain, $type) {
+			return '\Coxis\Core\Properties\\'.ucfirst($type).'Property';
+		});
 
 		static::$properties[$property] = new $propertyClass(get_called_class(), $property, $params);
 	}
@@ -142,7 +143,7 @@ abstract class Model {
 		if(!$force) {
 			#validate params and files
 			if($errors = $this->errors()) {
-				$msg = implode("\n", Tools::flateArray($errors));
+				$msg = implode("\n", \Coxis\Core\Tools\Tools::flateArray($errors));
 				$e = new ModelException($msg);
 				$e->errors = $errors;
 				throw $e;
@@ -220,7 +221,7 @@ abstract class Model {
 	}
 	
 	public static function getModelName() {
-		return Tools::classBasename(strtolower(get_called_class()));
+		return \Coxis\Core\Tools\Tools::classBasename(strtolower(get_called_class()));
 	}
 	
 	public function set($name, $value=null, $lang=null) {
@@ -268,9 +269,8 @@ abstract class Model {
 		if(!$lang)
 			$lang = Config::get('locale');
 
-		$res = null;
 		#todo go for data[$name] only if orm fetch failed
-		static::trigger('get', array($this, $name, $lang), function($chain, $model, $name, $lang, &$res) {
+		$res = static::trigger('get', array($this, $name, $lang), function($chain, $model, $name, $lang) {
 			if($model::hasProperty($name)) {
 				if($model::property($name)->i18n) {
 					if($lang == 'all') {
@@ -278,20 +278,19 @@ abstract class Model {
 						$res = array();
 						foreach($langs as $lang)
 							$res[$lang] = $model->get($name, $lang);
+						return $res;
 					}
 					elseif(isset($model->data['properties'][$name][$lang]))
-						$res = $model->data['properties'][$name][$lang];
+						return $model->data['properties'][$name][$lang];
 				}
 				elseif(isset($model->data['properties'][$name])) 
-					$res = $model->data['properties'][$name];
+					return $model->data['properties'][$name];
 			}
 			elseif(isset($model->data[$name]))
-				$res = $model->data[$name];
-			if($res)
-				$chain->stop();
-		}, $res);
+				return $model->data[$name];
+		});
 
-		#todo innto a hook
+		#todo into a hook
 		if(is_string($res) && !$raw && Coxis::get('in_view'))
 			return HTML::sanitize($res);
 

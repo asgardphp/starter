@@ -33,7 +33,7 @@ function get() {
 	return $result;
 }
 function __($key, $params=array()) {
-	return \Coxis\Core\Locale::translate($key, $params);
+	return \Coxis\Core\Tools\Locale::translate($key, $params);
 }
 
 ob_start();

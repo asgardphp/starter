@@ -134,9 +134,9 @@ namespace Coxis\Core {
 		}
 		
 		public static function loadClassFile($file) {
-			$before = get_declared_classes();
+			$before = array_merge(get_declared_classes(), get_declared_interfaces());
 			require_once $file;
-			$after = get_declared_classes();
+			$after = array_merge(get_declared_classes(), get_declared_interfaces());
 			
 			$diff = array_diff($after, $before);
 			foreach($diff as $class)		
@@ -153,7 +153,7 @@ namespace Coxis\Core {
 
 		public static function loadClass($class) {
 			#already loaded
-			if(class_exists($class, false))
+			if(class_exists($class, false) || interface_exists($class, false))
 				return true;
 			#file map
 			elseif(isset(Autoloader::$map[$class])) {
@@ -174,21 +174,21 @@ namespace Coxis\Core {
 					}
 				}
 				
-				#to load
+				#to load from namespace
 				if(file_exists(($path = static::class2path($class)))) {
 					static::loadClassFile($path);
-					if(class_exists($class, false))
+					if(class_exists($class, false) || interface_exists($class, false))
 						return true;
 				}
 				
-				//~ d();#only to test importer
+				// d($class);#only to test importer
 
 				#lookup for global classes
 				if(dirname($class) == '.') {
 					$classes = array();
 					
 					#check if there is any corresponding class already loaded
-					foreach(get_declared_classes() as $v)
+					foreach(array_merge(get_declared_classes(), get_declared_interfaces()) as $v)
 						if(strtolower(static::basename($class)) == strtolower(static::basename($v))) {
 							class_alias($v, $class);
 							return true;
@@ -201,13 +201,13 @@ namespace Coxis\Core {
 						if(strtolower(static::basename($class)) == $v[0])
 							$classes[] = $v;
 					if(sizeof($classes) == 1) {
-						$before = get_declared_classes();
+						$before = array_merge(get_declared_classes(), get_declared_interfaces());
 						static::loadClassFile($classes[0][1]);
-						$after = get_declared_classes();
+						$after = array_merge(get_declared_classes(), get_declared_interfaces());
 						
 						$diff = array_diff($after, $before);
 
-						if(class_exists(static::basename($class), false)) {
+						if(class_exists(static::basename($class), false) || interface_exists(static::basename($class), false)) {
 							#return true;
 							#return static::basename($class);
 						}

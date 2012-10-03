@@ -1,4 +1,6 @@
 <?php
+namespace Coxis\Core\Properties;
+
 class DateProperty extends BaseProperty {
 	public function getRules() {
 		$rules = parent::getRules();
@@ -8,7 +10,7 @@ class DateProperty extends BaseProperty {
 	}
 
 	public function getDefault() {
-		return new Date;
+		return new \Coxis\Core\Tools\Date;
 	}
 
 	public function serialize($obj) {
@@ -16,13 +18,13 @@ class DateProperty extends BaseProperty {
 	}
 
 	public function unserialize($str) {
-		return Date::fromDatetime($str);
+		return \Coxis\Core\Tools\Date::fromDatetime($str);
 	}
 
 	public function set($val) {
 		if(!$val)
 			return null;
-		return Date::fromDatetime($val);
+		return \Coxis\Core\Tools\Date::fromDatetime($val);
 	}
 
 	public function getSQLType() {

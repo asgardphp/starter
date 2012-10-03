@@ -1,4 +1,6 @@
 <?php
+namespace Coxis\Core\Properties;
+
 class BaseProperty {
 	protected $model = null;
 	protected $name = null;

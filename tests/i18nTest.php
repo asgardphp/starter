@@ -2,14 +2,14 @@
 if(!defined('_ENV_'))
 	define('_ENV_', 'test');
 require_once(dirname(__FILE__).'/../coxis.php');
-BundlesManager::$directories[] = 'tests/app';
+\Coxis\Core\BundlesManager::$directories[] = 'tests/app';
 require_once('core/load.php');
 
 class i18nTest extends PHPUnit_Framework_TestCase {
 	public function setUp(){
-		DB::import('tests/coxis.sql');
+		\Coxis\Core\DB\DB::import('tests/coxis.sql');
 				
-		Locale::setLocale('fr');
+		\Coxis\Core\Tools\Locale::setLocale('fr');
 	}
 
 	public function tearDown(){}
@@ -46,19 +46,19 @@ class i18nTest extends PHPUnit_Framework_TestCase {
     
 	#save english version
 	public function test5() {
-		Locale::setLocale('en');
+		\Coxis\Core\Tools\Locale::setLocale('en');
 		$actu = new \Coxis\Tests\App\Actualite\Models\Actualite(2);
 		$actu->test = 'Hi';
 		// d($actu->data['properties']);
 		$actu->save(null, true);
-		$dal = new DAL(Config::get('database', 'prefix').'actualite_translation');
+		$dal = new \Coxis\Core\DB\DAL(Config::get('database', 'prefix').'actualite_translation');
 		$r = $dal->where(array('locale'=>'en', 'id'=>2))->first();
 		$this->assertEquals('Hi', $r['test']);
 	}
 	
 	#translation
 	public function test6() {
-		Locale::importLocales('tests/locales');
+		\Coxis\Core\Tools\Locale::importLocales('tests/locales');
 		$this->assertEquals(__('Hello :name!', array('name' => 'Michel')), 'Bonjour Michel !');
 	}
 }

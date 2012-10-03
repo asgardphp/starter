@@ -9,14 +9,14 @@ class ORM {
 	function __construct($model) {
 		$this->model = $model;
 		
-		$this->dal = new \Coxis\Core\DAL(array($model::getTable() => 'a'));
+		$this->dal = new \Coxis\Core\DB\DAL(array($model::getTable() => 'a'));
 			
 		#todo buggy when the translation row does not exist (should reverse the leftjoin to rightjoin and a./t. tables)
 		if($model::isI18N()){
 			$this->leftjoin(array(
 				'a.Translation t'	=>	array(
 					'a.id = t.id',
-					't.locale'	=>	Config::get('locale'),
+					't.locale'	=>	\Coxis\Core\Config::get('locale'),
 				),
 			));
 		}

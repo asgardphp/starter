@@ -1,4 +1,6 @@
 <?php
+namespace Coxis\Core;
+
 #todo handle priorities
 class HookChain {
 	public $calls;
