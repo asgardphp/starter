@@ -70,12 +70,32 @@ class ORMHandler {
 		if($res['type'] == 'hasMany') {
 			if(isset($relation['link']))
 				$res['link'] = $relation['link'];
-			else
-				$res['link'] = $model::getModelName().'_id';
+			else {
+				#todo pouvoir creer une correspondance entre deux relations
+				if(is_string($model))
+					$modelName = strtolower($model);
+				else
+					$modelName = strtolower(get_class($model));
+				$modelName = preg_replace('/^\\\/', '', $modelName);
+				foreach($relation_model::$relationships as $name=>$relation) {
+					$rel = static::relationData($relation_model, $name);
+					$relModelClass = preg_replace('/^\\\/', '', strtolower($rel['model']));
+					if($rel['type'] == 'belongsTo' && $relModelClass == $modelName) {
+						$res['link'] = $rel['link'];
+						break;
+					}
+				}
+				if(!isset($res['link']))
+					throw new \Exception('Could not find the opposite relation.');
+			}
 		}
 		elseif($res['type'] == 'HMABT') {
 			$res['link_a'] = $model::getModelName().'_id';
 			$res['link_b'] = $relation_model::getModelName().'_id';
+			if(isset($relation['sortable']) && $relation['sortable'])
+				$res['sortable'] = $model::getModelName().'_position';
+			else
+				$res['sortable'] = false;
 			if($model::getModelName() < $relation_model::getModelName())
 				$res['join_table'] = Config::get('database', 'prefix').$model::getModelName().'_'.$relation_model::getModelName();
 			else

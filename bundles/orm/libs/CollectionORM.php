@@ -8,6 +8,7 @@ class CollectionORM extends ORM implements \Coxis\Core\Collection {
 	private $link_a = null;
 	private $link_b = null;
 	private $join_table = null;
+	private $sortfield = null;
 
 	function __construct($model, $relation_name) {
 		$this->current_model = $model;
@@ -28,6 +29,7 @@ class CollectionORM extends ORM implements \Coxis\Core\Collection {
 				$this->join_table = $rel['join_table'];
 				$this->link_a = $rel['link_a'];
 				$this->link_b = $rel['link_b'];
+				$this->sortfield = $rel['sortable'];
 				break;
 			default:
 				throw new \Exception('Collection only works with hasMany and HMABT');
@@ -44,6 +46,7 @@ class CollectionORM extends ORM implements \Coxis\Core\Collection {
 				$this->where(array($this->link => $this->current_model->id));
 				break;
 			case 'HMABT':
+				$relation_model = $this->relation['model'];
 				$currentmodel_idfield = $this->link_a;
 				$relationmodel_idfield = $this->link_b;
 				
@@ -53,6 +56,8 @@ class CollectionORM extends ORM implements \Coxis\Core\Collection {
 						'b.'.$relationmodel_idfield.' = a.id',
 					)
 				));
+				if($this->sortfield)
+					$this->orderBy('b.'.$this->sortfield.' ASC');
 				break;
 			default:
 				throw new \Exception('Collection only works with hasMany and HMABT');
@@ -81,8 +86,13 @@ class CollectionORM extends ORM implements \Coxis\Core\Collection {
 				$dal = new DAL($this->join_table);
 				$dal->where(array($this->link_a => $this->current_model->id))->delete();
 				$dal->reset();
-				foreach($ids as $id)
-					$dal->insert(array($this->link_a => $this->current_model->id, $this->link_b => $id));
+				$i = 1;
+				foreach($ids as $id) {
+					if($this->sortfield)
+						$dal->insert(array($this->link_a => $this->current_model->id, $this->link_b => $id, $this->sortfield => $i++));
+					else
+						$dal->insert(array($this->link_a => $this->current_model->id, $this->link_b => $id));
+				}
 				break;
 			default:
 				throw new \Exception('Collection only works with hasMany and HMABT');
@@ -107,9 +117,13 @@ class CollectionORM extends ORM implements \Coxis\Core\Collection {
 				break;
 			case 'HMABT':
 				$dal = new DAL($this->join_table);
+				$i = 1;
 				foreach($ids as $id) {
 					$dal->reset()->where(array($this->link_a => $this->current_model->id, $this->link_b => $id))->delete();
-					$dal->insert(array($this->link_a => $this->current_model->id, $this->link_b => $id));
+					if($this->sortfield)
+						$dal->insert(array($this->link_a => $this->current_model->id, $this->link_b => $id, $this->sortfield => $i++));
+					else
+						$dal->insert(array($this->link_a => $this->current_model->id, $this->link_b => $id));
 				}
 				break;
 			default:

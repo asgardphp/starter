@@ -109,9 +109,6 @@ class MigrationController extends CLIController {
 		}
 		foreach(get_declared_classes() as $class) {
 			if(is_subclass_of($class, 'Coxis\Core\Model')) {
-				// if(!isset($class::$behaviors['orm']) || $class::$behaviors['orm'] != true)
-					// continue;
-				// if(isset($class::$behaviors['orm']) && $class::$behaviors['orm'] == true)
 				if($class == 'Coxis\Core\Model')
 					continue;
 				$class::_autoload();#todo use Importer
@@ -154,24 +151,34 @@ class MigrationController extends CLIController {
 				foreach($class::$relationships as $relation=>$params) {
 					$rel = \Coxis\Core\ORM\ORMHandler::relationData($class, $relation);
 					if($rel['type'] == 'HMABT') {
-						$arr = array(
-							$rel['link_a']	=>	array(
-								'type'	=>	'int(11)',
-								'nullable'	=>	false,
-								'auto_increment'	=>	false,
-								'default'	=>	null,
-								'key'	=>	null,
-							),
-							$rel['link_b']	=>	array(
-								'type'	=>	'int(11)',
-								'nullable'	=>	false,
-								'auto_increment'	=>	false,
-								'default'	=>	null,
-								'key'	=>	null,
-							),
-						);
 						$table_name = $rel['join_table'];
-						$newSchemas[$table_name] = $arr;
+						if(!isset($newSchemas[$table_name])) {
+							$arr = array(
+								$rel['link_a']	=>	array(
+									'type'	=>	'int(11)',
+									'nullable'	=>	false,
+									'auto_increment'	=>	false,
+									'default'	=>	null,
+									'key'	=>	null,
+								),
+								$rel['link_b']	=>	array(
+									'type'	=>	'int(11)',
+									'nullable'	=>	false,
+									'auto_increment'	=>	false,
+									'default'	=>	null,
+									'key'	=>	null,
+								),
+							);
+							$newSchemas[$table_name] = $arr;
+						}
+						if($rel['sortable'])
+							$newSchemas[$table_name][$rel['sortable']] = array(
+								'type'	=>	'int(11)',
+								'nullable'	=>	false,
+								'auto_increment'	=>	false,
+								'default'	=>	null,
+								'key'	=>	null,
+							);
 					}
 				}
 
@@ -190,6 +197,8 @@ class MigrationController extends CLIController {
 		}
 		
 		$oldSchemas = array_filter($oldSchemas);
+
+		// d($newSchemas['value'], $oldSchemas['value']);
 
 		$up = static::diff($newSchemas, $oldSchemas);
 		$down = static::diff($oldSchemas, $newSchemas);
@@ -223,6 +232,7 @@ class MigrationController extends CLIController {
 				}
 				else {
 					$diff = array_diff_assoc($schema[$col], $tableSchema[$col]);
+					unset($diff['position']); #todo
 					if($diff)
 						$colsmigration .=  static::updateColumn($table, $col, $diff);
 				}

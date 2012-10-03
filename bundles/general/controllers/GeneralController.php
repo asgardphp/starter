@@ -56,9 +56,7 @@ class GeneralController extends \Coxis\Core\Controller {
 	*/
 	public function preSendingAction(&$content) {
 		try {
-			$type = \Coxis\Core\Response::getHeader('Content-Type');
-			
-			if($type != 'text/html')
+			if(get(Router::getRequest(), 'format') != 'html')
 				return;
 		} catch(\Exception $e) {}
 			

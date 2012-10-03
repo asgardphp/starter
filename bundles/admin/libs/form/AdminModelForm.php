@@ -30,10 +30,11 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 			else
 				$this->input($widget, $options);
 		}
+		elseif(isset($model::$relationships[$widget])) {
+			$this->relation($widget, $options);
+		}
 		else {
-			$relationships = $model::$relationships;
-			if(isset($relationships[$widget]))
-				$this->relation($widget, $options);
+			$this->input($widget, $options);
 		}
 			
 		return $this;
@@ -134,8 +135,10 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 		else
 			$label = $options['label'];
 		
-		if($this->model->property($widget)->required)
-			$label .= '*';
+		try {
+			if($this->model->property($widget)->required)
+				$label .= '*';
+		} catch(\ErrorException $e) {} #if widget does not belong to the model
 			
 		return $label;
 	}
