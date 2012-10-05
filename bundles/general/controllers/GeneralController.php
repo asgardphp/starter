@@ -14,8 +14,6 @@ class GeneralController extends \Coxis\Core\Controller {
 		if(!\Coxis\Core\Response::getContent())
 			return;
 		
-		//~ ini_set('zlib.output_compression','Off');
-		//~ d(Response::getContent());
 		$output = gzencode(\Coxis\Core\Response::getContent());
 		\Coxis\Core\Response::setContent($output);
 		\Coxis\Core\Response::setHeader('Content-Encoding', 'gzip');
@@ -36,7 +34,7 @@ class GeneralController extends \Coxis\Core\Controller {
 		
 		if($request['format']=='html') {
 			$output = Router::run('default', '_404');
-			$output = Hook::hook('output', $output);
+			\Coxis\Core\Hook::trigger('output', $output);
 			Response::setContent($output);
 		}
 		

@@ -6,7 +6,6 @@ class DefaultController extends \Coxis\Core\Controller {
 	@Route('')
 	*/
 	public function indexAction($request) {
-		echo 'Home';
 	}
 
 	public function _404Action() {
@@ -14,6 +13,5 @@ class DefaultController extends \Coxis\Core\Controller {
 	
 	public function layoutAction($content) {
 		$this->content = $content;
-		$this->view = 'layout.php';
 	}
 }

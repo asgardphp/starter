@@ -13,7 +13,6 @@ class Locale {
 		\Coxis\Core\Config::set('locale', $locale);
 	}
 
-	public static function load(){}
 	public static function _autoload() {
 		static::setLocale(\Coxis\Core\Config::get('locale'));
 	

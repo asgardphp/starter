@@ -8,7 +8,7 @@ if(\Coxis\Core\Config::get('error_display'))
 function url_for($what, $params=array(), $relative=true) {
 	return \Coxis\Core\URL::url_for($what, $params, $relative);
 }
-\Coxis\Core\Tools\Locale::load();
+import('\Coxis\Core\Tools\Locale');
 \Coxis\Core\BundlesManager::loadBundles();
 //User Session
 \Coxis\Core\User::start();

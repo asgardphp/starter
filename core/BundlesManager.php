@@ -3,10 +3,10 @@ namespace {
 	require_once('vendors/addendum/annotations.php');
 
 	/* Controllers */
-	class Hook extends Annotation {}
-	class Prefix extends Annotation {}
-	class Priority extends Annotation {}
-	class Route extends Annotation {
+	class Annootate_Hook extends Annotation {}
+	class Annootate_Prefix extends Annotation {}
+	class Annootate_Priority extends Annotation {}
+	class Annootate_Route extends Annotation {
 		public $name;
 		public $requirements;
 		public $method;

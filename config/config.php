@@ -12,12 +12,12 @@ $config = array(
 			'fr', 'en'
 		),
 		'cache'	=>	array(
-			'method'	=>	'apc',
-			//~ 'method'	=>	'file',
+			// 'method'	=>	'apc',
+			'method'	=>	'file',
 		)
 	),
 	'dev'	=>	array(
-		// 'phpcache'	=>	false,
-		'phpcache'	=>	true,
+		'phpcache'	=>	false,
+		// 'phpcache'	=>	true,
 	),
 );

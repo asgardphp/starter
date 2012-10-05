@@ -23,11 +23,11 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Table structure for table `arpa_actualite`
+-- Table structure for table `actualite`
 --
 
-DROP TABLE IF EXISTS `arpa_actualite`;
-CREATE TABLE IF NOT EXISTS `arpa_actualite` (
+DROP TABLE IF EXISTS `actualite`;
+CREATE TABLE IF NOT EXISTS `actualite` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `titre` text,
   `date` text,
@@ -44,10 +44,10 @@ CREATE TABLE IF NOT EXISTS `arpa_actualite` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=44 ;
 
 --
--- Dumping data for table `arpa_actualite`
+-- Dumping data for table `actualite`
 --
 
-INSERT INTO `arpa_actualite` (`id`, `titre`, `date`, `lieu`, `introduction`, `contenu`, `slug`, `position`, `created_at`, `updated_at`, `image`, `commentaire_id`) VALUES
+INSERT INTO `actualite` (`id`, `titre`, `date`, `lieu`, `introduction`, `contenu`, `slug`, `position`, `created_at`, `updated_at`, `image`, `commentaire_id`) VALUES
 (2, 'JOURNEE MONDIALE DE LA VOIX', '', '', 'sdfgm', '<p>\r\n	Cette ann&eacute;e la Journ&eacute;e Mondiale de la Voix se tiendra le lundi 16 avril 2012 &agrave; l&rsquo;Ecole Sup&eacute;rieure d&rsquo;Audiovisuel de Toulouse.</p>\r\n', 'journee-mondiale-de-la-voix', 1, '2010-11-00 15:37:00', '0000-00-00 00:00:00', 'img2.jpg', 2),
 (17, 'JOURNEE MONDIALE DE LA VOIX', '', '', 'sdfgm', '<p>\r\n	Cette ann&eacute;e la Journ&eacute;e Mondiale de la Voix se tiendra le lundi 16 avril 2012 &agrave; l&rsquo;Ecole Sup&eacute;rieure d&rsquo;Audiovisuel de Toulouse.</p>\r\n', 'journee-mondiale-de-la-voix-3', 0, '2013-11-00 15:37:00', '2012-07-21 13:52:21', 'Chrysanthemum_24.jpg', 2),
 (18, 'JOURNEE MONDIALE DE LA VOIX', '', '', 'sdfgm', '<p>\r\n	Cette ann&eacute;e la Journ&eacute;e Mondiale de la Voix se tiendra le lundi 16 avril 2012 &agrave; l&rsquo;Ecole Sup&eacute;rieure d&rsquo;Audiovisuel de Toulouse.</p>\r\n', 'journee-mondiale-de-la-voix-4', 2, '2016-06-00 15:37:00', '0000-00-00 00:00:00', 'img2.jpg', 0),
@@ -78,30 +78,30 @@ INSERT INTO `arpa_actualite` (`id`, `titre`, `date`, `lieu`, `introduction`, `co
 -- --------------------------------------------------------
 
 --
--- Table structure for table `arpa_actualite_commentaire`
+-- Table structure for table `actualite_commentaire`
 --
 
-DROP TABLE IF EXISTS `arpa_actualite_commentaire`;
-CREATE TABLE IF NOT EXISTS `arpa_actualite_commentaire` (
+DROP TABLE IF EXISTS `actualite_commentaire`;
+CREATE TABLE IF NOT EXISTS `actualite_commentaire` (
   `actualite_id` int(11) NOT NULL,
   `commentaire_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
--- Dumping data for table `arpa_actualite_commentaire`
+-- Dumping data for table `actualite_commentaire`
 --
 
-INSERT INTO `arpa_actualite_commentaire` (`actualite_id`, `commentaire_id`) VALUES
+INSERT INTO `actualite_commentaire` (`actualite_id`, `commentaire_id`) VALUES
 (2, 2);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `arpa_actualite_translation`
+-- Table structure for table `actualite_translation`
 --
 
-DROP TABLE IF EXISTS `arpa_actualite_translation`;
-CREATE TABLE IF NOT EXISTS `arpa_actualite_translation` (
+DROP TABLE IF EXISTS `actualite_translation`;
+CREATE TABLE IF NOT EXISTS `actualite_translation` (
   `id` int(11) NOT NULL,
   `locale` varchar(10) NOT NULL,
   `test` text NOT NULL,
@@ -109,10 +109,10 @@ CREATE TABLE IF NOT EXISTS `arpa_actualite_translation` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
--- Dumping data for table `arpa_actualite_translation`
+-- Dumping data for table `actualite_translation`
 --
 
-INSERT INTO `arpa_actualite_translation` (`id`, `locale`, `test`) VALUES
+INSERT INTO `actualite_translation` (`id`, `locale`, `test`) VALUES
 (2, 'en', 'Hello'),
 (2, 'fr', 'Bonjour'),
 (25, 'fr', 'un test'),
@@ -139,11 +139,11 @@ INSERT INTO `arpa_actualite_translation` (`id`, `locale`, `test`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `arpa_administrator`
+-- Table structure for table `administrator`
 --
 
-DROP TABLE IF EXISTS `arpa_administrator`;
-CREATE TABLE IF NOT EXISTS `arpa_administrator` (
+DROP TABLE IF EXISTS `administrator`;
+CREATE TABLE IF NOT EXISTS `administrator` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(100) NOT NULL,
   `password` varchar(100) NOT NULL,
@@ -151,20 +151,20 @@ CREATE TABLE IF NOT EXISTS `arpa_administrator` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=2 ;
 
 --
--- Dumping data for table `arpa_administrator`
+-- Dumping data for table `administrator`
 --
 
-INSERT INTO `arpa_administrator` (`id`, `username`, `password`) VALUES
+INSERT INTO `administrator` (`id`, `username`, `password`) VALUES
 (1, 'admin', 'aa9760ca2f0d59de8fd6eabebd61c4cf1b8ad972');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `arpa_annonce`
+-- Table structure for table `annonce`
 --
 
-DROP TABLE IF EXISTS `arpa_annonce`;
-CREATE TABLE IF NOT EXISTS `arpa_annonce` (
+DROP TABLE IF EXISTS `annonce`;
+CREATE TABLE IF NOT EXISTS `annonce` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `intitule` text,
   `categorie` text,
@@ -186,10 +186,10 @@ CREATE TABLE IF NOT EXISTS `arpa_annonce` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=4 ;
 
 --
--- Dumping data for table `arpa_annonce`
+-- Dumping data for table `annonce`
 --
 
-INSERT INTO `arpa_annonce` (`id`, `intitule`, `categorie`, `region`, `adresse`, `ville`, `code_postal`, `contenu`, `nom`, `prenom`, `portable`, `telephone`, `email`, `site_web`, `slug`, `created_at`, `updated_at`) VALUES
+INSERT INTO `annonce` (`id`, `intitule`, `categorie`, `region`, `adresse`, `ville`, `code_postal`, `contenu`, `nom`, `prenom`, `portable`, `telephone`, `email`, `site_web`, `slug`, `created_at`, `updated_at`) VALUES
 (1, 'Ensemble vocal Le Tourdion cherche un chef', 'Chorale', 'Haute-Garonne', '', 'Toulouse', '', 'Recherche ...', 'Hognerud', 'Michel', '', '303030303', 'bob@joe.com', 'joe.com', 'ensemble-vocal-le-tourdion-cherche-un-chef', '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
 (2, 'Ensemble vocal Le Tourdion cherche un chef vocal Le Tourdion cherche un chef', 'Recherche', 'Doubs', '', 'Besancon', '', 'Aaaaaaaah', 'Ghislain', 'Llorca', '', '303030303', 'lol@lol.com', 'lol.com', 'ensemble-vocal-le-tourdion-cherche-un-chef-vocal-le-tourdion-cherche-un-chef', '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
 (3, 'Ensemble vocal Le Tourdion cherche un chef', 'Stage', 'Midi-PyrÃ©nÃ©es', '1 rue de la paix', 'Besancon', '25000', 'Trolololol', 'Obama', 'Barrack', '', '811565908', 'barrack@obama.com', 'obama.com', 'ensemble-vocal-le-tourdion-cherche-un-chef-2', '0000-00-00 00:00:00', '0000-00-00 00:00:00');
@@ -197,73 +197,73 @@ INSERT INTO `arpa_annonce` (`id`, `intitule`, `categorie`, `region`, `adresse`, 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `arpa_article`
+-- Table structure for table `article`
 --
 
-DROP TABLE IF EXISTS `arpa_article`;
-CREATE TABLE IF NOT EXISTS `arpa_article` (
+DROP TABLE IF EXISTS `article`;
+CREATE TABLE IF NOT EXISTS `article` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(100) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=3 ;
 
 --
--- Dumping data for table `arpa_article`
+-- Dumping data for table `article`
 --
 
-INSERT INTO `arpa_article` (`id`, `title`) VALUES
+INSERT INTO `article` (`id`, `title`) VALUES
 (1, 'About Me'),
 (2, 'Introduction');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `arpa_article_author`
+-- Table structure for table `article_author`
 --
 
-DROP TABLE IF EXISTS `arpa_article_author`;
-CREATE TABLE IF NOT EXISTS `arpa_article_author` (
+DROP TABLE IF EXISTS `article_author`;
+CREATE TABLE IF NOT EXISTS `article_author` (
   `article_id` int(11) NOT NULL,
   `author_id` int(11) NOT NULL,
   PRIMARY KEY (`article_id`,`author_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
--- Dumping data for table `arpa_article_author`
+-- Dumping data for table `article_author`
 --
 
-INSERT INTO `arpa_article_author` (`article_id`, `author_id`) VALUES
+INSERT INTO `article_author` (`article_id`, `author_id`) VALUES
 (1, 1);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `arpa_author`
+-- Table structure for table `author`
 --
 
-DROP TABLE IF EXISTS `arpa_author`;
-CREATE TABLE IF NOT EXISTS `arpa_author` (
+DROP TABLE IF EXISTS `author`;
+CREATE TABLE IF NOT EXISTS `author` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=3 ;
 
 --
--- Dumping data for table `arpa_author`
+-- Dumping data for table `author`
 --
 
-INSERT INTO `arpa_author` (`id`, `name`) VALUES
+INSERT INTO `author` (`id`, `name`) VALUES
 (1, 'Michel'),
 (2, 'Bob');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `arpa_choeur`
+-- Table structure for table `choeur`
 --
 
-DROP TABLE IF EXISTS `arpa_choeur`;
-CREATE TABLE IF NOT EXISTS `arpa_choeur` (
+DROP TABLE IF EXISTS `choeur`;
+CREATE TABLE IF NOT EXISTS `choeur` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `nom` text,
   `region` text,
@@ -296,20 +296,20 @@ CREATE TABLE IF NOT EXISTS `arpa_choeur` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=2 ;
 
 --
--- Dumping data for table `arpa_choeur`
+-- Dumping data for table `choeur`
 --
 
-INSERT INTO `arpa_choeur` (`id`, `nom`, `region`, `adresse`, `ville`, `code_postal`, `telephone`, `mobile`, `email`, `site_web`, `lieu_repetition_adresse`, `lieu_repetition_ville`, `lieu_repetition_code_postal`, `repetitions_horaires`, `style_musical`, `responsable_adresse`, `responsable_code_postal`, `responsable_ville`, `responsable_nom`, `responsable_prenom`, `responsable_telephone`, `responsable_mobile`, `responsable_email`, `conditions_admission`, `type_choeurs`, `slug`, `created_at`, `updated_at`) VALUES
+INSERT INTO `choeur` (`id`, `nom`, `region`, `adresse`, `ville`, `code_postal`, `telephone`, `mobile`, `email`, `site_web`, `lieu_repetition_adresse`, `lieu_repetition_ville`, `lieu_repetition_code_postal`, `repetitions_horaires`, `style_musical`, `responsable_adresse`, `responsable_code_postal`, `responsable_ville`, `responsable_nom`, `responsable_prenom`, `responsable_telephone`, `responsable_mobile`, `responsable_email`, `conditions_admission`, `type_choeurs`, `slug`, `created_at`, `updated_at`) VALUES
 (1, 'GlÃ¼e Design', 'Haute-Garonne', '12 rue Arnaud vidal', 'Toulouse', '31000', '05 53 68 63 18', '06 65 09 16 81', 'gl@glue-design.com', 'www.glue-design.com', '12 rue arnaud Vidal', 'Toulouse', '31000', 'Les rÃ©pÃ©titions ont lieux tous les jours \r\nde 18h00 Ã  20h00. \r\nSauf le dimanche : pas de rÃ©pÃ©tition.', 'a:2:{i:0;s:18:"ChÅ“ur dâ€™enfants";i:1;s:18:"ChÅ“ur dâ€™adultes";}', '', '', '', 'Llorca', 'Ghislain', '303030303', '', 'ghislain@llorca.com', 'a:2:{i:0;s:16:"Un test de chant";i:1;s:12:"Un entretien";}', 'a:3:{i:0;s:7:"Baroque";i:1;s:15:"Chants du monde";i:2;s:9:"Classique";}', 'glue-design', '0000-00-00 00:00:00', '0000-00-00 00:00:00');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `arpa_commentaire`
+-- Table structure for table `commentaire`
 --
 
-DROP TABLE IF EXISTS `arpa_commentaire`;
-CREATE TABLE IF NOT EXISTS `arpa_commentaire` (
+DROP TABLE IF EXISTS `commentaire`;
+CREATE TABLE IF NOT EXISTS `commentaire` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `titre` text NOT NULL,
   `created_at` datetime NOT NULL,
@@ -319,20 +319,20 @@ CREATE TABLE IF NOT EXISTS `arpa_commentaire` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=3 ;
 
 --
--- Dumping data for table `arpa_commentaire`
+-- Dumping data for table `commentaire`
 --
 
-INSERT INTO `arpa_commentaire` (`id`, `titre`, `created_at`, `updated_at`, `actualite_id`) VALUES
+INSERT INTO `commentaire` (`id`, `titre`, `created_at`, `updated_at`, `actualite_id`) VALUES
 (2, 'un com', '2012-01-00 00:00:00', '2012-07-09 20:24:09', 2);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `arpa_document`
+-- Table structure for table `document`
 --
 
-DROP TABLE IF EXISTS `arpa_document`;
-CREATE TABLE IF NOT EXISTS `arpa_document` (
+DROP TABLE IF EXISTS `document`;
+CREATE TABLE IF NOT EXISTS `document` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `titre` text,
   `description` text,
@@ -344,10 +344,10 @@ CREATE TABLE IF NOT EXISTS `arpa_document` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=5 ;
 
 --
--- Dumping data for table `arpa_document`
+-- Dumping data for table `document`
 --
 
-INSERT INTO `arpa_document` (`id`, `titre`, `description`, `position`, `created_at`, `updated_at`, `filename_document`) VALUES
+INSERT INTO `document` (`id`, `titre`, `description`, `position`, `created_at`, `updated_at`, `filename_document`) VALUES
 (1, 'Titre de lâ€™Ã©tude', 'attention le texte de ne doit pas excÃ©der les 400 caractÃ¨res. Description de lâ€™Ã©tude : attention le texte de ne doit pas excÃ©der les 400 caractÃ¨res.Description de lâ€™Ã©tude : attention le texte de ne doit pas excÃ©der les 400 caractÃ¨res. Description de lâ€™Ã©tude : attention le texte de ne doit pas excÃ©der les 400 caractÃ¨res.', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00', 'img1.png'),
 (2, 'Titre de lâ€™Ã©tude', ' attention le texte de ne doit pas excÃ©der les 400 caractÃ¨res. Description de lâ€™Ã©tude : attention le texte de ne doit pas excÃ©der les 400 caractÃ¨res.Description de lâ€™Ã©tude : attention le texte de ne doit pas excÃ©der les 400 caractÃ¨res. Description de lâ€™Ã©tude : attention le texte de ne doit pas excÃ©der les 400 caractÃ¨res.', 1, '0000-00-00 00:00:00', '0000-00-00 00:00:00', 'img3.png'),
 (3, 'Titre de lâ€™Ã©tude', ' attention le texte de ne doit pas excÃ©der les 400 caractÃ¨res. Description de lâ€™Ã©tude : attention le texte de ne doit pas excÃ©der les 400 caractÃ¨res.Description de lâ€™Ã©tude : attention le texte de ne doit pas excÃ©der les 400 caractÃ¨res. Description de lâ€™Ã©tude : attention le texte de ne doit pas excÃ©der les 400 caractÃ¨res.', 1, '0000-00-00 00:00:00', '0000-00-00 00:00:00', 'img3_1.png'),
@@ -356,11 +356,11 @@ INSERT INTO `arpa_document` (`id`, `titre`, `description`, `position`, `created_
 -- --------------------------------------------------------
 
 --
--- Table structure for table `arpa_foo`
+-- Table structure for table `foo`
 --
 
-DROP TABLE IF EXISTS `arpa_foo`;
-CREATE TABLE IF NOT EXISTS `arpa_foo` (
+DROP TABLE IF EXISTS `foo`;
+CREATE TABLE IF NOT EXISTS `foo` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `date_naissance` text NOT NULL,
   `mot_de_passe` text NOT NULL,
@@ -374,10 +374,10 @@ CREATE TABLE IF NOT EXISTS `arpa_foo` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=16 ;
 
 --
--- Dumping data for table `arpa_foo`
+-- Dumping data for table `foo`
 --
 
-INSERT INTO `arpa_foo` (`id`, `date_naissance`, `mot_de_passe`, `email`, `slug`, `position`, `created_at`, `updated_at`, `filename_image`) VALUES
+INSERT INTO `foo` (`id`, `date_naissance`, `mot_de_passe`, `email`, `slug`, `position`, `created_at`, `updated_at`, `filename_image`) VALUES
 (1, '4/6/2011', 'a', 'a', 'a', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00', 'a:0:{}'),
 (2, '4/6/2011', 'a', 'a', 'a', 1, '0000-00-00 00:00:00', '0000-00-00 00:00:00', 'a:1:{i:0;s:4:".jpg";}'),
 (3, '4/6/2011', 'a', 'a', 'a', 1, '2012-07-19 19:56:19', '2012-07-19 19:56:19', 'a:1:{i:0;s:11:"php7421.jpg";}'),
@@ -397,11 +397,11 @@ INSERT INTO `arpa_foo` (`id`, `date_naissance`, `mot_de_passe`, `email`, `slug`,
 -- --------------------------------------------------------
 
 --
--- Table structure for table `arpa_formation`
+-- Table structure for table `formation`
 --
 
-DROP TABLE IF EXISTS `arpa_formation`;
-CREATE TABLE IF NOT EXISTS `arpa_formation` (
+DROP TABLE IF EXISTS `formation`;
+CREATE TABLE IF NOT EXISTS `formation` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `titre` text,
   `date` text,
@@ -419,10 +419,10 @@ CREATE TABLE IF NOT EXISTS `arpa_formation` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=4 ;
 
 --
--- Dumping data for table `arpa_formation`
+-- Dumping data for table `formation`
 --
 
-INSERT INTO `arpa_formation` (`id`, `titre`, `date`, `lieu`, `introduction`, `contenu`, `meta_title`, `meta_description`, `meta_keywords`, `slug`, `created_at`, `updated_at`, `filename_image`) VALUES
+INSERT INTO `formation` (`id`, `titre`, `date`, `lieu`, `introduction`, `contenu`, `meta_title`, `meta_description`, `meta_keywords`, `slug`, `created_at`, `updated_at`, `filename_image`) VALUES
 (1, 'Physiologie de la voix : apports thÃ©oriques et pratiques', 'Physiologie de la voix : apports thÃ©oriques et pratiques', 'Foix centre universitaire.', 'Le Dr Sabine Crestani nous fera partager ses connaissances sur la question de la physiologie de la voix ainsi que sur la question des pathologies vocales frÃ©quemment rencontrÃ©es chez les enfants et les adultes qui utilisent leur voix dans des conditions parfois difficiles comme les enseignants. Jean-Louis COMORETTO est chanteur professionnel.', '<p>\r\n	Intervenant : Sabine CRESTANI &amp; Jean-Louis COMORETTO<br />\r\n	Sabine CRESTANI est m&eacute;decin ORL sp&eacute;cialis&eacute; en chirurgie de la face et du cou, DIU Voix, parole et d&eacute;glutition, praticien hospitalier &agrave; l&rsquo;h&ocirc;pital Larrey CHU de Toulouse, service du Pr Serrano dans l&rsquo;Unit&eacute; Voix Parole et D&eacute;glutition du Dr Woisard. Le Dr Sabine Crestani nous fera partager ses connaissances sur la question de la physiologie de la voix ainsi que sur la question des pathologies vocales fr&eacute;quemment rencontr&eacute;es chez les enfants et les adultes qui utilisent leur voix dans des conditions parfois difficiles comme les enseignants.<br />\r\n	Jean-Louis COMORETTO est chanteur professionnel, directeur de l&rsquo;ARPA et directeur de l&rsquo;ensemble vocal A Sei Voci. Il interviendra sur la prise de conscience de l&rsquo;importance de la posture, sur le travail de la voix parl&eacute;e et chant&eacute;e, sur la coordination phono respiratoire au travers d&rsquo;exercices sp&eacute;cifiques.</p>\r\n<p>\r\n	Contenu :</p>\r\n<ul>\r\n	<li>\r\n		Partie th&eacute;orique : physionomie-anatomie du larynx, fonctionnement de l&rsquo;appareil phonatoire. Supports utilis&eacute;s : sch&eacute;mas, squelette, diaporama par exemple.</li>\r\n	<li>\r\n		Partie pratique : proposition d&rsquo;exercices sur la coordination phono respiratoire, la prise de conscience de l&rsquo;importance de la posture, le travail de la voix parl&eacute;e, projet&eacute;e et chant&eacute;e.</li>\r\n</ul>\r\n<p>\r\n	Public concern&eacute; : Amateurs ou professionnels de la voix (chanteurs, com&eacute;diens, enseignants, avocats, choristes...)</p>\r\n<p>\r\n	Tarif : gratuit&eacute; pour les stagiaires ari&eacute;geois dans le cadre des accords avec le Conseil G&eacute;n&eacute;ral 09, 20 &euro; pour une inscription individuelle + 15 &euro; d&rsquo;adh&eacute;sion &agrave; l&rsquo;ARPA, 45 &euro; dans le cadre de la prise en charge par l&rsquo;employeur au titre de la formation professionnelle continue + 15 &euro; d&rsquo;adh&eacute;sion &agrave; l&rsquo;ARPA.</p>\r\n', '', '', '', 'physiologie-de-la-voix-apports-theoriques-et-pratiques', '0000-00-00 00:00:00', '0000-00-00 00:00:00', 'img2.jpg'),
 (2, 'Polyphonies baltes et dâ€™Europe du nord', 'Le 16 octobre 2011, 8 janvier et 11 mars 2012', 'Maison de la Musique - Le Garric (81)', 'Ce stage est rÃ©alisÃ© Ã  lâ€™initiative de lâ€™ADDA du Tarn en partenariat avec lâ€™ARPA.', 'Ce stage est rÃ©alisÃ© Ã  lâ€™initiative de lâ€™ADDA du Tarn en partenariat avec lâ€™ARPA.', '', '', '', 'polyphonies-baltes-et-deurope-du-nord', '0000-00-00 00:00:00', '0000-00-00 00:00:00', ''),
 (3, 'OMMM : Vocal effervescent', 'Le 15 et 16 octobre 2011', 'salle des fÃªtes dâ€™Escalquens (31)', 'Ce stage est organisÃ© en partenariat avec le festival Â« VOIX CROISÃ‰ES Â» Ommm câ€™est la rencontre de 5 voix singuliÃ¨res (Manon, Mayon, Melow, Mathis et Sam) et dâ€™un alchimiste des sons (LÃ©o) sur le terrain du groove, de lâ€™improvisation et de lâ€™humour.', '<p>\r\n	<span style="color: rgb(77, 77, 79); font-family: Tahoma, Geneva, sans-serif; line-height: 15px; ">Ce stage est organis&eacute; en partenariat avec le festival &laquo; VOIX CROIS&Eacute;ES &raquo; Ommm c&rsquo;est la rencontre de 5 voix singuli&egrave;res (Manon, Mayon, Melow, Mathis et Sam) et d&rsquo;un alchimiste des sons (L&eacute;o) sur le terrain du groove, de l&rsquo;improvisation et de l&rsquo;humour.</span></p>\r\n', '', '', '', 'ommm-vocal-effervescent', '0000-00-00 00:00:00', '0000-00-00 00:00:00', '');
@@ -430,11 +430,11 @@ INSERT INTO `arpa_formation` (`id`, `titre`, `date`, `lieu`, `introduction`, `co
 -- --------------------------------------------------------
 
 --
--- Table structure for table `arpa_inscrit`
+-- Table structure for table `inscrit`
 --
 
-DROP TABLE IF EXISTS `arpa_inscrit`;
-CREATE TABLE IF NOT EXISTS `arpa_inscrit` (
+DROP TABLE IF EXISTS `inscrit`;
+CREATE TABLE IF NOT EXISTS `inscrit` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `email` text,
   `created_at` datetime NOT NULL,
@@ -443,20 +443,20 @@ CREATE TABLE IF NOT EXISTS `arpa_inscrit` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=3 ;
 
 --
--- Dumping data for table `arpa_inscrit`
+-- Dumping data for table `inscrit`
 --
 
-INSERT INTO `arpa_inscrit` (`id`, `email`, `created_at`, `updated_at`) VALUES
+INSERT INTO `inscrit` (`id`, `email`, `created_at`, `updated_at`) VALUES
 (2, 'sdf@dfg.com', '0000-00-00 00:00:00', '0000-00-00 00:00:00');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `arpa_page`
+-- Table structure for table `page`
 --
 
-DROP TABLE IF EXISTS `arpa_page`;
-CREATE TABLE IF NOT EXISTS `arpa_page` (
+DROP TABLE IF EXISTS `page`;
+CREATE TABLE IF NOT EXISTS `page` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
   `name` text,
@@ -472,21 +472,21 @@ CREATE TABLE IF NOT EXISTS `arpa_page` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=3 ;
 
 --
--- Dumping data for table `arpa_page`
+-- Dumping data for table `page`
 --
 
-INSERT INTO `arpa_page` (`id`, `title`, `name`, `content`, `position`, `meta_title`, `meta_description`, `meta_keywords`, `slug`, `created_at`, `updated_at`) VALUES
+INSERT INTO `page` (`id`, `title`, `name`, `content`, `position`, `meta_title`, `meta_description`, `meta_keywords`, `slug`, `created_at`, `updated_at`) VALUES
 (1, 'L''Arpa', 'arpa', '<p>\r\n	&nbsp;</p>\r\n<p style="margin-bottom: 15px; color: rgb(77, 77, 79); font-family: Tahoma, Geneva, sans-serif; ">\r\n	<strong>Aide aux chorales&nbsp;</strong><br />\r\n	Il s&#39;agit de 4h30 de formation gratuite dispens&eacute;e par un intervenant de l&rsquo;A.R.P.A. avec des conseils techniques adapt&eacute;s au r&eacute;pertoire travaill&eacute;.</p>\r\n<p style="margin-bottom: 15px; color: rgb(77, 77, 79); font-family: Tahoma, Geneva, sans-serif; ">\r\n	<strong>Aide aux projets</strong><br />\r\n	Si vous avez un projet artistique fort, si vous souhaitez &eacute;laborer un plan de formation sp&eacute;cifique pour votre ch&oelig;ur, l&rsquo;ARPA met &agrave; disposition un intervenant et vous aide dans votre d&eacute;marche. Un entretien pr&eacute;alable permettra de d&eacute;finir les objectifs g&eacute;n&eacute;raux de la formation, le contenu p&eacute;dagogique, le volume et le calendrier des interventions.</p>\r\n<p style="margin-bottom: 15px; color: rgb(77, 77, 79); font-family: Tahoma, Geneva, sans-serif; ">\r\n	<strong>Conseil et Expertise &quot;sur mesure&quot;</strong><br />\r\n	Les derni&egrave;res saisons d&eacute;montrent un int&eacute;r&ecirc;t croissant des ch&oelig;urs et chefs de ch&oelig;ur pour des conseils adapt&eacute;s. Vous vous posez des questions sur votre pratique en g&eacute;n&eacute;ral et plus particuli&egrave;rement sur vos techniques de r&eacute;p&eacute;titions l&rsquo;&eacute;tude de votre r&eacute;pertoire, le niveau vocal et musical de votre groupe, la d&eacute;finition d&rsquo;un nouveau projet... Nous vous proposons de vous accompagner dans l&rsquo;excercice quotidien de votre pratique, dans la mesure des disponibilit&eacute;s des intervenants et de vous mettre en relation avec une personne ressource pour vous faire profiter de notre exp&eacute;rience.</p>\r\n<p style="margin-bottom: 15px; color: rgb(77, 77, 79); font-family: Tahoma, Geneva, sans-serif; ">\r\n	<strong>Financement</strong><br />\r\n	Le co&ucirc;t de la formation peut-&ecirc;tre pris en charge en partie selon chaque d&eacute;partement. Le dispositif habituel consiste en la r&eacute;partition des frais li&eacute;s &agrave; l&rsquo;intervention &quot;prorata temporis&quot; &agrave; &eacute;galit&eacute; entre l&rsquo;ARPA, le ch&oelig;ur et votre relais d&eacute;partemental. Les frais de d&eacute;placement de l&rsquo;intervenant sont &agrave; la charge du ch&oelig;ur.</p>\r\n<p style="margin-bottom: 15px; color: rgb(77, 77, 79); font-family: Tahoma, Geneva, sans-serif; ">\r\n	<strong>Modalit&eacute;s</strong><br />\r\n	Pour b&eacute;n&eacute;ficier de ces 3 types de formations vous devez faire une demande par &eacute;crit avant le 30 novembre de chaque ann&eacute;e aupr&egrave;s de votre relais d&eacute;partemental. Les interventions se d&eacute;rouleront dans la mesure du possible dans le courant du 1er semestre de l&rsquo;ann&eacute;e civile suivante. Vous devez &eacute;galement acquitter &quot;l&rsquo;adh&eacute;sion chorale&quot; de 60&euro; &agrave; l&rsquo;ARPA qui assurera la gestion administrative et sociale des intervenants.</p>\r\n', 0, '', '', '', 'l-arpa', '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
 (2, 'Partenaires', 'partenaires', '<p>\r\n	sdfgj</p>\r\n', 1, '', '', '', 'partenaires', '0000-00-00 00:00:00', '0000-00-00 00:00:00');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `arpa_preferences`
+-- Table structure for table `preferences`
 --
 
-DROP TABLE IF EXISTS `arpa_preferences`;
-CREATE TABLE IF NOT EXISTS `arpa_preferences` (
+DROP TABLE IF EXISTS `preferences`;
+CREATE TABLE IF NOT EXISTS `preferences` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` text,
   `email` varchar(255) DEFAULT NULL,
@@ -497,20 +497,20 @@ CREATE TABLE IF NOT EXISTS `arpa_preferences` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=2 ;
 
 --
--- Dumping data for table `arpa_preferences`
+-- Dumping data for table `preferences`
 --
 
-INSERT INTO `arpa_preferences` (`id`, `name`, `email`, `adresse`, `telephone`, `head_script`) VALUES
+INSERT INTO `preferences` (`id`, `name`, `email`, `adresse`, `telephone`, `head_script`) VALUES
 (1, '', '', '', '', '');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `arpa_professeur`
+-- Table structure for table `professeur`
 --
 
-DROP TABLE IF EXISTS `arpa_professeur`;
-CREATE TABLE IF NOT EXISTS `arpa_professeur` (
+DROP TABLE IF EXISTS `professeur`;
+CREATE TABLE IF NOT EXISTS `professeur` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `nom` text,
   `prenoms` text,
@@ -531,20 +531,20 @@ CREATE TABLE IF NOT EXISTS `arpa_professeur` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=2 ;
 
 --
--- Dumping data for table `arpa_professeur`
+-- Dumping data for table `professeur`
 --
 
-INSERT INTO `arpa_professeur` (`id`, `nom`, `prenoms`, `region`, `adresse`, `ville`, `code_postal`, `telephone`, `email`, `site_web`, `cours_particuliers`, `type_choeurs`, `informations_complementaires`, `slug`, `created_at`, `updated_at`) VALUES
+INSERT INTO `professeur` (`id`, `nom`, `prenoms`, `region`, `adresse`, `ville`, `code_postal`, `telephone`, `email`, `site_web`, `cours_particuliers`, `type_choeurs`, `informations_complementaires`, `slug`, `created_at`, `updated_at`) VALUES
 (1, 'Llorca', 'Ghislain', 'Haute-Garonne', '12 rue Arnaud vidal', 'Toulouse', '31000', '05 53 68 63 18', 'gl@glue-design.com', 'www.glue-design.com', 'oui', 'a:3:{i:0;s:6:"Gospel";i:1;s:4:"Jazz";i:2;s:6:"MÃ©tal";}', 'Vous pouvez me joindre du lundi au jeudi de 9h00 Ã  14h00. Je peux venir avec mon matÃ©riel (guitare si nÃ©cessaire). L''heure de cours est Ã  15 â‚¬. Plusieurs peronnes peuvent participer au cours (3 â‚¬ sup. par personne).', 'llorca', '0000-00-00 00:00:00', '0000-00-00 00:00:00');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `arpa_value`
+-- Table structure for table `value`
 --
 
-DROP TABLE IF EXISTS `arpa_value`;
-CREATE TABLE IF NOT EXISTS `arpa_value` (
+DROP TABLE IF EXISTS `value`;
+CREATE TABLE IF NOT EXISTS `value` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `key` text,
   `value` text,
@@ -554,10 +554,10 @@ CREATE TABLE IF NOT EXISTS `arpa_value` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=4 ;
 
 --
--- Dumping data for table `arpa_value`
+-- Dumping data for table `value`
 --
 
-INSERT INTO `arpa_value` (`id`, `key`, `value`, `created_at`, `updated_at`) VALUES
+INSERT INTO `value` (`id`, `key`, `value`, `created_at`, `updated_at`) VALUES
 (1, 'name', 'ARPA', '1967-06-00 00:00:00', '2012-07-19 18:34:19'),
 (2, 'email', 'leyou.m@gmail.com', '1967-06-00 00:00:00', '2012-07-19 18:34:19'),
 (3, 'head_script', 'sdfgh', '1967-06-00 00:00:00', '2012-07-19 18:34:19');
