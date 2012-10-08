@@ -22,6 +22,10 @@ class URL {
 		return static::$url;
 	}
 	
+	public static function setURL($url) {
+		return static::$url = $url;
+	}
+	
 	public static function current() {
 		return static::base().static::get();
 	}

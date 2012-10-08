@@ -12,11 +12,13 @@ class User {
 				session_id($_POST['PHPSESSID']);
 			session_start();
 		}
-		static::$data = $_SESSION;
+		if(isset($_SESSION))
+			static::$data = $_SESSION;
 	}
 	
 	public static function delete($name) {
-		unset($_SESSION[$name]);
+		if(isset($_SESSION))
+			unset($_SESSION[$name]);
 		unset(static::$data[$name]);
 	}
 	
@@ -28,6 +30,7 @@ class User {
 	  
 	public static function set($name, $value) {
 		static::$data[$name] = $value;
-		$_SESSION[$name] = $value;
+		if(isset($_SESSION))
+			$_SESSION[$name] = $value;
 	}
 }

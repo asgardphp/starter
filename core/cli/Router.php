@@ -17,6 +17,7 @@ class Router {
 		//~ 'init'	=>	'coxis:test',
 		#git clone https://leyou@bitbucket.org/leyou/coxis.git
 		//~ git clone ...
+		'get'	=>	'coxis:get',	#set config var
 		'set'	=>	'coxis:set',	#set config var
 		//~ 'search'	=>	'coxis:test',	#search for bundles
 		'import'	=>	'coxis:import',	#import bundle

@@ -30,15 +30,15 @@ class GeneralController extends \Coxis\Core\Controller {
 			return;
 		static::$called404 = true;
 		
-		$request = Router::getRequest();
+		$request = \Coxis\Core\Router::getRequest();
 		
 		if($request['format']=='html') {
-			$output = Router::run('default', '_404');
+			$output = \Coxis\Core\Router::run('default', '_404');
 			\Coxis\Core\Hook::trigger('output', $output);
 			Response::setContent($output);
 		}
 		
-		Response::send();
+		\Coxis\Core\Response::send();
 	}
 
 	/**
@@ -54,7 +54,6 @@ class GeneralController extends \Coxis\Core\Controller {
 	*/
 	public function preSendingAction(&$content) {
 		try {
-			if(get(Router::getRequest(), 'format') != 'html')
 			if(get(\Coxis\Core\Router::getRequest(), 'format') != 'html')
 				return;
 		} catch(\Exception $e) {}

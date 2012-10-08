@@ -43,7 +43,7 @@ class Controller {
 		$this->view = null;
 		if(($actionName=$action) != 'configure')
 			$actionName = $action.'Action';
-		
+	
 		if(!is_array($params))
 			$params = array($params);
 

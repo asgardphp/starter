@@ -147,7 +147,6 @@ namespace Coxis\Core {
 						d($e); #todo error report this exception cause autoloader does not let it bubble up
 					}
 				}
-			
 			return get(array_values($diff), sizeof($diff)-1);
 		}
 

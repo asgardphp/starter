@@ -45,6 +45,8 @@ class Router {
 		$controllerName = ucfirst($controllerName);
 		$controllerClassName = $controllerName.'Controller';
 		$controller = new $controllerClassName();
+		if($actionName == 'mainAction')
+			exit();
 		return static::runAction($controller, $actionName, $params, $src, $showView);
 	}
 

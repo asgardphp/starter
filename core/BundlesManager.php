@@ -32,7 +32,8 @@ namespace Coxis\Core {
 				if(file_exists($bundle.'/controllers/')) {
 					foreach(glob($bundle.'/controllers/*.php') as $filename) {
 						$classname = \Coxis\Core\Importer::loadClassFile($filename);
-						
+						if(!$classname)
+							return;
 						$reflection = new \ReflectionAnnotatedClass($classname);
 						
 						if($reflection->getAnnotation('Prefix'))

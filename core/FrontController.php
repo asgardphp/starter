@@ -8,25 +8,12 @@ class FrontController extends Controller {
 				define('_ENV_', 'dev');
 			else
 				define('_ENV_', 'prod');
-	
-		/* CONFIG */
-		import('Coxis\Core\Config');
-		\Coxis\Core\Config::loadConfigDir('config');
-		if(\Coxis\Core\Config::get('error_display'))
-			\Coxis\Core\Error::display(true);
-
-		/* WEB RESOURCES */
-		// $this->getResource();
 		
 		require_once('core/load.php');
-
 		\Coxis\Core\Hook::trigger('start');
-			
 		//Dispatch to target controller
-		$output = Router::dispatch($this);
-
+		$output = \Coxis\Core\Router::dispatch();
 		\Coxis\Core\Hook::trigger('filter_output', array(), null, $output);
-
 		//Send the response
 		Response::setContent($output)->send();
 	}
