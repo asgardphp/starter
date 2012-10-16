@@ -7,6 +7,9 @@
 		Configuration
 		<ul>
 			<li>Configure the database in config/database.php</li>
+			<li>Configure the unique key in config/config.php</li>
+			<li>Configure the salt in config/config.php</li>
+			<li>Edit .htaccess</li>
 		</ul>
 	</li>
 	<li>
