@@ -8,13 +8,17 @@ class FrontController extends Controller {
 				define('_ENV_', 'dev');
 			else
 				define('_ENV_', 'prod');
-		
-		require_once('core/load.php');
-		\Coxis\Core\Hook::trigger('start');
+			
+		\BundlesManager::loadBundles();
+
+		\Router::parseRoutes();
+
+		\Hook::trigger('start');
+		// d(Router::getRoutes());
 		//Dispatch to target controller
-		$output = \Coxis\Core\Router::dispatch();
-		\Coxis\Core\Hook::trigger('filter_output', array(), null, $output);
+		$output = \Router::dispatch();
+		\Hook::trigger('filter_output', array(&$output), null);
 		//Send the response
-		Response::setContent($output)->send();
+		\Response::setContent($output)->send();
 	}
 }

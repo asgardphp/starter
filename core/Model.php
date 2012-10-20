@@ -5,7 +5,7 @@ class ModelException extends \Exception {
 	public $errors = array();
 }
 
-abstract class Model {
+class Model {
 	#public for behaviors
 	public $data = array(
 		'properties'	=>	array(),
@@ -41,6 +41,12 @@ abstract class Model {
 	}
 
 	public static function __callStatic($name, $arguments) {
+		// if(preg_match('/^_/', $name)) {
+		// 	$name = preg_replace('/^_/', '', $name);
+		// 	$inst = Context::instance()->get(get_called_class());
+		// 	return call_user_func_array(array($inst, $name), $arguments);
+		// }
+
 		$chain = new HookChain();
 		$chain->found = false;
 		$res = static::triggerChain($chain, 'callStatic', array($name, $arguments));
@@ -70,7 +76,7 @@ abstract class Model {
 		if(get_called_class() == 'Coxis\Core\Model')
 			return;
 
-		\Coxis\Core\Hook::trigger('behaviors_pre_load', get_called_class());
+		\Hook::trigger('behaviors_pre_load', get_called_class());
 
 		$properties = static::$properties;
 		foreach($properties as $k=>$v) {
@@ -89,7 +95,7 @@ abstract class Model {
 		
 		foreach(static::$behaviors as $behavior => $params)
 			if($params)
-				\Coxis\Core\Hook::trigger('behaviors_load_'.$behavior, get_called_class());
+				\Hook::trigger('behaviors_load_'.$behavior, get_called_class());
 
 		static::configure();
 	}
@@ -174,10 +180,10 @@ abstract class Model {
 	public function getValidator() {
 		$constrains = array();
 		$model = $this;
-		$this->trigger('constrains', array(), function($chain, &$constrains) use($model) {
+		$this->trigger('constrains', array(&$constrains), function($chain, &$constrains) use($model) {
 			foreach($model::$properties as $name=>$property)
 				$constrains[$name] = $property->getRules();
-		}, $constrains);
+		});
 		
 		if(isset(static::$messages))
 			$messages = static::$messages;
@@ -199,15 +205,15 @@ abstract class Model {
 		#todo use model hooks
 		foreach(static::$behaviors as $behavior => $params)
 			if($params)
-				\Coxis\Core\Hook::trigger('behaviors_presave_'.$behavior, $this);
+				\Hook::trigger('behaviors_presave_'.$behavior, $this);
 				
 		$data = $this->toArray();
 
 		$errors = null;
 		// $model = $this;
-		$this->trigger('validation', array($this), function($chain, $model, $data, &$errors) {
+		$this->trigger('validation', array($this, &$data, &$errors), function($chain, $model, &$data, &$errors) {
 			$errors = $model->getValidator()->errors($data);
-		}, $data, $errors);
+		});
 		
 		return $errors;
 	}
@@ -239,7 +245,7 @@ abstract class Model {
 
 				if(static::property($name)->i18n) {
 					if(!$lang)
-						$lang = Config::get('locale');
+						$lang = \Config::get('locale');
 					if($lang == 'all')
 						foreach($value as $one => $v)
 							$this->data['properties'][$name][$one] = static::property($name)->set($v);
@@ -267,14 +273,15 @@ abstract class Model {
 	
 	public function get($name, $lang=null, $raw=false) {
 		if(!$lang)
-			$lang = Config::get('locale');
+			$lang = \Config::get('locale');
 
 		#todo go for data[$name] only if orm fetch failed
+		// $res = static::trigger('get', array($this, $name, $lang), function($chain, $model, $name, $lang) {
 		$res = static::trigger('get', array($this, $name, $lang), function($chain, $model, $name, $lang) {
 			if($model::hasProperty($name)) {
 				if($model::property($name)->i18n) {
 					if($lang == 'all') {
-						$langs = Config::get('locales');
+						$langs = \Config::get('locales');
 						$res = array();
 						foreach($langs as $lang)
 							$res[$lang] = $model->get($name, $lang);
@@ -291,7 +298,7 @@ abstract class Model {
 		});
 
 		#todo into a hook
-		if(is_string($res) && !$raw && Coxis::get('in_view'))
+		if(is_string($res) && !$raw && \Memory::get('in_view'))
 			return HTML::sanitize($res);
 
 		return $res;
@@ -319,33 +326,33 @@ abstract class Model {
 	#cannot use references with get_func_args
 	protected static function trigger($name, $args=array(), $cb=null, &$filter1=null, &$filter2=null, &$filter3=null, &$filter4=null, &$filter5=null, &$filter6=null,
 		&$filter7=null, &$filter8=null, &$filter9=null, &$filter10=null) {
-		return \Coxis\Core\Hook::trigger(array('models', get_called_class(), $name), $args, $cb, $filter1, $filter2, $filter3, $filter4, $filter5, $filter6, $filter7,
+		return \Hook::trigger(array('models', get_called_class(), $name), $args, $cb, $filter1, $filter2, $filter3, $filter4, $filter5, $filter6, $filter7,
 			$filter8, $filter9, $filter10);
 	}
 
 	#cannot use references with get_func_args
 	protected static function triggerChain($chain, $name, $args=array(), $cb=null, &$filter1=null, &$filter2=null, &$filter3=null, &$filter4=null, &$filter5=null, &$filter6=null,
 		&$filter7=null, &$filter8=null, &$filter9=null, &$filter10=null) {
-		return \Coxis\Core\Hook::triggerChain($chain, array('models', get_called_class(), $name), $args, $cb, $filter1, $filter2, $filter3, $filter4, $filter5, $filter6, $filter7,
+		return \Hook::triggerChain($chain, array('models', get_called_class(), $name), $args, $cb, $filter1, $filter2, $filter3, $filter4, $filter5, $filter6, $filter7,
 			$filter8, $filter9, $filter10);
 	}
 
 	public static function hook() {
-		return call_user_func_array(array('Coxis\Core\Hook', 'hook'), func_get_args());
+		return call_user_func_array(array('Hook', 'hook'), func_get_args());
 	}
 
 	public static function hookOn($hookName, $cb) {
 		$args = array(array_merge(array('models', get_called_class()), array($hookName)), $cb);
-		return call_user_func_array(array('Coxis\Core\Hook', 'hookOn'), $args);
+		return call_user_func_array(array('Hook', 'hookOn'), $args);
 	}
 
 	public static function hookBefore($hookName, $cb) {
 		$args = array(array_merge(array('models', get_called_class()), array($hookName)), $cb);
-		return call_user_func_array(array('Coxis\Core\Hook', 'hookBefore'), $args);
+		return call_user_func_array(array('Hook', 'hookBefore'), $args);
 	}
 
 	public static function hookAfter($hookName, $cb) {
 		$args = array(array_merge(array('models', get_called_class()), array($hookName)), $cb);
-		return call_user_func_array(array('Coxis\Core\Hook', 'hookBefore'), $args);
+		return call_user_func_array(array('Hook', 'hookBefore'), $args);
 	}
 }

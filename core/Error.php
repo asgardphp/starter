@@ -2,24 +2,13 @@
 namespace Coxis\Core;
 
 class Error {
-	private static $display = false;
-
-	public static function except($e=null) { 
-		Response::setCode(500)->send();
-	}
-	
-	public static function display($display=E_ALL) {
-		static::$display = $display;
-		ini_set('display_errors', $display);
-	}
-	
 	public static function report($msg, $backtrace=null) {
 		set_error_handler(function(){});
 	
 		if(ob_get_length() > 0)
 			ob_end_clean();
 	
-		Response::setCode(500);
+		\Response::setCode(500);
 				
 		ob_start();
 		
@@ -32,15 +21,15 @@ class Error {
 		$result = ob_get_contents();
 		ob_end_clean();
 		
-		Log::add('errors/log.html', $result);
+		\Coxis\Core\Tools\Log::add('errors/log.html', $result);
 		
-		if(static::$display)
+		if(\Config::get('error_display') || \Config::get('error_display') === null)
 			return new Result(array(), $result);
 		else
 			return new Result(array(), '<h1>Error</h1>Oops, something went wrong. Please report it to the administrator.');
 	}
 	
-	public static function print_backtrace($msg, $backtrace) {
+	public static function print_backtrace($msg='', $backtrace=null) {
 		if(!$backtrace)
 			$backtrace = debug_backtrace();
 			
@@ -59,7 +48,7 @@ class Error {
 		else {
 			echo '<b>Backtrace</b><br/>'."\n";
 			?>
-			<script src="<?php echo URL::to('js/jquery.js') ?>"></script>
+			<script src="<?php echo \URL::to('js/jquery.js') ?>"></script>
 			<style>
 			.spanargs {
 				cursor:pointer;

@@ -11,15 +11,15 @@ class GeneralController extends \Coxis\Core\Controller {
 	public function gzipAction() {
 		if(!isset($_SERVER['HTTP_ACCEPT_ENCODING']) || !strstr($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip'))
 			return;
-		if(!\Coxis\Core\Response::getContent())
+		if(!\Response::getContent())
 			return;
 		
-		$output = gzencode(\Coxis\Core\Response::getContent());
-		\Coxis\Core\Response::setContent($output);
-		\Coxis\Core\Response::setHeader('Content-Encoding', 'gzip');
-		\Coxis\Core\Response::setHeader('Content-Length', strlen($output));
-		\Coxis\Core\Response::setHeader('Cache-Control', 'no-cache, no-store, max-age=0, must-revalidate');
-		\Coxis\Core\Response::setHeader('Pragma', 'no-cache');
+		$output = gzencode(\Response::getContent());
+		\Response::setContent($output);
+		\Response::setHeader('Content-Encoding', 'gzip');
+		\Response::setHeader('Content-Length', strlen($output));
+		\Response::setHeader('Cache-Control', 'no-cache, no-store, max-age=0, must-revalidate');
+		\Response::setHeader('Pragma', 'no-cache');
 	}
 	
 	/**
@@ -30,15 +30,15 @@ class GeneralController extends \Coxis\Core\Controller {
 			return;
 		static::$called404 = true;
 		
-		$request = \Coxis\Core\Router::getRequest();
+		$request = \Router::getRequest();
 		
 		if($request['format']=='html') {
 			$output = \Coxis\Core\Router::run('default', '_404');
-			\Coxis\Core\Hook::trigger('output', $output);
-			Response::setContent($output);
+			\Hook::trigger('output', array(&$output));
+			\Response::setContent($output);
 		}
 		
-		\Coxis\Core\Response::send();
+		\Response::send();
 	}
 
 	/**
@@ -46,7 +46,7 @@ class GeneralController extends \Coxis\Core\Controller {
 	@Priority(-10)
 	*/
 	public function startAction() {
-		\Coxis\Core\Coxis::set('layout', array('\Coxis\App\Standard\Controllers\Default', 'layout'));
+		\Memory::set('layout', array('\Coxis\App\Standard\Controllers\Default', 'layout'));
 	}
 	
 	/**
@@ -54,12 +54,12 @@ class GeneralController extends \Coxis\Core\Controller {
 	*/
 	public function preSendingAction(&$content) {
 		try {
-			if(get(\Coxis\Core\Router::getRequest(), 'format') != 'html')
+			if(get(\Router::getRequest(), 'format') != 'html')
 				return;
 		} catch(\Exception $e) {}
 			
-		if(is_array(\Coxis\Core\Coxis::get('layout'))
-			&& sizeof(\Coxis\Core\Coxis::get('layout')) >= 2 && $content !== null)
-			$content = \Coxis\Core\Router::run(\Coxis\Core\Coxis::get('layout', 0), \Coxis\Core\Coxis::get('layout', 1), $content, $this);
+		if(is_array(\Memory::get('layout'))
+			&& sizeof(\Memory::get('layout')) >= 2 && $content !== null)
+			$content = \Router::run(\Memory::get('layout', 0), \Memory::get('layout', 1), $content, $this);
 	}
 }

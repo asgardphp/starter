@@ -16,7 +16,7 @@ class ORM {
 			$this->leftjoin(array(
 				'a.Translation t'	=>	array(
 					'a.id = t.id',
-					't.locale'	=>	\Coxis\Core\Config::get('locale'),
+					't.locale'	=>	\Config::get('locale'),
 				),
 			));
 		}

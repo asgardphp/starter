@@ -39,9 +39,16 @@ function __($key, $params=array()) {
 ob_start();
 
 /* CORE/LIBS */
+// require_once 'core/Hook.php';
+require_once 'core/IoC.php';
+require_once 'core/Context.php';
+require_once 'core/Importer.php';
 require_once 'core/Autoloader.php';
-spl_autoload_register(array('Coxis\Core\Autoloader', 'loadClass'));
-\Coxis\Core\Autoloader::preloadDir('core');
+
+// spl_autoload_register(array('Coxis\core\Autoloader', 'loadClass'));
+// \Coxis\Core\Autoloader::preloadDir('core');
+spl_autoload_register(array(\Coxis\Core\Context::get('autoloader'), 'loadClass'));
+\Coxis\Core\Context::get('autoloader')->preloadDir('core');
 
 /* ERRORS/EXCEPTIONS */
 set_error_handler(function ($errno, $errstr, $errfile, $errline) {
@@ -50,16 +57,16 @@ set_error_handler(function ($errno, $errstr, $errfile, $errline) {
 set_exception_handler(function ($e) {
 	if($e instanceof \ErrorException) {
 		$msg = '('.$e->getCode().') '.$e->getMessage().'<br>'.$e->getFile().' ('.$e->getLine().')';
-		$result = \Coxis\Core\Error::report($msg, $e->getTrace());
+		$result = \Error::report($msg, $e->getTrace());
 	}
 	else {
 		$first_trace = array(array(
 			'file'	=>	$e->getFile(),
 			'line'	=>	$e->getLine(),
 		));
-		$result = \Coxis\Core\Error::report($e->getMessage(), array_merge($first_trace, $e->getTrace()));
+		$result = \Error::report($e->getMessage(), array_merge($first_trace, $e->getTrace()));
 	}
-	\Coxis\Core\Response::send($result);
+	\Response::send($result);
 });
 register_shutdown_function(function () {
 	chdir(dirname(__FILE__));//wtf?
@@ -68,6 +75,6 @@ register_shutdown_function(function () {
 		while(ob_get_level()){ ob_end_clean(); }
 		$result = \Coxis\Core\Error::report("($e[type]) $e[message]<br>
 			$e[file] ($e[line])".debug_backtrace(), array(array('file'=>$e['file'], 'line'=>$e['line'])));
-		\Coxis\Core\Response::send($result);
+		\Response::send($result);
 	}
 });

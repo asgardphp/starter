@@ -2,55 +2,70 @@
 namespace Coxis\Core;
 
 class URL {
-	public static $url = null;
+	public $url = null;
+	public $root = null;
+	public $server = null;
 
-	public static function get() {
-		if(!static::$url) {
+	public function get() {
+		if(!$this->url) {
 			if(isset($_SERVER['PATH_INFO']))
-				static::$url = $_SERVER['PATH_INFO'];
+				$this->url = $_SERVER['PATH_INFO'];
 			elseif(isset($_SERVER['ORIG_PATH_INFO']))
-				static::$url = $_SERVER['ORIG_PATH_INFO'];
+				$this->url = $_SERVER['ORIG_PATH_INFO'];
 			elseif(isset($_SERVER['REDIRECT_URL']))
-				static::$url = $_SERVER['REDIRECT_URL'];
+				$this->url = $_SERVER['REDIRECT_URL'];
 			else
-				static::$url = '';
-			static::$url = preg_replace('/^\//', '', static::$url);
+				$this->url = '';
+			$this->url = preg_replace('/^\//', '', $this->url);
 		}
 
-		\Coxis\Core\Hook::trigger('path_filter', static::$url);
+		\Hook::trigger('path_filter', $this->url);
 		
-		return static::$url;
+		return $this->url;
 	}
 	
-	public static function setURL($url) {
-		return static::$url = $url;
+	public function setURL($url) {
+		return $this->url = $url;
 	}
 	
-	public static function current() {
-		return static::base().static::get();
+	public function setServer($server) {
+		return $this->server = $server;
 	}
 	
-	public static function full() {
+	public function setRoot($root) {
+		return $this->root = $root;
+	}
+	
+	public function current() {
+		return $this->base().$this->get();
+	}
+	
+	public function full() {
 		if(sizeof($_GET)) {
-			$r = static::current().'?';
+			$r = $this->current().'?';
 			foreach($_GET as $k=>$v)
 				$r .= $k.'&'.$v;
 			return $r;
 		}
 		else
-			return static::current();
+			return $this->current();
 	}
 	
-	public static function base() {
-		return static::server().'/'.static::root().'/';
+	public function base() {
+		$res = $this->server().'/';
+		if($this->root())
+			$res .= $this->root().'/';
+		return $res;
 	}
 	
-	public static function to($url) {
-		return static::base().$url;
+	public function to($url) {
+		return $this->base().$url;
 	}
 	
-	public static function root() {
-		if(isset($_SERVER['ORIG_SCRIPT_NAME']))
+	public function root() {
+		if($this->root !== null)
+			$result = $this->root;
+		elseif(isset($_SERVER['ORIG_SCRIPT_NAME']))
 			$result = dirname($_SERVER['ORIG_SCRIPT_NAME']);
 		else
 			$result = dirname($_SERVER['SCRIPT_NAME']);
@@ -63,14 +78,16 @@ class URL {
 		return $result;
 	}
 	
-	public static function server() {
-		if(isset($_SERVER['SERVER_NAME']))
+	public function server() {
+		if($this->server !== null)
+			return 'http://'.$this->server;
+		elseif(isset($_SERVER['SERVER_NAME']))
 			return 'http://'.trim($_SERVER['SERVER_NAME'], '/');
 		else
 			return '';
 	}
 
-	public static function url_for($what, $params=array(), $relative=true) {
+	public function url_for($what, $params=array(), $relative=true) {
 		#controller/action
 		if(is_array($what)) {
 			$controller = strtolower($what[0]);
@@ -81,7 +98,7 @@ class URL {
 					if($relative)
 						return Router::buildRoute($route, $params);
 					else
-						return static::to(Router::buildRoute($route, $params));
+						return $this->to(Router::buildRoute($route, $params));
 			}
 		}
 		#route
@@ -93,7 +110,7 @@ class URL {
 					if($relative)
 						return Router::buildRoute($route, $params);
 					else
-						return static::to(Router::buildRoute($route, $params));
+						return $this->to(Router::buildRoute($route, $params));
 			}
 		}
 					

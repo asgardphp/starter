@@ -32,10 +32,15 @@ class Controller {
 		$cAction = array_values($cAction);
 		$controller = $cAction[0];
 		$action = $cAction[1];
-		\Coxis\Core\Hook::hookOn($hookName, function($chain, $arg1, $arg2, $arg3, $arg4,
-			$arg5, $arg6, $arg7, $arg8, $arg9, $arg10) use($controller, $action) {
+		\Hook::hookOn($hookName, function($chain, $arg1=null, $arg2=null, $arg3=null, $arg4=null,
+			$arg5=null, $arg6=null, $arg7=null, $arg8=null, $arg9=null, $arg10=null) use($controller, $action) {
+		// \Hook::hookOn($hookName, function($chain, $args=null) use($controller, $action) {
+			// if(!is_array($args))
+			// 	$args = array($args);
+			// if($action == 'preSending')
+			// d($controller, $action, $args);
 			$args = array(&$arg1, &$arg2, &$arg3, &$arg4, &$arg5, &$arg6, &$arg7, &$arg8, &$arg9, &$arg10);
-			echo Router::run($controller, $action, $args);
+			Router::run($controller, $action, $args);
 		});
 	}
 
@@ -89,12 +94,11 @@ class Controller {
 
 		foreach($_args as $_key=>$_value)
 			$$_key = $_value;#TODO, watchout keywords
-		
-		ob_start();
-		Coxis::set('in_view', true);
-		include($_viewfile);
-		Coxis::set('in_view', false);
 
+		ob_start();
+		\Memory::set('in_view', true);
+		include($_viewfile);
+		\Memory::set('in_view', false);
 		return ob_get_clean();
 	}
 	
@@ -108,8 +112,8 @@ class Controller {
 		
 		$request['_controller'] = $controller;
 		
-		if(isset(Coxis::$controller_hooks[$controller]))
-			foreach(Coxis::$controller_hooks[$controller] as $hook) {
+		if(isset(\Memory::$controller_hooks[$controller]))
+			foreach(\Memory::$controller_hooks[$controller] as $hook) {
 				if(Router::match($hook['route'])) {
 					return Router::run($hook['controller'], $hook['action'], $request, $this);
 				}

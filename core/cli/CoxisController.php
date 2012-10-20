@@ -6,33 +6,7 @@ namespace Coxis\Core\Cli;
 class CoxisController extends CLIController {
 	#todo
 	public function getAction($request) {
-		URL::setURL($request[0]);
-
-		// require_once 'core/load.php';
-
-		/* CONFIG */
-		// import('Coxis\Core\Config');
-		// \Coxis\Core\Config::loadConfigDir('config');
-		// if(\Coxis\Core\Config::get('error_display'))
-		// 	\Coxis\Core\Error::display(true);
-					
-		function url_for($what, $params=array(), $relative=true) {
-			return \Coxis\Core\URL::url_for($what, $params, $relative);
-		}
-		// import('\Coxis\Core\Tools\Locale');
-		// \Coxis\Core\BundlesManager::loadBundles();
-		//User Session
-		\Coxis\Core\User::start();
-		\Coxis\Core\Router::parseRoutes();
-
-
-
-		\Coxis\Core\Hook::trigger('start');
-		//Dispatch to target controller
-		$output = \Coxis\Core\Router::dispatch();
-		\Coxis\Core\Hook::trigger('filter_output', array(), null, $output);
-		//Send the response
-		// echo $output;
+		echo Browser::get($request[0]);
 	}
 
 	public function publishAction($request) {

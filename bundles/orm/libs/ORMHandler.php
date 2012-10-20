@@ -56,7 +56,7 @@ class ORMHandler {
 	}
 
 	public static function getTable($modelName) {
-		return \Coxis\Core\Config::get('database', 'prefix').$modelName::getModelName();
+		return \Config::get('database', 'prefix').$modelName::getModelName();
 	}
 	
 	public static function relationData($model, $name) {
@@ -96,9 +96,9 @@ class ORMHandler {
 			else
 				$res['sortable'] = false;
 			if($model::getModelName() < $relation_model::getModelName())
-				$res['join_table'] = \Coxis\Core\Config::get('database', 'prefix').$model::getModelName().'_'.$relation_model::getModelName();
+				$res['join_table'] = \Config::get('database', 'prefix').$model::getModelName().'_'.$relation_model::getModelName();
 			else
-				$res['join_table'] = \Coxis\Core\Config::get('database', 'prefix').$relation_model::getModelName().'_'.$model::getModelName();
+				$res['join_table'] = \Config::get('database', 'prefix').$relation_model::getModelName().'_'.$model::getModelName();
 		}
 		elseif($res['type'] == 'hasOne')
 			$res['link'] = $name.'_id';

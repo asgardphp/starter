@@ -3,29 +3,36 @@ namespace Coxis\Core;
 
 //todo merge with coxis?
 class Config {
-	private static $config = array();
+	private $config = array();
 	
-	public static function loadConfigDir($dir) {
+	function __construct() {
+		$this->loadConfigDir('config');
+		\Hook::hookOn(array('config', 'set', 'error_display'), function($chain, $value) {
+			ini_set('display_errors', $value);
+		});
+	}
+
+	public function loadConfigDir($dir) {
 		foreach(glob($dir.'/*.php') as $filename)
-			static::loadConfigFile($filename);
+			$this->loadConfigFile($filename);
 	}
 	
-	public static function loadConfigFile($filename) {
+	public function loadConfigFile($filename) {
 		require($filename);
 		if(isset($config['all']))
-			static::load($config['all']);
+			$this->load($config['all']);
 		if(isset($config[_ENV_]))
-			static::load($config[_ENV_]);
+			$this->load($config[_ENV_]);
 	}
 	
-	public static function load($config) {
+	public function load($config) {
 		foreach($config as $key=>$value)
-			static::set($key, $value);
+			$this->set($key, $value);
 	}
 	
-	public static function set() {
+	public function set() {
 		$args = func_get_args();
-		$arr =& static::$config;
+		$arr =& $this->config;
 		$key = $args[sizeof($args)-2];
 		$value = $args[sizeof($args)-1];
 		array_pop($args);
@@ -33,13 +40,14 @@ class Config {
 		
 		foreach($args as $parent)
 			$arr =& $arr[$parent];
+		\Hook::trigger(array_merge(array('config', 'set'), array_merge($args, array($key))), array($value));
 		$arr[$key] = $value;
 	}
 	
-	public static function get() {
-		//todo use access()
+	public function get() {
+		//todo use \get()
 		$args = func_get_args();
-		$result = static::$config;
+		$result = $this->config;
 		foreach(func_get_args() as $key)
 			if(!isset($result[$key]))
 				return null;

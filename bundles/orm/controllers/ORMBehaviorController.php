@@ -106,11 +106,11 @@ class ORMBehaviorController extends \Coxis\Core\Controller {
 		});
 		
 		#$article->title
-		$modelName::hookAfter('get', function($chain, $model, $name, $lang, &$res) {
+		$modelName::hookAfter('get', function($chain, $model, $name, $lang) {
 			return \Coxis\Bundles\ORM\Libs\ORMHandler::fetch($model, $name, $lang);
 		});
 
-		$modelName::hookBefore('get', function($chain, $model, $name, $lang, &$res) {
+		$modelName::hookBefore('get', function($chain, $model, $name, $lang) {
 			if(array_key_exists($name, $model::$relationships)) {
 				$rel = $model->relation($name);
 				if($rel instanceof \Coxis\Core\Collection)

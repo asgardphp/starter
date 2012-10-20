@@ -3,8 +3,8 @@ namespace Coxis\Core\Tools;
 
 class Cache {
 	public static function clear() {
-		if(Config::get('cache', 'method') == 'apc') {
-			apc_clear_cache(Config::get('key').'-'.'user');
+		if(\Config::get('cache', 'method') == 'apc') {
+			apc_clear_cache(\Config::get('key').'-'.'user');
 		}
 		elseif(Config::get('cache', 'method') == 'file') {
 			FileManager::unlink('cache');
@@ -12,15 +12,15 @@ class Cache {
 	}
 
 	public static function get($file, $default=null) {
-		if(Config::get('cache', 'method') == 'apc') {
+		if(\Config::get('cache', 'method') == 'apc') {
 			$success = null;
-			$res = apc_fetch(Config::get('key').'-'.$file, $success);
+			$res = apc_fetch(\Config::get('key').'-'.$file, $success);
 			if($success)
 				return $res;
 			else
 				return $default;
 		}
-		elseif(Config::get('cache', 'method') == 'file') {
+		elseif(\Config::get('cache', 'method') == 'file') {
 			try {
 				include 'cache/'.$file.'.php';
 				return $cache;
@@ -31,10 +31,10 @@ class Cache {
 	}
 	
 	public static function set($file, $var) {
-		if(Config::get('cache', 'method') == 'apc') {
-			apc_store(Config::get('key').'-'.$file, $var);
+		if(\Config::get('cache', 'method') == 'apc') {
+			apc_store(\Config::get('key').'-'.$file, $var);
 		}
-		elseif(Config::get('cache', 'method') == 'file') {
+		elseif(\Config::get('cache', 'method') == 'file') {
 			try {
 				if(var_export($var, true) == '')
 					$res = "null";
@@ -52,10 +52,10 @@ class Cache {
 	}
 	
 	public static function delete($file) {
-		if(Config::get('cache', 'method') == 'apc') {
-			apc_delete(Config::get('key').'-'.$file);
+		if(\Config::get('cache', 'method') == 'apc') {
+			apc_delete(\Config::get('key').'-'.$file);
 		}
-		elseif(Config::get('cache', 'method') == 'file') {
+		elseif(\Config::get('cache', 'method') == 'file') {
 			$path = 'cache/'.$file.'.php';
 			FileManager::unlink($path);
 		}

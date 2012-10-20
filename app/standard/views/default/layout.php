@@ -6,7 +6,7 @@
 	<?php \Coxis\Core\Tools\HTML::show_title() ?>
 	<?php \Coxis\Core\Tools\HTML::show_description() ?>
 	<?php \Coxis\Core\Tools\HTML::show_keywords() ?>
-	<base href="<?php echo \Coxis\Core\URL::base() ?>" />
+	<base href="<?php echo \URL::base() ?>" />
 	<?php \Coxis\Core\Tools\HTML::show_all() ?>
 
 </head>

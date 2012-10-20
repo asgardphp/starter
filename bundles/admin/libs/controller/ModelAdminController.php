@@ -26,7 +26,7 @@ class ModelAdminController extends AdminParentController {
 		foreach($model_behaviors as $behavior => $params)
 			if($params)
 				// \Coxis\Core\Event::trigger('behaviors_coxisadmin_'.$behavior, static::getControllerName());
-				\Coxis\Core\Hook::trigger('behaviors_coxisadmin_'.$behavior, static::getControllerName());
+				\Hook::trigger('behaviors_coxisadmin_'.$behavior, static::getControllerName());
 
 		if(static::$_models == null)
 			static::$_models = basename(strtolower(static::$_model.'s'));

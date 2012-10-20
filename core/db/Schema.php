@@ -325,7 +325,7 @@ class Column {
 	private function getType() {
 		$r = \Coxis\Core\DB\DB::query("SELECT * 
                  FROM INFORMATION_SCHEMA.COLUMNS 
-                 WHERE TABLE_SCHEMA = '".\Coxis\Core\Config::get('database', 'database')."' 
+                 WHERE TABLE_SCHEMA = '".\Config::get('database', 'database')."' 
                  AND  TABLE_NAME = '$this->table'
 		 AND COLUMN_NAME = '$this->name'")->first();
 		 
@@ -335,7 +335,7 @@ class Column {
 	private function getNullable() {
 		$r = \Coxis\Core\DB\DB::query("SELECT * 
                  FROM INFORMATION_SCHEMA.COLUMNS 
-                 WHERE TABLE_SCHEMA = '".\Coxis\Core\Config::get('database', 'database')."' 
+                 WHERE TABLE_SCHEMA = '".\Config::get('database', 'database')."' 
                  AND  TABLE_NAME = '$this->table'
 		 AND COLUMN_NAME = '$this->name'")->first();
 		 
@@ -345,7 +345,7 @@ class Column {
 	private function getDefault() {
 		$r = \Coxis\Core\DB\DB::query("SELECT * 
                  FROM INFORMATION_SCHEMA.COLUMNS 
-                 WHERE TABLE_SCHEMA = '".\Coxis\Core\Config::get('database', 'database')."' 
+                 WHERE TABLE_SCHEMA = '".\Config::get('database', 'database')."' 
                  AND  TABLE_NAME = '$this->table'
 		 AND COLUMN_NAME = '$this->name'")->first();
 		 
@@ -355,7 +355,7 @@ class Column {
 	private function getAutoincrement() {
 		$r = \Coxis\Core\DB\DB::query("SELECT * 
                  FROM INFORMATION_SCHEMA.COLUMNS 
-                 WHERE TABLE_SCHEMA = '".\Coxis\Core\Config::get('database', 'database')."' 
+                 WHERE TABLE_SCHEMA = '".\Config::get('database', 'database')."' 
                  AND  TABLE_NAME = '$this->table'
 		 AND COLUMN_NAME = '$this->name'")->first();
 		 

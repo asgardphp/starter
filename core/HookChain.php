@@ -11,9 +11,11 @@ class HookChain {
 		$this->calls = $calls;
 	}
 
-	public function run($args, $filters) {
+	// public function run($args, $filters) {
+	public function run($args) {
 		foreach($this->calls as $call) {
-			$res = call_user_func_array($call, array_merge(array($this), $args, $filters));
+			// $res = call_user_func_array($call, array_merge(array($this), $args, $filters));
+			$res = call_user_func_array($call, array_merge(array($this), $args));
 			$this->executed++;
 			if($res !== null)
 				return $res;

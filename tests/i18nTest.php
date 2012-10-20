@@ -2,8 +2,8 @@
 if(!defined('_ENV_'))
 	define('_ENV_', 'test');
 require_once(dirname(__FILE__).'/../coxis.php');
-\Coxis\Core\BundlesManager::$directories[] = 'tests/app';
-require_once('core/load.php');
+\BundlesManager::inst()->directories[] = 'tests/app';
+\BundlesManager::loadBundles();
 
 class i18nTest extends PHPUnit_Framework_TestCase {
 	public function setUp(){

@@ -8,7 +8,7 @@ class DB {
 	private static $instance;
 
 	public function __construct($db=null) {
-		$config = \Coxis\Core\Config::get('database');
+		$config = \Config::get('database');
 		if(!$db) {
 			$this->db = new \PDO('mysql:host='.$config['host'].';dbname='.$config['database'], 
 				$config['user'],
@@ -28,10 +28,10 @@ class DB {
 	}
 	
 	public static function import($file) {
-		$host = \Coxis\Core\Config::get('database', 'host');
-		$user = \Coxis\Core\Config::get('database', 'user');
-		$pwd = \Coxis\Core\Config::get('database', 'password');
-		$db = \Coxis\Core\Config::get('database', 'database');
+		$host = \Config::get('database', 'host');
+		$user = \Config::get('database', 'user');
+		$pwd = \Config::get('database', 'password');
+		$db = \Config::get('database', 'database');
 		$cmd = 'mysql -h '.$host.' -u '.$user.($pwd ? ' -p'.$pwd:'').' '.$db.' < '.$file;
 		exec($cmd);
 	}

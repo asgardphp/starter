@@ -5,34 +5,37 @@ class Locale {
 	private static $default = 'en';
 	public static $locales = array();
 
+	// public static $load_locales = false;
+
+	public static function _autoload() {
+		static::setLocale(\Config::get('locale'));
+	
+		require_once('vendors/yaml/sfYamlParser.php');
+		
+		if(\Config::get('phpcache'))
+			static::$locales = \Coxis\Core\Cache::get('locales');
+		if(!static::$locales) {
+			// \Memory::set('load_locales', true);
+			// static::$load_locales = true;
+			static::importLocales('locales');
+		}
+		
+		\Hook::hookOn('end', function() {
+			if(\Config::get('phpcache'))
+				\Coxis\Core\Cache::set('locales', Locale::$locales);
+		});
+	}
+
 	public static function setDefault($locale) {
 		static::$default = $locale;
 	}
 
 	public static function setLocale($locale) {
-		\Coxis\Core\Config::set('locale', $locale);
-	}
-
-	public static function _autoload() {
-		static::setLocale(\Coxis\Core\Config::get('locale'));
-	
-		require_once('vendors/yaml/sfYamlParser.php');
-		
-		if(\Coxis\Core\Config::get('phpcache'))
-			static::$locales = \Coxis\Core\Cache::get('locales');
-		if(!static::$locales) {
-			\Coxis\Core\Coxis::set('load_locales', true);
-			static::importLocales('locales');
-		}
-		
-		\Coxis\Core\Hook::hookOn('end', function() {
-			if(\Coxis\Core\Config::get('phpcache'))
-				\Coxis\Core\Cache::set('locales', Locale::$locales);
-		});
+		\Config::set('locale', $locale);
 	}
 
 	public static function translate($key, $params=array()) {
-		$locale = \Coxis\Core\Config::get('locale');
+		$locale = \Config::get('locale');
 		if(isset(static::$locales[$locale][$key]) && static::$locales[$locale][$key])
 			$str = static::$locales[$locale][$key];
 		elseif(isset(static::$locales[static::$default][$key]) && static::$locales[static::$default][$key])

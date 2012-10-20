@@ -4,13 +4,13 @@ namespace Coxis\Core\Tools;
 class Tools {
 	static $months = array(
 		'January'	=>	'Janvier',
-		'February'	=>	'FÃ©vrier',
+		'February'	=>	'Février',
 		'March'	=>	'Mars',
 		'April'	=>	'Avril',
 		'May'	=>	'Mai',
 		'June'	=>	'Juin',
 		'July'	=>	'Juillet',
-		'August'	=>	'AoÃ¹t',
+		'August'	=>	'Août',
 		'September'	=>	'Septembre',
 		'October'	=>	'Octobre',
 		'November'	=>	'Novembre',
@@ -45,6 +45,7 @@ class Tools {
 		return $res;
 	}
 
+	#todo replace with namespaceutils
 	public static	function classBasename($class) {
 		return basename(str_replace('\\', DIRECTORY_SEPARATOR, $class));
 	}

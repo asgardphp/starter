@@ -1,12 +1,12 @@
 <?php
 namespace Coxis\Core;
 
-class Coxis {
-	private static $arrs = array();
+class Memory {
+	private $arrs = array();
 	
-	public static function set() {
+	public function set() {
 		$args = func_get_args();
-		$arr =& static::$arrs;
+		$arr =& $this->arrs;
 		$key = $args[sizeof($args)-2];
 		$value = $args[sizeof($args)-1];
 		array_pop($args);
@@ -17,10 +17,10 @@ class Coxis {
 		$arr[$key] = $value;
 	}
 	
-	public static function get() {
+	public function get() {
 		//todo use access()
 		$args = func_get_args();
-		$result = static::$arrs;
+		$result = $this->arrs;
 		foreach(func_get_args() as $key)
 			if(!isset($result[$key]))
 				return null;

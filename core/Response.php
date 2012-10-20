@@ -2,12 +2,10 @@
 namespace Coxis\Core;
 
 class Response {
-	//~ public static $die = true;
-	//~ public static $isSent = false;
-	private static $instance;
-	private static $content;
-	private static $code;
-	private static $headers = array();
+	private $instance;
+	private $content;
+	private $code;
+	private $headers = array();
 	private static $codes = array(
 		200 => 'OK',
 		201 => 'Created',
@@ -22,44 +20,40 @@ class Response {
 		500 => 'Internal Server Error',
 	);
 	
-	public static function init() {
-		static::$content = null;
-		static::$headers = array();
-		static::$code = null;
-	}
-	
-	public static function isSent() {
-		return static::$isSent;
+	public function init() {
+		$this->content = null;
+		$this->headers = array();
+		$this->code = null;
 	}
 
-	public static function setCode($code) { 
-		static::$code = $code;
-		return static::getInstance();
+	public function setCode($code) { 
+		$this->code = $code;
+		return $this;
 	} 
 
-	public static function getCode() { 
-		return static::$code;
+	public function getCode() { 
+		return $this->code;
 	} 
 
-	public static function setHeader($header, $value) {
-		static::$headers[$header] = $value;
-		return static::getInstance();
+	public function setHeader($header, $value) {
+		$this->headers[$header] = $value;
+		return $this;
 	}
 
-	public static function getHeader($header) {
-		return static::$headers[$header];
+	public function getHeader($header) {
+		return $this->headers[$header];
 	}
 
-	public static function setContent($content) {
-		static::$content = $content;
-		return static::getInstance();
+	public function setContent($content) {
+		$this->content = $content;
+		return $this;
 	}
 
-	public static function getContent() {
-		return static::$content;
+	public function getContent() {
+		return $this->content;
 	}
 
-	public static function sendHeaders($headers=null) {
+	public function sendHeaders($headers=null) {
 		if(headers_sent())
 			return;
 			
@@ -69,11 +63,11 @@ class Response {
 	
 		if(!$headers) {
 			$headers = array();
-			if(array_key_exists(static::$code, static::$codes))
-				$headers[] = 'HTTP/1.1 '.static::$code.' '.static::$codes[static::$code];
+			if(array_key_exists($this->code, static::$codes))
+				$headers[] = 'HTTP/1.1 '.$this->code.' '.static::$codes[$this->code];
 			else
 				$headers[] = 'HTTP/1.1 200 '.static::$codes[200];
-			foreach(static::$headers as $k=>$v)
+			foreach($this->headers as $k=>$v)
 				$headers[] = $k.': '.$v;
 		}
 			
@@ -81,41 +75,41 @@ class Response {
 			header($h);
 	}
 
-	public static function send($result=null) {
+	public function send($result=null) {
 		if($result) {
-			\Coxis\Core\Hook::trigger('end');
+			\Hook::trigger('end');
 			\Coxis\Core\Response::sendHeaders($result->headers);
 			echo $result->content;
 			exit();
 		}
 
-		\Coxis\Core\Hook::trigger('output_'.static::$code);
-		\Coxis\Core\Hook::trigger('output');
+		\Hook::trigger('output_'.$this->code);
+		\Hook::trigger('output');
 		
 		$headers = array();
-		if(array_key_exists(static::$code, static::$codes))
-			$headers[] = 'HTTP/1.1 '.static::$code.' '.static::$codes[static::$code];
+		if(array_key_exists($this->code, static::$codes))
+			$headers[] = 'HTTP/1.1 '.$this->code.' '.static::$codes[$this->code];
 		else
 			$headers[] = 'HTTP/1.1 200 '.static::$codes[200];
-		foreach(static::$headers as $k=>$v)
+		foreach($this->headers as $k=>$v)
 			$headers[] = $k.': '.$v;
-		
-		static::send(new Result($headers, static::$content));
+
+		static::send(new Result($headers, $this->content));
 	}
 	
-	public static function redirect($url='', $relative=true) {
+	public function redirect($url='', $relative=true) {
 		if($relative)
-			static::$headers['Location'] = URL::to($url);
+			$this->headers['Location'] = URL::to($url);
 		else
-			static::$headers['Location'] = $url;
+			$this->headers['Location'] = $url;
 			
-		return static::getInstance();
+		return $this;
 	}
 
-	public static function getInstance() { 
-		if(!static::$instance)
-			static::$instance = new self();
+	// public function context_getInstance() { 
+	// 	if(!$this->instance)
+	// 		$this->instance = new self();
 
-		return static::$instance;
-	}
+	// 	return $this->instance;
+	// }
 }

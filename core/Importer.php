@@ -11,7 +11,7 @@ namespace {
 namespace Coxis\Core {
 	class Importer {
 		public $from = '';
-		public static $preimported = array();
+		public $preimported = array();
 
 		public function __construct($from='') {
 			$this->from = $from;
@@ -32,7 +32,7 @@ namespace Coxis\Core {
 			
 				$alias = preg_replace('/^\\\+/', '', $into.'\\'.$alias);
 				$class = preg_replace('/^\\\+/', '', $this->from.'\\'.$class);
-				static::$preimported[$alias] = $class;
+				$this->preimported[$alias] = $class;
 				
 				#import directly or preimport
 				//~ if(!static::_import($this->from.'\\'.$class, array('as'=>$alias, 'into'=>$into)))
@@ -42,7 +42,7 @@ namespace Coxis\Core {
 			return $this;
 		}
 		
-		public static function _import($class, $params=array()) {
+		public function _import($class, $params=array()) {
 			$class = preg_replace('/^\\\+/', '', $class);
 			$alias = isset($params['as']) ? $params['as']:null;
 			$intoNamespace= isset($params['into']) ? $params['into']:null;
@@ -50,9 +50,9 @@ namespace Coxis\Core {
 			if($intoNamespace == '.')
 				$intoNamespace = '';
 
-			if(isset(static::$preimported[$class])) {
-				if(static::_import(static::$preimported[$class], array('as'=>false))) {
-					$toload = static::$preimported[$class];
+			if(isset($this->preimported[$class])) {
+				if(static::_import($this->preimported[$class], array('as'=>false))) {
+					$toload = $this->preimported[$class];
 					
 					#import as ..
 					if($alias !== false) {
@@ -106,6 +106,7 @@ namespace Coxis\Core {
 			}
 		}
 		
+		#todo replace with namespaceutils
 		public static function dirname($v) {
 			return dirname(str_replace('\\', DIRECTORY_SEPARATOR, $v));
 		}
@@ -151,17 +152,24 @@ namespace Coxis\Core {
 		}
 
 		public static function loadClass($class) {
+		// 			if($class == 'Coxis\Core\FrontController')
+		// die($class);
 			#already loaded
 			if(class_exists($class, false) || interface_exists($class, false))
 				return true;
 			#file map
-			elseif(isset(Autoloader::$map[$class])) {
-				static::loadClassFile(Autoloader::$map[$class]);
+			// elseif(isset(Autoloader::$map[$class])) {
+			// elseif(isset(\Coxis\Core\Context::get('coxis\core\autoloader')->map[$class])) {
+			elseif(isset(\Coxis\Core\Context::get('autoloader')->map[$class])) {
+				$result = static::loadClassFile(\Coxis\Core\Context::get('autoloader')->map[$class]);
+				class_alias($result, $class);
 				return true;
 			}
 			else {
 				#directory map
-				foreach(Autoloader::$directories as $prefix=>$dir) {
+				// foreach(Autoloader::$directories as $prefix=>$dir) {
+				// foreach(\Coxis\Core\Context::get('coxis\core\autoloader')->directories as $prefix=>$dir) {
+				foreach(\Coxis\Core\Context::get('autoloader')->directories as $prefix=>$dir) {
 					if(preg_match('/^'.preg_quote($prefix).'/', $class)) {
 						$rest = preg_replace('/^'.preg_quote($prefix).'\\\?/', '', $class);
 						$path = $dir.DIRECTORY_SEPARATOR.static::class2path($rest);
@@ -196,7 +204,10 @@ namespace Coxis\Core {
 					#remove, only for testing class loading
 					// d();
 
-					foreach(Autoloader::$preloaded as $v)
+					// foreach(Autoloader::$preloaded as $v)
+					// foreach(\Coxis\Core\Context::get('coxis\core\autoloader')->preloaded as $v)
+					foreach(\Coxis\Core\Context::get('autoloader')->preloaded as $v)
+					// foreach(Context::get('Autoloader')->preloaded as $v)
 						if(strtolower(static::basename($class)) == $v[0])
 							$classes[] = $v;
 					if(sizeof($classes) == 1) {
@@ -222,7 +233,7 @@ namespace Coxis\Core {
 							}
 						}
 					}
-					#if nmultiple classes, don't load
+					#if multiple classes, don't load
 					elseif(sizeof($classes) > 1)
 						throw new \Exception('There are multiple classes '.$class);
 					#if no class, don't load

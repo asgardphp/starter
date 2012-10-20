@@ -23,11 +23,11 @@ class FrontController extends CLIController {
 		}
 				
 		/* CONFIG */
-		\Coxis\Core\Config::loadConfigDir('config');
-		if(\Coxis\Core\Config::get('error_display'))
-			\Coxis\Core\Error::display(true);
+		\Config::loadConfigDir('config');
+		// if(\Config::get('error_display'))
+		// 	\Error::display(true);
 			
-		BundlesManager::loadBundles();
+		\BundlesManager::loadBundles();
 		
 		#todo remove
 		while(ob_get_level()){ ob_end_clean(); }

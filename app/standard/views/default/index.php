@@ -1,4 +1,4 @@
-<p>Welcome!</p>
+<p>Welcome! / <?php echo __('Welcome!') ?></p>
 
 <p>Coxis is successfully running. Below are the steps you should go through now:</p>
 

@@ -1,40 +1,48 @@
 <?php
 namespace Coxis\Core;
 
-require_once 'core/Importer.php';
-
 class Autoloader {
-	public static $map = array(
-		// 'Somewhere'	=>	'there/somewhere.php',
+// class Autoloader {
+	public $map = array(
+		// 'Something'	=>	'there/somewhere.php',
+		'URL'	=>	'core/facades/URL.php',
+		'Router'	=>	'core/facades/Router.php',
+		'BundlesManager'	=>	'core/facades/BundlesManager.php',
+		'Config'	=>	'core/facades/Config.php',
+		'Hook'	=>	'core/facades/Hook.php',
+		'Response'	=>	'core/facades/Response.php',
+		'User'	=>	'core/facades/User.php',
+		'Validation'	=>	'core/facades/Validation.php',
+		'Memory'	=>	'core/facades/Memory.php',
 	);
-	public static $directories = array(
+	public $directories = array(
 		// 'foo\bar'	=>	'there',
 		// 'swift_'	=>	'swift',
 	);
-	public static $preloaded = array(
+	public $preloaded = array(
 		// array('Somewhere', 'there/somewhere.php'),
 	);
 	
-	public static function map() {
+	public function map() {
 	}
 	
-	public static function dir() {
+	public function dir() {
+	}
+
+	public function preloadClass($class, $file) {
+		$this->preloaded[] = array(strtolower($class), $file);
 	}
 	
-	public static function preloadClass($class, $file) {
-		static::$preloaded[] = array(strtolower($class), $file);
-	}
-	
-	public static function preloadDir($file) {
+	public function preloadDir($file) {
 		if(is_dir($file))
 			foreach(glob($file.'/*') as $sub_file)
-				static::preloadDir($sub_file);
+				$this->preloadDir($sub_file);
 		else {
 			list($class) = explode('.', basename($file));
-			static::preloadClass($class, $file);
+			$this->preloadClass($class, $file);
 		}
 		#remove duplicate files
-		static::$preloaded = array_unique(static::$preloaded, SORT_REGULAR);
+		$this->preloaded = array_unique($this->preloaded, SORT_REGULAR);
 	}
 	
 	public static function loadClass($class) {
@@ -44,13 +52,15 @@ class Autoloader {
 			return;
 		
 		$dir = str_replace('\\', DIRECTORY_SEPARATOR, $class);
-		$dir = Importer::dirname($dir);
+		// $dir = Importer::dirname($dir);
+		$dir = Context::get('importer')->dirname($dir);
 		$dir = str_replace(DIRECTORY_SEPARATOR, '\\', $dir);
 
 		// require_once 'core/Log.php';
 		// require_once 'core/Tools/FileManager.php';
 		// \Coxis\Core\Log::write('classes.txt', $class);
 
-		Importer::_import($class, array('into'=>$dir));
+		// Importer::_import($class, array('into'=>$dir));
+		Context::get('importer')->_import($class, array('into'=>$dir));
 	}
 }

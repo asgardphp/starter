@@ -3,7 +3,7 @@ namespace Coxis\Bundles\Files\Controllers;
 
 class FilesBehaviorController extends \Coxis\Core\Controller {
 	public static function _autoload() {
-		\Coxis\Core\Validator::register('filerequired', function($attribute, $value, $params, $validator) {
+		\Validation::register('filerequired', function($attribute, $value, $params, $validator) {
 			if(!$params[0])
 				return;
 			$msg = false;
@@ -12,17 +12,17 @@ class FilesBehaviorController extends \Coxis\Core\Controller {
 			elseif(!$value->exists())
 				$msg = $validator->getMessage('fileexists', $attribute, __('The file ":attribute" does not exist.'));
 			if($msg)
-				return Validator::format($msg, array(
+				return \Validation::format($msg, array(
 					'attribute'	=>	$attribute,
 				));
 		});
 		
-		\Coxis\Core\Validator::register('image', function($attribute, $value, $params, $validator) {
+		\Validation::register('image', function($attribute, $value, $params, $validator) {
 			try {
 				$mime = mime_content_type($value['tmp_name']);
 				if(!in_array($mime, array('image/jpeg', 'image/png', 'image/gif'))) {
 					$msg = $validator->getMessage('image', $attribute, __('The file ":attribute" must be an image.'));
-					return \Coxis\Core\Validator::format($msg, array(
+					return \Validation::format($msg, array(
 						'attribute'	=>	$attribute,
 					));
 				}
@@ -30,12 +30,12 @@ class FilesBehaviorController extends \Coxis\Core\Controller {
 		});
 		
 
-		\Coxis\Core\Validator::register('allowed', function($attribute, $value, $params, $validator) {
+		\Validation::register('allowed', function($attribute, $value, $params, $validator) {
 			if(!$value->exists())
 				return;
 			if(!in_array($value->extension(), $params[0])) {
 				$msg = $validator->getMessage('image', $attribute, __('This type of file is not allowed ":ext".'));
-				return \Coxis\Core\Validator::format($msg, array(
+				return \Validation::format($msg, array(
 					'attribute'	=>	$attribute,
 					'ext'	=>	$value->extension(),
 				));
@@ -49,11 +49,12 @@ class FilesBehaviorController extends \Coxis\Core\Controller {
 	public function behaviors_pre_loadAction($model) {
 		if(!isset($model::$behaviors['files']))
 			$model::$behaviors['files'] = true;
-		if($model::$behaviors['files'])
+		if($model::$behaviors['files']) {
 			$model::hookBefore('propertyClass', function($chain, $type) {
 				if($type == 'file')
 					return '\Coxis\Bundles\Files\Libs\FileProperty';
 			});
+		}
 	}
 
 	/**

@@ -2,27 +2,28 @@
 namespace Coxis\Core;
 
 class Router {
-	public static $request;
-	private static $routes = array();
+	public $request;
+	private $routes = array();
 
-	public static function addRoute($route) {
-		static::$routes[] = $route;
+	public function addRoute($route) {
+		$this->routes[] = $route;
 	}
 
-	public static function dispatch($src=null) {
-		if(method_exists(static::$request['controller'].'Controller', static::$request['action'].'Action')) {
-			$controllerName = ucfirst(strtolower(static::$request['controller']));
+	public function dispatch($src=null) {
+		if(method_exists($this->request['controller'].'Controller', $this->request['action'].'Action')) {
+			$controllerName = ucfirst(strtolower($this->request['controller']));
 			$controllerClassName = $controllerName.'Controller';
 			$controller = new $controllerClassName();
-			$actionName = static::$request['action'];
-			$params = array(static::$request);
+			$actionName = $this->request['action'];
+			$params = array($this->request);
 			
 			static::runAction($controller, 'configure', $params, $src, false);
-			\Coxis\Core\Hook::trigger('beforeDispatchAction');
+			\Hook::trigger('beforeDispatchAction');
 			return static::runAction($controller, $actionName, $params, $src);
 		}
-		else
-			Response::setCode(404)->send();
+		else {
+			\Response::setCode(404)->send();
+		}
 	}
 	
 	private static function runAction($controller, $actionName, $params=array(), $src=null, $showView=true) {
@@ -44,9 +45,10 @@ class Router {
 	public static function run($controllerName, $actionName, $params=array(), $src=null, $showView=true) {
 		$controllerName = ucfirst($controllerName);
 		$controllerClassName = $controllerName.'Controller';
+		// die($controllerClassName);
 		$controller = new $controllerClassName();
-		if($actionName == 'mainAction')
-			exit();
+		// if($actionName == 'mainAction')
+		// 	exit();
 		return static::runAction($controller, $actionName, $params, $src, $showView);
 	}
 
@@ -87,7 +89,7 @@ class Router {
 	}
 	
 	public static function match($route, $requirements=array(), $method=null) {
-		$with = static::formatRoute(URL::get());
+		$with = static::formatRoute(\URL::get());
 		return static::matchWith($route, $with, $requirements, $method);
 	}
 	
@@ -116,10 +118,10 @@ class Router {
 		return $regex;
 	}
 
-	public static function parseRoutes() {
-		$url = URL::get();
+	public function parseRoutes() {
+		$url = \URL::get();
 		
-		static::$request = array(
+		$this->request = array(
 			'method'=> isset($_SERVER['REQUEST_METHOD']) ? strtolower($_SERVER['REQUEST_METHOD']):'get',
 			'controller'=>'',
 			'action'=>'',
@@ -127,7 +129,7 @@ class Router {
 		);
 		
 		/* PARSE ALL ROUTES */
-		foreach(static::$routes as $params) {
+		foreach($this->routes as $params) {
 			$route = $params['route'];
 			$requirements = $params['requirements'];
 			$method = $params['method'];
@@ -145,7 +147,7 @@ class Router {
 						case 'PUT': $results['action'] = 'update'; break;
 					}
 					
-				static::$request = $results;
+				$this->request = $results;
 				
 				break;
 			}
@@ -154,9 +156,9 @@ class Router {
 		preg_match('/\.([a-zA-Z0-9]{1,5})$/', $url, $matches);
 		
 		if(isset($matches[1]))
-			static::$request['format'] = $matches[1];
+			$this->request['format'] = $matches[1];
 			
-		return static::$request;
+		return $this->request;
 	}
 	
 	public static function buildRoute($route, $params=array()) {
@@ -182,32 +184,32 @@ class Router {
 		return trim($route, '/');
 	}
 
-	public static function getRequest() {
-		return static::$request;
+	public function getRequest() {
+		return $this->request;
 	}
 	
-	public static function getController() {
-		return strtolower(static::$request['controller']);
+	public function getController() {
+		return strtolower($this->request['controller']);
 	}
 	
-	public static function getAction() {
-		return strtolower(static::$request['action']);
+	public function getAction() {
+		return strtolower($this->request['action']);
 	}
 
-	public static function getParam($param) {
-		if(isset(static::$request[$param]))
-			return strtolower(static::$request[$param]);
+	public function getParam($param) {
+		if(isset($this->request[$param]))
+			return strtolower($this->request[$param]);
 		else
 			return null;
 	}
 	
-	public static function getRouteFor($what) {
-		foreach(static::$routes as $route)
+	public function getRouteFor($what) {
+		foreach($this->routes as $route)
 			if($route['controller'] == $what[0] && $route['action'] == $what[1])
 				return $route['route'];
 	}
 
-	public static function getRoutes() {
-		return static::$routes;
+	public function getRoutes() {
+		return $this->routes;
 	}
 }
