@@ -1,7 +1,7 @@
 <?php
 if(version_compare(PHP_VERSION, '5.3.0') < 0)
 	die('You need PHP ≥ 5.3');
-
+ 
 /* ENV */
 ini_set('error_reporting', E_ALL);
 chdir(dirname(__FILE__));
@@ -44,8 +44,6 @@ require_once 'core/Context.php';
 require_once 'core/Importer.php';
 require_once 'core/Autoloader.php';
 
-// spl_autoload_register(array('Coxis\core\Autoloader', 'loadClass'));
-// \Coxis\Core\Autoloader::preloadDir('core');
 spl_autoload_register(array(\Coxis\Core\Context::get('autoloader'), 'loadClass'));
 \Coxis\Core\Context::get('autoloader')->preloadDir('core');
 
