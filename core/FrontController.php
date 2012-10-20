@@ -8,13 +8,12 @@ class FrontController extends Controller {
 				define('_ENV_', 'dev');
 			else
 				define('_ENV_', 'prod');
-			
+
 		\BundlesManager::loadBundles();
 
 		\Router::parseRoutes();
 
 		\Hook::trigger('start');
-		// d(Router::getRoutes());
 		//Dispatch to target controller
 		$output = \Router::dispatch();
 		\Hook::trigger('filter_output', array(&$output), null);
