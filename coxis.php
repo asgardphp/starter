@@ -39,7 +39,6 @@ function __($key, $params=array()) {
 ob_start();
 
 /* CORE/LIBS */
-// require_once 'core/Hook.php';
 require_once 'core/IoC.php';
 require_once 'core/Context.php';
 require_once 'core/Importer.php';
