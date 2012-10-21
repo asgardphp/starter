@@ -3,11 +3,11 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<title>Coxis</title>
-	<?php \Coxis\Core\Tools\HTML::show_title() ?>
-	<?php \Coxis\Core\Tools\HTML::show_description() ?>
-	<?php \Coxis\Core\Tools\HTML::show_keywords() ?>
+	<?php \HTML::show_title() ?>
+	<?php \HTML::show_description() ?>
+	<?php \HTML::show_keywords() ?>
 	<base href="<?php echo \URL::base() ?>" />
-	<?php \Coxis\Core\Tools\HTML::show_all() ?>
+	<?php \HTML::show_all() ?>
 
 </head>
 <body>

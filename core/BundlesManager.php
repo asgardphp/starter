@@ -11,33 +11,35 @@ namespace {
 		public $requirements;
 		public $method;
 	}
+	class Annootate_Shortcut extends Annotation {}
 }
 
 namespace Coxis\Core {
-	class BundlesManager {
-		public $directories = array('bundles', 'app');
-		private $routes = array();
-		private $hooks = array();
-		
-		public function loadBundle($bundle) {
-			\Coxis\Core\Tools\Locale::importLocales($bundle.'/locales');
+	abstract class BundlesManager {
+		public static function loadBundle($bundle) {
+			\Locale::importLocales($bundle.'/locales');
 
 			\Coxis\Core\Context::get('autoloader')->preloadDir($bundle.'/models');
 
-			\Coxis\Core\Context::get('autoloader')->preloadDir($bundle.'/controllers');
 			if(file_exists($bundle.'/controllers/')) {
-				foreach(glob($bundle.'/controllers/*.php') as $filename) {
+				\Coxis\Core\Context::get('autoloader')->preloadDir($bundle.'/controllers');
+				foreach(glob($bundle.'/controllers/*.php') as $filename)
 					\Coxis\Core\Importer::loadClassFile($filename);
-				}
+			}
+
+			if(file_exists($bundle.'/cli/')) {
+				\Coxis\Core\Context::get('autoloader')->preloadDir($bundle.'/cli');
+				foreach(glob($bundle.'/cli/*.php') as $filename)
+					\Coxis\Core\Importer::loadClassFile($filename);
 			}
 		}
 		
-		public function getBundles() {
+		public static function getBundles() {
 			if(\Config::get('phpcache') && $bundles=Cache::get('bundlesmanager/bundles'))
 				return $bundles;
 			else {
 				$bundles = array();
-				foreach($this->directories as $dir)
+				foreach(\Config::get('bundle_directories') as $dir)
 					foreach(glob($dir.'/*') as $bundlepath)
 						$bundles[] = $bundlepath;
 				if(\Config::get('phpcache'))
@@ -46,15 +48,16 @@ namespace Coxis\Core {
 			}
 		}
 		
-		public function loadBundles() {
+		public static function loadBundles() {
 			$bundles = static::getBundles();
 
 			if(\Config::get('phpcache') && $bm=Cache::get('bundlesmanager')) {
 				#todo only cache locales and preloaded from bundles (might be stuff cached from before bundlesManager)
-				$this->routes = $bm['routes'];
-				$this->hooks = $bm['hooks'];
+				$routes = $bm['routes'];
+				$hooks = $bm['hooks'];
 				\Locale::$locales = $bm['locales'];
 				Context::get('autoloader')->preloaded = $bm['preloaded'];
+				// Context::get('autoloader')->preloaded = $bm['preloaded'];
 			}
 			else {
 				foreach($bundles as $bundle)
@@ -88,7 +91,7 @@ namespace Coxis\Core {
 						if($method_reflection->getAnnotation('Route')) {
 							$route = \Router::formatRoute($prefix.'/'.$method_reflection->getAnnotation('Route')->value);
 
-							$this->routes[] = array(
+							$routes[] = array(
 								'route'	=>	$route,
 								'controller'		=>	static::formatControllerName($classname), 
 								'action'			=>	static::formatActionName($method),
@@ -110,26 +113,48 @@ namespace Coxis\Core {
 
 							$controller = static::formatControllerName($classname);
 							$action = static::formatActionName($method);
-							$this->hooks[$hook][] = array($controller, $action);
+							$hooks[$hook][] = array($controller, $action);
 						}
 					}
 				}
 
-				$this->sortRoutes();
+				#Parse cli controllers
+				$controllers = get_declared_classes();
+				$controllers = array_filter($controllers, function($controller) {
+					return is_subclass_of($controller, 'Coxis\Core\CLI\CLIController');
+				});
+				foreach($controllers as $classname) {
+					$r = new \ReflectionClass($classname);
+					if(!preg_match('/cli$/', dirname($r->getFileName())))
+						continue;
+
+					$reflection = new \ReflectionAnnotatedClass($classname);
+					
+					foreach(get_class_methods($classname) as $method) {
+						if(!preg_match('/Action$/i', $method))
+							continue;
+						$method_reflection = new \ReflectionAnnotatedMethod($classname, $method);
+					
+						if($v = $method_reflection->getAnnotation('Shortcut'))
+							\CLIRouter::addRoute($v->value, array(static::formatControllerName($classname), static::formatActionName($method)));
+					}
+				}
+
+				static::sortRoutes($routes);
 					
 				if(\Config::get('phpcache')) {
 					\Coxis\Core\Cache::set('bundlesmanager', array(
-						'routes'	=>	$this->routes,
-						'hooks'	=>	$this->hooks,
+						'routes'	=>	$routes,
+						'hooks'	=>	$hooks,
 						'preloaded'	=>	Context::get('autoloader')->preloaded,
 						'locales'	=>	\Locale::$locales,
 					));
 				}
 			}
 
-			foreach($this->routes as $route)
+			foreach($routes as $route)
 				\Router::addRoute($route);
-			foreach($this->hooks as $name=>$hooks)
+			foreach($hooks as $name=>$hooks)
 				foreach($hooks as $hook)
 					\Coxis\Core\Controller::hookOn($name, $hook);
 
@@ -138,8 +163,8 @@ namespace Coxis\Core {
 					include($bundle.'/bundle.php');
 		}
 
-		public function sortRoutes() {
-			usort($this->routes, function($route1, $route2) {
+		public static function sortRoutes($routes) {
+			usort($routes, function($route1, $route2) {
 				$route1 = $route1['route'];
 				$route2 = $route2['route'];
 				

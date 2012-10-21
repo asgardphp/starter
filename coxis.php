@@ -1,7 +1,7 @@
 <?php
 if(version_compare(PHP_VERSION, '5.3.0') < 0)
 	die('You need PHP ≥ 5.3');
- 
+
 /* ENV */
 ini_set('error_reporting', E_ALL);
 chdir(dirname(__FILE__));
@@ -33,7 +33,7 @@ function get() {
 	return $result;
 }
 function __($key, $params=array()) {
-	return \Coxis\Core\Tools\Locale::translate($key, $params);
+	return \Locale::translate($key, $params);
 }
 
 ob_start();

@@ -13,39 +13,52 @@ class Context {
 
 	function __construct() {
 		$this->ioc = new IoC;
-		$this->ioc->register('url', function() {
-			return new \Coxis\Core\URL;
-		});
-		$this->ioc->register('router', function() {
-			return new \Coxis\Core\Router;
-		});
-		$this->ioc->register('bundlesmanager', function() {
-			return new \Coxis\Core\BundlesManager;
-		});
+
+		$facades = array(
+			'URL'				=>	'\Coxis\Core\URL',
+			'Router'			=>	'\Coxis\Core\Router',
+			'Config'			=>	'\Coxis\Core\Config',
+			'Hook'				=>	'\Coxis\Core\Hook',
+			'Response'			=>	'\Coxis\Core\Response',
+			'User'				=>	'\Coxis\Core\User',
+			'Memory'			=>	'\Coxis\Core\Memory',
+			'Flash'				=>	'\Coxis\Core\Flash',
+			'DB'				=>	'\Coxis\Core\DB\DB',
+			'CLIRouter'			=>	'\Coxis\Core\CLI\Router',
+			'Validation'		=>	'\Coxis\Core\Validation',
+
+			'Locale'			=>	'\Coxis\Core\Tools\Locale',
+
+			'HTML'				=>	'\Coxis\Core\Tools\HTML',
+			'Importer'			=>	'\Coxis\Core\Importer',
+
+			'Request'		=>	'\Coxis\Core\Request',
+			'GET'			=>	'\Coxis\Core\Inputs\GET',
+			'POST'			=>	'\Coxis\Core\Inputs\POST',
+			'FILE'			=>	'\Coxis\Core\Inputs\FILE',
+			'Server'		=>	'\Coxis\Core\Inputs\SERVER',
+			'Cookie'		=>	'\Coxis\Core\Inputs\COOKIE',
+			'Session'		=>	'\Coxis\Core\Inputs\SESSION',
+			'ARGV'			=>	'\Coxis\Core\Inputs\ARGV',
+			'JSON'			=>	'\Coxis\Core\Inputs\JSON',
+		);
+
 		$this->ioc->register('autoloader', function() {
 			return new \Coxis\Core\Autoloader;
 		});
-		$this->ioc->register('config', function() {
-			return new \Coxis\Core\Config;
+
+		$this->ioc->register('db', function() {
+			return new \Coxis\Core\DB\DB(\Config::get('database'));
 		});
-		$this->ioc->register('hook', function() {
-			return new \Coxis\Core\Hook;
-		});
-		$this->ioc->register('importer', function() {
-			return new \Coxis\Core\Importer;
-		});
-		$this->ioc->register('response', function() {
-			return new \Coxis\Core\Response;
-		});
-		$this->ioc->register('user', function() {
-			return new \Coxis\Core\User;
-		});
-		$this->ioc->register('validation', function() {
-			return new \Coxis\Core\Validation;
-		});
-		$this->ioc->register('memory', function() {
-			return new \Coxis\Core\Memory;
-		});
+
+		foreach($facades as $facade=>$class) {
+			if(!$this->ioc->registered(strtolower($facade))) {
+				$this->ioc->register(strtolower($facade), function() use($class) {
+					return new $class;
+				});
+			}
+			$this->autoloader->map[strtolower($facade)] = 'core/facades/'.$facade.'.php';
+		}
 	}
 
 	public static function getDefault() {

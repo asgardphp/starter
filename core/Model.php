@@ -86,8 +86,7 @@ class Model {
 					array($v => array()) +
 					\Coxis\Core\Tools\Tools::array_after(static::$properties, $k);
 			}
-			else
-				if(is_string($v))
+			elseif(is_string($v))
 					static::$properties[$k] = array('type'=>$v);
 		}
 		foreach(static::$properties as $k=>$params)

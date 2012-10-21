@@ -2,19 +2,19 @@
 if(!defined('_ENV_'))
 	define('_ENV_', 'test');
 require_once(dirname(__FILE__).'/../coxis.php');
-\BundlesManager::inst()->directories[] = 'tests/app';
+// \Config::set('bundle_directories', array_merge(\Config::get('bundle_directories'), array('tests/app')));
 \BundlesManager::loadBundles();
 
 class SchemaTest extends PHPUnit_Framework_TestCase {
 	public function setUp(){
 		$db = \Config::get('database', 'database');
 		try {
-			\Coxis\Core\DB\DB::query('DROP DATABASE `'.$db.'`');
+			\DB::query('DROP DATABASE `'.$db.'`');
 		} catch(Exception $e) {}
-		\Coxis\Core\DB\DB::query('CREATE DATABASE `'.$db.'`');
-		\Coxis\Core\DB\DB::query('USE `'.$db.'`');
+		\DB::query('CREATE DATABASE `'.$db.'`');
+		\DB::query('USE `'.$db.'`');
 		
-		\Coxis\Core\DB\DB::import('tests/coxis.sql');
+		\DB::import('tests/coxis.sql');
 	}
 
 	public function tearDown(){}
@@ -45,14 +45,14 @@ class SchemaTest extends PHPUnit_Framework_TestCase {
 	*/
 		
 	private function tableExists($table) {
-		return \Coxis\Core\DB\DB::query("SELECT * 
+		return \DB::query("SELECT * 
                  FROM INFORMATION_SCHEMA.TABLES 
                  WHERE TABLE_SCHEMA = '".\Config::get('database', 'database')."' 
                  AND  TABLE_NAME = '$table'")->count() > 0;
 	}
 		
 	private function columnExists($table, $column) {
-		return \Coxis\Core\DB\DB::query("SELECT * 
+		return \DB::query("SELECT * 
                  FROM INFORMATION_SCHEMA.COLUMNS 
                  WHERE TABLE_SCHEMA = '".\Config::get('database', 'database')."' 
                  AND  TABLE_NAME = '$table'
@@ -60,7 +60,7 @@ class SchemaTest extends PHPUnit_Framework_TestCase {
 	}
 	
 	private function isAutoincrement($table, $column) {
-		return \Coxis\Core\DB\DB::query("SELECT * 
+		return \DB::query("SELECT * 
                  FROM INFORMATION_SCHEMA.COLUMNS 
                  WHERE TABLE_SCHEMA = '".\Config::get('database', 'database')."' 
                  AND  TABLE_NAME = '$table'
@@ -69,7 +69,7 @@ class SchemaTest extends PHPUnit_Framework_TestCase {
 	}
 	
 	private function isNullable($table, $column) {
-		return \Coxis\Core\DB\DB::query("SELECT * 
+		return \DB::query("SELECT * 
                  FROM INFORMATION_SCHEMA.COLUMNS 
                  WHERE TABLE_SCHEMA = '".\Config::get('database', 'database')."' 
                  AND  TABLE_NAME = '$table'
@@ -78,7 +78,7 @@ class SchemaTest extends PHPUnit_Framework_TestCase {
 	}
 	
 	private function getDefault($table, $column) {
-		$r = \Coxis\Core\DB\DB::query("SELECT * 
+		$r = \DB::query("SELECT * 
                  FROM INFORMATION_SCHEMA.COLUMNS 
                  WHERE TABLE_SCHEMA = '".\Config::get('database', 'database')."' 
                  AND  TABLE_NAME = '$table'
@@ -87,7 +87,7 @@ class SchemaTest extends PHPUnit_Framework_TestCase {
 	}
 	
 	private function getDataType($table, $column) {
-		$r = \Coxis\Core\DB\DB::query("SELECT * 
+		$r = \DB::query("SELECT * 
                  FROM INFORMATION_SCHEMA.COLUMNS 
                  WHERE TABLE_SCHEMA = '".\Config::get('database', 'database')."' 
                  AND  TABLE_NAME = '$table'
@@ -96,7 +96,7 @@ class SchemaTest extends PHPUnit_Framework_TestCase {
 	}
 	
 	private function getType($table, $column) {
-		$r = \Coxis\Core\DB\DB::query("SELECT * 
+		$r = \DB::query("SELECT * 
                  FROM INFORMATION_SCHEMA.COLUMNS 
                  WHERE TABLE_SCHEMA = '".\Config::get('database', 'database')."' 
                  AND  TABLE_NAME = '$table'
@@ -105,7 +105,7 @@ class SchemaTest extends PHPUnit_Framework_TestCase {
 	}
 	
 	private function getLength($table, $column) {
-		$r = \Coxis\Core\DB\DB::query("SELECT * 
+		$r = \DB::query("SELECT * 
                  FROM INFORMATION_SCHEMA.COLUMNS 
                  WHERE TABLE_SCHEMA = '".\Config::get('database', 'database')."' 
                  AND  TABLE_NAME = '$table'
@@ -114,7 +114,7 @@ class SchemaTest extends PHPUnit_Framework_TestCase {
 	}
 		
 	private function isPrimary() {
-		return \Coxis\Core\DB\DB::query("SELECT * 
+		return \DB::query("SELECT * 
                  FROM INFORMATION_SCHEMA.COLUMNS 
                  WHERE TABLE_SCHEMA = '".\Config::get('database', 'database')."' 
                  AND  TABLE_NAME = '$table'
@@ -123,7 +123,7 @@ class SchemaTest extends PHPUnit_Framework_TestCase {
 	}
 		
 	private function isUnique() {
-		return \Coxis\Core\DB\DB::query("SELECT * 
+		return \DB::query("SELECT * 
                  FROM INFORMATION_SCHEMA.COLUMNS 
                  WHERE TABLE_SCHEMA = '".\Config::get('database', 'database')."' 
                  AND  TABLE_NAME = '$table'
@@ -132,7 +132,7 @@ class SchemaTest extends PHPUnit_Framework_TestCase {
 	}
 		
 	private function isIndex() {
-		return \Coxis\Core\DB\DB::query("SELECT * 
+		return \DB::query("SELECT * 
                  FROM INFORMATION_SCHEMA.COLUMNS 
                  WHERE TABLE_SCHEMA = '".\Config::get('database', 'database')."' 
                  AND  TABLE_NAME = '$table'

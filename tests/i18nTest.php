@@ -2,14 +2,14 @@
 if(!defined('_ENV_'))
 	define('_ENV_', 'test');
 require_once(dirname(__FILE__).'/../coxis.php');
-\BundlesManager::inst()->directories[] = 'tests/app';
+// \Config::set('bundle_directories', array_merge(\Config::get('bundle_directories'), array('tests/app')));
 \BundlesManager::loadBundles();
 
 class i18nTest extends PHPUnit_Framework_TestCase {
 	public function setUp(){
-		\Coxis\Core\DB\DB::import('tests/coxis.sql');
+		\DB::import('tests/coxis.sql');
 				
-		\Coxis\Core\Tools\Locale::setLocale('fr');
+		\Locale::setLocale('fr');
 	}
 
 	public function tearDown(){}
@@ -46,7 +46,7 @@ class i18nTest extends PHPUnit_Framework_TestCase {
     
 	#save english version
 	public function test5() {
-		\Coxis\Core\Tools\Locale::setLocale('en');
+		\Locale::setLocale('en');
 		$actu = new \Coxis\Tests\App\Actualite\Models\Actualite(2);
 		$actu->test = 'Hi';
 		// d($actu->data['properties']);
@@ -58,7 +58,7 @@ class i18nTest extends PHPUnit_Framework_TestCase {
 	
 	#translation
 	public function test6() {
-		\Coxis\Core\Tools\Locale::importLocales('tests/locales');
+		\Locale::importLocales('tests/locales');
 		$this->assertEquals(__('Hello :name!', array('name' => 'Michel')), 'Bonjour Michel !');
 	}
 }

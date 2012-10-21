@@ -2,37 +2,36 @@
 namespace Coxis\Core\Tools;
 
 class Flash {
-	private static $messages = array('success' => array(), 'error' => array());
-	private static $instance;
+	private $messages = array('success' => array(), 'error' => array());
 
-	public static function _autoload() {
-		if(isset($_SESSION['messages']))
-			static::$messages = $_SESSION['messages'];
+	function __construct() {
+		if(isset(\Session::get('messages')))
+			$this->messages = \Session::get('messages');
 	}
 
-	private static function persist() {
-		$_SESSION['messages'] = static::$messages;
+	private function persist() {
+		\Session::set('messages', $this->messages);
 	}
 
-	public static function addSuccess($message) {
+	public function addSuccess($message) {
 		if(is_array($message))
 			foreach($message as $one_message)
-				static::$messages['success'][] = $one_message;
+				$this->messages['success'][] = $one_message;
 		else
-			static::$messages['success'][] = $message;
+			$this->messages['success'][] = $message;
 			
-		static::persist();
+		$this->persist();
 		return true;
 	}
 	
-	public static function addError($message) {
+	public function addError($message) {
 		if(is_array($message))
 			foreach($message as $one_message)
-				static::$messages['error'][] = $one_message;
+				$this->messages['error'][] = $one_message;
 		else
-			static::$messages['error'][] = $message;
+			$this->messages['error'][] = $message;
 			
-		static::persist();
+		$this->persist();
 		return true;
 	}
 	
@@ -41,23 +40,17 @@ class Flash {
 		static::showError();
 	}
 	
-	public static function showSuccess() {
-		foreach(Tools::flateArray(static::$messages['success']) as $msg)
+	public function showSuccess() {
+		foreach(Tools::flateArray($this->messages['success']) as $msg)
 			echo '<div class="message success"><p>'.$msg.'</p></div>'."\n";
-		static::$messages['success'] = array();	
-		static::persist();
+		$this->messages['success'] = array();	
+		$this->persist();
 	}
 	
-	public static function showError() {
-		foreach(Tools::flateArray(static::$messages['error']) as $msg)
+	public function showError() {
+		foreach(Tools::flateArray($this->messages['error']) as $msg)
 			echo '<div class="message errormsg"><p>'.$msg.'</p></div>'."\n";
-		static::$messages['error'] = array();	
-		static::persist();
+		$this->messages['error'] = array();	
+		$this->persist();
 	}
-
-	public static function getInstance() { 
-		if(!static::$instance)	static::$instance = new self();
-
-		return static::$instance; 
-	} 
 }

@@ -5,4 +5,4 @@ set_time_limit(0);
 require_once('coxis.php');
 
 /* RUN */
-\Coxis\Core\Cli\Router::run('Coxis\Core\Cli\Front', 'main');
+\CLIRouter::run('Coxis\Core\Cli\Front', 'main');

@@ -2,23 +2,18 @@
 namespace Coxis\Core\Tools;
 
 class Locale {
-	private static $default = 'en';
-	public static $locales = array();
+	private $default = 'en';
+	public $locales = array();
 
-	// public static $load_locales = false;
-
-	public static function _autoload() {
+	function __construct() {
 		static::setLocale(\Config::get('locale'));
 	
 		require_once('vendors/yaml/sfYamlParser.php');
 		
 		if(\Config::get('phpcache'))
-			static::$locales = \Coxis\Core\Cache::get('locales');
-		if(!static::$locales) {
-			// \Memory::set('load_locales', true);
-			// static::$load_locales = true;
-			static::importLocales('locales');
-		}
+			$this->locales = \Coxis\Core\Cache::get('locales');
+		if(!$this->locales)
+			$this->importLocales('locales');
 		
 		\Hook::hookOn('end', function() {
 			if(\Config::get('phpcache'))
@@ -26,20 +21,20 @@ class Locale {
 		});
 	}
 
-	public static function setDefault($locale) {
-		static::$default = $locale;
+	public function setDefault($locale) {
+		$this->default = $locale;
 	}
 
 	public static function setLocale($locale) {
 		\Config::set('locale', $locale);
 	}
 
-	public static function translate($key, $params=array()) {
+	public function translate($key, $params=array()) {
 		$locale = \Config::get('locale');
-		if(isset(static::$locales[$locale][$key]) && static::$locales[$locale][$key])
-			$str = static::$locales[$locale][$key];
-		elseif(isset(static::$locales[static::$default][$key]) && static::$locales[static::$default][$key])
-			$str = static::$locales[static::$default][$key];
+		if(isset($this->locales[$locale][$key]) && $this->locales[$locale][$key])
+			$str = $this->locales[$locale][$key];
+		elseif(isset($this->locales[$this->default][$key]) && $this->locales[$this->default][$key])
+			$str = $this->locales[$this->default][$key];
 		else
 			$str = $key;
 	
@@ -49,20 +44,20 @@ class Locale {
 		return $str;
 	}
 	
-	public static function importLocales($dir) {
+	public function importLocales($dir) {
 		if(is_array(glob($dir.'/*')))
 			foreach(glob($dir.'/*') as $lang_dir) {
 				$lang = basename($lang_dir);
 				foreach(glob($lang_dir.'/*') as $file)
-					static::import($lang, $file);
+					$this->import($lang, $file);
 			}
 	}
 	
-	public static function import($lang, $file) {
+	public function import($lang, $file) {
 		$yaml = new \sfYamlParser();
 		$raw = $yaml->parse(file_get_contents($file));
-		if(!isset(static::$locales[$lang]))
-			static::$locales[$lang] = array();
-		static::$locales[$lang] = array_merge(static::$locales[$lang], $raw);
+		if(!isset($this->locales[$lang]))
+			$this->locales[$lang] = array();
+		$this->locales[$lang] = array_merge($this->locales[$lang], $raw);
 	}
 }

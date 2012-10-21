@@ -58,7 +58,7 @@ class Router {
 	}
 	
 	public static function matchWith($route, $with, $requirements=array(), $method=null) {
-		$server_method = isset($_SERVER['REQUEST_METHOD']) ? strtolower($_SERVER['REQUEST_METHOD']):'get';
+		$server_method = \Request::method();
 		if($method)
 			if(is_array($method)) {
 				$good = false;
@@ -122,7 +122,7 @@ class Router {
 		$url = \URL::get();
 		
 		$this->request = array(
-			'method'=> isset($_SERVER['REQUEST_METHOD']) ? strtolower($_SERVER['REQUEST_METHOD']):'get',
+			'method'=> \Request::method(),
 			'controller'=>'',
 			'action'=>'',
 			'format'=>'html',
@@ -136,11 +136,11 @@ class Router {
 			
 			/* IF THE ROUTE MATCHES */
 			if(($results = static::match($route, $requirements, $method)) !== false) {
-				$results = array_merge(array('format'=>'html'), $results, array('data'=>file_get_contents('php://input')));
-				$results = array_merge($_GET, $params, $results);
+				$results = array_merge(array('format'=>'html'), $results, array('data'=>\Request::data()));
+				$results = array_merge(\GET::all(), $params, $results);
 				
 				if(!isset($results['action']))
-					switch($_SERVER['REQUEST_METHOD']) {
+					switch(\SERVER::get('REQUEST_METHOD')) {
 						case 'POST': $results['action'] = 'create'; break;
 						case 'GET': $results['action'] = 'show'; break;
 						case 'DELETE': $results['action'] = 'destroy'; break;

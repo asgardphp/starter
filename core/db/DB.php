@@ -5,10 +5,10 @@ class DBException extends \Exception {}
 
 class DB {
 	private $db;
-	private static $instance;
+	private $config;
 
-	public function __construct($db=null) {
-		$config = \Config::get('database');
+	public function __construct($config, $db=null) {
+		$this->config = $config;
 		if(!$db) {
 			$this->db = new \PDO('mysql:host='.$config['host'].';dbname='.$config['database'], 
 				$config['user'],
@@ -22,44 +22,25 @@ class DB {
 	}
 	
 	public function getDB() {
-		$instance = static::getInstance();
-		
-		return $instance->db;
+		return $this->db;
 	}
 	
-	public static function import($file) {
-		$host = \Config::get('database', 'host');
-		$user = \Config::get('database', 'user');
-		$pwd = \Config::get('database', 'password');
-		$db = \Config::get('database', 'database');
+	public function import($file) {
+		$host = $this->config['host'];
+		$user = $this->config['user'];
+		$pwd = $this->config['password'];
+		$db = $this->config['database'];
 		$cmd = 'mysql -h '.$host.' -u '.$user.($pwd ? ' -p'.$pwd:'').' '.$db.' < '.$file;
 		exec($cmd);
 	}
 
-	public static function query($sql, $args=array()) {
-		$instance = static::getInstance();
-	
-		return new Query($instance->db, $sql, $args);
+	public function query($sql, $args=array()) {
+		return new Query($this->db, $sql, $args);
 	}
 
 	public function id() {
-		$instance = static::getInstance();
-		
-		return $instance->db->lastInsertId();
+		return $this->db->lastInsertId();
 	}
-
-	public static function getInstance() { 
-		if(!static::$instance)
-			static::$instance = new static;
-
-		return static::$instance; 
-	} 
-
-	public static function newInstance($db=null) { 
-		static::$instance = new static($db);
-
-		return static::$instance; 
-	} 
 }
 
 class Query {

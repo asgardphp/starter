@@ -36,13 +36,13 @@ class Form extends AbstractGroup {
 		$this->addWidget(
 			new Widget(array(
 				'rules'	=>	array(
-					'eq'	=>	$_SESSION['_csrf_token'],
+					'eq'	=>	\Session::get('_csrf_token'),
 				),
 				'messages'	=>	array(
 					'eq'	=>	'Invalid CSRF token.',
 				),
 				'view'	=>	array(
-					'value'	=>	$_SESSION['_csrf_token'],
+					'value'	=>	\Session::get('_csrf_token'),
 				),
 			)),
 			'_csrf_token'
@@ -63,8 +63,8 @@ class Form extends AbstractGroup {
 	}
 	
 	private static function generateTokens() {	
-		if(!isset($_SESSION['_csrf_token']))
-			$_SESSION['_csrf_token'] = Tools::randstr();
+		if(\Session::get('_csrf_token') === null)
+			\Session::set('_csrf_token', Tools::randstr());
 	}
 	
 	public function __toString() {
@@ -101,12 +101,12 @@ class Form extends AbstractGroup {
 		$files = array();
 			
 		if($this->groupName)
-			if(isset($_FILES[$this->groupName]))
-				$raw = $_FILES[$this->groupName];
+			if(\File::get($this->groupName) !== null)
+				$raw = \File::get($this->groupName);
 			else
 				$raw = array();
 		else
-			$raw = $_FILES;
+			$raw = \File::all();
 			
 		if(isset($raw['name'])) {
 			$name = $this->convertTo('name', $raw['name']);
@@ -121,12 +121,12 @@ class Form extends AbstractGroup {
 		$this->data = array();
 		if($this->groupName)
 				$this->setData(
-					(isset($_POST[$this->groupName]) ? $_POST[$this->groupName]:array()),
+					\POST::get($this->groupName, array()),
 					$files
 				);
 		else
-			if(isset($_POST))
-				$this->setData($_POST, $_FILES);
+			// if(isset($_POST))
+				$this->setData(\POST::all(), \File::all());
 						
 		return $this;
 	}

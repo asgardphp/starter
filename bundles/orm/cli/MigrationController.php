@@ -1,8 +1,8 @@
 <?php
 #todo delete old model tables
-namespace Coxis\Core\Cli;
+namespace Coxis\Bundles\ORM\CLI;
 
-class MigrationController extends CLIController {
+class MigrationController extends \Coxis\Core\CLI\CLIController {
 	private static function tableSchema($table) {
 		$structure = array();
 		try{
@@ -23,11 +23,18 @@ class MigrationController extends CLIController {
 		return $struc;
 	}
 
+	/**
+	@Shortcut('automigrate')
+	*/
 	public function automigrateAction($request) {
 		$this->diffAction($request);
 		$this->migrateAction($request);
 	}
 
+
+	/**
+	@Shortcut('migrate')
+	*/
 	public function migrateAction($request) {
 		Router::run('Coxis\Core\Cli\DB', 'backup', $request);
 		echo 'Migrating...'."\n";
@@ -86,6 +93,9 @@ class MigrationController extends CLIController {
 		return $migrations;
 	}
 
+	/**
+	@Shortcut('diff')
+	*/
 	public function diffAction($request) {
 		#todo check migration version
 		if(!static::uptodate())

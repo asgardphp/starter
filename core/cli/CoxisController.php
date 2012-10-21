@@ -4,7 +4,10 @@ namespace Coxis\Core\Cli;
 #todo replace with a distributed architecture
 
 class CoxisController extends CLIController {
-	#todo
+	public function versionAction($request) {
+		echo 'Version: alpha';
+	}
+
 	public function getAction($request) {
 		echo Browser::get($request[0]);
 	}

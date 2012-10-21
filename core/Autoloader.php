@@ -5,15 +5,6 @@ class Autoloader {
 // class Autoloader {
 	public $map = array(
 		// 'Something'	=>	'there/somewhere.php',
-		'URL'	=>	'core/facades/URL.php',
-		'Router'	=>	'core/facades/Router.php',
-		'BundlesManager'	=>	'core/facades/BundlesManager.php',
-		'Config'	=>	'core/facades/Config.php',
-		'Hook'	=>	'core/facades/Hook.php',
-		'Response'	=>	'core/facades/Response.php',
-		'User'	=>	'core/facades/User.php',
-		'Validation'	=>	'core/facades/Validation.php',
-		'Memory'	=>	'core/facades/Memory.php',
 	);
 	public $directories = array(
 		// 'foo\bar'	=>	'there',

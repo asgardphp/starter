@@ -21,7 +21,7 @@ class FrontController extends CLIController {
 			else
 				define('_ENV_', 'dev');
 		}
-				
+
 		/* CONFIG */
 		\Config::loadConfigDir('config');
 		// if(\Config::get('error_display'))
@@ -32,7 +32,8 @@ class FrontController extends CLIController {
 		#todo remove
 		while(ob_get_level()){ ob_end_clean(); }
 		
-		\Coxis\Core\Cli\Router::dispatch($route, $args);
+		if(!\CLIRouter::dispatch($route, $args))
+			static::usage();
 	}
 	
 	public static function usage() {

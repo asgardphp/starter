@@ -34,11 +34,6 @@ class Controller {
 		$action = $cAction[1];
 		\Hook::hookOn($hookName, function($chain, $arg1=null, $arg2=null, $arg3=null, $arg4=null,
 			$arg5=null, $arg6=null, $arg7=null, $arg8=null, $arg9=null, $arg10=null) use($controller, $action) {
-		// \Hook::hookOn($hookName, function($chain, $args=null) use($controller, $action) {
-			// if(!is_array($args))
-			// 	$args = array($args);
-			// if($action == 'preSending')
-			// d($controller, $action, $args);
 			$args = array(&$arg1, &$arg2, &$arg3, &$arg4, &$arg5, &$arg6, &$arg7, &$arg8, &$arg9, &$arg10);
 			Router::run($controller, $action, $args);
 		});

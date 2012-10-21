@@ -98,4 +98,8 @@ class Validation {
 		
 		return $result;
 	}
+
+	public function ruleExists($rule) {
+		return isset($this->rules[$rule]);
+	}
 }

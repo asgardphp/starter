@@ -8,12 +8,12 @@ class URL {
 
 	public function get() {
 		if(!$this->url) {
-			if(isset($_SERVER['PATH_INFO']))
-				$this->url = $_SERVER['PATH_INFO'];
-			elseif(isset($_SERVER['ORIG_PATH_INFO']))
-				$this->url = $_SERVER['ORIG_PATH_INFO'];
-			elseif(isset($_SERVER['REDIRECT_URL']))
-				$this->url = $_SERVER['REDIRECT_URL'];
+			if(\SERVER::has('PATH_INFO'))
+				$this->url = \SERVER::get('PATH_INFO');
+			elseif(\SERVER::has('ORIG_PATH_INFO'))
+				$this->url = \SERVER::get('ORIG_PATH_INFO');
+			elseif(\SERVER::has('REDIRECT_URL'))
+				$this->url = \SERVER::get('REDIRECT_URL');
 			else
 				$this->url = '';
 			$this->url = preg_replace('/^\//', '', $this->url);
@@ -41,9 +41,9 @@ class URL {
 	}
 	
 	public function full() {
-		if(sizeof($_GET)) {
+		if(sizeof(\GET::all())) {
 			$r = $this->current().'?';
-			foreach($_GET as $k=>$v)
+			foreach(\GET::all() as $k=>$v)
 				$r .= $k.'&'.$v;
 			return $r;
 		}
@@ -65,10 +65,10 @@ class URL {
 	public function root() {
 		if($this->root !== null)
 			$result = $this->root;
-		elseif(isset($_SERVER['ORIG_SCRIPT_NAME']))
-			$result = dirname($_SERVER['ORIG_SCRIPT_NAME']);
+		elseif(\Server::has('ORIG_SCRIPT_NAME'))
+			$result = dirname(\SERVER::get('ORIG_SCRIPT_NAME'));
 		else
-			$result = dirname($_SERVER['SCRIPT_NAME']);
+			$result = dirname(\SERVER::get('SCRIPT_NAME'));
 		
 		$result = str_replace('\\', '/', $result);
 		$result = trim($result, '/');
@@ -81,8 +81,8 @@ class URL {
 	public function server() {
 		if($this->server !== null)
 			return 'http://'.$this->server;
-		elseif(isset($_SERVER['SERVER_NAME']))
-			return 'http://'.trim($_SERVER['SERVER_NAME'], '/');
+		elseif(\SERVER::has('SERVER_NAME'))
+			return 'http://'.trim(\SERVER::get('SERVER_NAME'), '/');
 		else
 			return '';
 	}

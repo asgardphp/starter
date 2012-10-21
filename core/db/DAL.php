@@ -14,8 +14,11 @@ class DAL {
 	public $rightjoin = array();
 	public $innerjoin = array();
 		
-	function __construct($tables) {
-		$this->db = DB::getInstance();
+	function __construct($tables, $db=null) {
+		if($db === null)
+			$this->db = \DB::inst();
+		else
+			$this->db = $db;
 		$this->setTables($tables);
 	}
 	

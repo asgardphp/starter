@@ -2,12 +2,12 @@
 if(!defined('_ENV_'))
 	define('_ENV_', 'test');
 require_once(dirname(__FILE__).'/../coxis.php');
-\BundlesManager::inst()->directories[] = 'tests/app';
+// \Config::set('bundle_directories', array_merge(\Config::get('bundle_directories'), array('tests/app')));
 \BundlesManager::loadBundles();
 
 class FilesTest extends PHPUnit_Framework_TestCase {
 	public function setUp(){
-		\Coxis\Core\DB\DB::import('tests/coxis.sql');
+		\DB::import('tests/coxis.sql');
 	}
 
 	public function tearDown(){}

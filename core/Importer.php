@@ -160,8 +160,8 @@ namespace Coxis\Core {
 			#file map
 			// elseif(isset(Autoloader::$map[$class])) {
 			// elseif(isset(\Coxis\Core\Context::get('coxis\core\autoloader')->map[$class])) {
-			elseif(isset(\Coxis\Core\Context::get('autoloader')->map[$class])) {
-				$result = static::loadClassFile(\Coxis\Core\Context::get('autoloader')->map[$class]);
+			elseif(isset(\Coxis\Core\Context::get('autoloader')->map[strtolower($class)])) {
+				$result = static::loadClassFile(\Coxis\Core\Context::get('autoloader')->map[strtolower($class)]);
 				class_alias($result, $class);
 				return true;
 			}

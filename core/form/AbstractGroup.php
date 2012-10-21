@@ -31,7 +31,7 @@ abstract class AbstractGroup implements \ArrayAccess, \Iterator {
 	
 	public function isSent() {
 		//todo handle get form
-		$method = isset($_SERVER['REQUEST_METHOD']) ? strtolower($_SERVER['REQUEST_METHOD']):'get';
+		$method = strtolower(\Request::method());
 		if($method != 'post')
 			return false;
 		else
@@ -39,7 +39,7 @@ abstract class AbstractGroup implements \ArrayAccess, \Iterator {
 				return $this->dad->isSent();
 			else
 				if($this->groupName)
-					return isset($_POST[$this->groupName]);
+					return \POST::has($this->groupName);
 				else
 					return true;
 	}

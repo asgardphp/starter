@@ -2,116 +2,116 @@
 namespace Coxis\Core\Tools;
 
 class HTML {
-	private static $include_js = array();
-	private static $include_css = array();
-	private static $code_js = array();
-	public static $code_css = array();
-	private static $code = array();
+	private $include_js = array();
+	private $include_css = array();
+	private $code_js = array();
+	public $code_css = array();
+	private $code = array();
 	
-	private static $title = '';
-	private static $description = '';
-	private static $keywords = '';
+	private $title = '';
+	private $description = '';
+	private $keywords = '';
 	
-	static public function getTitle() {
-		return static::$title;
+	public function getTitle() {
+		return $this->title;
 	}
-	static public function getDescription() {
-		return static::$description;
+	public function getDescription() {
+		return $this->description;
 	}
-	static public function getKeywords() {
-		return static::$keywords;
-	}
-	
-	static public function setTitle($title) {
-		static::$title = $title;
+	public function getKeywords() {
+		return $this->keywords;
 	}
 	
-	static public function setDescription($description) {
-		static::$description = $description;
+	public function setTitle($title) {
+		$this->title = $title;
 	}
 	
-	static public function setKeywords($keywords) {
-		static::$keywords = $keywords;
+	public function setDescription($description) {
+		$this->description = $description;
 	}
 	
-	static public function show_title() {
-		echo '<title>'.htmlentities(static::$title, ENT_QUOTES, "UTF-8").'</title>';
+	public function setKeywords($keywords) {
+		$this->keywords = $keywords;
 	}
 	
-	static public function show_description() {
-		if(static::$description)
-			echo '<meta name="description" content="'.str_replace('"', '\"', static::$description).'">';
+	public function show_title() {
+		echo '<title>'.htmlentities($this->title, ENT_QUOTES, "UTF-8").'</title>';
 	}
 	
-	static public function show_keywords() {
-		if(static::$keywords)
-			echo '<meta name="keywords" content="'.str_replace('"', '\"', static::$keywords).'">';
+	public function show_description() {
+		if($this->description)
+			echo '<meta name="description" content="'.str_replace('"', '\"', $this->description).'">';
 	}
 	
-	static public function include_js($js) {
-		if(!in_array($js, static::$include_js))
-			static::$include_js[] = $js;
+	public function show_keywords() {
+		if($this->keywords)
+			echo '<meta name="keywords" content="'.str_replace('"', '\"', $this->keywords).'">';
 	}
 	
-	static public function include_css($css) {
-		if(!in_array($css, static::$include_css))
-			static::$include_css[] = $css;
+	public function include_js($js) {
+		if(!in_array($js, $this->include_js))
+			$this->include_js[] = $js;
 	}
 	
-	static public function code_js($js) {
-		static::$code_js[] = $js;
+	public function include_css($css) {
+		if(!in_array($css, $this->include_css))
+			$this->include_css[] = $css;
 	}
 	
-	static public function code_css($css) {
-		static::$code_css[] = $css;
+	public function code_js($js) {
+		$this->code_js[] = $js;
 	}
 	
-	static public function code($code) {
-		static::$code[] = $code;
+	public function code_css($css) {
+		$this->code_css[] = $css;
 	}
 	
-	static public function show_include_js() {
-		foreach(static::$include_js as $js)
+	public function code($code) {
+		$this->code[] = $code;
+	}
+	
+	public function show_include_js() {
+		foreach($this->include_js as $js)
 			echo '<script type="text/javascript" src="'.URL::to($js).'"></script>'."\n";
 	}
 	
-	static public function show_include_css() {
-		foreach(static::$include_css as $css)
+	public function show_include_css() {
+		foreach($this->include_css as $css)
 			echo '<link rel="stylesheet" href="'.URL::to($css).'"/>'."\n";
 	}
 	
-	static public function show_code_js() {
-		if(sizeof(static::$code_js)>0) {
+	public function show_code_js() {
+		if(sizeof($this->code_js)>0) {
 			echo '<script type="text/javascript">
 			//<![CDATA[
 			';
-			foreach(static::$code_js as $code)
+			foreach($this->code_js as $code)
 				echo $code."\n";
 			echo '//]]>
 			</script>';
 		}
 	}
 	
-	static public function show_code_css() {
-		if(sizeof(static::$code_css)>0) {
+	public function show_code_css() {
+		if(sizeof($this->code_css)>0) {
 			echo '<style type="text/css">';
-			foreach(static::$code_css as $code)
+			foreach($this->code_css as $code)
 				echo $code."\n";
 			echo '</style>';
 		}
 	}
 	
-	static public function show_code() {
-		foreach(static::$code as $code)
+	public function show_code() {
+		foreach($this->code as $code)
 			echo $code."\n";
 	}
 	
-	static public function show_all() {
-		static::show_include_js();
-		static::show_include_css();
-		static::show_code_js();
-		static::show_code_css();
-		static::show_code();
+	public function show_all() {
+		$this->show_include_js();
+		$this->show_include_css();
+		$this->show_code_js();
+		$this->show_code_css();
+		$this->show_code();
 	}
 	
 	static public function sanitize($html) {

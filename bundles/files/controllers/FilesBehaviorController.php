@@ -2,51 +2,14 @@
 namespace Coxis\Bundles\Files\Controllers;
 
 class FilesBehaviorController extends \Coxis\Core\Controller {
-	public static function _autoload() {
-		\Validation::register('filerequired', function($attribute, $value, $params, $validator) {
-			if(!$params[0])
-				return;
-			$msg = false;
-			if(!$value)
-				$msg = $validator->getMessage('filerequired', $attribute, __('The file ":attribute" is required.'));
-			elseif(!$value->exists())
-				$msg = $validator->getMessage('fileexists', $attribute, __('The file ":attribute" does not exist.'));
-			if($msg)
-				return \Validation::format($msg, array(
-					'attribute'	=>	$attribute,
-				));
-		});
-		
-		\Validation::register('image', function($attribute, $value, $params, $validator) {
-			try {
-				$mime = mime_content_type($value['tmp_name']);
-				if(!in_array($mime, array('image/jpeg', 'image/png', 'image/gif'))) {
-					$msg = $validator->getMessage('image', $attribute, __('The file ":attribute" must be an image.'));
-					return \Validation::format($msg, array(
-						'attribute'	=>	$attribute,
-					));
-				}
-			} catch(\ErrorException $e) {}
-		});
-		
-
-		\Validation::register('allowed', function($attribute, $value, $params, $validator) {
-			if(!$value->exists())
-				return;
-			if(!in_array($value->extension(), $params[0])) {
-				$msg = $validator->getMessage('image', $attribute, __('This type of file is not allowed ":ext".'));
-				return \Validation::format($msg, array(
-					'attribute'	=>	$attribute,
-					'ext'	=>	$value->extension(),
-				));
-			}
-		});
-	}
-
 	/**
 	@Hook('behaviors_pre_load')
 	**/
 	public function behaviors_pre_loadAction($model) {
+		#TODO
+		if(!\Validation::ruleExists('filerequired'))
+			static::loadValidationRules();
+
 		if(!isset($model::$behaviors['files']))
 			$model::$behaviors['files'] = true;
 		if($model::$behaviors['files']) {
@@ -93,6 +56,48 @@ class FilesBehaviorController extends \Coxis\Core\Controller {
 			foreach($model::properties() as $name=>$property)
 				if($property->type == 'file')
 					$model->$name->delete();
+		});
+	}
+	
+	public static function loadValidationRules() {
+		\Validation::register('filerequired', function($attribute, $value, $params, $validator) {
+			if(!$params[0])
+				return;
+			$msg = false;
+			if(!$value)
+				$msg = $validator->getMessage('filerequired', $attribute, __('The file ":attribute" is required.'));
+			elseif(!$value->exists())
+				$msg = $validator->getMessage('fileexists', $attribute, __('The file ":attribute" does not exist.'));
+			if($msg) {
+				return \Validation::format($msg, array(
+					'attribute'	=>	$attribute,
+				));
+			}
+		});
+		
+		\Validation::register('image', function($attribute, $value, $params, $validator) {
+			try {
+				$mime = mime_content_type($value['tmp_name']);
+				if(!in_array($mime, array('image/jpeg', 'image/png', 'image/gif'))) {
+					$msg = $validator->getMessage('image', $attribute, __('The file ":attribute" must be an image.'));
+					return \Validation::format($msg, array(
+						'attribute'	=>	$attribute,
+					));
+				}
+			} catch(\ErrorException $e) {}
+		});
+		
+
+		\Validation::register('allowed', function($attribute, $value, $params, $validator) {
+			if(!$value->exists())
+				return;
+			if(!in_array($value->extension(), $params[0])) {
+				$msg = $validator->getMessage('image', $attribute, __('This type of file is not allowed ":ext".'));
+				return \Validation::format($msg, array(
+					'attribute'	=>	$attribute,
+					'ext'	=>	$value->extension(),
+				));
+			}
 		});
 	}
 }

@@ -62,11 +62,11 @@ class Paginator {
 	public function show() {
 		$url = URL::current();
 		if($this->page > 1)
-			echo '<a href="'.$url.'?'.http_build_query(array_merge($_GET, array('page'=>$this->page-1))).'">«</a>';
+			echo '<a href="'.$url.'?'.http_build_query(array_merge(\GET::all(), array('page'=>$this->page-1))).'">«</a>';
 		for($i=1; $i<=$this->getPages(); $i++)
-			echo '<a href="'.$url.'?'.http_build_query(array_merge($_GET, array('page'=>$i))).'" '.($this->page ==$i ? 'class="active"':'').'>'.$i.'</a>';
+			echo '<a href="'.$url.'?'.http_build_query(array_merge(\GET::all(), array('page'=>$i))).'" '.($this->page ==$i ? 'class="active"':'').'>'.$i.'</a>';
 		if($this->page < $this->getPages())
-			echo '<a href="'.$url.'?'.http_build_query(array_merge($_GET, array('page'=>$this->page+1))).'">»</a>';
+			echo '<a href="'.$url.'?'.http_build_query(array_merge(\GET::all(), array('page'=>$this->page+1))).'">»</a>';
 	}
 	
 	public function hasPrev() {
@@ -79,12 +79,12 @@ class Paginator {
 	
 	public function getPrev() {
 		$url = Router::current();
-		return $url.'?'.http_build_query(array_merge($_GET, array('page'=>$this->page-1)));
+		return $url.'?'.http_build_query(array_merge(\GET::all(), array('page'=>$this->page-1)));
 	}
 	
 	public function getNext() {
 		$url = Router::current();
-		return $url.'?'.http_build_query(array_merge($_GET, array('page'=>$this->page+1)));
+		return $url.'?'.http_build_query(array_merge(\GET::all(), array('page'=>$this->page+1)));
 	}
 	
 	#todo remove (only for arpa)
