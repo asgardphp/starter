@@ -5,8 +5,8 @@ class SlugifyBehaviorController extends \Coxis\Core\Controller {
 	/**
 	@Hook('behaviors_load_slugify')
 	**/
-	public function behaviors_load_slugifyAction($model) {
-		$model::addProperty('slug', array('type' => 'text', 'required' => false));
+	public function behaviors_load_slugifyAction($modelDefinition) {
+		$modelDefinition->addProperty('slug', array('type' => 'text', 'required' => false));
 	}
 	
 	/**

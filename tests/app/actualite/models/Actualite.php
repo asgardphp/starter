@@ -41,8 +41,6 @@ class Actualite extends \Coxis\Core\Model {
 		'sortable' => true,
 	);
 		
-	public static $meta = array();
-		
 	#General
 	public function __toString() {
 		return (string)$this->titre;

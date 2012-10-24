@@ -152,14 +152,10 @@ namespace Coxis\Core {
 		}
 
 		public static function loadClass($class) {
-		// 			if($class == 'Coxis\Core\FrontController')
-		// die($class);
 			#already loaded
 			if(class_exists($class, false) || interface_exists($class, false))
 				return true;
 			#file map
-			// elseif(isset(Autoloader::$map[$class])) {
-			// elseif(isset(\Coxis\Core\Context::get('coxis\core\autoloader')->map[$class])) {
 			elseif(isset(\Coxis\Core\Context::get('autoloader')->map[strtolower($class)])) {
 				$result = static::loadClassFile(\Coxis\Core\Context::get('autoloader')->map[strtolower($class)]);
 				class_alias($result, $class);
@@ -167,8 +163,6 @@ namespace Coxis\Core {
 			}
 			else {
 				#directory map
-				// foreach(Autoloader::$directories as $prefix=>$dir) {
-				// foreach(\Coxis\Core\Context::get('coxis\core\autoloader')->directories as $prefix=>$dir) {
 				foreach(\Coxis\Core\Context::get('autoloader')->directories as $prefix=>$dir) {
 					if(preg_match('/^'.preg_quote($prefix).'/', $class)) {
 						$rest = preg_replace('/^'.preg_quote($prefix).'\\\?/', '', $class);
@@ -204,10 +198,7 @@ namespace Coxis\Core {
 					#remove, only for testing class loading
 					// d();
 
-					// foreach(Autoloader::$preloaded as $v)
-					// foreach(\Coxis\Core\Context::get('coxis\core\autoloader')->preloaded as $v)
 					foreach(\Coxis\Core\Context::get('autoloader')->preloaded as $v)
-					// foreach(Context::get('Autoloader')->preloaded as $v)
 						if(strtolower(static::basename($class)) == $v[0])
 							$classes[] = $v;
 					if(sizeof($classes) == 1) {

@@ -5,15 +5,15 @@ class FilesBehaviorController extends \Coxis\Core\Controller {
 	/**
 	@Hook('behaviors_pre_load')
 	**/
-	public function behaviors_pre_loadAction($model) {
+	public function behaviors_pre_loadAction($modelDefinition) {
 		#TODO
 		if(!\Validation::ruleExists('filerequired'))
 			static::loadValidationRules();
 
-		if(!isset($model::$behaviors['files']))
-			$model::$behaviors['files'] = true;
-		if($model::$behaviors['files']) {
-			$model::hookBefore('propertyClass', function($chain, $type) {
+		if(!isset($modelDefinition->behaviors['files']))
+			$modelDefinition->behaviors['files'] = true;
+		if($modelDefinition->behaviors['files']) {
+			$modelDefinition->hookBefore('propertyClass', function($chain, $type) {
 				if($type == 'file')
 					return '\Coxis\Bundles\Files\Libs\FileProperty';
 			});
@@ -23,15 +23,17 @@ class FilesBehaviorController extends \Coxis\Core\Controller {
 	/**
 	@Hook('behaviors_load_files')
 	**/
-	public function behaviors_load_filesAction($modelName) {
-		$modelName::hookOn('call', function($chain, $model, $name, $file) {
+	public function behaviors_load_filesAction($modelDefinition) {
+		$modelName = $modelDefinition->getClass();
+
+		$modelDefinition->hookOn('call', function($chain, $model, $name, $file) {
 			if($name == 'hasFile') {
 				$chain->found = true;
 				return $model::hasProperty($file[0]) && $model::property($file[0])->type == 'file';
 			}
 		});
 
-		$modelName::hookOn('callStatic', function($chain, $name, $args) use($modelName) {
+		$modelDefinition->hookOn('callStatic', function($chain, $name, $args) use($modelName) {
 			$res = null;
 			#Article::files()
 			if($name == 'files') {
@@ -46,13 +48,13 @@ class FilesBehaviorController extends \Coxis\Core\Controller {
 			}
 		});
 
-		$modelName::hookBefore('save', function($chain, $model) {
+		$modelDefinition->hookBefore('save', function($chain, $model) {
 			foreach($model::properties() as $name=>$property)
 				if($property->type == 'file')
 					$model->$name->save();
 		});
 
-		$modelName::hookOn('destroy', function($chain, $model) {
+		$modelDefinition->hookOn('destroy', function($chain, $model) {
 			foreach($model::properties() as $name=>$property)
 				if($property->type == 'file')
 					$model->$name->delete();

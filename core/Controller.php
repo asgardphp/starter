@@ -101,21 +101,6 @@ class Controller {
 		return $this->showView($view, $args);
 	}
 	
-	#todo deprecated
-	public function _hookAction($request) {
-		$controller = strtolower(str_replace('Controller', '', get_class($this)));
-		
-		$request['_controller'] = $controller;
-		
-		if(isset(\Memory::$controller_hooks[$controller]))
-			foreach(\Memory::$controller_hooks[$controller] as $hook) {
-				if(Router::match($hook['route'])) {
-					return Router::run($hook['controller'], $hook['action'], $request, $this);
-				}
-			}
-		throw new \Exception('Controller hook does not exist!');
-	}
-	
 	//OVERRIDE
 	public function configure($request){}
 }

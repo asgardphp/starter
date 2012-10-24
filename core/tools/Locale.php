@@ -15,10 +15,20 @@ class Locale {
 		if(!$this->locales)
 			$this->importLocales('locales');
 		
-		\Hook::hookOn('end', function() {
+		$t = $this;
+		\Hook::hookOn('end', function() use($t) {
 			if(\Config::get('phpcache'))
-				\Coxis\Core\Cache::set('locales', Locale::$locales);
+				\Coxis\Core\Cache::set('locales', $t->getLocales());
 		});
+	}
+
+	public function setLocales($locales) {
+		$this->locales = $locales;
+		return $this;
+	}
+
+	public function getLocales() {
+		return $this->locales;
 	}
 
 	public function setDefault($locale) {

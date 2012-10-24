@@ -5,33 +5,35 @@ class ORMBehaviorController extends \Coxis\Core\Controller {
 	/**
 	@Hook('behaviors_pre_load')
 	**/
-	public function behaviors_pre_loadAction($model) {
-		if(!isset($model::$behaviors['orm']))
-			$model::$behaviors['orm'] = true;
+	public function behaviors_pre_loadAction($modelDefinition) {
+		if(!isset($modelDefinition->behaviors['orm']))
+			$modelDefinition->behaviors['orm'] = true;
 	}
 
 	/**
 	@Hook('behaviors_load_orm')
 	**/
-	public function behaviors_load_ormAction($modelName) {
+	public function behaviors_load_ormAction($modelDefinition) {
+		$modelName = $modelDefinition->getClass();
+
 		#todo rename hook as there is now variable to hook
-		$modelName::hookOn('callStatic', function($chain, $name, $args) use($modelName) {
+		$modelDefinition->hookOn('callStatic', function($chain, $name, $args) use($modelName) {
 			if($name == 'getTable') {
 				$chain->found = true;
 				return \Coxis\Bundles\ORM\Libs\ORMHandler::getTable($modelName);
 			}
 		});
 
-		$ormHandler = new \Coxis\Bundles\ORM\Libs\ORMHandler($modelName);
+		$ormHandler = new \Coxis\Bundles\ORM\Libs\ORMHandler($modelDefinition);
 
-		$modelName::hookOn('constrains', function($chain, &$constrains) use($modelName) {
+		$modelDefinition->hookOn('constrains', function($chain, &$constrains) use($modelName) {
 			foreach($modelName::$relationships as $name=>$relation) {
 				if(isset($relation['required']) && $relation['required'])
 					$constrains[$name]['required'] = true;
 			}
 		});
 
-		$modelName::hookOn('callStatic', function($chain, $name, $args) use($ormHandler) {
+		$modelDefinition->hookOn('callStatic', function($chain, $name, $args) use($ormHandler) {
 			$res = null;
 			#Article::load(2)
 			if($name == 'load') {
@@ -57,7 +59,7 @@ class ORMBehaviorController extends \Coxis\Core\Controller {
 			}
 		});
 
-		$modelName::hookOn('call', function($chain, $model, $name, $args) use($ormHandler) {
+		$modelDefinition->hookOn('call', function($chain, $model, $name, $args) use($ormHandler) {
 			$res = null;
 			#$article->isNew()
 			if($name == 'isNew') {
@@ -81,7 +83,7 @@ class ORMBehaviorController extends \Coxis\Core\Controller {
 			return $res;
 		});
 
-		$modelName::hookBefore('validation', function($chain, $model, &$data, &$errors) {
+		$modelDefinition->hookBefore('validation', function($chain, $model, &$data, &$errors) {
 			foreach($model::$relationships as $name=>$relation) {
 				if(isset($model->data[$name]))
 					$data[$name] = $model->data[$name];
@@ -90,27 +92,27 @@ class ORMBehaviorController extends \Coxis\Core\Controller {
 			}
 		});
 
-		$modelName::hookOn('construct', function($chain, $model, $id) use($ormHandler) {
+		$modelDefinition->hookOn('construct', function($chain, $model, $id) use($ormHandler) {
 			$ormHandler->construct($chain, $model, $id);
 		});
 
 		#$article->destroy()
-		$modelName::hookOn('destroy', function($chain, $model) use($ormHandler) {
+		$modelDefinition->hookOn('destroy', function($chain, $model) use($ormHandler) {
 			//todo delete all cascade models and files
 			$ormHandler->destroy($model);
 		});
 
 		#$article->save()
-		$modelName::hookOn('save', function($chain, $model) use($ormHandler) {
+		$modelDefinition->hookOn('save', function($chain, $model) use($ormHandler) {
 			$ormHandler->save($model);
 		});
 		
 		#$article->title
-		$modelName::hookAfter('get', function($chain, $model, $name, $lang) {
+		$modelDefinition->hookAfter('get', function($chain, $model, $name, $lang) {
 			return \Coxis\Bundles\ORM\Libs\ORMHandler::fetch($model, $name, $lang);
 		});
 
-		$modelName::hookBefore('get', function($chain, $model, $name, $lang) {
+		$modelDefinition->hookBefore('get', function($chain, $model, $name, $lang) {
 			if(array_key_exists($name, $model::$relationships)) {
 				$rel = $model->relation($name);
 				if($rel instanceof \Coxis\Core\Collection)

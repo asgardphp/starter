@@ -55,7 +55,7 @@ namespace Coxis\Core {
 				#todo only cache locales and preloaded from bundles (might be stuff cached from before bundlesManager)
 				$routes = $bm['routes'];
 				$hooks = $bm['hooks'];
-				\Locale::$locales = $bm['locales'];
+				\Locale::setLocales($bm['locales']);
 				Context::get('autoloader')->preloaded = $bm['preloaded'];
 				// Context::get('autoloader')->preloaded = $bm['preloaded'];
 			}
@@ -147,7 +147,7 @@ namespace Coxis\Core {
 						'routes'	=>	$routes,
 						'hooks'	=>	$hooks,
 						'preloaded'	=>	Context::get('autoloader')->preloaded,
-						'locales'	=>	\Locale::$locales,
+						'locales'	=>	\Locale::getLocales(),
 					));
 				}
 			}

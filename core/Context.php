@@ -26,6 +26,7 @@ class Context {
 			'DB'				=>	'\Coxis\Core\DB\DB',
 			'CLIRouter'			=>	'\Coxis\Core\CLI\Router',
 			'Validation'		=>	'\Coxis\Core\Validation',
+			'ModelsManager'		=>	'\Coxis\Core\ModelsManager',
 
 			'Locale'			=>	'\Coxis\Core\Tools\Locale',
 

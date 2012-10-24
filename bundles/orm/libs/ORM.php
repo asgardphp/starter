@@ -20,7 +20,7 @@ class ORM {
 				),
 			));
 		}
-		$this->orderBy($model::$meta['order_by']);
+		$this->orderBy($model::getDefinition()->meta['order_by']);
 	}
 	
 	public function dal() {
@@ -28,7 +28,6 @@ class ORM {
 	}
 	
 	public function first() {
-		$model = $this->model;
 		$this->limit(1);
 		
 		$res = $this->get();

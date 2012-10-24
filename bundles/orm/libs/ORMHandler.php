@@ -4,12 +4,12 @@ namespace Coxis\Bundles\ORM\Libs;
 class ORMHandler {
 	private $model;
 
-	function __construct($modelName) {
-		$this->model = $modelName;
-		if(!isset($modelName::$meta['order_by']))
-			$modelName::$meta['order_by'] = 'id DESC';
+	function __construct($modelDefinition) {
+		$this->model = $modelDefinition;
+		if(!isset($modelDefinition->meta['order_by']))
+			$modelDefinition->meta['order_by'] = 'id DESC';
 		
-		$modelName::addProperty('id', array(
+		$modelDefinition->addProperty('id', array(
 			'type' => 'text', 
 			'editable'=>false, 
 			'required'=>false,
@@ -21,7 +21,7 @@ class ORMHandler {
 				'position' => 1,
 			),
 		));
-		static::loadRelationships($modelName);
+		static::loadRelationships($modelDefinition);
 	}
 
 	public function isNew($model) {
@@ -33,7 +33,7 @@ class ORMHandler {
 	}
 
 	public function load($id) {
-		$modelName = $this->model;
+		$modelName = $this->model->getClass();
 		$model = new $modelName($id);
 		if($model->isNew())
 			return null;
@@ -41,7 +41,7 @@ class ORMHandler {
 	}
 	
 	public function getORM() {
-		return new ORM($this->model);
+		return new ORM($this->model->getClass());
 	}
 	
 	public function myORM($model) {
@@ -60,7 +60,7 @@ class ORMHandler {
 	}
 	
 	public static function relationData($model, $name) {
-		$relations = $model::$relationships;
+		$relations = $model->relationships;
 		$relation = $relations[$name];
 		
 		$res = array();
@@ -71,13 +71,15 @@ class ORMHandler {
 				$res['link'] = $relation['link'];
 			else {
 				#todo pouvoir creer une correspondance entre deux relations
-				if(is_string($model))
-					$modelName = strtolower($model);
-				else
-					$modelName = strtolower(get_class($model));
+				// if(is_string($model))
+				// 	$modelName = strtolower($model);
+				// else
+				// 	$modelName = strtolower(get_class($model));
+				$modelName = strtolower($model->getClass());
 				$modelName = preg_replace('/^\\\/', '', $modelName);
-				foreach($relation_model::$relationships as $name=>$relation) {
-					$rel = static::relationData($relation_model, $name);
+				// d($relation_model::getDefinition()->relationships);
+				foreach($relation_model::getDefinition()->relationships as $name=>$relation) {
+					$rel = static::relationData($relation_model::getDefinition(), $name);
 					$relModelClass = preg_replace('/^\\\/', '', strtolower($rel['model']));
 					if($rel['type'] == 'belongsTo' && $relModelClass == $modelName) {
 						$res['link'] = $rel['link'];
@@ -89,16 +91,17 @@ class ORMHandler {
 			}
 		}
 		elseif($res['type'] == 'HMABT') {
-			$res['link_a'] = $model::getModelName().'_id';
+			$modelClass = $model->getClass();
+			$res['link_a'] = $modelClass::getModelName().'_id';
 			$res['link_b'] = $relation_model::getModelName().'_id';
 			if(isset($relation['sortable']) && $relation['sortable'])
-				$res['sortable'] = $model::getModelName().'_position';
+				$res['sortable'] = $modelClass::getModelName().'_position';
 			else
 				$res['sortable'] = false;
-			if($model::getModelName() < $relation_model::getModelName())
-				$res['join_table'] = \Config::get('database', 'prefix').$model::getModelName().'_'.$relation_model::getModelName();
+			if($modelClass::getModelName() < $relation_model::getModelName())
+				$res['join_table'] = \Config::get('database', 'prefix').$modelClass::getModelName().'_'.$relation_model::getModelName();
 			else
-				$res['join_table'] = \Config::get('database', 'prefix').$relation_model::getModelName().'_'.$model::getModelName();
+				$res['join_table'] = \Config::get('database', 'prefix').$relation_model::getModelName().'_'.$modelClass::getModelName();
 		}
 		elseif($res['type'] == 'hasOne')
 			$res['link'] = $name.'_id';
@@ -109,14 +112,14 @@ class ORMHandler {
 	}
 	
 	public static function loadRelationships($model) {
-		$model_relationships = $model::$relationships;
+		$model_relationships = $model->relationships();
 		
 		if(is_array($model_relationships))
 			foreach($model_relationships as $relationship => $params)
 				#todo and hasOne ?
 				if($params['type'] == 'belongsTo' || $params['type'] == 'hasOne') {
 					$rel = ORMHandler::relationData($model, $relationship);
-					$model::addProperty($rel['link'], array('type' => 'integer', 'required' => (isset($params['required']) && $params['required']), 'editable'=>false));
+					$model->addProperty($rel['link'], array('type' => 'integer', 'required' => (isset($params['required']) && $params['required']), 'editable'=>false));
 				}
 	}
 	
@@ -126,7 +129,7 @@ class ORMHandler {
 	}
 	
 	public function destroyOne($id) {
-		$modelName = $this->model;
+		$modelName = $this->model->getClass();
 		if($model = $modelName::load($id)) {
 			$model->destroy();
 			return true;
@@ -151,7 +154,7 @@ class ORMHandler {
 	}
 
 	public function relation($model, $name) {
-		$rel = static::relationData($model, $name);
+		$rel = static::relationData($model->getDefinition(), $name);
 		$relation_type = $rel['type'];
 		$relmodel = $rel['model'];
 		
@@ -173,7 +176,7 @@ class ORMHandler {
 			case 'HMABT':
 				if($model->isNew())
 					return array();
-					
+
 				$collection = new \Coxis\Bundles\ORM\Libs\CollectionORM($model, $name);
 				return $collection;
 			default:	

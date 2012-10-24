@@ -41,12 +41,6 @@ class Model {
 	}
 
 	public static function __callStatic($name, $arguments) {
-		// if(preg_match('/^_/', $name)) {
-		// 	$name = preg_replace('/^_/', '', $name);
-		// 	$inst = Context::instance()->get(get_called_class());
-		// 	return call_user_func_array(array($inst, $name), $arguments);
-		// }
-
 		$chain = new HookChain();
 		$chain->found = false;
 		$res = static::triggerChain($chain, 'callStatic', array($name, $arguments));
@@ -72,71 +66,17 @@ class Model {
 	}
 	
 	/* INIT AND MODEL CONFIGURATION */
-	public static function _autoload() {
-		if(get_called_class() == 'Coxis\Core\Model')
-			return;
+	public static function configure($modelDefinition) {}
 
-		\Hook::trigger('behaviors_pre_load', get_called_class());
-
-		$properties = static::$properties;
-		foreach($properties as $k=>$v) {
-			if(is_int($k)) {
-				static::$properties = 
-					\Coxis\Core\Tools\Tools::array_before(static::$properties, $k) +
-					array($v => array()) +
-					\Coxis\Core\Tools\Tools::array_after(static::$properties, $k);
-			}
-			elseif(is_string($v))
-					static::$properties[$k] = array('type'=>$v);
-		}
-		foreach(static::$properties as $k=>$params)
-			static::addProperty($k, $params);
-		
-		foreach(static::$behaviors as $behavior => $params)
-			if($params)
-				\Hook::trigger('behaviors_load_'.$behavior, get_called_class());
-
-		static::configure();
+	public static function getDefinition() {
+		return \ModelsManager::get(get_called_class());
 	}
-	
-	protected static function configure() {}
 
 	public function loadDefault() {
 		foreach(static::properties() as $name=>$property)
 			$this->$name = $property->getDefault();
 				
 		return $this;
-	}
-	
-	/* PROPERTIES */
-	public static function hasProperty($name) {
-		return isset(static::$properties[$name]);
-	}
-
-	public static function addProperty($property, $params) {
-		if(!isset($params['required']))
-			$params['required'] = true;
-		#todo multiple values - not atomic.. ?
-		if(!isset($params['type'])) {
-			if(isset($params['multiple']) && $params['multiple'])
-				$params['type'] = 'array';
-			else
-				$params['type'] = 'text';
-		}
-
-		$propertyClass = static::trigger('propertyClass', array($params['type']), function($chain, $type) {
-			return '\Coxis\Core\Properties\\'.ucfirst($type).'Property';
-		});
-
-		static::$properties[$property] = new $propertyClass(get_called_class(), $property, $params);
-	}
-	
-	public static function property($name) {
-		return static::$properties[$name];
-	}
-	
-	public static function properties() {
-		return static::$properties;
 	}
 
 	/* PERSISTENCY */
@@ -180,14 +120,11 @@ class Model {
 		$constrains = array();
 		$model = $this;
 		$this->trigger('constrains', array(&$constrains), function($chain, &$constrains) use($model) {
-			foreach($model::$properties as $name=>$property)
+			foreach($model->getDefinition()->properties as $name=>$property)
 				$constrains[$name] = $property->getRules();
 		});
 		
-		if(isset(static::$messages))
-			$messages = static::$messages;
-		else
-			$messages = array();
+		$messages = static::getDefinition()->messages();
 		
 		$validator = new Validator($constrains, $messages);
 		$validator->model = $this;
@@ -202,14 +139,13 @@ class Model {
 	public function errors() {
 		#before validation
 		#todo use model hooks
-		foreach(static::$behaviors as $behavior => $params)
+		foreach(static::getDefinition()->behaviors() as $behavior => $params)
 			if($params)
 				\Hook::trigger('behaviors_presave_'.$behavior, $this);
 				
 		$data = $this->toArray();
 
 		$errors = null;
-		// $model = $this;
 		$this->trigger('validation', array($this, &$data, &$errors), function($chain, $model, &$data, &$errors) {
 			$errors = $model->getValidator()->errors($data);
 		});
@@ -217,18 +153,7 @@ class Model {
 		return $errors;
 	}
 
-	/* MISC */
-	public static function isI18N() {
-		foreach(static::$properties as $prop)
-			if($prop->i18n)
-				return true;
-		return false;
-	}
-	
-	public static function getModelName() {
-		return \Coxis\Core\Tools\Tools::classBasename(strtolower(get_called_class()));
-	}
-	
+	/* ACCESSORS */
 	public function set($name, $value=null, $lang=null) {
 		if(is_array($name)) {
 			$vars = $name;
@@ -236,26 +161,26 @@ class Model {
 				$this->$k = $v;
 		}
 		else {
-			if(static::hasProperty($name)) {
-				if(static::property($name)->setHook) {
-					$hook = static::property($name)->setHook;
+			if(static::getDefinition()->hasProperty($name)) {
+				if(static::getDefinition()->property($name)->setHook) {
+					$hook = static::getDefinition()->property($name)->setHook;
 					$value = call_user_func_array($hook, array($value));
 				}
 
-				if(static::property($name)->i18n) {
+				if(static::getDefinition()->property($name)->i18n) {
 					if(!$lang)
 						$lang = \Config::get('locale');
 					if($lang == 'all')
 						foreach($value as $one => $v)
-							$this->data['properties'][$name][$one] = static::property($name)->set($v);
+							$this->data['properties'][$name][$one] = static::getDefinition()->property($name)->set($v);
 					else
-						$this->data['properties'][$name][$lang] = static::property($name)->set($value);
+						$this->data['properties'][$name][$lang] = static::getDefinition()->property($name)->set($value);
 				}
 				else
-					$this->data['properties'][$name] = static::property($name)->set($value);
+					$this->data['properties'][$name] = static::getDefinition()->property($name)->set($value);
 			}
-			elseif(isset(static::$meta['hooks']['set'][$name])) {
-				$hook = static::$meta['hooks']['set'][$name];
+			elseif(isset(static::getDefinition()->meta['hooks']['set'][$name])) {
+				$hook = static::getDefinition()->meta['hooks']['set'][$name];
 				$hook($this, $value);
 			}
 			else
@@ -275,7 +200,6 @@ class Model {
 			$lang = \Config::get('locale');
 
 		#todo go for data[$name] only if orm fetch failed
-		// $res = static::trigger('get', array($this, $name, $lang), function($chain, $model, $name, $lang) {
 		$res = static::trigger('get', array($this, $name, $lang), function($chain, $model, $name, $lang) {
 			if($model::hasProperty($name)) {
 				if($model::property($name)->i18n) {
@@ -317,41 +241,57 @@ class Model {
 		return $vars;
 	}
 	
+	/* Definition */
+	public static function getModelName() {
+		return \Coxis\Core\Tools\Tools::classBasename(strtolower(get_called_class()));
+	}
+
+	public static function hasProperty($name) {
+		return static::getDefinition()->hasProperty($name);
+	}
+
+	public static function addProperty($property, $params) {
+		return static::getDefinition()->addProperty($property, $params);
+	}
+	
+	public static function property($name) {
+		return static::getDefinition()->property($name);
+	}
+	
+	public static function properties() {
+		return static::getDefinition()->properties();
+	}
+
 	public static function propertyNames() {
-		return array_keys(static::$properties);
+		return array_keys(static::getDefinition()->properties());
+	}
+	
+	public static function isI18N() {
+		return static::getDefinition()->isI18N();
 	}
 
 	/* HOOKS */
-	#cannot use references with get_func_args
-	protected static function trigger($name, $args=array(), $cb=null, &$filter1=null, &$filter2=null, &$filter3=null, &$filter4=null, &$filter5=null, &$filter6=null,
-		&$filter7=null, &$filter8=null, &$filter9=null, &$filter10=null) {
-		return \Hook::trigger(array('models', get_called_class(), $name), $args, $cb, $filter1, $filter2, $filter3, $filter4, $filter5, $filter6, $filter7,
-			$filter8, $filter9, $filter10);
+	protected static function trigger($name, $args=array(), $cb=null) {
+		return static::getDefinition()->trigger($name, $args, $cb);
 	}
 
-	#cannot use references with get_func_args
-	protected static function triggerChain($chain, $name, $args=array(), $cb=null, &$filter1=null, &$filter2=null, &$filter3=null, &$filter4=null, &$filter5=null, &$filter6=null,
-		&$filter7=null, &$filter8=null, &$filter9=null, &$filter10=null) {
-		return \Hook::triggerChain($chain, array('models', get_called_class(), $name), $args, $cb, $filter1, $filter2, $filter3, $filter4, $filter5, $filter6, $filter7,
-			$filter8, $filter9, $filter10);
+	protected static function triggerChain($chain, $name, $args=array(), $cb=null) {
+		return static::getDefinition()->triggerChain($chain, $name, $args, $cb);
 	}
 
 	public static function hook() {
-		return call_user_func_array(array('Hook', 'hook'), func_get_args());
+		return static::getDefinition()->hook();
 	}
 
 	public static function hookOn($hookName, $cb) {
-		$args = array(array_merge(array('models', get_called_class()), array($hookName)), $cb);
-		return call_user_func_array(array('Hook', 'hookOn'), $args);
+		return static::getDefinition()->hookOn($hookName, $cb);
 	}
 
 	public static function hookBefore($hookName, $cb) {
-		$args = array(array_merge(array('models', get_called_class()), array($hookName)), $cb);
-		return call_user_func_array(array('Hook', 'hookBefore'), $args);
+		return static::getDefinition()->hookBefore($hookName, $cb);
 	}
 
 	public static function hookAfter($hookName, $cb) {
-		$args = array(array_merge(array('models', get_called_class()), array($hookName)), $cb);
-		return call_user_func_array(array('Hook', 'hookBefore'), $args);
+		return static::getDefinition()->hookAfter($hookName, $cb);
 	}
 }

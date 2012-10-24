@@ -5,9 +5,9 @@ class SortableBehaviorController extends \Coxis\Core\Controller {
 	/**
 	@Hook('behaviors_load_sortable')
 	**/
-	public function behaviors_load_sortableAction($modelName) {
-		$modelName::$meta['order_by'] = 'position ASC';
-		$modelName::addProperty('position', array('type' => 'integer', 'required' => true, 'editable' => false));
+	public function behaviors_load_sortableAction($modelDefinition) {
+		$modelDefinition->meta['order_by'] = 'position ASC';
+		$modelDefinition->addProperty('position', array('type' => 'integer', 'required' => true, 'editable' => false));
 	}
 	
 	/**
