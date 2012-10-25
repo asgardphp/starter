@@ -8,7 +8,7 @@
 				<div class="block_content">
 					<p class="breadcrumb"><a href="preferences">Preferences</a></p>
 				
-					<?php Flash::showAll() ?>
+					<?php \Flash::showAll() ?>
 					
 					<?php
 					$form->start();

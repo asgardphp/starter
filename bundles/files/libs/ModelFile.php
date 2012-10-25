@@ -108,12 +108,21 @@ class ModelFile {
 		return $this;
 	}
 	
-	public function delete() {
+	public function delete($pos=null) {
 		$path = $this->get();
 		if($this->multiple()) {
-			foreach($path as $file) {
-				\Coxis\Core\Tools\FileManager::unlink(_WEB_DIR_.'/'.$file);
+			if(is_int($pos)) {
+				$path = $path[$pos];
+				\Coxis\Core\Tools\FileManager::unlink(_WEB_DIR_.'/'.$path);
 				\Coxis\Bundles\Imagecache\Libs\ImageCache::clearFile($path);
+				unset($this->name[$pos]);
+			}
+			else {
+				foreach($path as $file) {
+					\Coxis\Core\Tools\FileManager::unlink(_WEB_DIR_.'/'.$file);
+					\Coxis\Bundles\Imagecache\Libs\ImageCache::clearFile($path);
+				}
+				$this->name = null;
 			}
 		}
 		else {
@@ -121,8 +130,8 @@ class ModelFile {
 				\Coxis\Core\Tools\FileManager::unlink(_WEB_DIR_.'/'.$path);
 				\Coxis\Bundles\Imagecache\Libs\ImageCache::clearFile($path);
 			}
+			$this->name = null;
 		}
-		$this->name = null;
 		
 		return $this;
 	}

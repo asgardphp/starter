@@ -7,7 +7,7 @@ class DBController extends CLIController {
 		echo 'Dumping data into '.$output."\n";
 
 		FileManager::mkdir(dirname($output));
-		$config = Config::get('database');
+		$config = \Config::get('database');
 		$cmd = 'mysqldump -u '.$config['user'].' '.($config['password'] ? '-p'.$config['password']:'').' '.$config['database'].' > '.$output;
 		exec($cmd);
 

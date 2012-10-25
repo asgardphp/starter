@@ -7,7 +7,7 @@ class Controller {
 	}
 	
 	public static function url_for($action, $params=array(), $relative=false) {
-		return url_for(array(static::getControllerName(), $action), $params, $relative);
+		return \URL::url_for(array(static::getControllerName(), $action), $params, $relative);
 	}
 	
 	public static function getControllerName() {
@@ -35,7 +35,7 @@ class Controller {
 		\Hook::hookOn($hookName, function($chain, $arg1=null, $arg2=null, $arg3=null, $arg4=null,
 			$arg5=null, $arg6=null, $arg7=null, $arg8=null, $arg9=null, $arg10=null) use($controller, $action) {
 			$args = array(&$arg1, &$arg2, &$arg3, &$arg4, &$arg5, &$arg6, &$arg7, &$arg8, &$arg9, &$arg10);
-			Router::run($controller, $action, $args);
+			return Router::run($controller, $action, $args);
 		});
 	}
 
@@ -59,7 +59,8 @@ class Controller {
 			return $result;
 		elseif($this->view !== false) {
 			if($this->view === null)
-				$this->setRelativeView($action.'.php');
+				if(!$this->setRelativeView($action.'.php'))
+					return null;
 			return $this->showView($this->view, $this);
 		}
 		return null;
@@ -77,6 +78,7 @@ class Controller {
 		$reflection = new \ReflectionObject($this);
 		$dir = dirname($reflection->getFileName());
 		$this->setView($dir.'/../views/'.strtolower(preg_replace('/Controller$/i', '', Importer::basename(get_class($this)))).'/'.$view);
+		return file_exists($dir.'/../views/'.strtolower(preg_replace('/Controller$/i', '', Importer::basename(get_class($this)))).'/'.$view);
 	}
 	
 	public function setView($view) {
@@ -84,9 +86,6 @@ class Controller {
 	}
 		
 	private function showView($_viewfile, $_args) {
-		if(!file_exists($_viewfile))
-			return null;
-
 		foreach($_args as $_key=>$_value)
 			$$_key = $_value;#TODO, watchout keywords
 

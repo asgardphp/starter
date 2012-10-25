@@ -30,10 +30,7 @@ class SortableBehaviorController extends \Coxis\Core\Controller {
 				'controller'	=>	'SortableBehavior',
 				'action'			=>	'demote'
 			));
-		d
 			\Coxis\Core\Controller::hookOn('coxis_'.$modelName.'_actions', array('controller' => '\Coxis\Bundles\Behaviors\Controllers\SortableBehavior', 'action' => 'sortableactions'));
-
-			// \Coxis\Core\Hook::hookOn('coxis_'.$modelName.'_actions', array('controller' => '\Coxis\Bundles\Behaviors\Controllers\SortableBehavior', 'action' => 'sortableactions'));
 		} catch(\Exception $e) {}#if the admincontroller does not exist for this model
 	}
 	
@@ -52,7 +49,7 @@ class SortableBehaviorController extends \Coxis\Core\Controller {
 	}
 	
 	public function sortableactionsAction($model) {
-		return '<a href="'.url_for('coxis_'.get_class($model).'_promote', array('id' => $model->id), false).'">'.__('Promote').'</a> | <a href="'.url_for('coxis_'.get_class($model).'_demote', array('id' => $model->id), false).'">'.__('Demote').'</a> | ';
+		return '<a href="'.\URL::url_for('coxis_'.get_class($model).'_promote', array('id' => $model->id), false).'">'.__('Promote').'</a> | <a href="'.\URL::url_for('coxis_'.get_class($model).'_demote', array('id' => $model->id), false).'">'.__('Demote').'</a> | ';
 	}
 
 	public function promoteAction($request) {
@@ -69,10 +66,10 @@ class SortableBehaviorController extends \Coxis\Core\Controller {
 			$over_model->position = $old;
 			$model->save(null, true);
 			$over_model->save(null, true);
-			Flash::addSuccess('Ordre modifié avec succès.');
+			\Flash::addSuccess('Ordre modifié avec succès.');
 		} catch(\Exception $e) {}
 		
-		Response::redirect(url_for(array($request['_controller'], 'index')))->send();
+		\Response::redirect(\URL::url_for(array($request['_controller'], 'index')))->send();
 	}
 	
 	public function demoteAction($request) {
@@ -89,10 +86,10 @@ class SortableBehaviorController extends \Coxis\Core\Controller {
 			$below_model->position = $old;
 			$model->save(null, true);
 			$below_model->save(null, true);
-			Flash::addSuccess('Ordre modifié avec succès.');
+			\Flash::addSuccess('Ordre modifié avec succès.');
 		} catch(\Exception $e) {}
 		
-		Response::redirect(url_for(array($request['_controller'], 'index')))->send();
+		\Response::redirect(\URL::url_for(array($request['_controller'], 'index')))->send();
 	}
 	
 	public static function reset($modelName) {

@@ -2,7 +2,7 @@
 namespace Coxis\Core\Inputs;
 
 class InputsBag {
-	private $inputs = array();
+	protected $inputs = array();
 
 	function __construct($inputs=array()) {
 		$this->inputs = $inputs;

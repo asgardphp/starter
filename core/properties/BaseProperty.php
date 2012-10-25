@@ -18,6 +18,10 @@ class BaseProperty {
 		return $this->params[$name];
 	}
 
+	public function __toString() {
+		return $this->name;
+	}
+
 	public function getName() {
 		return $this->name;
 	}

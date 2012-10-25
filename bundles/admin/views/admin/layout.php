@@ -4,7 +4,7 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=7" />
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<title><?php echo \Coxis\Bundles\Value\Models\Value::val('name') ?> &#9679; <?php echo __('Administration') ?></title>
-	<base href="<?php echo \Coxis\Core\URL::to('admin/') ?>" />
+	<base href="<?php echo \URL::to('admin/') ?>" />
 	<style type="text/css" media="all">
 		@import url("../bundles/admin/css/admin.css");
 		@import url("../bundles/admin/css/jquery.wysiwyg.css");

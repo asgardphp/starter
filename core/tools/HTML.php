@@ -72,12 +72,12 @@ class HTML {
 	
 	public function show_include_js() {
 		foreach($this->include_js as $js)
-			echo '<script type="text/javascript" src="'.URL::to($js).'"></script>'."\n";
+			echo '<script type="text/javascript" src="'.\URL::to($js).'"></script>'."\n";
 	}
 	
 	public function show_include_css() {
 		foreach($this->include_css as $css)
-			echo '<link rel="stylesheet" href="'.URL::to($css).'"/>'."\n";
+			echo '<link rel="stylesheet" href="'.\URL::to($css).'"/>'."\n";
 	}
 	
 	public function show_code_js() {

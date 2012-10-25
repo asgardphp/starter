@@ -13,12 +13,17 @@ class ModelDefinition {
 	function __construct($modelClass) {
 		$this->modelClass = $modelClass;
 
-		$this->behaviors = isset($modelClass::$behaviors) ? $modelClass::$behaviors:array();
 		$this->relationships = isset($modelClass::$relationships) ? $modelClass::$relationships:array();
 		$this->meta = isset($modelClass::$meta) ? $modelClass::$meta:array();
 		$this->messages = isset($modelClass::$messages) ? $modelClass::$messages:array();
 
-		\Hook::trigger('behaviors_pre_load', $this);
+		foreach($modelClass::$behaviors as $name=>$params) {
+			if(is_int($name)) {
+				$name = $params;
+				$params = true;
+			}
+			$this->behaviors[$name] = $params;
+		}
 
 		$properties = $modelClass::$properties;
 		$clone = $properties;
@@ -35,21 +40,14 @@ class ModelDefinition {
 		foreach($properties as $k=>$params)
 			$this->addProperty($k, $params);
 
+		\Hook::trigger('behaviors_pre_load', $this);
+
 		foreach($this->behaviors as $behavior => $params)
 			if($params)
 				\Hook::trigger('behaviors_load_'.$behavior, $this);
 
 		$modelClass::configure($this);
 	}
-
-	// public static function __callStatic($name, $arguments) {
-	// 	return call_user_func_array(array($this->getClass(), $name), $arguments);
-	// }
-	
-	// public function getModelName() {
-	// 	return \Coxis\Core\Tools\Tools::classBasename(strtolower($this->getClass()));
-	// }
-
 
 	public function __call($name, $arguments) {
 		$chain = new HookChain();

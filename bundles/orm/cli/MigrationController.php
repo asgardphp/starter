@@ -108,7 +108,7 @@ class MigrationController extends \Coxis\Core\CLI\CLIController {
 		
 		foreach($bundles as $bundle)
 			foreach(glob($bundle.'/models/*.php') as $model)
-				include($model);
+				\Importer::loadClassFile($model);
 
 		$newSchemas = array();
 		$oldSchemas = array();
@@ -121,11 +121,10 @@ class MigrationController extends \Coxis\Core\CLI\CLIController {
 			if(is_subclass_of($class, 'Coxis\Core\Model')) {
 				if($class == 'Coxis\Core\Model')
 					continue;
-				$class::_autoload();#todo use Importer
 				
 				$schema = array();
 				
-				foreach($class::properties() as $name=>$prop) {
+				foreach($class::getDefinition()->properties() as $name=>$prop) {
 					if(!$prop->orm)
 						$neworm = array();
 					else
@@ -158,7 +157,7 @@ class MigrationController extends \Coxis\Core\CLI\CLIController {
 					$schema[$name] = $prop->orm = $neworm;
 				}
 
-				foreach($class::$relationships as $relation=>$params) {
+				foreach($class::getDefinition()->relationships as $relation=>$params) {
 					$rel = \Coxis\Core\ORM\ORMHandler::relationData($class, $relation);
 					if($rel['type'] == 'HMABT') {
 						$table_name = $rel['join_table'];

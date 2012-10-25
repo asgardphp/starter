@@ -51,7 +51,7 @@ class CoxisController extends CLIController {
 
 	public function installAllAction($request) {
 		echo 'Installing all bundles..'."\n";
-		foreach(BundlesManager::getBundles() as $bundle)
+		foreach(\BundlesManager::getBundles() as $bundle)
 			static::installBundle($bundle);
 	}
 
@@ -134,7 +134,7 @@ class CoxisController extends CLIController {
 				static::rrmdir('app/'.$bundle_name.'/');
 			
 			$bundle = $raw_bundle;
-			$bundle['name'] = $bundle_name;
+			$bundle['name'] = strtolower($bundle_name);
 			
 			if(!isset($bundle['model']['meta']))
 				$bundle['model']['meta'] = array();
@@ -198,10 +198,10 @@ class CoxisController extends CLIController {
 				'_modeladmin' =>	$bundle['model']['meta']['name'].'admin',
 			);
 			
-			static::copyDir('core/cli/base_bundle/', 'app/'.$bundle['name'].'/');
+			static::copyDir('core/cli/base_bundle/', 'app/'.strtolower($bundle['name']).'/');
 			static::processDir('app/'.$bundle['name'], $bundle, $bundle_filenames);
 		
-			\Coxis\Core\Autoloader::preloadDir('app/'.$bundle['name'].'/models');
+			\Coxis\Core\Context::get('autoloader')->preloadDir('app/'.$bundle['name'].'/models');
 		}
 		
 		foreach($bundles as $bundle) {		
@@ -222,7 +222,7 @@ class CoxisController extends CLIController {
 				);
 			}
 			
-			static::copyDir('core/cli/base_bundle2/', 'app/'.$bundle['name'].'/');
+			static::copyDir('core/cli/base_bundle2/', 'app/'.strtolower($bundle['name']).'/');
 			static::processDir('app/'.$bundle['name'], $bundle, $bundle_filenames);
 		}
 			

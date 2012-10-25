@@ -29,6 +29,8 @@ class Autoloader {
 			foreach(glob($file.'/*') as $sub_file)
 				$this->preloadDir($sub_file);
 		else {
+			if(!preg_match('/\/[a-zA-Z0-9]+.php$/', $file))
+				return;
 			list($class) = explode('.', basename($file));
 			$this->preloadClass($class, $file);
 		}

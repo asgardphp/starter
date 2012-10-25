@@ -5,9 +5,9 @@ class Session extends InputsBag {
 	function __construct() {
 		try {
 			$this->start();
-			$this->inputs = new InputsBag($_SESSION);
+			$this->inputs = $_SESSION;
 		} catch(\ErrorException $e) {
-			$this->inputs = new InputsBag();
+			$this->inputs = array();
 		}
 	}
 	  
@@ -15,6 +15,12 @@ class Session extends InputsBag {
 		if(isset($_SESSION))
 			$_SESSION[$name] = $value;
 		parent::set($name, $value);
+		return $this;
+	}
+	  
+	public function remove($name) {
+		parent::remove($name);
+		unset($_SESSION[$name]);
 		return $this;
 	}
 

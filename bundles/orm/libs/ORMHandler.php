@@ -184,21 +184,6 @@ class ORMHandler {
 		}
 	}
 
-	public function callStatic($name, $args) {	
-		if(strpos($name, 'loadBy') === 0) {
-			preg_match('/^loadBy(.*)/', $name, $matches);
-			$property = $matches[1];
-			$val = $args[0];
-			return $this->getORM()->where(array($property => $val))->first();
-		}
-		else {
-			if(method_exists('Coxis\Bundles\ORM\Libs\ORM', $name)) {
-				$orm = $this->getORM();
-				return call_user_func_array(array($orm, $name), $args);
-			}
-		}
-	}
-
 	public function construct($chain, $model, $id) {
 		if(!ctype_digit($id) && !is_int($id))
 			return;

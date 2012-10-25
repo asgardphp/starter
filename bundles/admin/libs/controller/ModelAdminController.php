@@ -73,7 +73,7 @@ class ModelAdminController extends AdminParentController {
 		#Search
 		if(isset($request['search']) && $request['search']) {
 			$conditions['or'] = array();
-			foreach($_model::getAttributes() as $property)
+			foreach($_model::propertyNames() as $property)
 				$conditions['or']["`$property` LIKE ?"] = '%'.$request['search'].'%';
 		}
 		#Filters
@@ -90,6 +90,7 @@ class ModelAdminController extends AdminParentController {
 		$this->paginator = null;
 		$this->$_models = $_model::where($conditions)->paginate(
 			isset($request['page']) ? $request['page']:1,
+			10,
 			$this->paginator
 		);
 	}
@@ -99,7 +100,7 @@ class ModelAdminController extends AdminParentController {
 	*/
 	public function editAction($request) {
 		$_model = static::$_model;
-		$modelName = strtolower(basename($_model));
+		$modelName = strtolower(basename($_model));#todo namespace utils
 		
 		if(!($this->$modelName = $_model::load($request['id'])))
 			$this->forward404();
@@ -109,14 +110,14 @@ class ModelAdminController extends AdminParentController {
 		if($this->form->isSent())
 			try {
 				$this->form->save();
-				Flash::addSuccess(static::$_messages['modified']);
+				\Flash::addSuccess(static::$_messages['modified']);
 				if(isset($_POST['send']))
-					Response::redirect('admin/'.static::$_index)->send();
+					\Response::redirect('admin/'.static::$_index)->send();
 			} catch(\Coxis\Core\Form\FormException $e) {
-				Flash::addError($e->errors);
+				\Flash::addError($e->errors);
 			}
 		
-		$this->view = 'form.php';
+		$this->setRelativeView('form.php');
 	}
 	
 	/**
@@ -133,17 +134,17 @@ class ModelAdminController extends AdminParentController {
 		if($this->form->isSent())
 			try {
 				$this->form->save();
-				Flash::addSuccess(static::$_messages['created']);
+				\Flash::addSuccess(static::$_messages['created']);
 				if(isset($_POST['send']))
-					Response::redirect('admin/'.static::$_index)->send();
+					\Response::redirect('admin/'.static::$_index)->send();
 				else {
-					Response::redirect('admin/'.static::$_index.'/'.$this->$modelName->id.'/edit')->send();
+					\Response::redirect('admin/'.static::$_index.'/'.$this->$modelName->id.'/edit')->send();
 				}
 			} catch(\Coxis\Core\Form\FormException $e) {
-				Flash::addError($e->errors);
+				\Flash::addError($e->errors);
 			}
 		
-		$this->view = 'form.php';
+		$this->setRelativeView('form.php');
 	}
 	
 	/**
@@ -153,10 +154,10 @@ class ModelAdminController extends AdminParentController {
 		$_model = static::$_model;
 		
 		!$_model::destroyOne($request['id']) ?
-			Flash::addError(static::$_messages['unexisting']) :
-			Flash::addSuccess(static::$_messages['deleted']);
+			\Flash::addError(static::$_messages['unexisting']) :
+			\Flash::addSuccess(static::$_messages['deleted']);
 			
-		Response::redirect('admin/'.static::$_index)->send();
+		\Response::redirect('admin/'.static::$_index)->send();
 	}
 	
 	/**
@@ -170,8 +171,8 @@ class ModelAdminController extends AdminParentController {
 			
 		$file = $request['file'];
 		$this->$_model->$file->delete();
-		Flash::addSuccess(__('File deleted with success.'));
-		Response::redirect(static::getEditURL($this->$_model->id), false)->send();
+		\Flash::addSuccess(__('File deleted with success.'));
+		\Response::redirect(static::getEditURL($this->$_model->id), false)->send();
 	}
 	
 	/**
@@ -181,37 +182,33 @@ class ModelAdminController extends AdminParentController {
 		$modelName = static::$_model;;
 		if(!($model = $modelName::load($request['id'])))
 			$this->forward404();
-		if(!$model->fileExists($request['file']))
+		if(!$model->hasProperty($request['file']))
 			$this->forward404();
 			
-		try {
-			if(isset($_FILES['Filedata']))
-				$files = array($request['file'] => $_FILES['Filedata']);
-			else
-				Response::setCode(500)->setContent(__('An error occured.'))->send();
-				
-			$file = $request['file'];
-			$model->setFiles($files)->save();
-			$final_paths = $model->$file->get();
-			$response = array(
-				'url' => array_pop($final_paths),
-				'deleteurl' => $this->url_for('deleteFile', array('id' => $model->id, 'pos' => sizeof($final_paths)+1, 'file' => $request['file'])),
-			);
-			Response::setCode(200)->setContent(json_encode($response))->send();
-		} catch(\Exception $e) {
-			Response::setCode(500)->setContent(__('An error occured.'))->send();
-		}
+		if(\File::has('Filedata'))
+			$files = array($request['file'] => \File::get('Filedata'));
+		else
+			\Response::setCode(500)->setContent(__('An error occured.'))->send();
+
+		$file = $request['file'];
+		$model->$file->add($files);
+		$model->save(array(), true);
+		$final_paths = $model->$file->get();
+		$response = array(
+			'url' => array_pop($final_paths),
+			'deleteurl' => $this->url_for('deleteFile', array('id' => $model->id, 'pos' => sizeof($final_paths)+1, 'file' => $request['file'])),
+		);
+		\Response::setCode(200)->setContent(json_encode($response))->send();
 	}
 	
 	/**
 	@Route(':id/:file/delete/:pos')
 	*/
 	public function deleteFileAction($request) {
-		//~ $modelName = CoxisAdmin::getModelNameFor($request['_controller']);
 		$modelName = static::$_model;
 		if(!($model = $modelName::load($request['id'])))
 			$this->forward404();
-		if(!$model->fileExists($request['file']))
+		if(!$model->hasProperty($request['file']))
 			$this->forward404();
 		
 		$file = $request['file'];
@@ -219,36 +216,30 @@ class ModelAdminController extends AdminParentController {
 		$paths = $model->$file->get();
 
 		if(!isset($paths[$request['pos']-1]))
-			Response::redirect($this->url_for('edit', array('id' => $model->id)), false)->setCode(404)->send();
-
-		$path = $paths[$request['pos']-1];
-		
-		$rawpaths = $model->$file->raw();
-		unset($rawpaths[$request['pos']-1]);
-		$rawpaths = array_values($rawpaths);
+			\Response::redirect($this->url_for('edit', array('id' => $model->id)), false)->setCode(404)->send();
 		
 		try {
-			$model->$file->set($rawpaths)->save(null, true);
-			Flash::addSuccess(__('File deleted with success.'));
-			FileManager::unlink(_WEB_DIR_.'/'.$path);
+			$model->$file->delete($request['pos']-1);
+			$model->save(null, true);
+			\Flash::addSuccess(__('File deleted with success.'));
 		} catch(\Exception $e) {
-			Flash::addError(__('There was an error in the file'));
+			\Flash::addError(__('There was an error in the file'));
 		}
 		
 		try {
-			Response::redirect($this->url_for('edit', array('id' => $model->id)), false)->send();
+			\Response::redirect($this->url_for('edit', array('id' => $model->id)), false)->send();
 		} catch(\Exception $e) {
-			Response::redirect($this->url_for('index'), false)->send();
+			\Response::redirect($this->url_for('index'), false)->send();
 		}
 	}
 	
 	public static function addHook($hook) {
 		static::$_hooks[] = $hook;
 		
-		$hook['route'] = str_replace(':route', $hook['route'], \Coxis\Core\Router::getRouteFor(array(static::getControllerName(), 'hooks')));
+		$hook['route'] = str_replace(':route', $hook['route'], \Router::getRouteFor(array(static::getControllerName(), 'hooks')));
 		$hook['controller'] = static::getControllerName();
 		$hook['action'] = 'hooks';
-		\Coxis\Core\Router::addRoute($hook);
+		\Router::addRoute($hook);
 	}
 	
 	/**
@@ -261,18 +252,18 @@ class ModelAdminController extends AdminParentController {
 	*/
 	public function hooksAction($request) {
 		$modelName = static::$_model;
-		$modelName::init();#todo not generic (generic for models actually..)
+		// $modelName::init();#todo not generic (generic for models actually..)
 		
 		$controller = static::getControllerName();
 
 		#todo sort hooks routes
 		foreach(static::$_hooks as $hook) {
-			if($results = Router::matchWith($hook['route'], $request['route'])) {
+			if($results = \Router::matchWith($hook['route'], $request['route'])) {
 				$request = array_merge($request, $results);
 				$request['_controller'] = $controller;
 				$request['controller'] = $hook['controller'];
 				$request['action'] = $hook['action'];
-				return Router::run($hook['controller'], $hook['action'], array($request), $this);
+				return \Router::run($hook['controller'], $hook['action'], array($request), $this);
 			}
 		}
 		throw new \Exception(__('Controller hook does not exist!'));

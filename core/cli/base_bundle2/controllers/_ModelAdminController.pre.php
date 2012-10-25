@@ -7,7 +7,7 @@ class <?php echo ucfirst($bundle['model']['meta']['name']) ?>AdminController ext
 	static $_models = '<?php echo $bundle['model']['meta']['plural'] ?>';
 
 	public static function _autoload() {
-		static::$messages = array(
+		static::$_messages = array(
 		<?php foreach($bundle['coxis_admin']['messages'] as $k=>$v): ?>
 			'<?php echo $k ?>'			=>	__('<?php echo $v ?>'),
 		<?php endforeach ?>

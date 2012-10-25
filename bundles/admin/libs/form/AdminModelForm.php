@@ -24,7 +24,7 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 			elseif($properties->type === 'date')
 				$this->input($widget, array_merge($options, array('class'=>'text date_picker')));
 			elseif($this->model->hasFile($widget)) {
-				$file = $this->model->$widget->params();
+				// $file = $this->model->$widget->params();
 				$this->file($widget, $options);
 			}
 			else
@@ -194,13 +194,13 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 	public function file($widget, $options=array()) {
 		$label = $this->prepareLabel($widget, $options);
 		
-		// if($this->$widget->params['type'] != 'file')
-		// 	throw new \Exception($widget.' should be a file.');
-		
+		if($this->$widget->params['type'] != 'file')
+			throw new \Exception($widget.' should be a file.');
+
 		$path = $this->model->$widget->get();
 		$optional = !$this->model->$widget->required();
 				
-		if(isset($specific_file['multiple']) && $specific_file['multiple']) {
+		if($this->model->property($widget)->multiple) {
 			if(!$this->model->isNew()):
 				$uid = Tools::randstr(10);
 				HTML::code_js("
@@ -231,9 +231,9 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 							foreach($path as $one_path):
 							?>
 							<li>
-								<img src="<?php echo URL::to('imagecache/admin_thumb/'.$one_path) ?>" alt=""/>
+								<img src="<?php echo \URL::to('imagecache/admin_thumb/'.$one_path) ?>" alt=""/>
 								<ul>
-									<li class="view"><a href="<?php echo URL::to($one_path) ?>" rel="facebox">Voir</a></li>
+									<li class="view"><a href="<?php echo \URL::to($one_path) ?>" rel="facebox">Voir</a></li>
 									<li class="delete"><a href="<?php echo $this->controller->url_for('deleteFile', array('id' => $this->model->id, 'pos' => $i, 'file' => $widget), false) ?>">Suppr.</a></li>
 								</ul>
 							</li>

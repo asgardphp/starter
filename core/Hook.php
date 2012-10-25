@@ -5,13 +5,21 @@ class Hook {
 	// private $registry = array();
 	public $registry = array();
 
-	#cannot use references with get_func_args
-	public function trigger($name, $args=array(), $cb=null) {
-		return $this->triggerChain(new \Coxis\Core\HookChain, $name, $args, $cb);
+	public function trigger_print($name, $args=array(), $cb=null) {
+		return $this->trigger($name, $args, $cb, true);
+	}
+
+	public function triggerChain_print($chain, $name, $args=array(), $cb=null) {
+		return $this->triggerChain($chain, $name, $args, $cb, true);
 	}
 
 	#cannot use references with get_func_args
-	public function triggerChain($chain, $name, $args=array(), $cb=null) {
+	public function trigger($name, $args=array(), $cb=null, $print=false) {
+		return $this->triggerChain(new \Coxis\Core\HookChain, $name, $args, $cb, $print);
+	}
+
+	#cannot use references with get_func_args
+	public function triggerChain($chain, $name, $args=array(), $cb=null, $print=false) {
 		if(count(func_get_args()) > 14)
 			throw new \Exception("triggerChain() can only accept up to 14 arguments");
 
@@ -24,14 +32,11 @@ class Hook {
 			$this->get(array_merge($name, array('on'))),
 			$this->get(array_merge($name, array('after')))
 		);
-
-		// $filters = array(&$filter1, &$filter2, &$filter3, &$filter4, &$filter5, &$filter6, &$filter7, &$filter8, &$filter9, &$filter10);
 		
 		if(!is_array($args))
 			$args = array($args);
 
-		// return $chain->run($args, $filters);
-		return $chain->run($args);
+		return $chain->run($args, $print);
 	}
 
 	protected function set($path, $cb) {

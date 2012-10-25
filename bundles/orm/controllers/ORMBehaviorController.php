@@ -50,12 +50,18 @@ class ORMBehaviorController extends \Coxis\Core\Controller {
 				$chain->found = true;
 				return $ormHandler->getORM();
 			}
+			#Article::loadByName()
+			elseif(strpos($name, 'loadBy') === 0) {
+				$chain->found = true;
+				preg_match('/^loadBy(.*)/', $name, $matches);
+				$property = $matches[1];
+				$val = $args[0];
+				return $ormHandler->getORM()->where(array($property => $val))->first();
+			}
 			#Article::where() / ::limit() / ::orderBy() / ..
-			else {
-				$res = $ormHandler->callStatic($name, $args);
-				if($res)
-					$chain->found = true;
-				return $res;
+			elseif(method_exists('Coxis\Bundles\ORM\Libs\ORM', $name)) {
+				$chain->found = true;
+				return call_user_func_array(array($ormHandler->getORM(), $name), $args);
 			}
 		});
 

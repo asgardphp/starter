@@ -6,7 +6,6 @@ class FilesBehaviorController extends \Coxis\Core\Controller {
 	@Hook('behaviors_pre_load')
 	**/
 	public function behaviors_pre_loadAction($modelDefinition) {
-		#TODO
 		if(!\Validation::ruleExists('filerequired'))
 			static::loadValidationRules();
 

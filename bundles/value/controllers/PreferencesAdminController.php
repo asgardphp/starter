@@ -36,14 +36,14 @@ class PreferencesAdminController extends \Coxis\Bundles\Admin\Libs\Controller\Ad
 		if($this->form->isSent())
 			try {
 				$this->form->save();
-				Flash::addSuccess(static::$_messages['modified']);
+				\Flash::addSuccess(static::$_messages['modified']);
 				if(isset($_POST['send']))
 					$this->redirect('admin/'.static::$_index, true)->send();
 			} catch(FormException $e) {
-				Flash::addError($e->errors);
+				\Flash::addError($e->errors);
 			}
 		
-		$this->view = 'form.php';
+		$this->setRelativeView('form.php');
 	}
 }
 ?>

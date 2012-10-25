@@ -5,7 +5,7 @@ class Flash {
 	private $messages = array('success' => array(), 'error' => array());
 
 	function __construct() {
-		if(isset(\Session::get('messages')))
+		if(\Session::has('messages'))
 			$this->messages = \Session::get('messages');
 	}
 
@@ -35,9 +35,9 @@ class Flash {
 		return true;
 	}
 	
-	public static function showAll() {
-		static::showSuccess();
-		static::showError();
+	public function showAll() {
+		$this->showSuccess();
+		$this->showError();
 	}
 	
 	public function showSuccess() {
