@@ -16,7 +16,7 @@ class FrontController extends Controller {
 		\Hook::trigger('start');
 		//Dispatch to target controller
 		$output = \Router::dispatch();
-		\Hook::trigger('filter_output', array(&$output), null);
+		\Hook::trigger('filter_output', array(&$output));
 		//Send the response
 		\Response::setContent($output)->send();
 	}
