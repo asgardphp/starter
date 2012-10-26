@@ -37,16 +37,15 @@ class FileProperty extends \Coxis\Core\Properties\BaseProperty {
 	}
 
 	public function set($val) {
-		if($val instanceof \ModelFile)
+		if($val instanceof \Coxis\Bundles\Files\Libs\ModelFile)
 			return $val;
 		if(is_array($val))
-			$file = new \Coxis\Bundles\Files\Libs\ModelFile($this->model, $this->name, null, $val);
+			return new \Coxis\Bundles\Files\Libs\ModelFile($this->model, $this->name, null, $val);
 		#todo should use unserialize instead..
 		elseif($this->multiple)
-			$file = new \Coxis\Bundles\Files\Libs\ModelFile($this->model, $this->name, unserialize($val));
+			return new \Coxis\Bundles\Files\Libs\ModelFile($this->model, $this->name, unserialize($val));
 		else
-			$file = new \Coxis\Bundles\Files\Libs\ModelFile($this->model, $this->name, $val);
-		return $file;
+			return new \Coxis\Bundles\Files\Libs\ModelFile($this->model, $this->name, $val);
 	}
 
 	public function get() {

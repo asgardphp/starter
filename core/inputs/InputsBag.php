@@ -1,45 +1,56 @@
 <?php
 namespace Coxis\Core\Inputs;
 
-class InputsBag {
-	protected $inputs = array();
-
-	function __construct($inputs=array()) {
-		$this->inputs = $inputs;
+abstract class InputsBag {
+	protected static function getRequest() {
+		return \Request::inst();
 	}
 
-	public function get($name, $default=null) {
-		return isset($this->inputs[$name]) ? $this->inputs[$name]:$default;
+	public static function get($name, $default=null) {
+		$req = static::getRequest();
+		$datatype = strtolower(NamespaceUtils::basename(get_called_class()));
+
+		return static::has($name) ? $req->{$datatype}[$name]:$default;
 	}
 
-	public function set($name, $value) {
-		if(is_array($name)) {
-			$this->inputs = array_merge($this->inputs, $name);
-		}
+	public static function set($name, $value) {
+		$req = static::getRequest();
+		$datatype = strtolower(NamespaceUtils::basename(get_called_class()));
+		
+		if(is_array($name))
+			$req->$datatype = array_merge($req->$datatype, $name);
 		else
-			$this->inputs[$name] = $value;
-		return $this;
+			$req->$datatype[$name] = $value;
 	}
 
-	public function has($name) {
-		return isset($this->inputs[$name]);
+	public static function has($name) {
+		$req = static::getRequest();
+		$datatype = strtolower(NamespaceUtils::basename(get_called_class()));
+		
+		return isset($req->{$datatype}[$name]);
 	}
 
-	public function remove($name) {
-		unset($this->inputs[$name]);
-		return $this;
+	public static function remove($name) {
+		$req = static::getRequest();
+		$datatype = strtolower(NamespaceUtils::basename(get_called_class()));
+		
+		unset($req->$datatype[$name]);
 	}
 
-	public function all() {
-		return $this->inputs;
+	public static function all() {
+		$req = static::getRequest();
+		$datatype = strtolower(NamespaceUtils::basename(get_called_class()));
+		return $req->$datatype;
 	}
 
-	public function clear() {
-		$this->inputs = array();
-		return $this;
+	public static function clear() {
+		$req = static::getRequest();
+		$datatype = strtolower(NamespaceUtils::basename(get_called_class()));
+		
+		$req->$datatype = array();
 	}
 
-	public function setAll($all) {
+	public static function setAll($all) {
 		return $this->clear()->set($all);
 	}
 }

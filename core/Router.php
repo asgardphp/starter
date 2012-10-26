@@ -133,7 +133,7 @@ class Router {
 			$route = $params['route'];
 			$requirements = $params['requirements'];
 			$method = $params['method'];
-			
+
 			/* IF THE ROUTE MATCHES */
 			if(($results = static::match($route, $requirements, $method)) !== false) {
 				$results = array_merge(array('format'=>'html'), $results, array('data'=>\Request::data()));

@@ -25,6 +25,7 @@ class ModelFile {
 			foreach($files as $file)
 				if(!file_exists($file))
 					return false;
+			return true;
 		}
 		else {
 			if($this->tmp_file)

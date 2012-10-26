@@ -26,11 +26,9 @@ class ModelForm extends Form {
 				$widget_params['type'] = 'boolean';
 			elseif($properties->type == 'file')
 				$widget_params['type'] = 'file';
-			if($properties->in) {
-				// $widget_params['choices'][] = 'Choisir';#todo i18n
+			if($properties->in)
 				foreach($properties->in as $v)
 					$widget_params['choices'][$v] = $v;
-			}
 			if($properties->multiple)
 				$widget_params['multiple'] = true;
 
@@ -46,7 +44,6 @@ class ModelForm extends Form {
 			#todo why using _id instead of name?!
 			
 			$ids = array();
-			// $ids[] = 'Choisir';#todo i18n
 			foreach($relation['model']::all() as $v)
 				$ids[$v->id] = (string)$v;
 					
@@ -54,9 +51,7 @@ class ModelForm extends Form {
 				$widget_params = array(
 					'type'	=>	'integer',
 					'choices'		=>	$ids,
-					// 'default'	=>	d($model->$property_name),
 					'default'	=>	($model->$property_name ? $model->$property_name->id:null),
-					// 'default'	=>	($model->$property_name ? d($property_name, $model->$property_name):null),
 				);
 				$widgets[$property_name] = new Widget($widget_params);
 			}
@@ -65,7 +60,6 @@ class ModelForm extends Form {
 				foreach($this->model->$name as $r)
 					$defaults[] = $r->id;
 				$widget_params = array(
-					//~ 'type'	=>	'integer',
 					'choices'		=>	$ids,
 					'default'	=>	$defaults,
 				);
@@ -119,7 +113,7 @@ class ModelForm extends Form {
 			return $v !== null;
 		});
 		$this->model->set($data);
-		
+
 		return array_merge(parent::my_errors(), $this->model->errors());
 	}
 	

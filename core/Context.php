@@ -33,14 +33,6 @@ class Context {
 			'Importer'			=>	'\Coxis\Core\Importer',
 
 			'Request'		=>	'\Coxis\Core\Request',
-			'GET'			=>	'\Coxis\Core\Inputs\GET',
-			'POST'			=>	'\Coxis\Core\Inputs\POST',
-			'FILE'			=>	'\Coxis\Core\Inputs\FILE',
-			'Server'		=>	'\Coxis\Core\Inputs\SERVER',
-			'Cookie'		=>	'\Coxis\Core\Inputs\COOKIE',
-			'Session'		=>	'\Coxis\Core\Inputs\SESSION',
-			'ARGV'			=>	'\Coxis\Core\Inputs\ARGV',
-			'JSON'			=>	'\Coxis\Core\Inputs\JSON',
 		);
 
 		$this->ioc->register('autoloader', function() {
