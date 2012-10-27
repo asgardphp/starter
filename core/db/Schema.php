@@ -15,7 +15,7 @@ class BuildCol {
 		$this->type = $type;
 		$this->length = $length;
 	}
-	
+
 	public function autoincrement() {
 		$this->autoincrement = true;
 		return $this;
@@ -397,6 +397,12 @@ class Column {
 }
 
 class Schema {
+	public static function dropAll() {
+		$tables = Tools::flateArray(\DB::query('SHOW TABLES')->all());
+		foreach($tables as $table)
+			\DB::query('DROP TABLE '.$table);
+	}
+
 	public static function create($tableName, $cb) {
 		$table = new BuildTable($tableName);
 		$cb($table);

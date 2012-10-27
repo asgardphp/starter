@@ -71,21 +71,12 @@ class CoxisController extends CLIController {
 				die('Bundle '.$bundle.' does not exist.');
 		}
 
-		static::installBundle($bundle);
+		static::installBundle($bundle_path);
 	}
 
-	public static function installBundle($bundle) {
-		$bundle_path = 'bundles\\'.$bundle.'\\';
-
-		$yaml = new sfYamlParser();
-		if(file_exists($bundle_path.'data')) {
-			foreach(glob($bundle_path.'data\*') as $file) {
-				$raw = $yaml->parse(file_get_contents($file));
-				foreach($raw as $class=>$all)
-					foreach($all as $one) 
-						$class::create($one);
-			}
-		}
+	public static function installBundle($bundle_path) {
+		#todo move all from here to bundlesmanager
+		\BundlesManager::loadData($bundle_path);
 
 		static::publishBundle($bundle);
 

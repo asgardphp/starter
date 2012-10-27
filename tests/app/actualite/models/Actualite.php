@@ -1,7 +1,6 @@
 <?php
 namespace Coxis\Tests\App\Actualite\Models;
 
-// class Actualite extends \Coxis\Core\ORM\ModelORM {
 class Actualite extends \Coxis\Core\Model {
 	public static $properties = array(
 		'titre',

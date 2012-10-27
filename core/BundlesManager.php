@@ -198,5 +198,22 @@ namespace Coxis\Core {
 		private static function formatActionName($action) {
 			return preg_replace('/Action$/i', '', $action);
 		}
+
+		public static function loadData($bundle_path) {
+			$yaml = new sfYamlParser();
+			if(file_exists($bundle_path.'/data')) {
+				foreach(glob($bundle_path.'/data/*') as $file) {
+					$raw = $yaml->parse(file_get_contents($file));
+					foreach($raw as $class=>$all)
+						foreach($all as $one) 
+							$class::create($one);
+				}
+			}
+		}
+
+		public static function loadDataAll() {
+			foreach(static::getBundles() as $bundle)
+				static::loadData($bundle);
+		}
 	}
 }
