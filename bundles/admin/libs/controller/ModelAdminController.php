@@ -112,7 +112,7 @@ class ModelAdminController extends AdminParentController {
 				$this->form->save();
 				\Flash::addSuccess(static::$_messages['modified']);
 				if(isset($_POST['send']))
-					\Response::redirect('admin/'.static::$_index)->send();
+					return \Response::redirect('admin/'.static::$_index);
 			} catch(\Coxis\Core\Form\FormException $e) {
 				\Flash::addError($e->errors);
 			}
@@ -136,9 +136,9 @@ class ModelAdminController extends AdminParentController {
 				$this->form->save();
 				\Flash::addSuccess(static::$_messages['created']);
 				if(isset($_POST['send']))
-					\Response::redirect('admin/'.static::$_index)->send();
+					return \Response::redirect('admin/'.static::$_index);
 				else {
-					\Response::redirect('admin/'.static::$_index.'/'.$this->$modelName->id.'/edit')->send();
+					return \Response::redirect('admin/'.static::$_index.'/'.$this->$modelName->id.'/edit');
 				}
 			} catch(\Coxis\Core\Form\FormException $e) {
 				\Flash::addError($e->errors);
@@ -157,7 +157,7 @@ class ModelAdminController extends AdminParentController {
 			\Flash::addError(static::$_messages['unexisting']) :
 			\Flash::addSuccess(static::$_messages['deleted']);
 			
-		\Response::redirect('admin/'.static::$_index)->send();
+		return \Response::redirect('admin/'.static::$_index);
 	}
 	
 	/**
@@ -172,7 +172,7 @@ class ModelAdminController extends AdminParentController {
 		$file = $request['file'];
 		$this->$_model->$file->delete();
 		\Flash::addSuccess(__('File deleted with success.'));
-		\Response::redirect(static::getEditURL($this->$_model->id), false)->send();
+		return \Response::redirect(static::getEditURL($this->$_model->id), false);
 	}
 	
 	/**
@@ -188,7 +188,7 @@ class ModelAdminController extends AdminParentController {
 		if(\File::has('Filedata'))
 			$files = array($request['file'] => \File::get('Filedata'));
 		else
-			\Response::setCode(500)->setContent(__('An error occured.'))->send();
+			return \Response::setCode(500)->setContent(__('An error occured.'));
 
 		$file = $request['file'];
 		$model->$file->add($files);
@@ -198,7 +198,7 @@ class ModelAdminController extends AdminParentController {
 			'url' => array_pop($final_paths),
 			'deleteurl' => $this->url_for('deleteFile', array('id' => $model->id, 'pos' => sizeof($final_paths)+1, 'file' => $request['file'])),
 		);
-		\Response::setCode(200)->setContent(json_encode($response))->send();
+		return \Response::setCode(200)->setContent(json_encode($response));
 	}
 	
 	/**
@@ -216,7 +216,7 @@ class ModelAdminController extends AdminParentController {
 		$paths = $model->$file->get();
 
 		if(!isset($paths[$request['pos']-1]))
-			\Response::redirect($this->url_for('edit', array('id' => $model->id)), false)->setCode(404)->send();
+			return \Response::redirect($this->url_for('edit', array('id' => $model->id)), false)->setCode(404);
 		
 		try {
 			$model->$file->delete($request['pos']-1);
@@ -227,9 +227,9 @@ class ModelAdminController extends AdminParentController {
 		}
 		
 		try {
-			\Response::redirect($this->url_for('edit', array('id' => $model->id)), false)->send();
+			return \Response::redirect($this->url_for('edit', array('id' => $model->id)), false);
 		} catch(\Exception $e) {
-			\Response::redirect($this->url_for('index'), false)->send();
+			return \Response::redirect($this->url_for('index'), false);
 		}
 	}
 	

@@ -2,8 +2,6 @@
 namespace Coxis\Core;
 
 class Request {
-	public $data;
-
 	public $get = array();
 	public $post = array();
 	public $file = array();
@@ -12,26 +10,33 @@ class Request {
 	public $cookie = array();
 	public $session = array();
 	public $argv = array();
+	public $data = '';
 
-	function __construct($default=true) {
+	public static function createFromGlobals() {
 		global $argv;
 
-		if($default) {
-			$this->get = $_GET;
-			$this->post = $_POST;
-			$this->file = $_FILES;
-			$this->cookie = $_COOKIE;
-			$this->server = $_SERVER;
-			$this->argv = $argv;
-			try {
-				$this->start();
-				$this->session = $_SESSION;
-			} catch(\ErrorException $e) {}
-			$this->data = file_get_contents('php://input');
-			try {
-				$this->json = json_decode($this->data);
-			} catch(\ErrorException $e) {}
-		}
+		$request = new static;
+		$request->get = $_GET;
+		$request->post = $_POST;
+		$request->file = $_FILES;
+		$request->cookie = $_COOKIE;
+		$request->server = $_SERVER;
+		$request->argv = $argv;
+		try {
+			$request->start();
+			$request->session = $_SESSION;
+		} catch(\ErrorException $e) {}
+		$request->body = file_get_contents('php://input');
+		try {
+			$request->json = json_decode($request->body);
+		} catch(\ErrorException $e) {}
+
+		return $request;
+	}
+
+	public function buildServer() {
+		$this->server = $_SERVER;
+		return $this;
 	}
 
 	public function start() {
@@ -71,12 +76,12 @@ class Request {
 		return $this;
 	}
 
-	public function data() {
-		return $this->data;
+	public function body() {
+		return $this->body;
 	}
 
-	public function setData($value) {
-		$this->data = $value;
+	public function setbody($value) {
+		$this->body = $value;
 		return $this;
 	}
 }

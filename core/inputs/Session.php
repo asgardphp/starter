@@ -2,33 +2,15 @@
 namespace Coxis\Core\Inputs;
 
 abstract class Session extends InputsBag {
-	// function __construct() {
-	// 	try {
-	// 		$this->start();
-	// 		$this->inputs = $_SESSION;
-	// 	} catch(\ErrorException $e) {}
-	// }
-	  
 	public static function set($name, $value) {
 		if(isset($_SESSION))
 			$_SESSION[$name] = $value;
-		parent::set($name, $value);
-		// return $this;
+		return parent::set($name, $value);
 	}
 	  
 	public static function remove($name) {
-		parent::remove($name);
-		unset($_SESSION[$name]);
-		// return $this;
+		if(isset($_SESSION))
+			unset($_SESSION[$name]);
+		return parent::remove($name);
 	}
-
-	// public function start() {
-	// 	if(!headers_sent()) {
-	// 		if(\GET::get('PHPSESSID') !== null)
-	// 			session_id(\GET::get('PHPSESSID'));
-	// 		elseif(\POSt::get('PHPSESSID') !== null)
-	// 			session_id(\POST::get('PHPSESSID'));
-	// 		session_start();
-	// 	}
-	// }
 }

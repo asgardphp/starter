@@ -7,7 +7,7 @@ class Context {
 	public static $default = 'default';
 
 	private static $instances = array();
-	private $classes = array();
+	public $classes = array();
 
 	private $ioc = null;
 
@@ -41,6 +41,10 @@ class Context {
 
 		$this->ioc->register('db', function() {
 			return new \Coxis\Core\DB\DB(\Config::get('database'));
+		});
+
+		$this->ioc->register('request', function() {
+			return \Coxis\Core\Request::createFromGlobals();
 		});
 
 		foreach($facades as $facade=>$class) {
@@ -86,5 +90,14 @@ class Context {
 
 	public function __get($name) {
 		return $this->_get($name);
+	}
+
+	public function set($name, $value) {
+		$this->classes[$name] = $value;
+		return $this;
+	}
+
+	public function __set($name, $value) {
+		return $this->set($name, $value);
 	}
 }

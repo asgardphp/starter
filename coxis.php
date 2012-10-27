@@ -52,26 +52,15 @@ set_error_handler(function ($errno, $errstr, $errfile, $errline) {
 	throw new \ErrorException($errstr, $errno, 0, $errfile, $errline);
 });
 set_exception_handler(function ($e) {
-	if($e instanceof \ErrorException) {
-		$msg = '('.$e->getCode().') '.$e->getMessage().'<br>'.$e->getFile().' ('.$e->getLine().')';
-		$result = \Error::report($msg, $e->getTrace());
-	}
-	else {
-		$first_trace = array(array(
-			'file'	=>	$e->getFile(),
-			'line'	=>	$e->getLine(),
-		));
-		$result = \Error::report($e->getMessage(), array_merge($first_trace, $e->getTrace()));
-	}
-	\Response::send($result);
+	\Coxis\Core\Coxis::getExceptionResponse($e)->send();
 });
 register_shutdown_function(function () {
 	chdir(dirname(__FILE__));//wtf?
 	#todo get the full backtrace for shutdown errors
 	if($e=error_get_last()) {
 		while(ob_get_level()){ ob_end_clean(); }
-		$result = \Coxis\Core\Error::report("($e[type]) $e[message]<br>
+		$response = \Coxis\Core\Error::report("($e[type]) $e[message]<br>
 			$e[file] ($e[line])".debug_backtrace(), array(array('file'=>$e['file'], 'line'=>$e['line'])));
-		\Response::send($result);
+		\Response::send($response);
 	}
 });

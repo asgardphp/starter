@@ -9,15 +9,7 @@ class FrontController extends Controller {
 			else
 				define('_ENV_', 'prod');
 
-		BundlesManager::loadBundles();
-
-		\Router::parseRoutes();
-
-		\Hook::trigger('start');
-		//Dispatch to target controller
-		$output = \Router::dispatch();
-		\Hook::trigger('filter_output', array(&$output));
-		//Send the response
-		\Response::setContent($output)->send();
+		$response = require('core/getresponse.php');
+		$response->send();
 	}
 }

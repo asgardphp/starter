@@ -2,7 +2,41 @@
 namespace Coxis\Bundles\General\Controllers;
 
 class GeneralController extends \Coxis\Core\Controller {
-	static $called404 = false;
+	/**
+	@Hook('start')
+	@Priority(-10)
+	*/
+	public function startAction() {
+		\Memory::set('layout', array('\Coxis\App\Standard\Controllers\Default', 'layout'));
+	}
+	
+	/**
+	@Hook('filter_response')
+	**/
+	public function hook404Action($response) {
+		if($response->getCode() != 404)
+			return;
+		
+		$request = \Router::getRequest();
+		
+		if($request['format']=='html') {
+			$output = \Coxis\Core\Router::run('default', '_404');
+			$response->setContent($output);
+		}
+	}
+	
+	/**
+	@Hook('filter_response')
+	*/
+	public function preSendingAction($response) {
+		try {
+			if(get(\Router::getRequest(), 'format') != 'html')
+				return;
+		} catch(\Exception $e) {}
+			
+		if(is_array(\Memory::get('layout')) && sizeof(\Memory::get('layout')) >= 2 && $response->getContent() !== null)
+			$response->setContent(\Router::run(\Memory::get('layout', 0), \Memory::get('layout', 1), $response->getContent()));
+	}
 
 	/**
 	@Hook('output')
@@ -20,46 +54,5 @@ class GeneralController extends \Coxis\Core\Controller {
 		\Response::setHeader('Content-Length', strlen($output));
 		\Response::setHeader('Cache-Control', 'no-cache, no-store, max-age=0, must-revalidate');
 		\Response::setHeader('Pragma', 'no-cache');
-	}
-	
-	/**
-	@Hook('output_404')
-	**/
-	public function hook404Action() {
-		if(static::$called404)
-			return;
-		static::$called404 = true;
-		
-		$request = \Router::getRequest();
-		
-		if($request['format']=='html') {
-			$output = \Coxis\Core\Router::run('default', '_404');
-			\Hook::trigger('output', array(&$output));
-			\Response::setContent($output);
-		}
-		
-		\Response::send();
-	}
-
-	/**
-	@Hook('start')
-	@Priority(-10)
-	*/
-	public function startAction() {
-		\Memory::set('layout', array('\Coxis\App\Standard\Controllers\Default', 'layout'));
-	}
-	
-	/**
-	@Hook('filter_output')
-	*/
-	public function preSendingAction(&$content) {
-		try {
-			if(get(\Router::getRequest(), 'format') != 'html')
-				return;
-		} catch(\Exception $e) {}
-			
-		if(is_array(\Memory::get('layout'))
-			&& sizeof(\Memory::get('layout')) >= 2 && $content !== null)
-			$content = \Router::run(\Memory::get('layout', 0), \Memory::get('layout', 1), $content, $this);
 	}
 }

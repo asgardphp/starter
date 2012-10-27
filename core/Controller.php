@@ -2,8 +2,8 @@
 namespace Coxis\Core;
 
 class Controller {
-	public function forward404() {
-		Response::setCode(404)->send();
+	public function forward404($msg = 'Not found') {
+		throw new ControllerException($msg, \Response::setCode(404));
 	}
 	
 	public static function url_for($action, $params=array(), $relative=false) {
@@ -21,7 +21,7 @@ class Controller {
 			$uri = URL::current();
 		
 		if($redirect && $canonical != $uri)
-			Response::setCode(301)->redirect($canonical, $relative)->send();
+			throw new ControllerException('Page not found', \Response::setCode(301)->redirect($canonical, $relative));
 		if($relative)
 			HTML::code('<link rel="canonical" href="'.URL::to($canonical).'">');
 		else
@@ -51,12 +51,12 @@ class Controller {
 		$result = call_user_func_array(array($this, $actionName), $params);
 		$controllerBuffer =  ob_get_clean();
 
-		if($controllerBuffer)
-			return $controllerBuffer;
-		elseif(!$showView)
-			return null;
-		elseif($result!==null)
+		if($result!==null)
 			return $result;
+		elseif($controllerBuffer)
+			return $controllerBuffer;
+		elseif(!$showView) #todo still necessary?
+			return null;
 		elseif($this->view !== false) {
 			if($this->view === null)
 				if(!$this->setRelativeView($action.'.php'))

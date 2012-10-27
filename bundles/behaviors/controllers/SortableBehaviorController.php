@@ -69,7 +69,7 @@ class SortableBehaviorController extends \Coxis\Core\Controller {
 			\Flash::addSuccess('Ordre modifié avec succès.');
 		} catch(\Exception $e) {}
 		
-		\Response::redirect(\URL::url_for(array($request['_controller'], 'index')))->send();
+		return \Response::redirect(\URL::url_for(array($request['_controller'], 'index')));
 	}
 	
 	public function demoteAction($request) {
@@ -89,7 +89,7 @@ class SortableBehaviorController extends \Coxis\Core\Controller {
 			\Flash::addSuccess('Ordre modifié avec succès.');
 		} catch(\Exception $e) {}
 		
-		\Response::redirect(\URL::url_for(array($request['_controller'], 'index')))->send();
+		return \Response::redirect(\URL::url_for(array($request['_controller'], 'index')));
 	}
 	
 	public static function reset($modelName) {

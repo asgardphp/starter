@@ -6,7 +6,11 @@ namespace Coxis\Bundles\Imagecache\Controllers;
 */
 class ImageCacheController extends \Coxis\Core\Controller {
 	private function apply($img, $preset) {
-		$preset = ImageCache::getPreset($preset);
+		try {
+			$preset = ImageCache::getPreset($preset);
+		} catch(\Exception $e) {
+			return \Response::setCode(404);
+		}
 		foreach($preset as $op=>$params)
 			switch($op) {
 				case 'resize':
@@ -44,7 +48,7 @@ class ImageCacheController extends \Coxis\Core\Controller {
 			try {
 				$img = ImageManager::load(_WEB_DIR_.'/'.$request['src']);
 			} catch(\Exception $e) {
-				Response::setCode(500)->send();
+				return Response::setCode(500);
 			}
 			$this->apply($img, $request['preset']);
 			$img->output();
@@ -61,6 +65,6 @@ class ImageCacheController extends \Coxis\Core\Controller {
 	public function testAction() {
 		$src = ImageCache::src('img/2.jpg', 'thumb');
 		$content = $src.'<br/><img src="'.$src.'" alt=""/>';
-		Response::setContent($content)->send();
+		return \Response::setContent($content);
 	}
 }

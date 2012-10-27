@@ -2,10 +2,10 @@
 namespace Coxis\Core;
 
 class Response {
-	private $instance;
-	private $content;
-	private $code;
-	private $headers = array();
+	private $instance;#todo what for ?
+	public $content;
+	public $code = 200;
+	public $headers = array();
 	private static $codes = array(
 		200 => 'OK',
 		201 => 'Created',
@@ -80,10 +80,10 @@ class Response {
 			\Hook::trigger('end');
 			\Coxis\Core\Response::sendHeaders($result->headers);
 			echo $result->content;
-			exit();
+			// exit();
+			return;
 		}
 
-		\Hook::trigger('output_'.$this->code);
 		\Hook::trigger('output');
 		
 		$headers = array();
@@ -104,5 +104,9 @@ class Response {
 			$this->headers['Location'] = $url;
 			
 		return $this;
+	}
+
+	public function __toString() {
+		return $this->content;
 	}
 }

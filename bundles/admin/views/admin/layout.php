@@ -30,6 +30,7 @@
 				<ul id="nav">
 					<li><a href="#"><?php echo __('Dashboard') ?></a></li>
 					<?php
+					if(!function_exists('showMenu')) {
 					function showMenu($menu) {
 						foreach($menu as $item) {
 							if(is_array($item))
@@ -45,6 +46,7 @@
 							</li>
 							<?php
 						}
+					}
 					}
 					showMenu(\Coxis\Bundles\Admin\Libs\AdminMenu::$menu);
 					?>

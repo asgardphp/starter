@@ -16,11 +16,11 @@ abstract class InputsBag {
 	public static function set($name, $value) {
 		$req = static::getRequest();
 		$datatype = strtolower(NamespaceUtils::basename(get_called_class()));
-		
+
 		if(is_array($name))
 			$req->$datatype = array_merge($req->$datatype, $name);
 		else
-			$req->$datatype[$name] = $value;
+			$req->{$datatype}[$name] = $value;
 	}
 
 	public static function has($name) {
@@ -34,7 +34,7 @@ abstract class InputsBag {
 		$req = static::getRequest();
 		$datatype = strtolower(NamespaceUtils::basename(get_called_class()));
 		
-		unset($req->$datatype[$name]);
+		unset($req->{$datatype}[$name]);
 	}
 
 	public static function all() {

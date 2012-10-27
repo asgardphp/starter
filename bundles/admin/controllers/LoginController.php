@@ -11,7 +11,7 @@ class LoginController extends \Coxis\Core\Controller {
 	*/
 	public function loginAction($request) {
 		if(\Session::get('admin_id'))
-			\Response::redirect('admin')->send();
+			return \Response::redirect('admin');
 	
 		$administrator = null;
 		if(isset($_POST['username']))
@@ -28,9 +28,9 @@ class LoginController extends \Coxis\Core\Controller {
 				\Cookie::set('coxis_remember', md5($administrator->username.'-'.$administrator->password));
 			}
 			if(isset($_SESSION['redirect_to']))
-				\Response::redirect($_SESSION['redirect_to'], false)->send();
+				return \Response::redirect($_SESSION['redirect_to'], false);
 			else
-				\Response::redirect('admin')->send();
+				return \Response::redirect('admin');
 		}
 		elseif(isset($_POST['username']))
 			\Flash::addError(__('Invalid username or password.'));
@@ -42,7 +42,7 @@ class LoginController extends \Coxis\Core\Controller {
 	public function logoutAction($request) {
 		\Cookie::remove('coxis_remember');
 		\Session::remove('admin_id');
-		\Response::redirect('')->send();
+		return \Response::redirect('');
 	}
 	
 	/**

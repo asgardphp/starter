@@ -17,13 +17,13 @@ class Router {
 			$actionName = $this->request['action'];
 			$params = array($this->request);
 			
-			static::runAction($controller, 'configure', $params, $src, false);
+			if($response = static::runAction($controller, 'configure', $params, $src, false))
+				return $response;
 			\Hook::trigger('beforeDispatchAction');
 			return static::runAction($controller, $actionName, $params, $src);
 		}
-		else {
-			\Response::setCode(404)->send();
-		}
+		else
+			throw new \Coxis\Core\ControllerException('Page not found', \Response::setCode(404));
 	}
 	
 	private static function runAction($controller, $actionName, $params=array(), $src=null, $showView=true) {
@@ -34,7 +34,7 @@ class Router {
 				$controller->$k = $v;
 		
 		$result = $controller->run($actionName, $params, $showView);
-		
+
 		if($src != null)
 			foreach($controller as $k=>$v)
 				$src->$k = $v;
@@ -45,10 +45,7 @@ class Router {
 	public static function run($controllerName, $actionName, $params=array(), $src=null, $showView=true) {
 		$controllerName = ucfirst($controllerName);
 		$controllerClassName = $controllerName.'Controller';
-		// die($controllerClassName);
 		$controller = new $controllerClassName();
-		// if($actionName == 'mainAction')
-		// 	exit();
 		return static::runAction($controller, $actionName, $params, $src, $showView);
 	}
 
@@ -136,7 +133,7 @@ class Router {
 
 			/* IF THE ROUTE MATCHES */
 			if(($results = static::match($route, $requirements, $method)) !== false) {
-				$results = array_merge(array('format'=>'html'), $results, array('data'=>\Request::data()));
+				$results = array_merge(array('format'=>'html'), $results, array('body'=>\Request::body()));
 				$results = array_merge(\GET::all(), $params, $results);
 				
 				if(!isset($results['action']))
