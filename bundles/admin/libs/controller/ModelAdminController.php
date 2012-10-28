@@ -252,7 +252,7 @@ class ModelAdminController extends AdminParentController {
 	*/
 	public function hooksAction($request) {
 		$modelName = static::$_model;
-		// $modelName::init();#todo not generic (generic for models actually..)
+		import($modelName, __NAMESPACE__);
 		
 		$controller = static::getControllerName();
 

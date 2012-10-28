@@ -4,6 +4,7 @@
     introduction: Physics is a science
     contenu: We will study physics
     test: blabla
+    commentaires: [1, comment2]
   course2:
     titre: Math
     introduction: Math is a science
@@ -12,5 +13,6 @@
 \Coxis\Tests\App\Actualite\Models\Commentaire:
   1:
     titre: Hello!
+    actualite: 1
   comment2:
     titre: That's cool.

@@ -34,12 +34,18 @@ namespace Coxis\Core {
 			}
 		}
 		
-		public static function getBundles() {
+		public static function getBundles($directory = null) {
 			if(\Config::get('phpcache') && $bundles=Cache::get('bundlesmanager/bundles'))
 				return $bundles;
 			else {
 				$bundles = array();
-				foreach(\Config::get('bundle_directories') as $dir)
+				if(!$directory)
+					$directories = \Config::get('bundle_directories');
+				elseif(is_string($directory))
+					$directories = array($directory);
+				else
+					$directories = $directory;
+				foreach($directories as $dir)
 					foreach(glob($dir.'/*') as $bundlepath)
 						$bundles[] = $bundlepath;
 				if(\Config::get('phpcache'))
@@ -48,8 +54,8 @@ namespace Coxis\Core {
 			}
 		}
 		
-		public static function loadBundles() {
-			$bundles = static::getBundles();
+		public static function loadBundles($directory = null) {
+			$bundles = static::getBundles($directory);
 
 			if(\Config::get('phpcache') && $bm=Cache::get('bundlesmanager')) {
 				#todo only cache locales and preloaded from bundles (might be stuff cached from before bundlesManager)
@@ -57,7 +63,6 @@ namespace Coxis\Core {
 				$hooks = $bm['hooks'];
 				\Locale::setLocales($bm['locales']);
 				Context::get('autoloader')->preloaded = $bm['preloaded'];
-				// Context::get('autoloader')->preloaded = $bm['preloaded'];
 			}
 			else {
 				foreach($bundles as $bundle)
@@ -65,58 +70,7 @@ namespace Coxis\Core {
 				foreach($bundles as $bundle)
 					static::loadBundle($bundle);
 
-				#Parse controllers routes/hooks
-				$controllers = get_declared_classes();
-				$controllers = array_filter($controllers, function($controller) {
-					return is_subclass_of($controller, 'Coxis\Core\Controller');
-				});
-				foreach($controllers as $classname) {
-					$r = new \ReflectionClass($classname);
-					if(!preg_match('/controllers$/', dirname($r->getFileName())))
-						continue;
-
-					$reflection = new \ReflectionAnnotatedClass($classname);
-					
-					if($reflection->getAnnotation('Prefix'))
-						$prefix = \Router::formatRoute($reflection->getAnnotation('Prefix')->value);
-					else
-						$prefix = '';
-					
-					$methods = get_class_methods($classname);
-					foreach($methods as $method) {
-						if(!preg_match('/Action$/i', $method))
-							continue;
-						$method_reflection = new \ReflectionAnnotatedMethod($classname, $method);
-					
-						if($method_reflection->getAnnotation('Route')) {
-							$route = \Router::formatRoute($prefix.'/'.$method_reflection->getAnnotation('Route')->value);
-
-							$routes[] = array(
-								'route'	=>	$route,
-								'controller'		=>	static::formatControllerName($classname), 
-								'action'			=>	static::formatActionName($method),
-								'requirements'	=>	$method_reflection->getAnnotation('Route')->requirements,
-								'method'	=>	$method_reflection->getAnnotation('Route')->method,
-								'name'	=>	isset($method_reflection->getAnnotation('Route')->name) ? $method_reflection->getAnnotation('Route')->name:null
-							);
-						}
-						if($method_reflection->getAnnotation('Hook')) {
-							$hook = $method_reflection->getAnnotation('Hook')->value;
-							#todo priority
-							// if($method_reflection->getAnnotation('Priority'))
-							// 	$priority = $method_reflection->getAnnotation('Priority')->value;
-							// else
-							// 	$priority = 0;
-							// $priority *= 1000;
-							// while(isset(BundlesManager::$hooks_table[$hook][$priority]))
-							// 	$priority += 1;
-
-							$controller = static::formatControllerName($classname);
-							$action = static::formatActionName($method);
-							$hooks[$hook][] = array($controller, $action);
-						}
-					}
-				}
+				list($routes, $hooks) = static::getRoutesAndHooks();
 
 				#Parse cli controllers
 				$controllers = get_declared_classes();
@@ -199,21 +153,96 @@ namespace Coxis\Core {
 			return preg_replace('/Action$/i', '', $action);
 		}
 
-		public static function loadData($bundle_path) {
-			$yaml = new sfYamlParser();
+		public static function loadModelFixtures($bundle_path) {
 			if(file_exists($bundle_path.'/data')) {
-				foreach(glob($bundle_path.'/data/*') as $file) {
-					$raw = $yaml->parse(file_get_contents($file));
-					foreach($raw as $class=>$all)
-						foreach($all as $one) 
-							$class::create($one);
+				foreach(glob($bundle_path.'/data/*.models.yml') as $file) {
+					ORMManager::loadModelFixtures($file);
 				}
 			}
+
+			// $yaml = new sfYamlParser();
+			// if(file_exists($bundle_path.'/data')) {
+			// 	foreach(glob($bundle_path.'/data/*') as $file) {
+			// 		$raw = $yaml->parse(file_get_contents($file));
+			// 		foreach($raw as $class=>$all)
+			// 			foreach($all as $one) 
+			// 				$class::create($one);
+			// 	}
+			// }
 		}
 
-		public static function loadDataAll() {
+		public static function loadModelFixturesAll() {
 			foreach(static::getBundles() as $bundle)
-				static::loadData($bundle);
+				static::loadModelFixtures($bundle);
+		}
+
+		public static function getRoutesAndHooks($directory = false) {
+			$routes = array();
+			$hooks = array();
+
+			#Parse controllers routes/hooks
+			$controllers = get_declared_classes();
+			$controllers = array_filter($controllers, function($controller) {
+				return is_subclass_of($controller, 'Coxis\Core\Controller');
+			});
+			foreach($controllers as $classname) {
+				$r = new \ReflectionClass($classname);
+				if(!preg_match('/controllers$/', dirname($r->getFileName())))
+					continue;
+				if($directory)
+					if(strpos($r->getFileName(), realpath($directory)) !== 0)
+						continue;
+
+				$reflection = new \ReflectionAnnotatedClass($classname);
+				
+				if($reflection->getAnnotation('Prefix'))
+					$prefix = \Router::formatRoute($reflection->getAnnotation('Prefix')->value);
+				else
+					$prefix = '';
+				
+				$methods = get_class_methods($classname);
+				foreach($methods as $method) {
+					if(!preg_match('/Action$/i', $method))
+						continue;
+					$method_reflection = new \ReflectionAnnotatedMethod($classname, $method);
+				
+					if($method_reflection->getAnnotation('Route')) {
+						$route = \Router::formatRoute($prefix.'/'.$method_reflection->getAnnotation('Route')->value);
+
+						$routes[] = array(
+							'route'	=>	$route,
+							'controller'		=>	static::formatControllerName($classname), 
+							'action'			=>	static::formatActionName($method),
+							'requirements'	=>	$method_reflection->getAnnotation('Route')->requirements,
+							'method'	=>	$method_reflection->getAnnotation('Route')->method,
+							'name'	=>	isset($method_reflection->getAnnotation('Route')->name) ? $method_reflection->getAnnotation('Route')->name:null
+						);
+					}
+					if($method_reflection->getAnnotation('Hook')) {
+						$hook = $method_reflection->getAnnotation('Hook')->value;
+						#todo priority
+						// if($method_reflection->getAnnotation('Priority'))
+						// 	$priority = $method_reflection->getAnnotation('Priority')->value;
+						// else
+						// 	$priority = 0;
+						// $priority *= 1000;
+						// while(isset(BundlesManager::$hooks_table[$hook][$priority]))
+						// 	$priority += 1;
+
+						$controller = static::formatControllerName($classname);
+						$action = static::formatActionName($method);
+						$hooks[$hook][] = array($controller, $action);
+					}
+				}
+			}
+
+			return array($routes, $hooks);
+		}
+
+		public static function getRoutesFromDirectory($directory) {
+			static::loadBundles($directory);
+			list($routes) = static::getRoutesAndHooks($directory);
+			return $routes;
 		}
 	}
 }

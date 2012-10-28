@@ -19,7 +19,9 @@ class Router {
 		'install'	=>	array('Coxis\Core\Cli\Coxis', 'install'),	
 		'install-all'	=>	array('Coxis\Core\Cli\Coxis', 'installAll'),	
 		'console'	=>	array('Coxis\Core\Cli\Coxis', 'console'),	
-		'publish'	=>	array('Coxis\Core\Cli\Coxis', 'publish'),	
+		'publish'	=>	array('Coxis\Core\Cli\Coxis', 'publish'),
+
+		'generate-tests'	=>	array('Coxis\Core\Cli\Coxis', 'generateTests'),
 		
 		'dump'	=>	array('Coxis\Core\Cli\DB', 'dump'),	#dump data into data.yml
 		'backup-db'	=>	array('Coxis\Core\Cli\DB', 'backup'),	#dump data into default yml file

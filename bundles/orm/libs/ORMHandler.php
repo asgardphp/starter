@@ -60,6 +60,8 @@ class ORMHandler {
 	}
 	
 	public static function relationData($model, $name) {
+		if(is_string($model) || !$model instanceof \Coxis\Core\ModelDefinition)
+			$model = $model::getDefinition();
 		$relations = $model->relationships;
 		$relation = $relations[$name];
 		
@@ -218,7 +220,7 @@ class ORMHandler {
 		}
 		
 		//Persist local id field
-		foreach($model::$relationships as $relationship => $params) {
+		foreach($model::getDefinition()->relationships as $relationship => $params) {
 			if(!isset($model->data[$relationship]))
 				continue;
 			$rel = ORMHandler::relationData($model, $relationship);
@@ -267,12 +269,12 @@ class ORMHandler {
 		}
 	
 		//Persist relationships
-		foreach($model::$relationships as $relationship => $params) {
+		foreach($model::getDefinition()->relationships as $relationship => $params) {
 			if(!isset($model->data[$relationship]))
 				continue;
 			$rel = static::relationData($model, $relationship);
 			$type = $rel['type'];
-				
+
 			if($type == 'hasOne') {
 				$relation_model = $rel['model'];
 				$link = $rel['link'];

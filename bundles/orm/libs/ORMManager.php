@@ -2,7 +2,65 @@
 namespace Coxis\Bundles\ORM\Libs;
 
 class ORMManager {
-	public static function diff() {
+	public static function autobuild() {
+		list($up) = static::_diff();
+
+		foreach($up as $one)
+			eval($one);
+	}
+
+	public static function loadModelFixtures($file) {
+		require_once('vendors/yaml/sfYamlParser.php');
+		$yaml = new sfYamlParser();
+		$raw = $yaml->parse(file_get_contents($file));
+
+		$models = array();
+
+		foreach($raw as $class => $raw_models) {
+			foreach($raw_models as $name => $raw_model) {
+				foreach($raw_model as $k=>$V)
+					if(!$class::hasProperty($k))
+						unset($raw_model[$k]);
+
+				$model = new $class($raw_model);
+				$model->save(array(), true);
+				$models[$class][$name] = $model;
+			}
+		}
+
+		foreach($models as $class => $classmodels) {
+			foreach($classmodels as $name => $model) {
+				foreach($class::getDefinition()->relationships as $relation => $params) {
+					if(!isset($raw[$class][$name][$relation]))
+						continue;
+					$relationFixtures = $raw[$class][$name][$relation];
+
+					$rel = ORMHandler::relationData($class, $relation);
+					$relationClass = $rel['model'];
+
+					if(is_array($relationFixtures))
+						foreach($relationFixtures as $k=>$v)
+							$relationFixtures[$k] = $models[$relationClass][$v]->id;
+					else
+						$relationFixtures = $models[$relationClass][$relationFixtures]->id;
+
+					$model->save(array($relation => $relationFixtures), true);
+				}
+			}
+		}
+	}
+
+	public static function diff($verbose=false) {
+		list($up, $down) = static::_diff();
+
+		if(isset($request[0]))
+			$filename = $request[0];
+		else
+			$filename = 'diff';
+		static::addMigration($up, $down, $filename, $verbose);
+	}
+
+	protected static function _diff() {
 		$bundles = BundlesManager::getBundles();
 		
 		foreach($bundles as $bundle)
@@ -28,8 +86,6 @@ class ORMManager {
 						$neworm = array();
 					else
 						$neworm = $prop->orm;
-					if($prop->i18n)
-						continue;
 					if(!isset($prop->orm['type'])) {
 						if(method_exists($prop, 'getSQLType'))
 							$neworm['type'] = $prop->getSQLType();
@@ -53,7 +109,30 @@ class ORMManager {
 						$neworm['key'] = '';
 					if(!isset($prop->orm['auto_increment']))
 						$neworm['auto_increment'] = false;
-					$schema[$name] = $prop->orm = $neworm;
+
+					if($prop->i18n) {
+						if(!isset($newSchemas[$class::getTable().'_translation'])) {
+							$newSchemas[$class::getTable().'_translation'] = array(
+								'id' => array(
+									'type'	=>	'int(11)',
+									'nullable'	=>	false,
+									'auto_increment'	=>	false,
+									'default'	=>	null,
+									'key'	=>	null,
+								),
+								'locale' => array(
+									'type'	=>	'varchar(50)',
+									'nullable'	=>	false,
+									'auto_increment'	=>	false,
+									'default'	=>	null,
+									'key'	=>	null,
+								),
+							);
+						}
+						$newSchemas[$class::getTable().'_translation'][$prop->getName()] = $neworm;
+					}
+					else
+						$schema[$name] = $prop->orm = $neworm;
 				}
 
 				foreach($class::getDefinition()->relationships as $relation=>$params) {
@@ -108,19 +187,14 @@ class ORMManager {
 
 		$up = static::diffBetween($newSchemas, $oldSchemas);
 		$down = static::diffBetween($oldSchemas, $newSchemas);
-		
-		if(isset($request[0]))
-			$filename = $request[0];
-		else
-			$filename = 'diff';
-		return static::addMigration($up, $down, $filename);
+
+		return array($up, $down);
 	}
 	
 	private static function diffBetween($newSchemas, $oldSchemas) {
 		$migrations = array();
 		$migration = '';
 		foreach($newSchemas as $class=>$schema) {
-			// $table = $class::getTable();
 			$table = $class;
 			if(!in_array($class, array_keys($oldSchemas))) {
 				$migration = static::buildTableFor($class, $newSchemas[$class]);
@@ -168,7 +242,7 @@ class ORMManager {
 		file_put_contents('migrations/migrate_version', $last);
 	}
 	
-	private static function addMigration($up, $down, $filename='diff') {
+	private static function addMigration($up, $down, $filename='diff', $verbose=false) {
 		if(!$up)
 			return;
 		if(!is_array($up))
@@ -180,7 +254,6 @@ class ORMManager {
 		foreach($down as $k=>$v)
 			$down[$k] = static::tabs($v, 2);
 			
-		//~ $filename = 'diff';
 		$i = static::current()+1;
 			
 		$migration = '<?php
@@ -193,9 +266,11 @@ class '.$filename.'_'.$i.' {
 		'.implode("\n\n\t\t", $down)."
 	}
 }";
+		\Coxis\Core\Tools\FileManager::mkdir('migrations');
 		file_put_contents('migrations/'.$i.'_'.$filename.'.php', $migration);
-		// echo 'New migration: '.$i.'_'.$filename;
-		return $i.'_'.$filename;
+
+		if($verbose)
+			echo 'New migration: '.$i.'_'.$filename;
 	}
 	
 	private static function tabs($str, $tabs) {

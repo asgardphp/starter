@@ -4,12 +4,14 @@ if(!defined('_ENV_'))
 require_once(dirname(__FILE__).'/../coxis.php');
 \BundlesManager::loadBundles();
 
-require 'vendors/phpQuery/phpQuery/phpQuery.php';
+require_once 'vendors/phpQuery/phpQuery/phpQuery.php';
 
-function _pq($html, $selector) {
-	$doc = phpQuery::newDocument($html);
-	phpQuery::selectDocument($doc);
-	return pq($selector);
+if(!function_exists('_pq')) {
+	function _pq($html, $selector) {
+		$doc = phpQuery::newDocument($html);
+		phpQuery::selectDocument($doc);
+		return pq($selector);
+	}
 }
 
 class BrowserTest extends PHPUnit_Framework_TestCase {

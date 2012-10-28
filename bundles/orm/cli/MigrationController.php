@@ -22,7 +22,7 @@ class MigrationController extends \Coxis\Core\CLI\CLIController {
 		FileManager::mkdir('migrations');
 		echo 'Running diff..'."\n";
 	
-		echo 'New migration: '.ORMManager::diff();
+		echo 'New migration: '.ORMManager::diff(true);
 	}
 
 	/**

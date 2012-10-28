@@ -7,8 +7,8 @@ class DefaultAdminController extends \Coxis\Bundles\Admin\Libs\Controller\AdminP
 	}
 	
 	/**
-	@Route('/admin')
+	@Route('admin')
 	*/
-	public function indexAction($params) {
+	public function indexAction($request) {
 	}
 }

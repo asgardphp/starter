@@ -299,4 +299,68 @@ class CoxisController extends CLIController {
 		else
 			rename($src, $dst);
 	}
+
+	public function generateTestsAction($request) {
+		if(isset($request['dir']))
+			$directory = $request['dir'];
+		else
+			$directory = 'app';
+
+		if(isset($request['file']))
+			$res = $request['file'];
+		else
+			$res = 'tests/AutoTest.php';
+
+		copy('sample.php', $res);
+
+		$routes = \Router::getRoutes();
+		$routes = \BundlesManager::getRoutesFromDirectory($directory);
+		usort($routes, function($a, $b) {
+			return $a['route'] > $b['route'];
+		});
+
+		foreach($routes as $route=>$params) {
+			$method = strtolower($params['method']);
+			if(!$method)
+				$method = 'get';
+
+			#get
+			if($method === 'get' || $method === 'delete') {
+				if(strpos($params['route'], ':') !== false) {
+					// continue;
+					#get params
+					file_put_contents($res, '
+				/*
+				$browser = new Browser;
+				$this->assertEquals(200, $browser->'.$method.'(\''.$params['route'].'\')->getCode(), \''.strtoupper($method).' '.$params['route'].'\');
+				*/
+				', FILE_APPEND);
+				}
+				else {
+				file_put_contents($res, '
+				$browser = new Browser;
+				$this->assertEquals(200, $browser->'.$method.'(\''.$params['route'].'\')->getCode(), \''.strtoupper($method).' '.$params['route'].'\');
+				', FILE_APPEND);
+				}
+			}
+			else {
+				// continue;
+				#post params
+				file_put_contents($res, '
+				/*
+				$browser = new Browser;
+				$this->assertEquals(200, $browser->'.$method.'(\''.strtoupper($method).' '.$params['route'].'\',
+					array(),
+					array(),
+				)->getCode(), \''.$params['route'].'\');
+				*/
+				', FILE_APPEND);
+			}
+		}
+
+		file_put_contents($res, '
+			}
+		}
+		', FILE_APPEND);
+	}
 }
