@@ -16,16 +16,16 @@ class Controller {
 	
 	public function canonical($canonical, $relative=true, $redirect=true) {
 		if($relative)
-			$uri = URL::get();
+			$uri = \URL::get();
 		else
-			$uri = URL::current();
+			$uri = \URL::current();
 		
 		if($redirect && $canonical != $uri)
 			throw new ControllerException('Page not found', \Response::setCode(301)->redirect($canonical, $relative));
 		if($relative)
-			HTML::code('<link rel="canonical" href="'.URL::to($canonical).'">');
+			\HTML::code('<link rel="canonical" href="'.\URL::to($canonical).'">');
 		else
-			HTML::code('<link rel="canonical" href="'.$canonical.'">');
+			\HTML::code('<link rel="canonical" href="'.$canonical.'">');
 	}
 
 	public static function hookOn($hookName, $cAction) {
