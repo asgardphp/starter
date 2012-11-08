@@ -5,7 +5,7 @@ class BuildTools {
 			$res = 'array('."\n";
 			foreach($value as $v)
 				$res .= "\t".static::outputPHP($v).",\n";
-			$res .= ');';
+			$res .= ')';
 			return $res;
 		}
 		else

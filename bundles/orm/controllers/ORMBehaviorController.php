@@ -27,7 +27,7 @@ class ORMBehaviorController extends \Coxis\Core\Controller {
 		$ormHandler = new \Coxis\Bundles\ORM\Libs\ORMHandler($modelDefinition);
 
 		$modelDefinition->hookOn('constrains', function($chain, &$constrains) use($modelName) {
-			foreach($modelName::$relationships as $name=>$relation) {
+			foreach($modelName::getDefinition()->relationships() as $name=>$relation) {
 				if(isset($relation['required']) && $relation['required'])
 					$constrains[$name]['required'] = true;
 			}
@@ -90,7 +90,7 @@ class ORMBehaviorController extends \Coxis\Core\Controller {
 		});
 
 		$modelDefinition->hookBefore('validation', function($chain, $model, &$data, &$errors) {
-			foreach($model::$relationships as $name=>$relation) {
+			foreach($model::getDefinition()->relationships() as $name=>$relation) {
 				if(isset($model->data[$name]))
 					$data[$name] = $model->data[$name];
 				else
@@ -119,7 +119,7 @@ class ORMBehaviorController extends \Coxis\Core\Controller {
 		});
 
 		$modelDefinition->hookBefore('get', function($chain, $model, $name, $lang) {
-			if(array_key_exists($name, $model::$relationships)) {
+			if(array_key_exists($name, $model::getDefinition()->relationships())) {
 				$rel = $model->relation($name);
 				if($rel instanceof \Coxis\Core\Collection)
 					return $rel->get();

@@ -17,11 +17,15 @@ class CoxisController extends CLIController {
 		static::publishBundle($bundle);
 	}
 
-	public static function publishBundle($bundle) {
+	public static function publishBundle($bundle_path) {
+		$bundle = basename($bundle_path);
 		echo 'Publishing assets of bundle '.$bundle.'..'."\n";
-		$bundle_path = 'bundles\\'.$bundle.'\\';
-		if(file_exists($bundle_path.'web') && is_dir($bundle_path.'web'))
-			static::copyDir($bundle_path.'web', 'web/bundles/'.$bundle);
+		#todo find path to bundle
+		// $bundle_path = 'bundles\\'.$bundle.'\\';
+		// d($bundle);
+
+		if(file_exists($bundle_path.'/web') && is_dir($bundle_path.'/web'))
+			static::copyDir($bundle_path.'/web', 'web/bundles/'.$bundle);
 	}
 
 	public function consoleAction($request) {
@@ -71,14 +75,15 @@ class CoxisController extends CLIController {
 				die('Bundle '.$bundle.' does not exist.');
 		}
 
-		static::installBundle($bundle_path);
+		static::installBundle($bundle);
 	}
 
 	public static function installBundle($bundle_path) {
-		#todo move all from here to bundlesmanager
-		\BundlesManager::loadData($bundle_path);
+		// $bundle_path = 'bundles\\'.$bundle.'\\';
 
-		static::publishBundle($bundle);
+		\BundlesManager::loadModelFixtures($bundle_path);
+
+		static::publishBundle($bundle_path);
 
 		if(file_exists($bundle_path.'install.php'))
 			include(file_exists($bundle_path.'install.php'));

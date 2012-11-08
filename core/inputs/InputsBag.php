@@ -53,4 +53,11 @@ abstract class InputsBag {
 	public static function setAll($all) {
 		return $this->clear()->set($all);
 	}
+
+	public static function size() {
+		$req = static::getRequest();
+		$datatype = strtolower(NamespaceUtils::basename(get_called_class()));
+		
+		return sizeof($req->$datatype);
+	}
 }

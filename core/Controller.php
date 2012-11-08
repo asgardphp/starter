@@ -97,7 +97,9 @@ class Controller {
 	}
 	
 	public function render($view, $args) {
-		return $this->showView($view, $args);
+		$reflection = new \ReflectionObject($this);	
+		$dir = dirname($reflection->getFileName());
+		return $this->showView($dir.'/../views/'.strtolower(preg_replace('/Controller$/i', '', Importer::basename(get_class($this)))).'/'.$view, $args);
 	}
 	
 	//OVERRIDE

@@ -17,13 +17,14 @@ class ModelDefinition {
 		$this->meta = isset($modelClass::$meta) ? $modelClass::$meta:array();
 		$this->messages = isset($modelClass::$messages) ? $modelClass::$messages:array();
 
-		foreach($modelClass::$behaviors as $name=>$params) {
-			if(is_int($name)) {
-				$name = $params;
-				$params = true;
+		if(isset($modelClass::$behaviors))
+			foreach($modelClass::$behaviors as $name=>$params) {
+				if(is_int($name)) {
+					$name = $params;
+					$params = true;
+				}
+				$this->behaviors[$name] = $params;
 			}
-			$this->behaviors[$name] = $params;
-		}
 
 		$properties = $modelClass::$properties;
 		$clone = $properties;

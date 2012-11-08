@@ -22,10 +22,9 @@ class ModelAdminController extends AdminParentController {
 	function __construct() {
 		#trigger the model behaviors coxisadmin hook
 		$model = static::$_model;
-		$model_behaviors = $model::$behaviors;
+		$model_behaviors = $model::getDefinition()->behaviors();
 		foreach($model_behaviors as $behavior => $params)
 			if($params)
-				// \Coxis\Core\Event::trigger('behaviors_coxisadmin_'.$behavior, static::getControllerName());
 				\Hook::trigger('behaviors_coxisadmin_'.$behavior, static::getControllerName());
 
 		if(static::$_models == null)
@@ -61,8 +60,8 @@ class ModelAdminController extends AdminParentController {
 	
 		//submitted
 		$i = 0;
-		if(count($_POST)>1 && isset($_POST['action']) && $_POST['action']=='delete') {
-			foreach($_POST['id'] as $id)
+		if(POST::size()>1 && POST::get('action')=='delete') {
+			foreach(POST::get('id') as $id)
 				$i += $_model::destroyOne($id);
 		
 			Flash::addSuccess(sprintf(static::$_messages['many_deleted'], $i));

@@ -16,7 +16,7 @@ class MigrationController extends \Coxis\Core\CLI\CLIController {
 	*/
 	public function diffAction($request) {
 		#todo check migration version
-		if(!static::uptodate())
+		if(!ORMManager::uptodate())
 			die('You must run all migrations before using diff.');
 			
 		FileManager::mkdir('migrations');

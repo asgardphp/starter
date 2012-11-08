@@ -68,6 +68,7 @@ class Locale {
 		$raw = $yaml->parse(file_get_contents($file));
 		if(!isset($this->locales[$lang]))
 			$this->locales[$lang] = array();
-		$this->locales[$lang] = array_merge($this->locales[$lang], $raw);
+		if(is_array($raw))
+			$this->locales[$lang] = array_merge($this->locales[$lang], $raw);
 	}
 }
