@@ -121,7 +121,8 @@ class ORMHandler {
 				#todo and hasOne ?
 				if($params['type'] == 'belongsTo' || $params['type'] == 'hasOne') {
 					$rel = ORMHandler::relationData($model, $relationship);
-					$model->addProperty($rel['link'], array('type' => 'integer', 'required' => (isset($params['required']) && $params['required']), 'editable'=>false));
+					// $model->addProperty($rel['link'], array('type' => 'integer', 'required' => (isset($params['required']) && $params['required']), 'editable'=>false));
+					$model->addProperty($rel['link'], array('type' => 'integer', 'required' => false, 'editable'=>false));
 				}
 	}
 	

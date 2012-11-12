@@ -84,7 +84,7 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 		elseif($relationship['type'] == 'hasMany') {
 			echo '<p>';
 			$label = isset($options['label']) ? $options['label']:ucfirst($relation);
-			if(get($this->model->relationships(), $widget, 'required'))
+			if(get($this->model->getDefinition()->relationships(), $widget, 'required'))
 				$label .= '*';
 			
 			$this->$widget->label($label);
@@ -233,6 +233,7 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 							<li>
 								<img src="<?php echo \URL::to('imagecache/admin_thumb/'.$one_path) ?>" alt=""/>
 								<ul>
+
 									<li class="view"><a href="<?php echo \URL::to($one_path) ?>" rel="facebox">Voir</a></li>
 									<li class="delete"><a href="<?php echo $this->controller->url_for('deleteFile', array('id' => $this->model->id, 'pos' => $i, 'file' => $widget), false) ?>">Suppr.</a></li>
 								</ul>

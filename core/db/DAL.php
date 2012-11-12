@@ -10,6 +10,7 @@ class DAL {
 	public $offset = null;
 	public $limit = null;
 	public $orderBy = null;
+	public $groupBy = null;
 	public $leftjoin = array();
 	public $rightjoin = array();
 	public $innerjoin = array();
@@ -119,6 +120,11 @@ class DAL {
 		$this->orderBy = $orderBy;
 		return $this;
 	}
+		
+	public function groupBy($groupBy) {
+		$this->groupBy = $groupBy;
+		return $this;
+	}
 	
 	private static function processConditions($conditions, $join = 'and', $brackets=false, $table=null) {
 		if(sizeof($conditions) == 0)
@@ -184,6 +190,7 @@ class DAL {
 	public function buildSQL() {
 		$where = '';
 		$orderBy = '';
+		$groupBy = '';
 		$leftjoin = '';
 		$rightjoin = '';
 		$innerjoin = '';
@@ -263,8 +270,11 @@ class DAL {
 			}
 			$innerjoin .= ' INNER JOIN '.$table.' ON '.static::processConditions($conditions);
 		}
+
+		if($this->groupBy)
+			$groupBy = ' GROUP BY '.$this->groupBy;
 	
-		return 'SELECT * FROM '.$sqltable.$rightjoin.$leftjoin.$innerjoin.$where.$orderBy.$limit;
+		return 'SELECT * FROM '.$sqltable.$rightjoin.$leftjoin.$innerjoin.$where.$groupBy.$orderBy.$limit;
 	}
 	
 	public function first() {

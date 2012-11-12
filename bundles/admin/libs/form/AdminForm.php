@@ -21,6 +21,8 @@ class AdminForm extends Form {
 		
 		echo '<p>';
 		$widget->label($label);
+		if($widget->getError())
+			echo '<span style="color:#f00">'.$widget->getError().'</span>';
 		echo '<br>';
 		$widget->select($options, $choices);
 		echo '</p>';
@@ -29,9 +31,10 @@ class AdminForm extends Form {
 	public static function input($widget, $label, $options=array()) {
 		if(!isset($options['class']))
 			$options['class'] = 'text big';
-			
 		echo '<p>';
 		$widget->label($label);
+		if($widget->getError())
+			echo '<span style="color:#f00">'.$widget->getError().'</span>';
 		echo '<br>';
 		$widget->input($options);
 		if(isset($options['nb']))
@@ -45,6 +48,8 @@ class AdminForm extends Form {
 			
 		echo '<p>';
 		$this->$widget->label($label);
+		if($widget->getError())
+			echo '<span style="color:#f00">'.$widget->getError().'</span>';
 		echo '<br>';
 		$this->$widget->password($options);
 		if(isset($options['nb']))
@@ -55,6 +60,8 @@ class AdminForm extends Form {
 	public static function file($widget, $label, $options=array()) {
 		echo '<p>';
 		$widget->label($label);
+		if($widget->getError())
+			echo '<span style="color:#f00">'.$widget->getError().'</span>';
 		echo '<br>';
 		$widget->file(array(
 			'class'=>'text big',
@@ -68,6 +75,8 @@ class AdminForm extends Form {
 	public static function textarea($widget, $label, $options=array()) {	
 		echo '<p>';
 		$widget->label($label);
+		if($widget->getError())
+			echo '<span style="color:#f00">'.$widget->getError().'</span>';
 		echo '<br>';
 		$widget->textarea(array(
 			'class'=>'text big',
@@ -92,6 +101,8 @@ class AdminForm extends Form {
 			
 		echo '<p>';
 		$widget->label($label);
+		if($widget->getError())
+			echo '<span style="color:#f00">'.$widget->getError().'</span>';
 		echo '<br>';
 		$widget->wysiwyg($options);
 		echo '</p>';
@@ -101,6 +112,8 @@ class AdminForm extends Form {
 		echo '<p>';
 		$widget->label($label);
 		$widget->checkbox($options);
+		if($widget->getError())
+			echo '<br/><span style="color:#f00">'.$widget->getError().'</span>';
 		echo '</p>';
 	}
 }

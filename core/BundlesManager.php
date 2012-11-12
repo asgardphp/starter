@@ -117,7 +117,7 @@ namespace Coxis\Core {
 					include($bundle.'/bundle.php');
 		}
 
-		public static function sortRoutes($routes) {
+		public static function sortRoutes(&$routes) {
 			usort($routes, function($route1, $route2) {
 				$route1 = $route1['route'];
 				$route2 = $route2['route'];

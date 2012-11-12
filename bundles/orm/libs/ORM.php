@@ -201,6 +201,12 @@ class ORM {
 		return $this;
 	}
 	
+	public function groupBy($groupBy) {
+		$this->dal->groupBy($groupBy);
+		
+		return $this;
+	}
+	
 	public function insert($values) {
 		return $this->dal->insert($values);
 	}

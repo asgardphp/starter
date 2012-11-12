@@ -103,7 +103,7 @@ class ModelAdminController extends AdminParentController {
 		
 		if(!($this->$modelName = $_model::load($request['id'])))
 			$this->forward404();
-	
+
 		$this->form = $this->formConfigure($this->$modelName);
 	
 		if($this->form->isSent())
