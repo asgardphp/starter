@@ -10,7 +10,7 @@ class Article extends \Coxis\Core\Model {
 	public static $files = array(
 	);
 	
-	public static $relationships = array(
+	public static $relations = array(
 		'authors'	=>	array(
 			'model'	=>	'\Coxis\Tests\App\Article\Models\Author',
 			'type'		=>	'HMABT',

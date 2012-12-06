@@ -18,7 +18,7 @@ class Administrator extends \Coxis\Core\Model {
 	}
 
 	public static $behaviors = array();
-	public static $relationships = array();
+	public static $relations = array();
 	
 	public static function hash($pwd) {
 		return sha1(Config::get('salt').$pwd);

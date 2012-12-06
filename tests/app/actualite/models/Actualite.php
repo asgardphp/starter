@@ -24,7 +24,7 @@ class Actualite extends \Coxis\Core\Model {
 		),
 	);
 	
-	public static $relationships = array(
+	public static $relations = array(
 		'commentaires'	=>	array(
 			'model'	=>	'\Coxis\Tests\App\Actualite\Models\Commentaire',
 			//~ 'type'		=>	'HMABT',

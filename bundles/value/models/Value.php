@@ -15,7 +15,7 @@ class Value extends \Coxis\Core\Model {
 		),
 	);
 	
-	public static $relationships = array();
+	public static $relations = array();
 	public static $behaviors = array();
 	public static $meta = array();
 	

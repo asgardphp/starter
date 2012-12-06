@@ -30,7 +30,7 @@ class ORMManager {
 
 		foreach($models as $class => $classmodels) {
 			foreach($classmodels as $name => $model) {
-				foreach($class::getDefinition()->relationships as $relation => $params) {
+				foreach($class::getDefinition()->relations as $relation => $params) {
 					if(!isset($raw[$class][$name][$relation]))
 						continue;
 					$relationFixtures = $raw[$class][$name][$relation];
@@ -135,7 +135,7 @@ class ORMManager {
 						$schema[$name] = $prop->orm = $neworm;
 				}
 
-				foreach($class::getDefinition()->relationships as $relation=>$params) {
+				foreach($class::getDefinition()->relations as $relation=>$params) {
 					$rel = \Coxis\Core\ORM\ORMHandler::relationData($class::getDefinition(), $relation);
 					if($rel['type'] == 'HMABT') {
 						$table_name = $rel['join_table'];

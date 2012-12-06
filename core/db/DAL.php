@@ -92,13 +92,13 @@ class DAL {
 		
 		if(is_array($conditions)) {
 			foreach($conditions as $k=>$v)
-				if(!is_int($k)) {
+				if(is_int($k))
+					$res[] = static::parseConditions($v);
+				else {
 					$ar = array();
 					$ar[$k] = static::parseConditions($v);
 					$res[] = $ar;
 				}
-				else
-					$res[] = static::parseConditions($v);
 			return $res;
 		}
 		else
@@ -120,40 +120,52 @@ class DAL {
 		return $this;
 	}
 	
-	private static function processConditions($conditions, $join = 'and', $brackets=false, $table=null) {
-		if(sizeof($conditions) == 0)
-			return '';
+	private static function processConditions($params, $condition = 'and', $brackets=false, $table=null) {
+		if(sizeof($params) == 0)
+			return array('', array());
 		
 		$string_conditions = '';
 		
-		if(!is_array($conditions))
-			if($join == 'and')
-				return $conditions;
+		if(!is_array($params))
+			if($condition == 'and')
+				return array($params, array());
 			else
-				return static::replace($join, $conditions, $table);
-		else
-			foreach($conditions as $key=>$value)
+				return array(static::replace($condition, $table), array());
+
+		$pdoparams = array();
+
+		foreach($params as $key=>$value) {
+			if(!is_array($value)) {
 				if(is_int($key))
-					$string_conditions[] = static::processConditions($value, 'and', false, $table);
-				else
-					$string_conditions[] = static::processConditions($value, $key, true, $table);
-			
-		$result = implode(' '.$join.' ', $string_conditions);
+					$string_conditions[] = $value;
+				else {
+					$string_conditions[] = static::replace($key, $table);
+					$pdoparams[] = $value;
+				}
+			}
+			else {
+				if(is_int($key)) {
+					$r = static::processConditions($value, 'and', false, $table);
+					$string_conditions[] = $r[0];
+					$pdoparams[] = $r[1];
+				}
+				else {
+					$r = static::processConditions($value, $key, true, $table);
+					$string_conditions[] = $r[0];
+					$pdoparams[] = $r[1];
+				}
+			}
+		}
+
+		$result = implode(' '.$condition.' ', $string_conditions);
 		
 		if($brackets)
-			return '('.$result.')';
-		else
-			return $result;
+			$result = '('.$result.')';
+		
+		return array($result, Tools::flateArray($pdoparams));
 	}
 	
-	private static function replace($condition, $params, $table='') {
-		if(!is_array($params))
-			$params = array($params);
-		
-		#TODO MUST FIX THIS
-		//~ foreach($params as $k=>$v)
-			//~ $params[$k] = mysql_real_escape_string($v, $this->db);
-			
+	private static function replace($condition, $table='') {
 		if(strpos($condition, '?') === false)
 			if(preg_match('/^[a-zA-Z0-9_]+$/', $condition))
 				if($table)
@@ -162,14 +174,6 @@ class DAL {
 					$condition = '`'.$condition.'` = ?';
 			else
 				$condition = $condition.' = ?';
-		
-		$format_str = str_replace('%', '%%', $condition);
-		$format_str = str_replace('?', "'%s'", $format_str);
-		
-		if($params) {
-			array_unshift($params, $format_str);
-			$condition = call_user_func_array('sprintf', $params);
-		}
 		
 		return $condition;
 	}
@@ -188,6 +192,8 @@ class DAL {
 		$rightjoin = '';
 		$innerjoin = '';
 		$limit = null;
+
+		$params = array();
 		
 		$tables = array();
 		foreach($this->tables as $table=>$alias)
@@ -201,9 +207,6 @@ class DAL {
 			$default = get(array_values($this->tables), 0);
 		else
 			$default = get(array_keys($this->tables), 0);
-		
-		if($where = static::processConditions($this->where, 'and', false, $default))
-			$where = ' WHERE '.$where;
 		
 		if($this->orderBy) {
 			$orderBy = ' ORDER BY ';
@@ -239,9 +242,11 @@ class DAL {
 				$table = preg_replace('/^([a-zA-Z]+)/', $ref_table, $table);
 				$table = str_replace('.Translation', '_translation', $table);
 			}
-			$rightjoin .= ' RIGHT JOIN '.$table.' ON '.static::processConditions($conditions);
+			$r = static::processConditions($conditions);
+			$rightjoin .= ' RIGHT JOIN '.$table.' ON '.$r[0];
+			$params = array_merge($params, $r[1]);
 		}
-				
+		
 		foreach($this->leftjoin as $tableName=>$conditions) {
 			$table = $tableName;
 			if(preg_match('/^([a-zA-Z]+).Translation /', $tableName, $matches)) {
@@ -250,7 +255,9 @@ class DAL {
 				$table = str_replace('.Translation', '_translation', $table);
 				#todo move it into ORM
 			}
-			$leftjoin .= ' LEFT JOIN '.$table.' ON '.static::processConditions($conditions);
+			$r = static::processConditions($conditions);
+			$leftjoin .= ' LEFT JOIN '.$table.' ON '.$r[0];
+			$params = array_merge($params, $r[1]);
 		}
 				
 		foreach($this->innerjoin as $tableName=>$conditions) {
@@ -261,20 +268,28 @@ class DAL {
 				$table = str_replace('.Translation', '_translation', $table);
 				#todo move it into ORM
 			}
-			$innerjoin .= ' INNER JOIN '.$table.' ON '.static::processConditions($conditions);
+			$r = static::processConditions($conditions);
+			$innerjoin .= ' INNER JOIN '.$table.' ON '.$r[0];
+			$params = array_merge($params, $r[1]);
+		}
+		
+		$r = static::processConditions($this->where, 'and', false, $default);
+		if($where = $r[0]) {
+			$where = ' WHERE '.$where;
+			$params = array_merge($params, $r[1]);
 		}
 	
-		return 'SELECT * FROM '.$sqltable.$rightjoin.$leftjoin.$innerjoin.$where.$orderBy.$limit;
+		return array('SELECT * FROM '.$sqltable.$rightjoin.$leftjoin.$innerjoin.$where.$orderBy.$limit, $params);
 	}
 	
 	public function first() {
-		$sql = $this->limit(1)->buildSQL();
-		return $this->db->query($sql)->first();
+		list($sql, $params) = $this->limit(1)->buildSQL();
+		return $this->db->query($sql, $params)->first();
 	}
 	
 	public function get() {
-		$sql = $this->buildSQL();
-		return $this->db->query($sql)->all();
+		list($sql, $params) = $this->buildSQL();
+		return $this->db->query($sql, $params, $params)->all();
 	}
 	
 	public function paginate($page, $per_page=10) {
@@ -286,8 +301,13 @@ class DAL {
 	
 	public function update($values) {
 		$where = '';
-		if($where = static::processConditions($this->where))
-			$where = ' WHERE '.$where;
+		$params = array();
+
+		$r = static::processConditions($this->where);
+		if($where = $r[0]) {
+ 			$where = ' WHERE '.$where;
+			$params = array_merge($params, $r[1]);
+		}
 		
 		if(sizeof($values) == 0)
 			throw new Exception('Update values should not be empty.');
@@ -300,8 +320,10 @@ class DAL {
 		$set = ' SET '.implode(', ', $set);
 	
 		$sql = 'UPDATE '.$table.$set.$where;
+
+		$params = array_merge(array_values($values), $params);
 		
-		return $this->db->query($sql, array_values($values))->affected();
+		return $this->db->query($sql, $params)->affected();
 	}
 	
 	public function insert($values) {
@@ -324,21 +346,30 @@ class DAL {
 	
 	public function delete() {
 		$where = '';
+		$params = array();
 		
 		$table = get(array_keys($this->tables), 0);
-		
-		if($where = static::processConditions($this->where))
-			$where = ' WHERE '.$where;
+
+		$r = static::processConditions($this->where);
+		if($where = $r[0]) {
+ 			$where = ' WHERE '.$where;
+			$params = array_merge($params, $r[1]);
+		}
 	
 		$sql = 'DELETE FROM '.$table.$where;
 		
-		return $this->db->query($sql)->affected();
+		return $this->db->query($sql, $params)->affected();
 	}
 	
 	public function count($group_by=null) {
 		$where = '';
-		if($where = static::processConditions($this->where))
-			$where = ' WHERE '.$where;
+		$params = array();
+
+		$r = static::processConditions($this->where);
+		if($where = $r[0]) {
+ 			$where = ' WHERE '.$where;
+			$params = array_merge($params, $r[1]);
+		}
 	
 		$tables = array();
 		foreach($this->tables as $table=>$alias)
@@ -351,93 +382,145 @@ class DAL {
 		if($group_by) {
 			$sql = 'SELECT `'.$group_by.'` as groupby, count(*) as total FROM '.$sqltable.$where.' GROUP BY '.$group_by;
 			$res = array();
-			foreach($this->db->query($sql)->all() as $v)
+			foreach($this->db->query($sql, $params)->all() as $v)
 				$res[$v['groupby']] = $v['total'];
 			return $res;
 		}
 		else {
 			$sql = 'SELECT count(*) as total FROM '.$sqltable.$where;
-			$res = $this->db->query($sql)->first();
+			$res = $this->db->query($sql, $params)->first();
 			return $res['total'];
 		}
 	}
 	
 	public function min($what, $group_by=null) {
 		$where = '';
+		$params = array();
+
+		$r = static::processConditions($this->where);
+
+		if($where = $r[0]) {
+			$where = ' WHERE '.$where;
+			$params = array_merge($params, $r[1]);
+		}
 		
-		if($this->where)
-			$where = ' WHERE '.static::processConditions($this->where);
+		$tables = array();
+		foreach($this->tables as $table=>$alias)
+			if($alias)
+				$tables[] = $table.' '.$alias;
+			else
+				$tables[] = $table;
+		$sqltable = implode(', ', $tables);
 	
 		if($group_by) {
 			$sql = 'SELECT `'.$group_by.'` as groupby, min(`'.$what.'`) as min FROM '.$this->table.$where.' GROUP BY '.$group_by;
 			$res = array();
-			foreach($this->db->query($sql)->all() as $v)
+			foreach($this->db->query($sql, $params)->all() as $v)
 				$res[$v['groupby']] = $v['min'];
 			return $res;
 		}
 		else {
-			$sql = 'SELECT min(`'.$what.'`) as min FROM '.$this->table.$where;
-			$res = $this->db->query($sql)->first();
+			$sql = 'SELECT min(`'.$what.'`) as min FROM '.$sqltable.$where;
+			$res = $this->db->query($sql, $params)->first();
 			return $res['min'];
 		}
 	}
 	
 	public function max($what, $group_by=null) {
 		$where = '';
+		$params = array();
+
+		$r = static::processConditions($this->where);
+
+		if($where = $r[0]) {
+			$where = ' WHERE '.$where;
+			$params = array_merge($params, $r[1]);
+		}
 		
-		if($this->where)
-			$where = ' WHERE '.static::processConditions($this->where);
+		$tables = array();
+		foreach($this->tables as $table=>$alias)
+			if($alias)
+				$tables[] = $table.' '.$alias;
+			else
+				$tables[] = $table;
+		$sqltable = implode(', ', $tables);
 	
 		if($group_by) {
 			$sql = 'SELECT `'.$group_by.'` as groupby, max(`'.$what.'`) as max FROM '.$this->table.$where.' GROUP BY '.$group_by;
 			$res = array();
-			foreach($this->db->query($sql)->all() as $v)
+			foreach($this->db->query($sql, $params)->all() as $v)
 				$res[$v['groupby']] = $v['max'];
 			return $res;
 		}
 		else {
-			$sql = 'SELECT max(`'.$what.'`) as max FROM '.$this->table.$where;
-			$res = $this->db->query($sql)->first();
+			$sql = 'SELECT max(`'.$what.'`) as max FROM '.$sqltable.$where;
+			$res = $this->db->query($sql, $params)->first();
 			return $res['max'];
 		}
 	}
 	
 	public function avg($what, $group_by=null) {
 		$where = '';
+		$params = array();
+
+		$r = static::processConditions($this->where);
+
+		if($where = $r[0]) {
+			$where = ' WHERE '.$where;
+			$params = array_merge($params, $r[1]);
+		}
 		
-		if($this->where)
-			$where = ' WHERE '.static::processConditions($this->where);
+		$tables = array();
+		foreach($this->tables as $table=>$alias)
+			if($alias)
+				$tables[] = $table.' '.$alias;
+			else
+				$tables[] = $table;
+		$sqltable = implode(', ', $tables);
 	
 		if($group_by) {
 			$sql = 'SELECT `'.$group_by.'` as groupby, avg(`'.$what.'`) as avg FROM '.$this->table.$where.' GROUP BY '.$group_by;
 			$res = array();
-			foreach($this->db->query($sql)->all() as $v)
+			foreach($this->db->query($sql, $params)->all() as $v)
 				$res[$v['groupby']] = $v['avg'];
 			return $res;
 		}
 		else {
-			$sql = 'SELECT avg(`'.$what.'`) as avg FROM '.$this->table.$where;
-			$res = $this->db->query($sql)->first();
+			$sql = 'SELECT avg(`'.$what.'`) as avg FROM '.$sqltable.$where;
+			$res = $this->db->query($sql, $params)->first();
 			return $res['avg'];
 		}
 	}
 	
 	public function sum($what, $group_by=null) {
 		$where = '';
+		$params = array();
+
+		$r = static::processConditions($this->where);
+
+		if($where = $r[0]) {
+			$where = ' WHERE '.$where;
+			$params = array_merge($params, $r[1]);
+		}
 		
-		if($this->where)
-			$where = ' WHERE '.static::processConditions($this->where);
+		$tables = array();
+		foreach($this->tables as $table=>$alias)
+			if($alias)
+				$tables[] = $table.' '.$alias;
+			else
+				$tables[] = $table;
+		$sqltable = implode(', ', $tables);
 	
 		if($group_by) {
 			$sql = 'SELECT `'.$group_by.'` as groupby, sum(`'.$what.'`) as sum FROM '.$this->table.$where.' GROUP BY '.$group_by;
 			$res = array();
-			foreach($this->db->query($sql)->all() as $v)
+			foreach($this->db->query($sql, $params)->all() as $v)
 				$res[$v['groupby']] = $v['sum'];
 			return $res;
 		}
 		else {
-			$sql = 'SELECT sum(`'.$what.'`) as sum FROM '.$this->table.$where;
-			$res = $this->db->query($sql)->first();
+			$sql = 'SELECT sum(`'.$what.'`) as sum FROM '.$sqltable.$where;
+			$res = $this->db->query($sql, $params)->first();
 			return $res['sum'];
 		}
 	}

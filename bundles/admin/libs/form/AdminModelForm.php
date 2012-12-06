@@ -30,7 +30,7 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 			else
 				$this->input($widget, $options);
 		}
-		elseif(isset($model::$relationships[$widget])) {
+		elseif(isset($model::$relations[$widget])) {
 			$this->relation($widget, $options);
 		}
 		else {
@@ -46,8 +46,8 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 	
 		$modelName = get_class($this->model);
 	
-		$relationship = get($modelName::$relationships, $relation);
-		$relation_model = $relationship['model'];
+		$relation = get($modelName::$relations, $relation);
+		$relation_model = $relation['model'];
 		$widget = $relation;
 				
 		if(isset($options['choices']))
@@ -61,12 +61,12 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 				$choices[$one->id] = $one->__toString();
 		}
 		
-		if($relationship['type'] == 'belongsTo' || $relationship['type'] == 'hasOne') {
+		if($relation['type'] == 'belongsTo' || $relation['type'] == 'hasOne') {
 			echo '<p>';
 			$label = isset($options['label']) ? $options['label']:ucfirst($widget);
 				
 			$model = $this->model;
-			if(get($model::$relationships, $widget, 'required'))
+			if(get($model::$relations, $widget, 'required'))
 				$label .= '*';
 		
 			$this->$widget->label($label);
@@ -81,10 +81,10 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 			);
 			echo '</p>';
 		}
-		elseif($relationship['type'] == 'hasMany') {
+		elseif($relation['type'] == 'hasMany') {
 			echo '<p>';
 			$label = isset($options['label']) ? $options['label']:ucfirst($relation);
-			if(get($this->model->relationships(), $widget, 'required'))
+			if(get($this->model->relations(), $widget, 'required'))
 				$label .= '*';
 			
 			$this->$widget->label($label);
@@ -103,10 +103,10 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 			);
 			echo '</p>';
 		}
-		elseif($relationship['type'] == 'HMABT') {
+		elseif($relation['type'] == 'HMABT') {
 			echo '<p>';
 			$label = isset($options['label']) ? $options['label']:ucfirst($widget);
-			if(get($modelName::$relationships, $widget, 'required'))
+			if(get($modelName::$relations, $widget, 'required'))
 				$label .= '*';
 			
 			$this->$widget->label($label);

@@ -15,7 +15,7 @@ class Commentaire extends \Coxis\Core\Model {
 		//~ ),
 	);
 	
-	public static $relationships = array(
+	public static $relations = array(
 		'actualite'	=>	array(
 			'model'	=>	'\Coxis\Tests\App\Actualite\Models\Actualite',
 			'type'		=>	'belongsTo',

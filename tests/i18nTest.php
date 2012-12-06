@@ -14,6 +14,9 @@ class i18nTest extends PHPUnit_Framework_TestCase {
 
 	public function tearDown(){}
 	
+	public function test0() {
+	}
+
 	#get default
 	public function test1() {
 		$com = new \Coxis\Tests\App\Actualite\Models\Commentaire(2);

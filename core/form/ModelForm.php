@@ -35,7 +35,7 @@ class ModelForm extends Form {
 			$widgets[$name] = new Widget($widget_params);
 		}
 		
-		foreach($model::getDefinition()->relationships() as $name=>$relation) {
+		foreach($model::getDefinition()->relations() as $name=>$relation) {
 			if(isset($params['only']))
 				if(!in_array($name, $params['only']))
 					continue;

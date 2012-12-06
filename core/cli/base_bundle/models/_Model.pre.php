@@ -10,8 +10,8 @@ class <?php echo ucfirst($bundle['model']['meta']['name']) ?> extends \Coxis\Cor
 		<?php endforeach ?>
 	);
 	
-	public static $relationships = array(	
-	<?php foreach($bundle['model']['relationships'] as $relationname => $relation): ?>
+	public static $relations = array(	
+	<?php foreach($bundle['model']['relations'] as $relationname => $relation): ?>
 		'<?php echo $relationname ?>' => array(
 			<?php foreach($relation as $k=>$v): ?>
 			'<?php echo $k ?>'	=>	<?php echo BuildTools::outputPHP($v) ?>,
