@@ -22,6 +22,13 @@ class ORM {
 		}
 		$this->orderBy($model::getDefinition()->meta['order_by']);
 	}
+
+	public function ids() {
+		$ids = array();
+		foreach($this->get() as $one)
+			$ids[] = $one->id;
+		return $ids;
+	}
 	
 	public function dal() {
 		return $this->dal; 
