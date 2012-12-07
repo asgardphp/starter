@@ -1027,3 +1027,8 @@ a:hover {
 	display: inline-block;
 	width: 30px;
 }
+
+.error {
+	border:1px solid #f00 !important;
+	background-color: #FFCACA !important;
+}

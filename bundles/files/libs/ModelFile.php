@@ -16,6 +16,43 @@ class ModelFile {
 		$this->name = $name;
 		$this->tmp_file = $tmp_file;
 	}
+
+	public function extension() {
+		if(isset($this->tmp_file['name']))
+			$name = $this->tmp_file['name'];
+		else
+			$name = $this->get();
+		if(!$name)
+			return null;
+		if(is_array($name)) {
+			$res = array();
+			foreach($name as $v)
+				$res[] = pathinfo($v, PATHINFO_EXTENSION);
+			return $res;
+		}
+		else
+			return pathinfo($name, PATHINFO_EXTENSION);
+	}
+
+	public function notAllowed() {
+		if(!$this->exists())
+			return false;
+		$params = $this->params;
+		if($this->multiple()) {
+			if($ext = $this->extension())
+				foreach($ext as $v)
+					if(!in_array($v, $params::$defaultallowed))
+						return $v;
+		}
+		else
+			if(!in_array($this->extension(), $params::$defaultallowed))
+				return $this->extension();
+		return false;
+	}
+
+	public function allowed() {
+		return !$this->notAllowed();
+	}
 	
 	public function exists() {
 		if($this->multiple()) {
@@ -112,7 +149,10 @@ class ModelFile {
 	public function delete($pos=null) {
 		$path = $this->get();
 		if($this->multiple()) {
-			if(is_int($pos)) {
+			if($pos !== null) {
+				$pos = (int)$pos;
+				if(!isset($path[$pos]))
+					return $this;
 				$path = $path[$pos];
 				\Coxis\Core\Tools\FileManager::unlink(_WEB_DIR_.'/'.$path);
 				\Coxis\Bundles\Imagecache\Libs\ImageCache::clearFile($path);

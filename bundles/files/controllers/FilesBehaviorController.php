@@ -87,16 +87,13 @@ class FilesBehaviorController extends \Coxis\Core\Controller {
 				}
 			} catch(\ErrorException $e) {}
 		});
-		
 
 		\Validation::register('allowed', function($attribute, $value, $params, $validator) {
-			if(!$value->exists())
-				return;
-			if(!in_array($value->extension(), $params[0])) {
+			if($ext = $value->notAllowed()) {
 				$msg = $validator->getMessage('image', $attribute, __('This type of file is not allowed ":ext".'));
 				return \Validation::format($msg, array(
 					'attribute'	=>	$attribute,
-					'ext'	=>	$value->extension(),
+					'ext'	=>	$ext,
 				));
 			}
 		});

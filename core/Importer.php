@@ -197,7 +197,6 @@ namespace Coxis\Core {
 					
 					#remove, only for testing class loading
 					// d();
-
 					foreach(\Coxis\Core\Context::get('autoloader')->preloaded as $v)
 						if(strtolower(static::basename($class)) == $v[0])
 							$classes[] = $v;

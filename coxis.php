@@ -24,6 +24,7 @@ function d() {
 function get() {
 	$args = func_get_args();
 	$result = array_shift($args);
+	$args = \Coxis\Core\Tools\Tools::flateArray($args);
 	foreach($args as $key)
 		if(!isset($result[$key]))
 			return null;
@@ -58,6 +59,8 @@ register_shutdown_function(function () {
 	chdir(dirname(__FILE__));//wtf?
 	#todo get the full backtrace for shutdown errors
 	if($e=error_get_last()) {
+		if($e['type'] > 1)
+			return;
 		while(ob_get_level()){ ob_end_clean(); }
 		$response = \Coxis\Core\Error::report("($e[type]) $e[message]<br>
 			$e[file] ($e[line])".debug_backtrace(), array(array('file'=>$e['file'], 'line'=>$e['line'])));

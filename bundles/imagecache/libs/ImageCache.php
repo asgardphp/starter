@@ -38,7 +38,7 @@ class ImageCache {
 	
 	public static function clearFile($file) {
 		if(!file_exists('web/cache/imagecache/'))
-			FileManager::mkdir('web/cache/imagecache/');
+			return;
 		if ($handle = opendir('web/cache/imagecache/')) {
 			while (false !== ($entry = readdir($handle)))
 				if ($entry != "." && $entry != ".." && is_dir('web/cache/imagecache/'.$entry))

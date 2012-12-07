@@ -147,8 +147,8 @@ class ORMHandler {
 				return null;
 			unset($res['id']);
 			unset($res['locale']);
-			foreach($res as $k=>$v)
-				$model->set($k, $v, $lang);
+
+			static::unserializeSet($model, $res, $lang);
 				
 			if(isset($model->data['properties'][$name][$lang]))
 				return $model->data['properties'][$name][$lang];
@@ -192,9 +192,18 @@ class ORMHandler {
 
 		$res = $this->getORM()->where(array('id' => $id))->dal()->first();
 		if($res) {
-			$model->set($res);
+			static::unserializeSet($model, $res);
 			$chain->found = true;
 		}
+	}
+
+	public static function unserializeSet($model, $data, $lang=null) {
+		foreach($data as $k=>$v)
+			if($model->hasProperty($k))
+				$data[$k] = $model->property($k)->unserialize($v);
+			else
+				unset($data[$k]);
+		return $model->set($data, $lang, true);
 	}
 
 	public function destroy($model) {
@@ -227,7 +236,10 @@ class ORMHandler {
 			$type = $rel['type'];
 			if($type == 'belongsTo') {
 				$link = $rel['link'];
-				$vars[$link] = $model->data[$relation];
+				if(is_object($model->data[$relation]))
+					$vars[$link] = $model->data[$relation]->id;
+				else
+					$vars[$link] = $model->data[$relation];
 			}
 		}
 		

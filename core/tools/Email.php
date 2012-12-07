@@ -30,22 +30,24 @@ class Email {
 		$this->html = $html;
 		return $this;
  	}
- 
+
 	public function addFile($file, $filename=null) {
 		if($filename)
 			$this->files[$filename] = $file;
 		else
 			$this->files[] = $file;
 		return $this;
- 	}
- 	
+	}
+	
 	public function send() {
- 		$boundary = md5(uniqid(microtime(), TRUE));
- 
- 		// Headers
- 		$headers .= 'Content-Type: multipart/mixed;boundary='.$boundary."\r\n";
- 		$headers .= "\r\n";
- 		
+		$boundary = md5(uniqid(microtime(), TRUE));
+
+		// Headers
+		$headers = 'From: '.$this->from.''."\r\n";
+		$headers .= 'Mime-Version: 1.0'."\r\n";
+		$headers .= 'Content-Type: multipart/mixed;boundary='.$boundary."\r\n";
+		$headers .= "\r\n";
+		
 		$msg = '';
 
 		#text
@@ -54,7 +56,7 @@ class Email {
 			$msg .= 'Content-type: text/plain; charset=utf-8'."\r\n";
 			$msg = $this->text."\r\n";
 		}
- 
+
 		#html
 		if($this->html) {
 			$msg .= '--'.$boundary."\r\n";
@@ -79,7 +81,7 @@ class Email {
 				"Content-Transfer-Encoding: base64\r\n\r\n" . $data . "\r\n\r\n";
 			}
 		}
- 
+
 		return mail($this->to, $this->subject, $msg, $headers);
- 	}
- }
+	}
+}

@@ -60,7 +60,7 @@ class Paginator {
 	}
 	
 	public function show() {
-		$url = URL::current();
+		$url = \URL::current();
 		if($this->page > 1)
 			echo '<a href="'.$url.'?'.http_build_query(array_merge(\GET::all(), array('page'=>$this->page-1))).'">«</a>';
 		for($i=1; $i<=$this->getPages(); $i++)

@@ -2,7 +2,6 @@
 namespace Coxis\Core;
 
 class Autoloader {
-// class Autoloader {
 	public $map = array(
 		// 'Something'	=>	'there/somewhere.php',
 	);
@@ -29,7 +28,7 @@ class Autoloader {
 			foreach(glob($file.'/*') as $sub_file)
 				$this->preloadDir($sub_file);
 		else {
-			if(!preg_match('/\/[a-zA-Z0-9]+.php$/', $file))
+			if(!preg_match('/\/[a-zA-Z0-9_]+.php$/', $file))
 				return;
 			list($class) = explode('.', basename($file));
 			$this->preloadClass($class, $file);

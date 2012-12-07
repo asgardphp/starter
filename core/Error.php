@@ -112,7 +112,7 @@ class Error {
 					$pos = $trace['line']-$start;
 					
 					$code = '';
-					
+
 					ob_start();
 					highlight_string(file_get_contents($trace['file']));
 					$code = ob_get_contents();

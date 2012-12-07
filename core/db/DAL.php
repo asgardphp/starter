@@ -10,6 +10,7 @@ class DAL {
 	public $offset = null;
 	public $limit = null;
 	public $orderBy = null;
+	public $groupBy = null;
 	public $leftjoin = array();
 	public $rightjoin = array();
 	public $innerjoin = array();
@@ -89,7 +90,7 @@ class DAL {
 	
 	private static function parseConditions($conditions) {
 		$res = array();
-		
+
 		if(is_array($conditions)) {
 			foreach($conditions as $k=>$v)
 				if(is_int($k))
@@ -117,6 +118,11 @@ class DAL {
 		
 	public function orderBy($orderBy) {
 		$this->orderBy = $orderBy;
+		return $this;
+	}
+		
+	public function groupBy($groupBy) {
+		$this->groupBy = $groupBy;
 		return $this;
 	}
 	
@@ -188,6 +194,7 @@ class DAL {
 	public function buildSQL() {
 		$where = '';
 		$orderBy = '';
+		$groupBy = '';
 		$leftjoin = '';
 		$rightjoin = '';
 		$innerjoin = '';
@@ -278,6 +285,9 @@ class DAL {
 			$where = ' WHERE '.$where;
 			$params = array_merge($params, $r[1]);
 		}
+
+		if($this->groupBy)
+			$groupBy = ' GROUP BY '.$this->groupBy;
 	
 		return array('SELECT * FROM '.$sqltable.$rightjoin.$leftjoin.$innerjoin.$where.$orderBy.$limit, $params);
 	}

@@ -198,7 +198,7 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 			throw new \Exception($widget.' should be a file.');
 
 		$path = $this->model->$widget->get();
-		$optional = !$this->model->$widget->required();
+		$optional = !$this->model->property($widget)->required;
 				
 		if($this->model->property($widget)->multiple) {
 			if(!$this->model->isNew()):
@@ -233,6 +233,7 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 							<li>
 								<img src="<?php echo \URL::to('imagecache/admin_thumb/'.$one_path) ?>" alt=""/>
 								<ul>
+
 									<li class="view"><a href="<?php echo \URL::to($one_path) ?>" rel="facebox">Voir</a></li>
 									<li class="delete"><a href="<?php echo $this->controller->url_for('deleteFile', array('id' => $this->model->id, 'pos' => $i, 'file' => $widget), false) ?>">Suppr.</a></li>
 								</ul>

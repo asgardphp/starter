@@ -13,7 +13,7 @@ class PreferencesAdminController extends \Coxis\Bundles\Admin\Libs\Controller\Ad
 		$form = new AdminSimpleForm();
 		
 		$form->values = array();
-		$vars = array('name', 'email', 'head_script');
+		$vars = array('name', 'email', 'head_script', 'adresse', 'telephone');
 		foreach($vars as $valueName) {
 			$value = Value::fetch($valueName);
 			$a = new AdminModelForm($value, $this);
