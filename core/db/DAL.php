@@ -14,6 +14,8 @@ class DAL {
 	public $leftjoin = array();
 	public $rightjoin = array();
 	public $innerjoin = array();
+
+	protected $rsc = null;
 		
 	function __construct($tables, $db=null) {
 		if($db === null)
@@ -43,6 +45,17 @@ class DAL {
 		
 		return $this;
 	}
+
+	public function rsc() {
+		$query = $this->buildSQL();
+		return $this->query($query[0], $query[1]);
+	}
+
+	public function next() {
+		if($this->rsc === null)
+			$this->rsc = $this->rsc();
+		return $this->rsc->next();
+	}
 	
 	public function innerjoin($jointures) {
 		$this->innerjoin = array_merge($this->innerjoin, $jointures);
@@ -66,13 +79,12 @@ class DAL {
 		$this->where = null;
 		$this->offset = null;
 		$this->limit = null;
+		#todo leftjoin etc.
 		
 		return $this;
 	}
 	
 	public function query($sql, $args) {
-		$sql = static::replace($sql, $args);
-		
 		return $this->db->query($sql);
 	}
 		
@@ -289,7 +301,7 @@ class DAL {
 
 		if($this->groupBy)
 			$groupBy = ' GROUP BY '.$this->groupBy;
-	
+
 		return array('SELECT * FROM '.$sqltable.$rightjoin.$leftjoin.$innerjoin.$where.$orderBy.$limit, $params);
 	}
 	

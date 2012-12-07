@@ -2,9 +2,9 @@
 namespace Coxis\Bundles\ORM\Libs;
 
 class ORM {
-	private $model = null;
-	private $with = null;
-	private $dal = null;
+	protected $model = null;
+	protected $with = null;
+	protected $dal = null;
 		
 	function __construct($model) {
 		$this->model = $model;
@@ -23,11 +23,28 @@ class ORM {
 		$this->orderBy($model::getDefinition()->meta['order_by']);
 	}
 
+	public function toModel($raw) {
+		$current_model = $this->model;
+		$new = new $current_model;
+		return ORMHandler::unserializeSet($new, $raw);
+	}
+
+	public function next() {
+		if(!($r = $this->dal()->next()))
+			return false;
+		else
+			return $this->toModel($r);
+	}
+
 	public function ids() {
-		$ids = array();
+		return $this->values('id');
+	}
+
+	public function values($attr) {
+		$res = array();
 		foreach($this->get() as $one)
-			$ids[] = $one->id;
-		return $ids;
+			$res[] = $one->$attr;
+		return $res;
 	}
 	
 	public function dal() {
@@ -55,8 +72,7 @@ class ORM {
 		
 		$rows = $this->dal->get();
 		foreach($rows as $row) {
-			$new = new $current_model;
-			$models[] = ORMHandler::unserializeSet($new, $row);
+			$models[] = $this->toModel($row);
 			$ids[] = $row['id'];
 		}
 		

@@ -15,4 +15,8 @@ class Coxis {
 			return \Error::report($e->getMessage(), array_merge($first_trace, $e->getTrace()));
 		}
 	}
+
+	public static function load() {
+		BundlesManager::loadBundles();
+	}
 }
