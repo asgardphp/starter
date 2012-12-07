@@ -4,7 +4,7 @@ namespace Coxis\Core\Properties;
 class DatetimeProperty extends BaseProperty {
 	public function getRules() {
 		$rules = parent::getRules();
-		$rules['date'] = true;
+		$rules['datetime'] = true;
 
 		return $rules;
 	}
@@ -16,18 +16,19 @@ class DatetimeProperty extends BaseProperty {
 	public function serialize($obj) {
 		if($obj == null)
 			return '';
-		return $obj->datetime();
+		return date('Y-m-d H:i:s', $obj->timestamp);
 	}
 
 	public function unserialize($str) {
-		preg_match('/([0-9]+)\/([0-9]+)\/([0-9]+) ([0-9]+):([0-9]+):([0-9]+)/', $str, $r);
-		d($r);
+		preg_match('/([0-9]+)-([0-9]+)-([0-9]+) ([0-9]+):([0-9]+):([0-9]+)/', $str, $r);
+		$t = mktime($r[4], $r[5], $r[6], $r[2], $r[3], $r[1]);
+		return new \Coxis\Core\Tools\Datetime($t);
 	}
 
 	public function set($val) {
 		if(!$val)
 			return null;
-		preg_match('/([0-9]+)-([0-9]+)-([0-9]+) ([0-9]+):([0-9]+):([0-9]+)/', $val, $r);
+		preg_match('/([0-9]+)\/([0-9]+)\/([0-9]+) ([0-9]+):([0-9]+):([0-9]+)/', $val, $r);
 		$t = mktime($r[4], $r[5], $r[6], $r[2], $r[3], $r[1]);
 		return new \Coxis\Core\Tools\Datetime($t);
 	}

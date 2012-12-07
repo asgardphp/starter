@@ -33,8 +33,9 @@ class GeneralController extends \Coxis\Core\Controller {
 		if($response->getCode() == 500)
 			return;
 
-		if(get(getallheaders(), 'X-Requested-With') == 'XMLHttpRequest')
-			return;
+		if(function_exists('getallheaders'))
+			if(\get(\getallheaders(), 'X-Requested-With') == 'XMLHttpRequest')
+				return;
 
 		try {
 			if(\Response::getHeader('Content-Type') && \Response::getHeader('Content-Type')!='text/html')
