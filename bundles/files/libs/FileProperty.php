@@ -2,6 +2,8 @@
 namespace Coxis\Bundles\Files\Libs;
 
 class FileProperty extends \Coxis\Core\Properties\BaseProperty {
+	public static $defaultallowed = array('pdf', 'doc', 'jpg', 'jpeg', 'png', 'docx', 'gif', 'rtf', 'ppt', 'xls', 'zip', 'txt');
+
 	public function getRules() {
 		$rules = parent::getRules();
 		if(isset($rules['required'])) {
@@ -10,6 +12,8 @@ class FileProperty extends \Coxis\Core\Properties\BaseProperty {
 		}
 		unset($rules['dir']);
 		unset($rules['multiple']);
+		if(!isset($rules['allowed']))
+			$rules['allowed'] = static::$defaultallowed;
 
 		return $rules;
 	}

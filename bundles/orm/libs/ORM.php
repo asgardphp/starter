@@ -22,13 +22,6 @@ class ORM {
 		}
 		$this->orderBy($model::getDefinition()->meta['order_by']);
 	}
-
-	public function ids() {
-		$ids = array();
-		foreach($this->get() as $one)
-			$ids[] = $one->id;
-		return $ids;
-	}
 	
 	public function dal() {
 		return $this->dal; 
@@ -55,8 +48,8 @@ class ORM {
 		
 		$rows = $this->dal->get();
 		foreach($rows as $row) {
-			$new = new $current_model();
-			$models[] = $new->set($row);
+			$new = new $current_model;
+			$models[] = ORMHandler::unserializeSet($new, $row);
 			$ids[] = $row['id'];
 		}
 		
@@ -130,18 +123,19 @@ class ORM {
 		return $models;
 	}
 	
-	public function queryGet($sql, $args) {
+	public function queryGet($sql, $args=array()) {
 		$models = array();
 		$model = $this->model;
 		
 		$rows = $this->dal->query($sql, $args)->all();
 		foreach($rows as $row)
-			$models[] = new $model($row);
+			$models[] = ORMHandler::unserializeSet(new $model, $row);
 			
 		return $models;
 	}
 	
 	public function paginate($page, $per_page=10, &$paginator=null) {
+		$page = $page ? $page:1;
 		$this->dal->paginate($page, $per_page);
 		$paginator = new \Coxis\Core\Tools\Paginator($per_page, $this->count(), $page);
 		

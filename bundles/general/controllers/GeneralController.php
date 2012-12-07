@@ -33,7 +33,7 @@ class GeneralController extends \Coxis\Core\Controller {
 			return;
 
 		try {
-			if(get(\Router::getRequest(), 'format') != 'html')
+			if(\Response::getHeader('Content-Type') && \Response::getHeader('Content-Type')!='text/html')
 				return;
 		} catch(\Exception $e) {}
 			

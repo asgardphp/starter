@@ -30,7 +30,7 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 			else
 				$this->input($widget, $options);
 		}
-		elseif(isset($model::$relations[$widget])) {
+		elseif(isset($model::$relationships[$widget])) {
 			$this->relation($widget, $options);
 		}
 		else {
@@ -46,8 +46,8 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 	
 		$modelName = get_class($this->model);
 	
-		$relation = get($modelName::$relations, $relation);
-		$relation_model = $relation['model'];
+		$relationship = get($modelName::$relationships, $relation);
+		$relation_model = $relationship['model'];
 		$widget = $relation;
 				
 		if(isset($options['choices']))
@@ -61,12 +61,12 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 				$choices[$one->id] = $one->__toString();
 		}
 		
-		if($relation['type'] == 'belongsTo' || $relation['type'] == 'hasOne') {
+		if($relationship['type'] == 'belongsTo' || $relationship['type'] == 'hasOne') {
 			echo '<p>';
 			$label = isset($options['label']) ? $options['label']:ucfirst($widget);
 				
 			$model = $this->model;
-			if(get($model::$relations, $widget, 'required'))
+			if(get($model::$relationships, $widget, 'required'))
 				$label .= '*';
 		
 			$this->$widget->label($label);
@@ -81,10 +81,10 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 			);
 			echo '</p>';
 		}
-		elseif($relation['type'] == 'hasMany') {
+		elseif($relationship['type'] == 'hasMany') {
 			echo '<p>';
 			$label = isset($options['label']) ? $options['label']:ucfirst($relation);
-			if(get($this->model->getDefinition()->relations(), $widget, 'required'))
+			if(get($this->model->getDefinition()->relationships(), $widget, 'required'))
 				$label .= '*';
 			
 			$this->$widget->label($label);
@@ -103,10 +103,10 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 			);
 			echo '</p>';
 		}
-		elseif($relation['type'] == 'HMABT') {
+		elseif($relationship['type'] == 'HMABT') {
 			echo '<p>';
 			$label = isset($options['label']) ? $options['label']:ucfirst($widget);
-			if(get($modelName::$relations, $widget, 'required'))
+			if(get($modelName::$relationships, $widget, 'required'))
 				$label .= '*';
 			
 			$this->$widget->label($label);
@@ -198,7 +198,7 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 			throw new \Exception($widget.' should be a file.');
 
 		$path = $this->model->$widget->get();
-		$optional = !$this->model->$widget->required();
+		$optional = !$this->model->property($widget)->required;
 				
 		if($this->model->property($widget)->multiple) {
 			if(!$this->model->isNew()):

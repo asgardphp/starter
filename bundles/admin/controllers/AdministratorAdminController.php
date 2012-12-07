@@ -8,15 +8,14 @@ class AdministratorAdminController extends \Coxis\Bundles\Admin\Libs\Controller\
 	static $_model = 'administrator';
 	static $_messages = array();
 	
-	function __construct() {
-		$this->__messages = array(
+	public static function _autoload() {
+		static::$__messages = array(
 			'modified'			=>	__('Administrator updated with success.'),
 			'created'				=>	__('Administrator created with success.'),
 			'many_deleted'	=>	__('%s administrators deleted.'),
 			'deleted'				=>	__('Administrator deleted with success.'),
 			'unexisting'			=>	__('This administrator does not exist.'),
 		);
-		parent::__construct();
 	}
 	
 	public function formConfigure($model) {

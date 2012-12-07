@@ -21,7 +21,7 @@ class ORMHandler {
 				'position' => 1,
 			),
 		));
-		static::loadrelations($modelDefinition);
+		static::loadRelationships($modelDefinition);
 	}
 
 	public function isNew($model) {
@@ -62,7 +62,7 @@ class ORMHandler {
 	public static function relationData($model, $name) {
 		if(is_string($model) || !$model instanceof \Coxis\Core\ModelDefinition)
 			$model = $model::getDefinition();
-		$relations = $model->relations;
+		$relations = $model->relationships;
 		$relation = $relations[$name];
 		
 		$res = array();
@@ -79,8 +79,8 @@ class ORMHandler {
 				// 	$modelName = strtolower(get_class($model));
 				$modelName = strtolower($model->getClass());
 				$modelName = preg_replace('/^\\\/', '', $modelName);
-				// d($relation_model::getDefinition()->relations);
-				foreach($relation_model::getDefinition()->relations as $name=>$relation) {
+				// d($relation_model::getDefinition()->relationships);
+				foreach($relation_model::getDefinition()->relationships as $name=>$relation) {
 					$rel = static::relationData($relation_model::getDefinition(), $name);
 					$relModelClass = preg_replace('/^\\\/', '', strtolower($rel['model']));
 					if($rel['type'] == 'belongsTo' && $relModelClass == $modelName) {
@@ -113,14 +113,14 @@ class ORMHandler {
 		return $res;
 	}
 	
-	public static function loadrelations($model) {
-		$model_relations = $model->relations();
+	public static function loadRelationships($model) {
+		$model_relationships = $model->relationships();
 		
-		if(is_array($model_relations))
-			foreach($model_relations as $relation => $params)
+		if(is_array($model_relationships))
+			foreach($model_relationships as $relationship => $params)
 				#todo and hasOne ?
 				if($params['type'] == 'belongsTo' || $params['type'] == 'hasOne') {
-					$rel = ORMHandler::relationData($model, $relation);
+					$rel = ORMHandler::relationData($model, $relationship);
 					// $model->addProperty($rel['link'], array('type' => 'integer', 'required' => (isset($params['required']) && $params['required']), 'editable'=>false));
 					$model->addProperty($rel['link'], array('type' => 'integer', 'required' => false, 'editable'=>false));
 				}
@@ -148,8 +148,8 @@ class ORMHandler {
 				return null;
 			unset($res['id']);
 			unset($res['locale']);
-			foreach($res as $k=>$v)
-				$model->set($k, $v, $lang);
+
+			static::unserializeSet($model, $res, $lang);
 				
 			if(isset($model->data['properties'][$name][$lang]))
 				return $model->data['properties'][$name][$lang];
@@ -193,9 +193,18 @@ class ORMHandler {
 
 		$res = $this->getORM()->where(array('id' => $id))->dal()->first();
 		if($res) {
-			$model->set($res);
+			static::unserializeSet($model, $res);
 			$chain->found = true;
 		}
+	}
+
+	public static function unserializeSet($model, $data, $lang=null) {
+		foreach($data as $k=>$v)
+			if($model->hasProperty($k))
+				$data[$k] = $model->property($k)->unserialize($v);
+			else
+				unset($data[$k]);
+		return $model->set($data, $lang, true);
 	}
 
 	public function destroy($model) {
@@ -221,14 +230,17 @@ class ORMHandler {
 		}
 		
 		//Persist local id field
-		foreach($model::getDefinition()->relations as $relation => $params) {
-			if(!isset($model->data[$relation]))
+		foreach($model::getDefinition()->relationships as $relationship => $params) {
+			if(!isset($model->data[$relationship]))
 				continue;
-			$rel = ORMHandler::relationData($model, $relation);
+			$rel = ORMHandler::relationData($model, $relationship);
 			$type = $rel['type'];
 			if($type == 'belongsTo') {
 				$link = $rel['link'];
-				$vars[$link] = $model->data[$relation];
+				if(is_object($model->data[$relationship]))
+					$vars[$link] = $model->data[$relationship]->id;
+				else
+					$vars[$link] = $model->data[$relationship];
 			}
 		}
 		
@@ -269,21 +281,21 @@ class ORMHandler {
 				);
 		}
 	
-		//Persist relations
-		foreach($model::getDefinition()->relations as $relation => $params) {
-			if(!isset($model->data[$relation]))
+		//Persist relationships
+		foreach($model::getDefinition()->relationships as $relationship => $params) {
+			if(!isset($model->data[$relationship]))
 				continue;
-			$rel = static::relationData($model, $relation);
+			$rel = static::relationData($model, $relationship);
 			$type = $rel['type'];
 
 			if($type == 'hasOne') {
 				$relation_model = $rel['model'];
 				$link = $rel['link'];
 				$relation_model::where(array($link => $model->id))->update(array($link => 0));
-				$relation_model::where(array('id' => $model->data[$relation]))->update(array($link => $model->id));
+				$relation_model::where(array('id' => $model->data[$relationship]))->update(array($link => $model->id));
 			}
 			elseif($type == 'hasMany' || $type == 'HMABT')
-				$model->$relation()->sync($model->data[$relation]);
+				$model->$relationship()->sync($model->data[$relationship]);
 		}
 	}
 }

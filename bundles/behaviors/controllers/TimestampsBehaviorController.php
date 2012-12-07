@@ -6,8 +6,6 @@ class TimestampsBehaviorController extends \Coxis\Core\Controller {
 	@Hook('behaviors_pre_load')
 	**/
 	public function behaviors_pre_loadAction($ModelDefinition) {
-		// if(!isset($model::$behaviors['timestamps']))
-		// 	$model::$behaviors['timestamps'] = true;
 		if(!isset($ModelDefinition->behaviors['timestamps']))
 			$ModelDefinition->behaviors['timestamps'] = true;
 	}
@@ -25,10 +23,10 @@ class TimestampsBehaviorController extends \Coxis\Core\Controller {
 	**/
 	public function behaviors_presave_timestampsAction($model) {
 		if($model->isNew()) {
-			$model->created_at = new \Coxis\Core\Tools\Datetime();
-			$model->updated_at = new \Coxis\Core\Tools\Datetime();
+			$model->created_at = new \Coxis\Core\Tools\Date(time());
+			$model->updated_at = new \Coxis\Core\Tools\Date(time());
 		}
 		elseif(!$model->isNew())
-			$model->updated_at = new \Coxis\Core\Tools\Datetime();
+			$model->updated_at = new \Coxis\Core\Tools\Date(time());
 	}
 }

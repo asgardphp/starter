@@ -6,13 +6,41 @@
 	)
 ));
 
-\Coxis\Bundles\Imagecache\Libs\ImageCache::addPreset('VLqgzyhpDV', 
-	array (
-	'resize' => 
-	array (
-		'width' => 100,
-		'height' => 100,
-		'force' => true,
-	),
-)
-);
+		ImageCache::addPreset('H2LWUltvu7', 
+				array (
+			'resize' => 
+			array (
+				'width' => 122,
+			),
+			'crop' => 
+			array (
+				'height' => 92,
+			),
+		)
+			);
+
+		ImageCache::addPreset('Lmyup3kZCw', 
+				array (
+			'resize' => 
+			array (
+				'width' => 122,
+			),
+			'crop' => 
+			array (
+				'height' => 92,
+			),
+		)
+			);
+
+		ImageCache::addPreset('ql4ydBfEoo', 
+				array (
+			'resize' => 
+			array (
+				'width' => 122,
+			),
+			'crop' => 
+			array (
+				'height' => 92,
+			),
+		)
+			);

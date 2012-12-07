@@ -13,9 +13,13 @@
 					<?php
 					$form->start();
 						
+					$form->values['name']->def('value', array('label'=>'Nom'));
+						
+					$form->values['adresse']->def('value', array('label'=>'Adresse'));
+						
+					$form->values['telephone']->def('value', array('label'=>'Téléphone'));
+
 					$form->values['email']->def('value', array('label'=>'Email'));
-					
-					$form->values['name']->def('value', array('label'=>'Nom*'));
 					
 					$form->values['head_script']->def('value', array('label'=>'Script'));
 					

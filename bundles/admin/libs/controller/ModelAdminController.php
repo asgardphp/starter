@@ -5,19 +5,21 @@ class ModelAdminController extends AdminParentController {
 	static $_model = null;#todo model variable name or model name ?
 	static $_models = null;
 	static $_index = null;
-	// static $_messages = null;
-	// static $__messages = array();
+	static $_messages = null;
+	static $__messages = array();
 	protected static $_hooks = array();
 	
-	function __construct() {
-		$this->__messages = array(
+	public static function _autoload() {
+		static::$__messages = array(
 			'modified'			=>	__('Element updated with success.'),
 			'created'				=>	__('Element created with success.'),
 			'many_deleted'	=>	__('%s elements deleted.'),
 			'deleted'				=>	__('Element deleted with success.'),
 			'unexisting'			=>	__('This element does not item.'),
 		);
-
+	}
+	
+	function __construct() {
 		#trigger the model behaviors coxisadmin hook
 		$model = static::$_model;
 		$model_behaviors = $model::getDefinition()->behaviors();
@@ -27,10 +29,10 @@ class ModelAdminController extends AdminParentController {
 
 		if(static::$_models == null)
 			static::$_models = basename(strtolower(static::$_model.'s'));
-		if(isset($this->_messages))
-			$this->_messages = array_merge($this->__messages, $this->_messages);
+		if(isset(static::$_messages))
+			static::$_messages = array_merge(static::$__messages, static::$_messages);
 		else
-			$this->_messages = $this->__messages;
+			static::$_messages = static::$__messages;
 		static::$_index = static::$_index ? static::$_index:basename(static::$_models);
 	}
 	
@@ -62,7 +64,7 @@ class ModelAdminController extends AdminParentController {
 			foreach(POST::get('id') as $id)
 				$i += $_model::destroyOne($id);
 		
-			Flash::addSuccess(sprintf($this->_messages['many_deleted'], $i));
+			Flash::addSuccess(sprintf(static::$_messages['many_deleted'], $i));
 		}
 		
 		$conditions = array();
@@ -107,7 +109,7 @@ class ModelAdminController extends AdminParentController {
 		if($this->form->isSent())
 			try {
 				$this->form->save();
-				\Flash::addSuccess($this->_messages['modified']);
+				\Flash::addSuccess(static::$_messages['modified']);
 				if(isset($_POST['send']))
 					return \Response::redirect('admin/'.static::$_index);
 			} catch(\Coxis\Core\Form\FormException $e) {
@@ -131,7 +133,7 @@ class ModelAdminController extends AdminParentController {
 		if($this->form->isSent())
 			try {
 				$this->form->save();
-				\Flash::addSuccess($this->_messages['created']);
+				\Flash::addSuccess(static::$_messages['created']);
 				if(isset($_POST['send']))
 					return \Response::redirect('admin/'.static::$_index);
 				else {
@@ -151,8 +153,8 @@ class ModelAdminController extends AdminParentController {
 		$_model = static::$_model;
 		
 		!$_model::destroyOne($request['id']) ?
-			\Flash::addError($this->_messages['unexisting']) :
-			\Flash::addSuccess($this->_messages['deleted']);
+			\Flash::addError(static::$_messages['unexisting']) :
+			\Flash::addSuccess(static::$_messages['deleted']);
 			
 		return \Response::redirect('admin/'.static::$_index);
 	}
