@@ -72,6 +72,7 @@ class ModelFile {
 					return false;
 				$path = 'web/'.$this->get();
 			}
+			
 
 			return file_exists($path);
 		}

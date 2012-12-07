@@ -20,6 +20,7 @@ namespace Coxis\Core {
 			\Locale::importLocales($bundle.'/locales');
 
 			\Coxis\Core\Context::get('autoloader')->preloadDir($bundle.'/models');
+			// d(\Coxis\Core\Context::get('autoloader')->preloaded);
 
 			if(file_exists($bundle.'/controllers/')) {
 				\Coxis\Core\Context::get('autoloader')->preloadDir($bundle.'/controllers');
@@ -46,7 +47,7 @@ namespace Coxis\Core {
 				else
 					$directories = $directory;
 				foreach($directories as $dir)
-					foreach(glob($dir.'/*') as $bundlepath)
+					foreach(glob(_DIR_.$dir.'/*') as $bundlepath)
 						$bundles[] = $bundlepath;
 				if(\Config::get('phpcache'))
 					Cache::set('bundlesmanager/bundles', $bundles);
@@ -105,7 +106,6 @@ namespace Coxis\Core {
 					));
 				}
 			}
-
 			foreach($routes as $route)
 				\Router::addRoute($route);
 			foreach($hooks as $name=>$hooks)
@@ -192,7 +192,6 @@ namespace Coxis\Core {
 				if($directory)
 					if(strpos($r->getFileName(), realpath($directory)) !== 0)
 						continue;
-
 				$reflection = new \ReflectionAnnotatedClass($classname);
 				
 				if($reflection->getAnnotation('Prefix'))

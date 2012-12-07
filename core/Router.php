@@ -12,15 +12,13 @@ class Router {
 	public function dispatch($src=null) {
 		if(method_exists($this->request['controller'].'Controller', $this->request['action'].'Action')) {
 			$controllerName = ucfirst(strtolower($this->request['controller']));
-			$controllerClassName = $controllerName.'Controller';
-			$controller = new $controllerClassName();
+			// $controllerClassName = $controllerName.'Controller';
+			// $controller = new $controllerClassName();
 			$actionName = $this->request['action'];
 			$params = array($this->request);
 			
-			if($response = static::runAction($controller, 'configure', $params, $src, false))
-				return $response;
 			\Hook::trigger('beforeDispatchAction');
-			return static::runAction($controller, $actionName, $params, $src);
+			return static::run($controllerName, $actionName, $params, $src);
 		}
 		else
 			throw new \Coxis\Core\ControllerException('Page not found', \Response::setCode(404));
@@ -46,6 +44,11 @@ class Router {
 		$controllerName = ucfirst($controllerName);
 		$controllerClassName = $controllerName.'Controller';
 		$controller = new $controllerClassName();
+
+		if(method_exists($controller, 'configure'))
+			if($response = static::runAction($controller, 'configure', array(), $src, false))
+				throw new ControllerException('', $response);
+
 		return static::runAction($controller, $actionName, $params, $src, $showView);
 	}
 

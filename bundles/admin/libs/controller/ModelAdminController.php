@@ -82,8 +82,13 @@ class ModelAdminController extends AdminParentController {
 		$pagination = $_model::where($conditions);
 		if(isset(static::$_orderby))
 			$pagination->orderBy(static::$_orderby);
+
+		$this->orm = $_model::where($conditions);
+
+		\Hook::trigger('coxisadmin_'.static::$_model.'_index', array($this));
+
 		$this->paginator = null;
-		$this->$_models = $_model::where($conditions)->paginate(
+		$this->$_models = $this->orm->paginate(
 			isset($request['page']) ? $request['page']:1,
 			10,
 			$this->paginator
@@ -120,7 +125,7 @@ class ModelAdminController extends AdminParentController {
 	*/
 	public function newAction($request) {
 		$_model = static::$_model;
-		$modelName = strtolower(basename($_model));
+		$modelName = strtolower(basename($_model));#todo
 		
 		$this->$modelName = new $_model;
 	
@@ -129,7 +134,8 @@ class ModelAdminController extends AdminParentController {
 		if($this->form->isSent())
 			try {
 				$this->form->save();
-				\Flash::addSuccess($this->_messages['created']);
+				\Hook::trigger('coxisadmin_'.static::$_model.'_new', array($this, $this->$modelName));
+				\Flash::addSuccess(static::$_messages['created']);
 				if(isset($_POST['send']))
 					return \Response::redirect('admin/'.static::$_index);
 				else {
@@ -167,7 +173,7 @@ class ModelAdminController extends AdminParentController {
 		$file = $request['file'];
 		$this->$_model->$file->delete();
 		\Flash::addSuccess(__('File deleted with success.'));
-		return \Response::redirect(static::getEditURL($this->$_model->id), false);
+		return \Response::back();
 	}
 	
 	/**

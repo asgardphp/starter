@@ -19,7 +19,7 @@ class Validation {
 
 		$this->register('unique', function($attribute, $value, $params, $validator) {
 			$modelName = get_class($validator->model);
-			if($modelName::where(array($attribute => $value))->count() > 0) {
+			if($modelName::where(array($attribute => $value, 'id!=?'=>$params[1]['id']))->count() > 0) {
 				$msg = $validator->getMessage('unique', $attribute, __('":value" is already used.'));
 				return Validation::format($msg, array(
 					'attribute'	=>	str_replace('_', ' ', $attribute),
@@ -37,8 +37,18 @@ class Validation {
 			}
 		});
 		
-		$this->register('exact_length', function($attribute, $value, $params, $validator) {
+		$this->register('length', function($attribute, $value, $params, $validator) {
 			if(strlen($value) > $params[0]) {
+				$msg = $validator->getMessage('length', $attribute, __('The field ":attribute" must be less than :length characters.'));
+				return Validation::format($msg, array(
+					'attribute'	=>	str_replace('_', ' ', $attribute),
+					'length'	=>	$params[0],
+				));
+			}
+		});
+		
+		$this->register('exact_length', function($attribute, $value, $params, $validator) {
+			if(strlen($value) != $params[0]) {
 				$msg = $validator->getMessage('exact_length', $attribute, __('The field ":attribute" must be :length characters.'));
 				return Validation::format($msg, array(
 					'attribute'	=>	str_replace('_', ' ', $attribute),

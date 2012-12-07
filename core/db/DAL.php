@@ -205,9 +205,9 @@ class DAL {
 		$tables = array();
 		foreach($this->tables as $table=>$alias)
 			if($alias)
-				$tables[] = $table.' '.$alias;
+				$tables[] = '`'.$table.'` '.$alias;
 			else
-				$tables[] = $table;
+				$tables[] = '`'.$table.'`';
 		$sqltable = implode(', ', $tables);
 		
 		if(get(array_values($this->tables), 0))
@@ -242,6 +242,7 @@ class DAL {
 				$limit .= $this->limit;
 		}
 				
+		#todo put ` around table only, ie `like` l and not `like l`
 		foreach($this->rightjoin as $tableName=>$conditions) {
 			$table = $tableName;
 			if(preg_match('/^([a-zA-Z]+).Translation /', $tableName, $matches)) {
@@ -303,6 +304,7 @@ class DAL {
 	}
 	
 	public function paginate($page, $per_page=10) {
+		$page = $page ? $page:1;
 		$this->offset(($page-1)*$per_page);
 		$this->limit($per_page);
 		
@@ -322,7 +324,7 @@ class DAL {
 		if(sizeof($values) == 0)
 			throw new Exception('Update values should not be empty.');
 		
-		$table = get(array_keys($this->tables), 0);
+		$table = '`'.get(array_keys($this->tables), 0).'`';
 			
 		$vals = array();
 		foreach($values as $k=>$v)
@@ -340,7 +342,7 @@ class DAL {
 		if(sizeof($values) == 0)
 			throw new Exception('Insert values should not be empty.');
 		
-		$table = get(array_keys($this->tables), 0);
+		$table = '`'.get(array_keys($this->tables), 0).'`';
 			
 		$columns = array();
 		$vals = array();
@@ -384,9 +386,9 @@ class DAL {
 		$tables = array();
 		foreach($this->tables as $table=>$alias)
 			if($alias)
-				$tables[] = $table.' '.$alias;
+				$tables[] = '`'.$table.'` '.$alias;
 			else
-				$tables[] = $table;
+				$tables[] = '`'.$table.'`';
 		$sqltable = implode(', ', $tables);
 		
 		if($group_by) {
@@ -423,7 +425,7 @@ class DAL {
 		$sqltable = implode(', ', $tables);
 	
 		if($group_by) {
-			$sql = 'SELECT `'.$group_by.'` as groupby, min(`'.$what.'`) as min FROM '.$this->table.$where.' GROUP BY '.$group_by;
+			$sql = 'SELECT `'.$group_by.'` as groupby, min(`'.$what.'`) as min FROM `'.$this->table.'`'.$where.' GROUP BY '.$group_by;
 			$res = array();
 			foreach($this->db->query($sql, $params)->all() as $v)
 				$res[$v['groupby']] = $v['min'];
@@ -456,7 +458,7 @@ class DAL {
 		$sqltable = implode(', ', $tables);
 	
 		if($group_by) {
-			$sql = 'SELECT `'.$group_by.'` as groupby, max(`'.$what.'`) as max FROM '.$this->table.$where.' GROUP BY '.$group_by;
+			$sql = 'SELECT `'.$group_by.'` as groupby, max(`'.$what.'`) as max FROM `'.$this->table.'`'.$where.' GROUP BY '.$group_by;
 			$res = array();
 			foreach($this->db->query($sql, $params)->all() as $v)
 				$res[$v['groupby']] = $v['max'];
@@ -489,7 +491,7 @@ class DAL {
 		$sqltable = implode(', ', $tables);
 	
 		if($group_by) {
-			$sql = 'SELECT `'.$group_by.'` as groupby, avg(`'.$what.'`) as avg FROM '.$this->table.$where.' GROUP BY '.$group_by;
+			$sql = 'SELECT `'.$group_by.'` as groupby, avg(`'.$what.'`) as avg FROM `'.$this->table.'`'.$where.' GROUP BY '.$group_by;
 			$res = array();
 			foreach($this->db->query($sql, $params)->all() as $v)
 				$res[$v['groupby']] = $v['avg'];
@@ -522,7 +524,7 @@ class DAL {
 		$sqltable = implode(', ', $tables);
 	
 		if($group_by) {
-			$sql = 'SELECT `'.$group_by.'` as groupby, sum(`'.$what.'`) as sum FROM '.$this->table.$where.' GROUP BY '.$group_by;
+			$sql = 'SELECT `'.$group_by.'` as groupby, sum(`'.$what.'`) as sum FROM `'.$this->table.'`'.$where.' GROUP BY '.$group_by;
 			$res = array();
 			foreach($this->db->query($sql, $params)->all() as $v)
 				$res[$v['groupby']] = $v['sum'];

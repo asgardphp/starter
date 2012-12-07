@@ -74,7 +74,7 @@ class Model {
 
 	public function loadDefault() {
 		foreach(static::properties() as $name=>$property)
-			$this->$name = $property->getDefault();
+			$this->set($name, $property->getDefault());
 				
 		return $this;
 	}
@@ -154,15 +154,17 @@ class Model {
 	}
 
 	/* ACCESSORS */
-	public function set($name, $value=null, $lang=null) {
+	public function set($name, $value=null, $lang=null, $raw=false) {
 		if(is_array($name)) {
+			$raw = $lang;
+			$lang = $value;
 			$vars = $name;
 			foreach($vars as $k=>$v)
-				$this->$k = $v;
+				$this->set($k, $v, $lang, $raw);
 		}
 		else {
 			if(static::getDefinition()->hasProperty($name)) {
-				if(static::getDefinition()->property($name)->setHook) {
+				if(!$raw && static::getDefinition()->property($name)->setHook) {
 					$hook = static::getDefinition()->property($name)->setHook;
 					$value = call_user_func_array($hook, array($value));
 				}
@@ -172,14 +174,21 @@ class Model {
 						$lang = \Config::get('locale');
 					if($lang == 'all')
 						foreach($value as $one => $v)
-							$this->data['properties'][$name][$one] = static::getDefinition()->property($name)->set($v);
+							if($raw)
+								$this->data['properties'][$name][$one] = $v;
+							else
+								$this->data['properties'][$name][$one] = static::getDefinition()->property($name)->set($v);
+					elseif($raw)
+						$this->data['properties'][$name][$lang] = $value;
 					else
 						$this->data['properties'][$name][$lang] = static::getDefinition()->property($name)->set($value);
 				}
+				elseif($raw)
+					$this->data['properties'][$name] = $value;
 				else
 					$this->data['properties'][$name] = static::getDefinition()->property($name)->set($value);
 			}
-			elseif(isset(static::getDefinition()->meta['hooks']['set'][$name])) {
+			elseif(!$raw && isset(static::getDefinition()->meta['hooks']['set'][$name])) {
 				$hook = static::getDefinition()->meta['hooks']['set'][$name];
 				$hook($this, $value);
 			}
@@ -222,7 +231,7 @@ class Model {
 
 		#todo into a hook
 		if(is_string($res) && !$raw && \Memory::get('in_view'))
-			return HTML::sanitize($res);
+			return \HTML::sanitize($res);
 
 		return $res;
 	}

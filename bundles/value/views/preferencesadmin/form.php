@@ -19,9 +19,9 @@
 						
 					$form->values['telephone']->def('value', array('label'=>'Téléphone'));
 
-					$form->values['email']->def('value', array('label'=>'Email'));
+					$form->values['email']->def('value', array('label'=>'Email'));					
 					
-					$form->values['head_script']->def('value', array('label'=>'Script'));
+					$form->values['head_script']->textarea('value', array('label'=>'Script'));
 					
 					$form->end();
 					?>

@@ -2,7 +2,7 @@
 namespace Coxis\Bundles\Admin\Controllers;
 
 class LoginController extends \Coxis\Core\Controller {
-	public function configure($request) {
+	public function configure() {
 		\Memory::set('layout', false);
 	}
 	

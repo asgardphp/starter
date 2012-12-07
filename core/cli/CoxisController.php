@@ -24,7 +24,7 @@ class CoxisController extends CLIController {
 		// $bundle_path = 'bundles\\'.$bundle.'\\';
 		// d($bundle);
 
-		if(file_exists($bundle_path.'/web') && is_dir($bundle_path.'/web'))
+		if(file_exists(_DIR_.$bundle_path.'/web') && is_dir($bundle_path.'/web'))
 			static::copyDir($bundle_path.'/web', 'web/bundles/'.$bundle);
 	}
 
@@ -66,7 +66,7 @@ class CoxisController extends CLIController {
 
 		$bundle_path = 'bundles\\'.$bundle.'\\';
 
-		if(!(file_exists($bundle_path) && is_dir($bundle_path))) {
+		if(!(file_exists(_DIR_.$bundle_path) && is_dir($bundle_path))) {
 			#copy bundle files
 			#todo replace with distributed solution
 			if(file_exists('C:\Users\leyou\Documents\projects\coxisgenerator\bundles\\'.$bundle))
@@ -85,8 +85,8 @@ class CoxisController extends CLIController {
 
 		static::publishBundle($bundle_path);
 
-		if(file_exists($bundle_path.'install.php'))
-			include(file_exists($bundle_path.'install.php'));
+		if(file_exists(_DIR_.$bundle_path.'install.php'))
+			include($bundle_path.'install.php');
 	}
 	
 	public function backupfilesAction($request) {
@@ -119,14 +119,14 @@ class CoxisController extends CLIController {
 		$raw = $yaml->parse(file_get_contents($input));
 		$bundles = array();
 		foreach($bundles as $bundle) {
-			if(file_exists('app/'.$bundle.'/')) {
+			if(file_exists(_DIR_.'app/'.$bundle.'/')) {
 				static::promptConfirmation('Some bundles already exist. Are you sure you want to continue?');
 				break;
 			}
 		}
 		
 		foreach($raw as $bundle_name=>$raw_bundle) {
-			if(file_exists('app/'.$bundle_name.'/'))
+			if(file_exists(_DIR_.'app/'.$bundle_name.'/'))
 				static::rrmdir('app/'.$bundle_name.'/');
 			
 			$bundle = $raw_bundle;
@@ -252,7 +252,7 @@ class CoxisController extends CLIController {
 
 	public static function copyDir($src,$dst) { 
 	    $dir = opendir($src); 
-		if(!file_exists($dst))
+		if(!file_exists(_DIR_.$dst))
 			mkdir($dst, 0777, true);
 	    while(false !== ($file = readdir($dir))) { 
 			if ($file != '.' && $file != '..') { 
@@ -297,7 +297,7 @@ class CoxisController extends CLIController {
 	}
 	
 	public static function myrename($src, $dst) {
-		if(file_exists($dst)) {
+		if(file_exists(_DIR_.$dst)) {
 			static::copyDir($src, $dst);
 			static::rrmdir($src);
 		}

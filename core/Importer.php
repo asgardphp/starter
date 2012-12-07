@@ -94,10 +94,10 @@ namespace Coxis\Core {
 
 				if($dir != '.') {
 					$base = static::basename($class);
-					if(dirname($dir) == '.')
+					if(static::dirname($dir) == '.')
 						$next = $base;
 					else
-						$next = str_replace(DIRECTORY_SEPARATOR, '\\', dirname($dir)).'\\'.$base;
+						$next = str_replace(DIRECTORY_SEPARATOR, '\\', static::dirname($dir)).'\\'.$base;
 
 					return static::_import($next, array('into'=>$intoNamespace, 'as'=>$alias));
 				}
@@ -168,15 +168,15 @@ namespace Coxis\Core {
 						$rest = preg_replace('/^'.preg_quote($prefix).'\\\?/', '', $class);
 						$path = $dir.DIRECTORY_SEPARATOR.static::class2path($rest);
 						
-						if(file_exists($path)) {
+						if(file_exists(_DIR_.$path)) {
 							static::loadClassFile($path);
 							return true;
 						}
 					}
 				}
-				
+
 				#to load from namespace
-				if(file_exists(($path = static::class2path($class)))) {
+				if(file_exists(_DIR_.($path = static::class2path($class)))) {
 					static::loadClassFile($path);
 					if(class_exists($class, false) || interface_exists($class, false))
 						return true;
@@ -185,7 +185,7 @@ namespace Coxis\Core {
 				// d($class);#only to test importer
 
 				#lookup for global classes
-				if(dirname($class) == '.') {
+				if(static::dirname($class) == '.') {
 					$classes = array();
 					
 					#check if there is any corresponding class already loaded
@@ -208,7 +208,7 @@ namespace Coxis\Core {
 						$diff = array_diff($after, $before);
 
 						if(class_exists(static::basename($class), false) || interface_exists(static::basename($class), false)) {
-							#return true;
+							return true;
 							#return static::basename($class);
 						}
 						else {

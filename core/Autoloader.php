@@ -13,7 +13,8 @@ class Autoloader {
 		// array('Somewhere', 'there/somewhere.php'),
 	);
 	
-	public function map() {
+	public function map($class, $path) {
+		$this->map[$class] = $path;
 	}
 	
 	public function dir() {
@@ -24,8 +25,11 @@ class Autoloader {
 	}
 	
 	public function preloadDir($file) {
+		// if($relative)
+		// 	$file = _DIR_.$file;
 		if(is_dir($file))
 			foreach(glob($file.'/*') as $sub_file)
+				// d($sub_file);
 				$this->preloadDir($sub_file);
 		else {
 			if(!preg_match('/\/[a-zA-Z0-9_]+.php$/', $file))

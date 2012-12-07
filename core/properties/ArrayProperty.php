@@ -13,7 +13,7 @@ class ArrayProperty extends BaseProperty {
 		return 'text';
 	}
 
-	public function getDefault() {
+	protected function _getDefault() {
 		return array();
 	}
 
@@ -27,16 +27,14 @@ class ArrayProperty extends BaseProperty {
 		} catch(\ErrorException $e) {
 			return array($str);
 		}
-		// return unserialize($str);
 	}
 
 	public function set($val) {
 		if(is_array($val))
 			return $val;
-		try {
-			return unserialize($val);
-		} catch(\ErrorException $e) {
-			return (array)$val;
-		}
+		if($res = unserialize($val))
+			return $res;
+		else
+			return array();
 	}
 }

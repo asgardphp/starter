@@ -36,12 +36,12 @@ class Response {
 	} 
 
 	public function setHeader($header, $value) {
-		$this->headers[$header] = $value;
+		$this->headers[strtolower($header)] = $value;
 		return $this;
 	}
 
 	public function getHeader($header) {
-		return $this->headers[$header];
+		return $this->headers[strtolower($header)];
 	}
 
 	public function setContent($content) {
@@ -80,7 +80,7 @@ class Response {
 			\Hook::trigger('end');
 			\Coxis\Core\Response::sendHeaders($result->headers);
 			echo $result->content;
-			// exit();
+			exit();
 			return;
 		}
 
@@ -96,13 +96,16 @@ class Response {
 
 		static::send(new Result($headers, $this->content));
 	}
+
+	public function back() {
+		return $this->redirect(Server::get('HTTP_REFERER'), false);
+	}
 	
 	public function redirect($url='', $relative=true) {
 		if($relative)
 			$this->headers['Location'] = \URL::to($url);
 		else
 			$this->headers['Location'] = $url;
-			
 		return $this;
 	}
 

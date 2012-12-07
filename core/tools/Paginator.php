@@ -9,27 +9,8 @@ class Paginator {
 	function __construct($per_page, $total, $page) {
 		$this->per_page		= $per_page;
 		$this->total		= $total;
-		$this->page		= $page;
+		$this->page		= $page ? $page:1;
 	}
-	
-	/*
-	public static function paginate($model, $page, $where=array(), $per_page=10) {
-	d();
-	//~ d($model);
-		//~ $total = $model::count($params);
-		$total = $model::where($where)->count();
-		
-		$offset = ($page-1)*$per_page;
-		$limit = $per_page;
-		
-		//~ $models = $model::find($params);
-		$models = $model::where($where)->offset($offset)->limit($limit)->get();
-		
-		$paginator = new static($per_page, $total, $page);
-		
-		return array($models, $paginator);
-	}
-	*/
 	
 	public function getStart() {
 		return ($this->page-1)*$this->per_page;

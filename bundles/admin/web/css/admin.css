@@ -210,7 +210,7 @@ a:hover {
 
 /* 3rd Menu */
 #header #nav li:hover li:hover li a,
-#header #nav li.iehover li.iehover li a {
+#header #nav li.iehover li.iehover li a, #header #nav span {
 	float: none;
 	color: #999;
 	background: url(../img/mbg.png) 0 0 repeat;

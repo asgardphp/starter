@@ -6,7 +6,7 @@ class ImageCache {
 
 	public static function getPreset($presetName) {
 		if(!isset(static::$presets[$presetName]))
-			throw \Exception('Preset '.$presetName.' does not exist.');
+			throw new \Exception('Preset '.$presetName.' does not exist.');
 		return static::$presets[$presetName];
 	}
 

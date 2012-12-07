@@ -22,11 +22,8 @@ class TimestampsBehaviorController extends \Coxis\Core\Controller {
 	@Hook('behaviors_presave_timestamps')
 	**/
 	public function behaviors_presave_timestampsAction($model) {
-		if($model->isNew()) {
-			$model->created_at = new \Coxis\Core\Tools\Date(time());
-			$model->updated_at = new \Coxis\Core\Tools\Date(time());
-		}
-		elseif(!$model->isNew())
-			$model->updated_at = new \Coxis\Core\Tools\Date(time());
+		if(!$model->created_at)
+			$model->created_at = new \Coxis\Core\Tools\Datetime();
+		$model->updated_at = new \Coxis\Core\Tools\Datetime();
 	}
 }

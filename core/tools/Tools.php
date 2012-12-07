@@ -51,7 +51,7 @@ class Tools {
 	}
 	
 	public static function zip($source, $destination) {
-	    if (!extension_loaded('zip') || !file_exists($source)) {
+	    if (!extension_loaded('zip') || !file_exists(_DIR_.$source)) {
 		return false;
 	    }
 
@@ -233,8 +233,7 @@ class Tools {
 		return $text;
 	}
 	
-	static public function randstr($length=10) {
-		$validCharacters = 'abcdefghijklmnopqrstuxyvwzABCDEFGHIJKLMNOPQRSTUXYVWZ0123456789';
+	static public function randstr($length=10, $validCharacters = 'abcdefghijklmnopqrstuxyvwzABCDEFGHIJKLMNOPQRSTUXYVWZ0123456789') {
 		$validCharNumber = strlen($validCharacters);
 
 		$result = '';

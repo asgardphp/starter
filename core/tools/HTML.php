@@ -116,6 +116,7 @@ class HTML {
 	
 	static public function sanitize($html) {
 		return htmlentities($html, ENT_NOQUOTES, 'UTF-8');
+		// return htmlentities($html);
 	}
 }
 ?>
