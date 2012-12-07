@@ -16,8 +16,8 @@ class TimestampsBehaviorController extends \Coxis\Core\Controller {
 	@Hook('behaviors_load_timestamps')
 	**/
 	public function behaviors_load_timestampsAction($ModelDefinition) {
-		$ModelDefinition->addProperty('created_at', array('type' => 'date', 'required' => false, 'editable' => false));
-		$ModelDefinition->addProperty('updated_at', array('type' => 'date', 'required' => false, 'editable' => false));
+		$ModelDefinition->addProperty('created_at', array('type' => 'datetime', 'required' => false, 'editable' => false));
+		$ModelDefinition->addProperty('updated_at', array('type' => 'datetime', 'required' => false, 'editable' => false));
 	}
 	
 	/**

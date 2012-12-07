@@ -7,20 +7,12 @@ class Datetime extends Time {
 	}
 	
 	public static function fromDatetime($v) {
-		if(strtotime($v))
-			$timestamp = strtotime($v);
-		else
-			$timestamp = 0;
-		return new static($timestamp);
-	}
-	
-	public static function fromDate($v) {
 		if(!$v)
 			return 0;
 		if($v instanceof Time)
 			return $v;
-		list($d, $m, $y) = explode('/', $v);
-		$timestamp = mktime(0, 0, 0, $m, $d, $y);
+		preg_match('/([0-9]+)\/([0-9]+)\/([0-9]+) ([0-9]+):([0-9]+):([0-9]+)/', $v, $r);
+		d($r);
 		return new static($timestamp);
 	}
 }

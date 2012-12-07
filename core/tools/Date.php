@@ -6,14 +6,6 @@ class Date extends Time {
 		return $this->format('d/m/Y');
 	}
 	
-	public static function fromDatetime($v) {
-		if(strtotime($v))
-			$timestamp = strtotime($v);
-		else
-			$timestamp = 0;
-		return new static($timestamp);
-	}
-	
 	public static function fromDate($v) {
 		if(!$v)
 			return 0;
