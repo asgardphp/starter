@@ -5,6 +5,10 @@ class Date extends Time {
 	public function __toString() {
 		return $this->format('d/m/Y');
 	}
+
+	public static function isNull() {
+		return $this->timestamp == 0;
+	}
 	
 	public static function fromDatetime($v) {
 		if(strtotime($v))

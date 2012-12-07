@@ -20,7 +20,9 @@ class ModelForm extends Form {
 
 			if($properties->editable === false)
 				continue;
-			if(!$model->isNew())
+			if($properties->form_hidden)
+				$widget_params['default'] = '';
+			elseif($model->isOld())
 				$widget_params['default'] = $model->$name;
 			if($properties->type == 'boolean')
 				$widget_params['type'] = 'boolean';
@@ -112,6 +114,9 @@ class ModelForm extends Form {
 		$data = array_filter($data, function($v) {
 			return $v !== null;
 		});
+		foreach($data as $k=>$v)
+			if(!$v && $this->model->property($k)->form_hidden)
+				unset($data);
 		$this->model->set($data);
 
 		return array_merge(parent::my_errors(), $this->model->errors());

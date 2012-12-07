@@ -13,9 +13,8 @@ class BaseProperty {
 	}
 
 	public function __get($name) {
-		if(!isset($this->params[$name]))
-			return null;
-		return $this->params[$name];
+		$path = explode('_', $name);
+		return get($this->params, $path);
 	}
 
 	public function __toString() {
@@ -31,7 +30,12 @@ class BaseProperty {
 	}
 
 	public function getDefault() {
-		return '';
+		if(isset($this->params['default']))
+			return $this->params['default'];
+		elseif(method_exists($this, '_getDefault'))
+			return $this->_getDefault();
+		else
+			return '';
 	}
 
 	public function getRules() {

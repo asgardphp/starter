@@ -6,8 +6,6 @@ class TimestampsBehaviorController extends \Coxis\Core\Controller {
 	@Hook('behaviors_pre_load')
 	**/
 	public function behaviors_pre_loadAction($ModelDefinition) {
-		// if(!isset($model::$behaviors['timestamps']))
-		// 	$model::$behaviors['timestamps'] = true;
 		if(!isset($ModelDefinition->behaviors['timestamps']))
 			$ModelDefinition->behaviors['timestamps'] = true;
 	}
@@ -16,7 +14,7 @@ class TimestampsBehaviorController extends \Coxis\Core\Controller {
 	@Hook('behaviors_load_timestamps')
 	**/
 	public function behaviors_load_timestampsAction($ModelDefinition) {
-		$ModelDefinition->addProperty('created_at', array('type' => 'date', 'required' => false, 'editable' => false));
+		$ModelDefinition->addProperty('created_at', array('type' => 'date', 'required' => false, 'editable' => false, 'default'=>date('d/m/Y')));
 		$ModelDefinition->addProperty('updated_at', array('type' => 'date', 'required' => false, 'editable' => false));
 	}
 	
@@ -24,11 +22,8 @@ class TimestampsBehaviorController extends \Coxis\Core\Controller {
 	@Hook('behaviors_presave_timestamps')
 	**/
 	public function behaviors_presave_timestampsAction($model) {
-		if($model->isNew()) {
+		if(!$model->created_at)
 			$model->created_at = new \Coxis\Core\Tools\Datetime();
-			$model->updated_at = new \Coxis\Core\Tools\Datetime();
-		}
-		elseif(!$model->isNew())
-			$model->updated_at = new \Coxis\Core\Tools\Datetime();
+		$model->updated_at = new \Coxis\Core\Tools\Datetime();
 	}
 }

@@ -7,6 +7,7 @@ class GeneralController extends \Coxis\Core\Controller {
 	@Priority(-10)
 	*/
 	public function startAction() {
+		HTML::setTitle('LiliChantilly');
 		\Memory::set('layout', array('\Coxis\App\Standard\Controllers\Default', 'layout'));
 	}
 	
@@ -29,8 +30,10 @@ class GeneralController extends \Coxis\Core\Controller {
 	@Hook('filter_response')
 	*/
 	public function preSendingAction($response) {
+		if(get(getallheaders(), 'X-Requested-With') == 'XMLHttpRequest')
+			return;
 		try {
-			if(get(\Router::getRequest(), 'format') != 'html')
+			if(\Response::getHeader('Content-Type') && \Response::getHeader('Content-Type')!='text/html')
 				return;
 		} catch(\Exception $e) {}
 			
@@ -47,8 +50,9 @@ class GeneralController extends \Coxis\Core\Controller {
 			return;
 		if(!\Response::getContent())
 			return;
-		
-		$output = gzencode(\Response::getContent());
+
+		$r = \Response::getContent();
+		$output = gzencode($r);
 		\Response::setContent($output);
 		\Response::setHeader('Content-Encoding', 'gzip');
 		\Response::setHeader('Content-Length', strlen($output));

@@ -65,10 +65,15 @@ class ModelDefinition {
 	}
 
 	public function addProperty($property, $params) {
+		foreach($params as $k=>$v)
+			if(is_int($k)) {
+				unset($params[$k]);
+				$params[$v] = true;
+			}
 		if(!isset($params['required']))
 			$params['required'] = true;
 		#todo multiple values - not atomic.. ?
-		if(!isset($params['type'])) {
+		if(!isset($params['type']) || !$params['type']) {
 			if(isset($params['multiple']) && $params['multiple'])
 				$params['type'] = 'array';
 			else

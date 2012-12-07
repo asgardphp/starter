@@ -133,11 +133,17 @@ class CollectionORM extends ORM implements \Coxis\Core\Collection {
 		return $this;
 	}
 
-	public function create() {
+	public function create($params=array()) {
 		$relModel = $this->relation['model'];
 		$new = new $relModel;
-		// $new->
-		d();
+		switch($this->relation['type']) {
+			case 'hasMany':
+				$params[$this->link] = $this->current_model->id;
+				break;
+			case 'HMABT':#todo
+				break;
+		}
+		$new->save($params);
 		return $new;
 	}
 	

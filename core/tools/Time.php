@@ -5,9 +5,13 @@ class Time {
 	public $timestamp = 0;
 
 	public function __construct($t=null) {
-		if(!$t)
+		if($t === null)
 			$t = time();
 		$this->timestamp = $t;
+	}
+
+	public static function isNull() {
+		return $this->timestamp == 0;
 	}
 
 	public function iso() {
@@ -18,7 +22,7 @@ class Time {
 		return $this->format('Y-d-m H:i:s');
 	}
 	
-	public function date($format) {
+	public function date() {
 		return $this->format('d/m/Y');
 	}
 	

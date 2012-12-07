@@ -23,9 +23,9 @@ class Controller {
 		if($redirect && $canonical != $uri)
 			throw new ControllerException('Page not found', \Response::setCode(301)->redirect($canonical, $relative));
 		if($relative)
-			\HTML::code('<link rel="canonical" href="'.\URL::to($canonical).'">');
+			HTML::code('<link rel="canonical" href="'.\URL::to($canonical).'">');
 		else
-			\HTML::code('<link rel="canonical" href="'.$canonical.'">');
+			HTML::code('<link rel="canonical" href="'.$canonical.'">');
 	}
 
 	public static function hookOn($hookName, $cAction) {
@@ -39,7 +39,7 @@ class Controller {
 		});
 	}
 
-	public function run($action, $params=array(), $showView=false) {
+	public function run($action, $params=array(), $showView=true) {
 		$this->view = null;
 		if(($actionName=$action) != 'configure')
 			$actionName = $action.'Action';
@@ -67,7 +67,7 @@ class Controller {
 	}
 	
 	private function component($controller, $action, $args=array()) {
-		echo Router::run($controller, $action, $args, $this);
+		echo Router::run($controller, $action, $args);
 	}
 
 	public function noView() {
@@ -96,12 +96,9 @@ class Controller {
 		return ob_get_clean();
 	}
 	
-	public function render($view, $args) {
+	public function render($view, $args=array()) {
 		$reflection = new \ReflectionObject($this);	
 		$dir = dirname($reflection->getFileName());
 		return $this->showView($dir.'/../views/'.strtolower(preg_replace('/Controller$/i', '', Importer::basename(get_class($this)))).'/'.$view, $args);
 	}
-	
-	//OVERRIDE
-	public function configure($request){}
 }

@@ -141,7 +141,7 @@ class Widget extends WidgetHelper {
 			$params = array_merge($options['attrs'], $params);
 				
 		$res = HTMLHelper::tag('select', $params)."\n";
-		if(!$multiple)
+		if(!$multiple && !isset($choices['']))
 			$res .= '<option value="">'.__('Choose').'</option>'."\n";
 		foreach($choices as $k=>$v) {
 			if(is_array($v)){
@@ -149,9 +149,9 @@ class Widget extends WidgetHelper {
 				foreach($v as $k2=>$v2)
 				//~ d($k2, $value);
 					if($multiple)
-						$res .= '<option value="'.HTML::sanitize($k2).'"'.(in_array($k2, $value) ? ' selected="selected"':'').'>'.$v2.'</option>'."\n";
+						$res .= '<option value="'.\HTML::sanitize($k2).'"'.(in_array($k2, $value) ? ' selected="selected"':'').'>'.$v2.'</option>'."\n";
 					else
-						$res .= '<option value="'.HTML::sanitize($k2).'"'.($k2==$value ? ' selected="selected"':'').'>'.$v2.'</option>'."\n";
+						$res .= '<option value="'.\HTML::sanitize($k2).'"'.($k2==$value ? ' selected="selected"':'').'>'.$v2.'</option>'."\n";
 				$res .= HTMLHelper::endTag('optgroup')."\n";
 			}
 			else {
@@ -216,7 +216,7 @@ class Widget extends WidgetHelper {
 		if(isset($widget['view']['placeholder']))
 			echo '<script>placeholder("#'.$this->getID().'", "'.$widget['view']['placeholder'].'")</script>';
 		echo HTMLHelper::tag('textarea', $params);
-		echo HTML::sanitize($value);
+		echo \HTML::sanitize($value);
 		echo HTMLHelper::endTag('textarea');
 		
 		return $this;
@@ -252,7 +252,7 @@ class Widget extends WidgetHelper {
 			$params = array_merge($options['attrs'], $params);
 	
 		echo HTMLHelper::tag('textarea', $params);
-		echo HTML::sanitize($value);
+		echo \HTML::sanitize($value);
 		echo HTMLHelper::endTag('textarea');
 		?>
 		<script>

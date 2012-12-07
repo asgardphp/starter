@@ -2,7 +2,7 @@
 namespace Coxis\Bundles\Admin\Controllers;
 
 class LoginController extends \Coxis\Core\Controller {
-	public function configure($request) {
+	public function configure() {
 		\Memory::set('layout', false);
 	}
 	
@@ -23,10 +23,8 @@ class LoginController extends \Coxis\Core\Controller {
 		
 		if($administrator) {
 			\Session::set('admin_id', $administrator->id);
-			if(isset($_POST['remember']) && $_POST['remember']=='yes') {
-				\Cookie::delete('coxis_remember');
+			if(isset($_POST['remember']) && $_POST['remember']=='yes')
 				\Cookie::set('coxis_remember', md5($administrator->username.'-'.$administrator->password));
-			}
 			if(isset($_SESSION['redirect_to']))
 				return \Response::redirect($_SESSION['redirect_to'], false);
 			else

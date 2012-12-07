@@ -48,15 +48,13 @@ class ImageCacheController extends \Coxis\Core\Controller {
 			try {
 				$img = ImageManager::load(_WEB_DIR_.'/'.$request['src']);
 			} catch(\Exception $e) {
-				return Response::setCode(500);
+				return \Response::setCode(500);
 			}
 			$this->apply($img, $request['preset']);
 			$img->output();
 		}
 		
-		Response::setHeader('Content-Type', image_type_to_mime_type($img->type));#->send();
-		//~ $this->view = false;
-		//~ Coxis::set('layout', false);
+		\Response::setHeader('Content-Type', image_type_to_mime_type($img->type));
 	}
 	
 	/**

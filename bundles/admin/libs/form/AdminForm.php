@@ -22,6 +22,10 @@ class AdminForm extends Form {
 		echo '<p>';
 		$widget->label($label);
 		echo '<br>';
+		if(isset($options['note'])) {
+			echo '<span style="font-size:9px; font-weight:normal">'.$options['note'].'</span>';
+			echo '<br>';
+		}
 		$widget->select($options, $choices);
 		echo '</p>';
 	}
@@ -29,10 +33,16 @@ class AdminForm extends Form {
 	public static function input($widget, $label, $options=array()) {
 		if(!isset($options['class']))
 			$options['class'] = 'text big';
-			
+		else
+			$options['class'] .= ' text big';
+
 		echo '<p>';
 		$widget->label($label);
 		echo '<br>';
+		if(isset($options['note'])) {
+			echo '<span style="font-size:9px; font-weight:normal">'.$options['note'].'</span>';
+			echo '<br>';
+		}
 		$widget->input($options);
 		if(isset($options['nb']))
 			echo '<span>'.$options['nb'].'</span>';
@@ -42,10 +52,16 @@ class AdminForm extends Form {
 	public static function password($widget, $label, $options=array()) {
 		if(!isset($options['class']))
 			$options['class'] = 'text big';
+		else
+			$options['class'] .= ' text big';
 			
 		echo '<p>';
 		$this->$widget->label($label);
 		echo '<br>';
+		if(isset($options['note'])) {
+			echo '<span style="font-size:9px; font-weight:normal">'.$options['note'].'</span>';
+			echo '<br>';
+		}
 		$this->$widget->password($options);
 		if(isset($options['nb']))
 			echo '<span>'.$options['nb'].'</span>';
@@ -56,6 +72,10 @@ class AdminForm extends Form {
 		echo '<p>';
 		$widget->label($label);
 		echo '<br>';
+		if(isset($options['note'])) {
+			echo '<span style="font-size:9px; font-weight:normal">'.$options['note'].'</span>';
+			echo '<br>';
+		}
 		$widget->file(array(
 			'class'=>'text big',
 		));
@@ -69,6 +89,10 @@ class AdminForm extends Form {
 		echo '<p>';
 		$widget->label($label);
 		echo '<br>';
+		if(isset($options['note'])) {
+			echo '<span style="font-size:9px; font-weight:normal">'.$options['note'].'</span>';
+			echo '<br>';
+		}
 		$widget->textarea(array(
 			'class'=>'text big',
 		));
@@ -93,6 +117,10 @@ class AdminForm extends Form {
 		echo '<p>';
 		$widget->label($label);
 		echo '<br>';
+		if(isset($options['note'])) {
+			echo '<span style="font-size:9px; font-weight:normal">'.$options['note'].'</span>';
+			echo '<br>';
+		}
 		$widget->wysiwyg($options);
 		echo '</p>';
 	}
@@ -101,6 +129,10 @@ class AdminForm extends Form {
 		echo '<p>';
 		$widget->label($label);
 		$widget->checkbox($options);
+		if(isset($options['note'])) {
+			echo '<br>';
+			echo '<span style="font-size:9px; font-weight:normal">'.$options['note'].'</span>';
+		}
 		echo '</p>';
 	}
 }

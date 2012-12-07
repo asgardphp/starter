@@ -116,4 +116,8 @@ class URL {
 					
 		throw new \Exception('Route not found.');
 	}
+
+	public function startsWith($what) {
+		return preg_match('/^'.preg_quote($what, '/').'/', $this->get());
+	}
 }

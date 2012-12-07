@@ -13,7 +13,7 @@ class Config {
 	}
 
 	public function loadConfigDir($dir) {
-		foreach(glob($dir.'/*.php') as $filename)
+		foreach(glob(_DIR_.$dir.'/*.php') as $filename)
 			$this->loadConfigFile($filename);
 	}
 	

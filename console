@@ -1,5 +1,6 @@
 #!/usr/bin/env php
 <?php
+define('_ENV_', 'dev');
 set_time_limit(0);
 
 require_once('coxis.php');

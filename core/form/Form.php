@@ -36,13 +36,13 @@ class Form extends AbstractGroup {
 		$this->addWidget(
 			new Widget(array(
 				'rules'	=>	array(
-					'eq'	=>	\Session::get('_csrf_token'),
+					'eq'	=>	\Coxis\Core\Inputs\Session::get('_csrf_token'),
 				),
 				'messages'	=>	array(
 					'eq'	=>	'Invalid CSRF token.',
 				),
 				'view'	=>	array(
-					'value'	=>	\Session::get('_csrf_token'),
+					'value'	=>	\Coxis\Core\Inputs\Session::get('_csrf_token'),
 				),
 			)),
 			'_csrf_token'
@@ -63,8 +63,8 @@ class Form extends AbstractGroup {
 	}
 	
 	private static function generateTokens() {	
-		if(\Session::get('_csrf_token') === null)
-			\Session::set('_csrf_token', Tools::randstr());
+		if(\Coxis\Core\Inputs\Session::get('_csrf_token') === null)
+			\Coxis\Core\Inputs\Session::set('_csrf_token', Tools::randstr());
 	}
 	
 	public function __toString() {

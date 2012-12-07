@@ -7,8 +7,8 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 	public static $BOTH = 2;
 	public $controller = null;
 	
-	function __construct($model, $controller) {
-		parent::__construct($model);
+	function __construct($model, $controller, $params=array('action' => '', 'method' => 'post')) {
+		parent::__construct($model, $params);
 		$this->controller = $controller;
 	}
 	
@@ -23,10 +23,8 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 				$this->checkbox($widget, $options);
 			elseif($properties->type === 'date')
 				$this->input($widget, array_merge($options, array('class'=>'text date_picker')));
-			elseif($this->model->hasFile($widget)) {
-				// $file = $this->model->$widget->params();
+			elseif($this->model->hasFile($widget))
 				$this->file($widget, $options);
-			}
 			else
 				$this->input($widget, $options);
 		}
@@ -70,6 +68,9 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 				$label .= '*';
 		
 			$this->$widget->label($label);
+			if(isset($options['note'])) {
+				echo '<br><span style="font-size:9px; font-weight:normal">'.$options['note'].'</span>';
+			}
 			if($this->$widget->getError())
 				echo '<span style="color:#f00">'.$this->$widget->getError().'</span>';
 			echo '<br>';
@@ -88,6 +89,9 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 				$label .= '*';
 			
 			$this->$widget->label($label);
+			if(isset($options['note'])) {
+				echo '<br><span style="font-size:9px; font-weight:normal">'.$options['note'].'</span>';
+			}
 			if($this->$widget->getError())
 				echo '<span style="color:#f00">'.$this->$widget->getError().'</span>';
 			echo '<br>';
@@ -198,7 +202,7 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 			throw new \Exception($widget.' should be a file.');
 
 		$path = $this->model->$widget->get();
-		$optional = !$this->model->$widget->required();
+		$optional = !$this->model->property($widget)->required;
 				
 		if($this->model->property($widget)->multiple) {
 			if(!$this->model->isNew()):

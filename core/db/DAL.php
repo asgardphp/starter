@@ -153,8 +153,7 @@ class DAL {
 		#TODO MUST FIX THIS
 		//~ foreach($params as $k=>$v)
 			//~ $params[$k] = mysql_real_escape_string($v, $this->db);
-			
-		if(strpos($condition, '?') === false)
+		if($params && strpos($condition, '?') === false)
 			if(preg_match('/^[a-zA-Z0-9_]+$/', $condition))
 				if($table)
 					$condition = $table.'.`'.$condition.'` = ?';
@@ -192,9 +191,9 @@ class DAL {
 		$tables = array();
 		foreach($this->tables as $table=>$alias)
 			if($alias)
-				$tables[] = $table.' '.$alias;
+				$tables[] = '`'.$table.'` '.$alias;
 			else
-				$tables[] = $table;
+				$tables[] = '`'.$table.'`';
 		$sqltable = implode(', ', $tables);
 		
 		if(get(array_values($this->tables), 0))
@@ -232,6 +231,7 @@ class DAL {
 				$limit .= $this->limit;
 		}
 				
+		#todo put ` around table only, ie `like` l and not `like l`
 		foreach($this->rightjoin as $tableName=>$conditions) {
 			$table = $tableName;
 			if(preg_match('/^([a-zA-Z]+).Translation /', $tableName, $matches)) {
@@ -239,7 +239,7 @@ class DAL {
 				$table = preg_replace('/^([a-zA-Z]+)/', $ref_table, $table);
 				$table = str_replace('.Translation', '_translation', $table);
 			}
-			$rightjoin .= ' RIGHT JOIN '.$table.' ON '.static::processConditions($conditions);
+			$rightjoin .= ' RIGHT JOIN `'.$table.'` ON '.static::processConditions($conditions);
 		}
 				
 		foreach($this->leftjoin as $tableName=>$conditions) {
@@ -250,7 +250,7 @@ class DAL {
 				$table = str_replace('.Translation', '_translation', $table);
 				#todo move it into ORM
 			}
-			$leftjoin .= ' LEFT JOIN '.$table.' ON '.static::processConditions($conditions);
+			$leftjoin .= ' LEFT JOIN `'.$table.'` ON '.static::processConditions($conditions);
 		}
 				
 		foreach($this->innerjoin as $tableName=>$conditions) {
@@ -261,7 +261,7 @@ class DAL {
 				$table = str_replace('.Translation', '_translation', $table);
 				#todo move it into ORM
 			}
-			$innerjoin .= ' INNER JOIN '.$table.' ON '.static::processConditions($conditions);
+			$innerjoin .= ' INNER JOIN `'.$table.'` ON '.static::processConditions($conditions);
 		}
 	
 		return 'SELECT * FROM '.$sqltable.$rightjoin.$leftjoin.$innerjoin.$where.$orderBy.$limit;
@@ -278,6 +278,7 @@ class DAL {
 	}
 	
 	public function paginate($page, $per_page=10) {
+		$page = $page ? $page:1;
 		$this->offset(($page-1)*$per_page);
 		$this->limit($per_page);
 		
@@ -292,7 +293,7 @@ class DAL {
 		if(sizeof($values) == 0)
 			throw new Exception('Update values should not be empty.');
 		
-		$table = get(array_keys($this->tables), 0);
+		$table = '`'.get(array_keys($this->tables), 0).'`';
 			
 		$vals = array();
 		foreach($values as $k=>$v)
@@ -308,7 +309,7 @@ class DAL {
 		if(sizeof($values) == 0)
 			throw new Exception('Insert values should not be empty.');
 		
-		$table = get(array_keys($this->tables), 0);
+		$table = '`'.get(array_keys($this->tables), 0).'`';
 			
 		$columns = array();
 		$vals = array();
@@ -329,8 +330,8 @@ class DAL {
 		
 		if($where = static::processConditions($this->where))
 			$where = ' WHERE '.$where;
-	
-		$sql = 'DELETE FROM '.$table.$where;
+
+		$sql = 'DELETE FROM `'.$table.'`'.$where;
 		
 		return $this->db->query($sql)->affected();
 	}
@@ -343,9 +344,9 @@ class DAL {
 		$tables = array();
 		foreach($this->tables as $table=>$alias)
 			if($alias)
-				$tables[] = $table.' '.$alias;
+				$tables[] = '`'.$table.'` '.$alias;
 			else
-				$tables[] = $table;
+				$tables[] = '`'.$table.'`';
 		$sqltable = implode(', ', $tables);
 		
 		if($group_by) {
@@ -369,14 +370,14 @@ class DAL {
 			$where = ' WHERE '.static::processConditions($this->where);
 	
 		if($group_by) {
-			$sql = 'SELECT `'.$group_by.'` as groupby, min(`'.$what.'`) as min FROM '.$this->table.$where.' GROUP BY '.$group_by;
+			$sql = 'SELECT `'.$group_by.'` as groupby, min(`'.$what.'`) as min FROM `'.$this->table.'`'.$where.' GROUP BY '.$group_by;
 			$res = array();
 			foreach($this->db->query($sql)->all() as $v)
 				$res[$v['groupby']] = $v['min'];
 			return $res;
 		}
 		else {
-			$sql = 'SELECT min(`'.$what.'`) as min FROM '.$this->table.$where;
+			$sql = 'SELECT min(`'.$what.'`) as min FROM `'.$this->table.'`'.$where;
 			$res = $this->db->query($sql)->first();
 			return $res['min'];
 		}
@@ -389,14 +390,14 @@ class DAL {
 			$where = ' WHERE '.static::processConditions($this->where);
 	
 		if($group_by) {
-			$sql = 'SELECT `'.$group_by.'` as groupby, max(`'.$what.'`) as max FROM '.$this->table.$where.' GROUP BY '.$group_by;
+			$sql = 'SELECT `'.$group_by.'` as groupby, max(`'.$what.'`) as max FROM `'.$this->table.'`'.$where.' GROUP BY '.$group_by;
 			$res = array();
 			foreach($this->db->query($sql)->all() as $v)
 				$res[$v['groupby']] = $v['max'];
 			return $res;
 		}
 		else {
-			$sql = 'SELECT max(`'.$what.'`) as max FROM '.$this->table.$where;
+			$sql = 'SELECT max(`'.$what.'`) as max FROM `'.$this->table.'`'.$where;
 			$res = $this->db->query($sql)->first();
 			return $res['max'];
 		}
@@ -409,14 +410,14 @@ class DAL {
 			$where = ' WHERE '.static::processConditions($this->where);
 	
 		if($group_by) {
-			$sql = 'SELECT `'.$group_by.'` as groupby, avg(`'.$what.'`) as avg FROM '.$this->table.$where.' GROUP BY '.$group_by;
+			$sql = 'SELECT `'.$group_by.'` as groupby, avg(`'.$what.'`) as avg FROM `'.$this->table.'`'.$where.' GROUP BY '.$group_by;
 			$res = array();
 			foreach($this->db->query($sql)->all() as $v)
 				$res[$v['groupby']] = $v['avg'];
 			return $res;
 		}
 		else {
-			$sql = 'SELECT avg(`'.$what.'`) as avg FROM '.$this->table.$where;
+			$sql = 'SELECT avg(`'.$what.'`) as avg FROM `'.$this->table.'`'.$where;
 			$res = $this->db->query($sql)->first();
 			return $res['avg'];
 		}
@@ -429,14 +430,14 @@ class DAL {
 			$where = ' WHERE '.static::processConditions($this->where);
 	
 		if($group_by) {
-			$sql = 'SELECT `'.$group_by.'` as groupby, sum(`'.$what.'`) as sum FROM '.$this->table.$where.' GROUP BY '.$group_by;
+			$sql = 'SELECT `'.$group_by.'` as groupby, sum(`'.$what.'`) as sum FROM `'.$this->table.'`'.$where.' GROUP BY '.$group_by;
 			$res = array();
 			foreach($this->db->query($sql)->all() as $v)
 				$res[$v['groupby']] = $v['sum'];
 			return $res;
 		}
 		else {
-			$sql = 'SELECT sum(`'.$what.'`) as sum FROM '.$this->table.$where;
+			$sql = 'SELECT sum(`'.$what.'`) as sum FROM `'.$this->table.'`'.$where;
 			$res = $this->db->query($sql)->first();
 			return $res['sum'];
 		}

@@ -17,7 +17,7 @@
 					
 					$form->values['name']->def('value', array('label'=>'Nom*'));
 					
-					$form->values['head_script']->def('value', array('label'=>'Script'));
+					$form->values['head_script']->textarea('value', array('label'=>'Script'));
 					
 					$form->end();
 					?>

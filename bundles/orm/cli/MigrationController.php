@@ -29,7 +29,7 @@ class MigrationController extends \Coxis\Core\CLI\CLIController {
 	@Shortcut('migrate')
 	*/
 	public function migrateAction($request) {
-		Router::run('Coxis\Core\Cli\DB', 'backup', $request);
+		CLIRouter::run('Coxis\Core\Cli\DB', 'backup', $request);
 		echo 'Migrating...'."\n";
 
 		ORMManager::migrate(true);

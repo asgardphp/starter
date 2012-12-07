@@ -1,7 +1,7 @@
 <?php
 namespace Coxis\Core\Properties;
 
-class DateProperty extends BaseProperty {
+class DatetimeProperty extends BaseProperty {
 	public function getRules() {
 		$rules = parent::getRules();
 		$rules['date'] = true;
@@ -10,36 +10,30 @@ class DateProperty extends BaseProperty {
 	}
 
 	public function _getDefault() {
-		return new \Coxis\Core\Tools\Date(0);
+		return new \Coxis\Core\Tools\Date;
 	}
 
 	public function serialize($obj) {
 		if($obj == null)
 			return '';
-		$d = $obj->date();
-		list($d, $m, $y) = explode('/', $d);
-		$d = $y.'-'.$m.'-'.$d;
-		return $d;
+		return $obj->datetime();
 	}
 
 	public function unserialize($str) {
-		if($str == null)
-			$str = '1970-01-01';
+		d('todo');
 		list($y, $m, $d) = explode('-', $str);
 		$str = $d.'/'.$m.'/'.$y;
-		return \Coxis\Core\Tools\Date::fromDate($str);
+		return \Coxis\Core\Tools\Date::fromDatetime($str);
 	}
 
 	public function set($val) {
+		d('todo');
 		if(!$val)
 			return null;
-		if(preg_match('/[0-9]{2}\/[0-9]{2}\/[0-9]{4}/', $val))
-			return \Coxis\Core\Tools\Date::fromDate($val);
-		else
-			return $val;
+		return \Coxis\Core\Tools\Date::fromDatetime($val);
 	}
 
 	public function getSQLType() {
-		return 'date';
+		return 'datetime';
 	}
 }

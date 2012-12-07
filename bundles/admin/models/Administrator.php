@@ -7,6 +7,9 @@ class Administrator extends \Coxis\Core\Model {
 			'length'    =>    100,
 		),
 		'password'    => array(
+			'form'	=>	array(
+				'hidden'	=>	true,
+			),
 			'length'    =>    100,
 			'setHook'  =>    array('administrator', 'hash'),
 		),
@@ -26,4 +29,11 @@ class Administrator extends \Coxis\Core\Model {
 		
 	public static $meta = array(
 	);
+
+	public static function configure($definition) {
+		$definition->hookBefore('destroy', function($chain, $model) {
+			if(Administrator::count() < 2)
+				$chain->stop();
+		});
+	}
 }
