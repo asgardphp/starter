@@ -15,6 +15,9 @@ class ModelForm extends Form {
 			if(isset($params['only']))
 				if(!in_array($name, $params['only']))
 					continue;
+			if(isset($params['except']))
+				if(in_array($name, $params['except']))
+					continue;
 		
 			$widget_params = array();
 
@@ -40,6 +43,9 @@ class ModelForm extends Form {
 		foreach($model::getDefinition()->relations() as $name=>$relation) {
 			if(isset($params['only']))
 				if(!in_array($name, $params['only']))
+					continue;
+			if(isset($params['except']))
+				if(in_array($name, $params['except']))
 					continue;
 		
 			$property_name = $name;
