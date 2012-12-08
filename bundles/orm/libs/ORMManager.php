@@ -236,8 +236,10 @@ class ORMManager {
 		if(!sizeof($migrations))
 			return;
 		
+		DB::beginTransaction();
 		foreach($migrations as $migration)
 			$last = static::runMigration($migration, $verbose);
+		DB::commit();
 			
 		file_put_contents('migrations/migrate_version', $last);
 	}

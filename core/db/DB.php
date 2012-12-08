@@ -41,6 +41,18 @@ class DB {
 	public function id() {
 		return $this->db->lastInsertId();
 	}
+
+	public function beginTransaction() {
+		$this->db->beginTransaction();
+	}
+
+	public function commit() {
+		$this->db->commit();
+	}
+
+	public function rollback() {
+		$this->db->rollback();
+	}
 }
 
 class Query {
@@ -55,7 +67,8 @@ class Query {
 				$rsc->execute($args);
 			}
 			else
-				$rsc = $db->query($sql);
+				// $rsc = $db->query($sql);
+				$rsc = $db->exec($sql);
 			$this->rsc = $rsc;
 		} catch(\PDOException $e) {
 			throw new DBException($e->getMessage().'<br/>'."\n".'SQL: '.$sql);
