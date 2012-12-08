@@ -12,11 +12,9 @@ class ModelForm extends Form {
 	
 		$widgets = array();
 		foreach($model->properties() as $name=>$properties) {
-			if(isset($params['only']))
-				if(!in_array($name, $params['only']))
+			if(isset($params['only']) && !in_array($name, $params['only']))
 					continue;
-			if(isset($params['except']))
-				if(in_array($name, $params['except']))
+			if(isset($params['except']) && in_array($name, $params['except']))
 					continue;
 		
 			$widget_params = array();
@@ -27,10 +25,11 @@ class ModelForm extends Form {
 				$widget_params['default'] = '';
 			elseif($model->isOld())
 				$widget_params['default'] = $model->$name;
-			if($properties->type == 'boolean')
-				$widget_params['type'] = 'boolean';
-			elseif($properties->type == 'file')
-				$widget_params['type'] = 'file';
+			#todo useless? might be needed for form input def
+			// if($properties->type == 'boolean')
+			// 	$widget_params['type'] = 'boolean';
+			// elseif($properties->type == 'file')
+			// 	$widget_params['type'] = 'file';
 			if($properties->in)
 				foreach($properties->in as $v)
 					$widget_params['choices'][$v] = $v;
@@ -41,11 +40,9 @@ class ModelForm extends Form {
 		}
 		
 		foreach($model::getDefinition()->relations() as $name=>$relation) {
-			if(isset($params['only']))
-				if(!in_array($name, $params['only']))
+			if(isset($params['only']) && !in_array($name, $params['only']))
 					continue;
-			if(isset($params['except']))
-				if(in_array($name, $params['except']))
+			if(isset($params['except']) && in_array($name, $params['except']))
 					continue;
 		
 			$property_name = $name;

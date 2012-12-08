@@ -118,7 +118,6 @@ class Widget extends WidgetHelper {
 			$params = array_merge($options['attrs'], $params);
 	
 		#todo with Coxis javascript
-		//~ d($widget);
 		if(isset($widget['view']['placeholder']))
 			\Coxis\Core\JS::placeholder('#'.$this->getID(), $widget['view']['placeholder']);
 		echo \Coxis\Core\Form\HTMLHelper::tag('input', $params);
