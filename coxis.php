@@ -52,8 +52,9 @@ spl_autoload_register(array(\Coxis\Core\Context::get('autoloader'), 'loadClass')
 
 /* ERRORS/EXCEPTIONS */
 set_error_handler(function ($errno, $errstr, $errfile, $errline) {
-	if($errno <= \Memory::get('errno'))#todo
-		throw new \ErrorException($errstr, $errno, 0, $errfile, $errline);
+	if(Config::get('errno')!=null && $errno <= Config::get('errno'))
+		return;
+	throw new \ErrorException($errstr, $errno, 0, $errfile, $errline);
 });
 set_exception_handler(function ($e) {
 	\Coxis\Core\Coxis::getExceptionResponse($e)->send();

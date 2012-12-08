@@ -1,7 +1,7 @@
 <?php
 namespace Coxis\Core\Form;
 
-class Checkboxes extends WidgetHelper implements \ArrayAccess, \Iterator {
+class CheckboxGroup extends WidgetHelper implements \ArrayAccess, \Iterator {
 	protected $pos=0;
 	
 	function __construct($dad, $name, $params, $value) {

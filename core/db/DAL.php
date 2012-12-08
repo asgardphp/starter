@@ -241,7 +241,10 @@ class DAL {
 		else
 			return get(array_keys($this->tables), 0);
 	}
-	public function buildWhere($default) {
+	public function buildWhere($default=null) {
+		if(!$default)
+			$default = $this->getDefaultTable();
+
 		$params = array();
 		$r = static::processConditions($this->where, 'and', false, $default);
 		if($r[0])
@@ -369,14 +372,14 @@ class DAL {
 	/* FUNCTIONS */
 	public function update($values) {
 		$params = array();
-
-		list($where, $whereparams) = $this->buildWhere($default);
-		$params = array_merge($params, $whereparams);
 		
 		if(sizeof($values) == 0)
 			throw new Exception('Update values should not be empty.');
 		
 		$table = '`'.get(array_keys($this->tables), 0).'`';
+
+		list($where, $whereparams) = $this->buildWhere($table);
+		$params = array_merge($params, $whereparams);
 			
 		$vals = array();
 		foreach($values as $k=>$v)
@@ -424,7 +427,7 @@ class DAL {
 	protected function _function($fct, $what=null, $group_by=null) {
 		$params = array();
 
-		list($where, $whereparams) = $this->buildWhere($default);
+		list($where, $whereparams) = $this->buildWhere();
 		$params = array_merge($params, $whereparams);
 	
 		$tables = $this->buildTables();

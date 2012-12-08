@@ -21,21 +21,19 @@ class Widget extends WidgetHelper {
 			
 		return $this;
 	}
-	
-	public function radioInput($value) {
-		$radios = $this->radio(array(), array($value=>$value));
-		// d($radios);
-		$radios[$value]->input();
-	}
 
-	#todo radio => radios
-	public function radio($options=array(), $choices=null) {
+	public function radios($options=array(), $choices=null) {
 		#todo options
 		if($choices !== null)
 			$this->params['choices'] = $choices;
 		if(!isset($this->params['choices']))
 			throw new \Exception('No multiple choices available.');
-		return new Radio($this->dad, $this->name, $this->params, $this->value);
+		return new RadioGroup($this->dad, $this->name, $this->params, $this->value);
+	}
+	
+	public function getradio($value) {
+		$radios = $this->radios(array(), array($value=>$value));
+		return $radios[$value];
 	}
 	
 	public function checkboxes($options=array(), $choices=null) {
@@ -44,7 +42,47 @@ class Widget extends WidgetHelper {
 			$this->params['choices'] = $choices;
 		if(!isset($this->params['choices']))
 			throw new \Exception('No multiple choices available.');
-		return new Checkboxes($this->dad, $this->name, $this->params, $this->value);
+		return new CheckboxGroup($this->dad, $this->name, $this->params, $this->value);
+	}
+	
+	public function getcheckbox($value) {
+		$checkboxes = $this->checkboxes(array(), array($value=>$value));
+		return $checkboxes[$value];
+	}
+	
+	public function checkbox($options=array()) {
+		$widget = $this->params;
+		
+		$widget['view']	=	array_merge(isset($widget['view']) ? $widget['view']:array(), $options);
+		
+		$value = '';
+		if($this->value !== null)
+			$value = $this->value;
+		elseif(isset($widget['view']['value']))
+			$value = $widget['view']['value'];
+		elseif(isset($widget['default']))
+			$value = $widget['default'];
+			
+		$params = array(
+			'id'	=>	$this->getID(),
+			'type'	=>	'checkbox',
+			'name'	=>	$this->getName(),
+			'value'	=>	1,
+		);
+		if($value == 1)
+			$params['checked'] = 'checked';
+		if(isset($widget['view']['class']))
+			if(is_array($widget['view']['class']))
+				$params['class'] = implode(' ', $widget['view']['class']);
+			else
+				$params['class'] = $widget['view']['class'];
+				
+		if(isset($options['attrs']))
+			$params = array_merge($options['attrs'], $params);
+				
+		$res = HTMLHelper::tag('input', $params);
+		
+		echo $res;
 	}
 	
 	protected function _input($type, $options=array()) {
@@ -279,41 +317,6 @@ class Widget extends WidgetHelper {
 		HTML::include_css('bundles/ckeditor/ckeditor/_samples/sample.css');
 		
 		return $this;
-	}
-	
-	public function checkbox($options=array()) {
-		$widget = $this->params;
-		
-		$widget['view']	=	array_merge(isset($widget['view']) ? $widget['view']:array(), $options);
-		
-		$value = '';
-		if($this->value !== null)
-			$value = $this->value;
-		elseif(isset($widget['view']['value']))
-			$value = $widget['view']['value'];
-		elseif(isset($widget['default']))
-			$value = $widget['default'];
-			
-		$params = array(
-			'id'	=>	$this->getID(),
-			'type'	=>	'checkbox',
-			'name'	=>	$this->getName(),
-			'value'	=>	1,
-		);
-		if($value == 1)
-			$params['checked'] = 'checked';
-		if(isset($widget['view']['class']))
-			if(is_array($widget['view']['class']))
-				$params['class'] = implode(' ', $widget['view']['class']);
-			else
-				$params['class'] = $widget['view']['class'];
-				
-		if(isset($options['attrs']))
-			$params = array_merge($options['attrs'], $params);
-				
-		$res = HTMLHelper::tag('input', $params);
-		
-		echo $res;
 	}
 
 	public function getError() {
