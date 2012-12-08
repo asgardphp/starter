@@ -44,14 +44,14 @@ class SchemaTest extends PHPUnit_Framework_TestCase {
 	raw sql
 	*/
 		
-	private function tableExists($table) {
+	protected function tableExists($table) {
 		return \DB::query("SELECT * 
                  FROM INFORMATION_SCHEMA.TABLES 
                  WHERE TABLE_SCHEMA = '".\Config::get('database', 'database')."' 
                  AND  TABLE_NAME = '$table'")->count() > 0;
 	}
 		
-	private function columnExists($table, $column) {
+	protected function columnExists($table, $column) {
 		return \DB::query("SELECT * 
                  FROM INFORMATION_SCHEMA.COLUMNS 
                  WHERE TABLE_SCHEMA = '".\Config::get('database', 'database')."' 
@@ -59,7 +59,7 @@ class SchemaTest extends PHPUnit_Framework_TestCase {
 		 AND COLUMN_NAME = '$column'")->count() > 0;
 	}
 	
-	private function isAutoincrement($table, $column) {
+	protected function isAutoincrement($table, $column) {
 		return \DB::query("SELECT * 
                  FROM INFORMATION_SCHEMA.COLUMNS 
                  WHERE TABLE_SCHEMA = '".\Config::get('database', 'database')."' 
@@ -68,7 +68,7 @@ class SchemaTest extends PHPUnit_Framework_TestCase {
 		 AND EXTRA LIKE '%auto_increment%'")->count() > 0;
 	}
 	
-	private function isNullable($table, $column) {
+	protected function isNullable($table, $column) {
 		return \DB::query("SELECT * 
                  FROM INFORMATION_SCHEMA.COLUMNS 
                  WHERE TABLE_SCHEMA = '".\Config::get('database', 'database')."' 
@@ -77,7 +77,7 @@ class SchemaTest extends PHPUnit_Framework_TestCase {
 		 AND IS_NULLABLE = 'YES'")->count() > 0;
 	}
 	
-	private function getDefault($table, $column) {
+	protected function getDefault($table, $column) {
 		$r = \DB::query("SELECT * 
                  FROM INFORMATION_SCHEMA.COLUMNS 
                  WHERE TABLE_SCHEMA = '".\Config::get('database', 'database')."' 
@@ -86,7 +86,7 @@ class SchemaTest extends PHPUnit_Framework_TestCase {
 		return $r['COLUMN_DEFAULT'];
 	}
 	
-	private function getDataType($table, $column) {
+	protected function getDataType($table, $column) {
 		$r = \DB::query("SELECT * 
                  FROM INFORMATION_SCHEMA.COLUMNS 
                  WHERE TABLE_SCHEMA = '".\Config::get('database', 'database')."' 
@@ -95,7 +95,7 @@ class SchemaTest extends PHPUnit_Framework_TestCase {
 		return $r['DATA_TYPE'];
 	}
 	
-	private function getType($table, $column) {
+	protected function getType($table, $column) {
 		$r = \DB::query("SELECT * 
                  FROM INFORMATION_SCHEMA.COLUMNS 
                  WHERE TABLE_SCHEMA = '".\Config::get('database', 'database')."' 
@@ -104,7 +104,7 @@ class SchemaTest extends PHPUnit_Framework_TestCase {
 		return $r['COLUMN_TYPE'];
 	}
 	
-	private function getLength($table, $column) {
+	protected function getLength($table, $column) {
 		$r = \DB::query("SELECT * 
                  FROM INFORMATION_SCHEMA.COLUMNS 
                  WHERE TABLE_SCHEMA = '".\Config::get('database', 'database')."' 
@@ -113,7 +113,7 @@ class SchemaTest extends PHPUnit_Framework_TestCase {
 		return $r['CHARACTER_MAXIMUM_LENGTH'];
 	}
 		
-	private function isPrimary() {
+	protected function isPrimary() {
 		return \DB::query("SELECT * 
                  FROM INFORMATION_SCHEMA.COLUMNS 
                  WHERE TABLE_SCHEMA = '".\Config::get('database', 'database')."' 
@@ -122,7 +122,7 @@ class SchemaTest extends PHPUnit_Framework_TestCase {
 		 AND COLUMN_KEY = 'PRI'")->count() > 0;
 	}
 		
-	private function isUnique() {
+	protected function isUnique() {
 		return \DB::query("SELECT * 
                  FROM INFORMATION_SCHEMA.COLUMNS 
                  WHERE TABLE_SCHEMA = '".\Config::get('database', 'database')."' 
@@ -131,7 +131,7 @@ class SchemaTest extends PHPUnit_Framework_TestCase {
 		 AND COLUMN_KEY = 'UNI'")->count() > 0;
 	}
 		
-	private function isIndex() {
+	protected function isIndex() {
 		return \DB::query("SELECT * 
                  FROM INFORMATION_SCHEMA.COLUMNS 
                  WHERE TABLE_SCHEMA = '".\Config::get('database', 'database')."' 

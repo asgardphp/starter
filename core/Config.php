@@ -3,7 +3,7 @@ namespace Coxis\Core;
 
 //todo merge with coxis?
 class Config {
-	private $config = array();
+	protected $config = array();
 	
 	function __construct() {
 		$this->loadConfigDir('config');

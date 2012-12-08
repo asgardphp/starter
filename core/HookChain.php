@@ -4,7 +4,7 @@ namespace Coxis\Core;
 #todo handle priorities
 class HookChain {
 	public $calls;
-	private $continue = true;
+	protected $continue = true;
 	public $executed = 0;
 
 	function __construct($calls=array()) {

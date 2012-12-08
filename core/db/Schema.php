@@ -2,12 +2,12 @@
 namespace Coxis\Core\DB;
 
 class BuildCol {
-	private $name;
-	private $type;
-	private $length;
-	private $nullable = false;
-	private $autoincrement = false;
-	private $def;
+	protected $name;
+	protected $type;
+	protected $length;
+	protected $nullable = false;
+	protected $autoincrement = false;
+	protected $def;
 	
 	function __construct($table, $name, $type, $length=null) {
 		$this->table = $table;
@@ -65,11 +65,11 @@ class BuildCol {
 }
 
 class BuildTable {
-	private $name;
-	private $cols = array();
-	private $primary = array();
-	private $indexes = array();
-	private $uniques = array();
+	protected $name;
+	protected $cols = array();
+	protected $primary = array();
+	protected $indexes = array();
+	protected $uniques = array();
 	
 	function __construct($name) {
 		$this->name = $name;
@@ -158,7 +158,7 @@ class BuildTable {
 }
 
 class Table {
-	private $name;
+	protected $name;
 	
 	function __construct($name) {
 		$this->name = $name;
@@ -199,10 +199,10 @@ class Table {
 }
 
 class Column {
-	private $table;
-	private $name;
-	private $type;
-	private $length;
+	protected $table;
+	protected $name;
+	protected $type;
+	protected $length;
 	
 	function __construct($table, $name, $type=null, $length=null) {
 		$this->table = $table;
@@ -234,7 +234,7 @@ class Column {
 	#default
 	#autoincrement
 	
-	private function change($params) {
+	protected function change($params) {
 		$table = $this->table;
 		$oldcol = $this->name;
 		$newcol = isset($params['name']) ? $params['name']:$this->name;
@@ -322,7 +322,7 @@ class Column {
 		return $this;
 	}
 	
-	private function getType() {
+	protected function getType() {
 		$r = \DB::query("SELECT * 
                  FROM INFORMATION_SCHEMA.COLUMNS 
                  WHERE TABLE_SCHEMA = '".\Config::get('database', 'database')."' 
@@ -332,7 +332,7 @@ class Column {
 		return $r['COLUMN_TYPE'];
 	}
 	
-	private function getNullable() {
+	protected function getNullable() {
 		$r = \DB::query("SELECT * 
                  FROM INFORMATION_SCHEMA.COLUMNS 
                  WHERE TABLE_SCHEMA = '".\Config::get('database', 'database')."' 
@@ -342,7 +342,7 @@ class Column {
 		return $r['IS_NULLABLE'] === 'YES';
 	}
 	
-	private function getDefault() {
+	protected function getDefault() {
 		$r = \DB::query("SELECT * 
                  FROM INFORMATION_SCHEMA.COLUMNS 
                  WHERE TABLE_SCHEMA = '".\Config::get('database', 'database')."' 
@@ -352,7 +352,7 @@ class Column {
 		return $r['COLUMN_DEFAULT'];
 	}
 	
-	private function getAutoincrement() {
+	protected function getAutoincrement() {
 		$r = \DB::query("SELECT * 
                  FROM INFORMATION_SCHEMA.COLUMNS 
                  WHERE TABLE_SCHEMA = '".\Config::get('database', 'database')."' 

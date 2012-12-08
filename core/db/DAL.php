@@ -142,7 +142,7 @@ class DAL {
 	}
 
 	/* CONDITIONS PROCESSING */
-	private static function processConditions($params, $condition = 'and', $brackets=false, $table=null) {
+	protected static function processConditions($params, $condition = 'and', $brackets=false, $table=null) {
 		if(sizeof($params) == 0)
 			return array('', array());
 		
@@ -187,7 +187,7 @@ class DAL {
 		return array($result, Tools::flateArray($pdoparams));
 	}
 	
-	private static function replace($condition, $table='') {
+	protected static function replace($condition, $table='') {
 		if(strpos($condition, '?') === false)
 			if(preg_match('/^[a-zA-Z0-9_]+$/', $condition))
 				if($table)
@@ -200,7 +200,7 @@ class DAL {
 		return $condition;
 	}
 	
-	private static function parseConditions($conditions) {
+	protected static function parseConditions($conditions) {
 		$res = array();
 
 		if(is_array($conditions)) {

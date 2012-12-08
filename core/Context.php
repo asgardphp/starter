@@ -6,10 +6,10 @@ namespace Coxis\Core;
 class Context {
 	public static $default = 'default';
 
-	private static $instances = array();
+	protected static $instances = array();
 	public $classes = array();
 
-	private $ioc = null;
+	protected $ioc = null;
 
 	function __construct() {
 		$this->ioc = new IoC;
@@ -78,7 +78,7 @@ class Context {
 		return $context->_get($class);
 	}
 
-	private function _get($class) {
+	protected function _get($class) {
 		if($class == 'ioc')
 			return $this->ioc;
 

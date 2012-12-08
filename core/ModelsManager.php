@@ -2,7 +2,7 @@
 namespace Coxis\Core;
 
 class ModelDefinition {
-	private $modelClass;
+	protected $modelClass;
 
 	public $meta = array();
 	public $properties = array();
@@ -154,7 +154,7 @@ class ModelDefinition {
 }
 
 class ModelsManager {
-	private $models = array();
+	protected $models = array();
 
 	public function get($modelClass) {
 		if(!isset($this->models[$modelClass]))

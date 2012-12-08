@@ -145,11 +145,11 @@ namespace Coxis\Core {
 			});
 		}
 
-		private static function formatControllerName($controller) {
+		protected static function formatControllerName($controller) {
 			return preg_replace('/Controller$/i', '', $controller);
 		}
 
-		private static function formatActionName($action) {
+		protected static function formatActionName($action) {
 			return preg_replace('/Action$/i', '', $action);
 		}
 

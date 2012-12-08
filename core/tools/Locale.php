@@ -2,7 +2,7 @@
 namespace Coxis\Core\Tools;
 
 class Locale {
-	private $default = 'en';
+	protected $default = 'en';
 	public $locales = array();
 
 	function __construct() {

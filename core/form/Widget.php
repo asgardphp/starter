@@ -2,7 +2,7 @@
 namespace Coxis\Core\Form;
 
 class Widget extends WidgetHelper {
-	private $parent;
+	protected $parent;
 
 	function __construct($params=array()) {
 		$this->params = $params;

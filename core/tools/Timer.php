@@ -2,7 +2,7 @@
 namespace Coxis\Core\Tools;
 
 class Timer {
-	private static $time;
+	protected static $time;
 
 	public static function start() {
 		$t = time()+microtime();

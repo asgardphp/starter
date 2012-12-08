@@ -2,7 +2,7 @@
 namespace Coxis\Core;
 
 class IoC {
-	private $registry = array();
+	protected $registry = array();
 
 	public function register($name, $callback) {
 		$this->registry[$name] = $callback;

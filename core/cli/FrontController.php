@@ -39,7 +39,7 @@ class FrontController extends CLIController {
 		die();
 	}
 	
-	private static function parseArgs($argv) {
+	protected static function parseArgs($argv) {
 		$res = array();
 		for($k=0; $k<sizeof($argv); $k++) {
 			$v = $argv[$k];

@@ -2,15 +2,15 @@
 namespace Coxis\Core\Tools;
 
 class HTML {
-	private $include_js = array();
-	private $include_css = array();
-	private $code_js = array();
+	protected $include_js = array();
+	protected $include_css = array();
+	protected $code_js = array();
 	public $code_css = array();
-	private $code = array();
+	protected $code = array();
 	
-	private $title = '';
-	private $description = '';
-	private $keywords = '';
+	protected $title = '';
+	protected $description = '';
+	protected $keywords = '';
 	
 	public function getTitle() {
 		return $this->title;

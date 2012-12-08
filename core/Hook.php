@@ -2,7 +2,7 @@
 namespace Coxis\Core;
 
 class Hook {
-	// private $registry = array();
+	// protected $registry = array();
 	public $registry = array();
 
 	public function trigger_print($name, $args=array(), $cb=null) {
@@ -58,7 +58,7 @@ class Hook {
 		return $result;
 	}
 
-	private function createhook($name, $cb, $type='on') {
+	protected function createhook($name, $cb, $type='on') {
 		if(is_string($name))
 			$name = explode('_', $name);
 		$name[] = $type;

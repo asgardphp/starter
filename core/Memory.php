@@ -2,7 +2,7 @@
 namespace Coxis\Core;
 
 class Memory {
-	private $arrs = array();
+	protected $arrs = array();
 	
 	public function set() {
 		$args = func_get_args();

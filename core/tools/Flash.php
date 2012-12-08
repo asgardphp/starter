@@ -2,14 +2,14 @@
 namespace Coxis\Core\Tools;
 
 class Flash {
-	private $messages = array('success' => array(), 'error' => array());
+	protected $messages = array('success' => array(), 'error' => array());
 
 	function __construct() {
 		if(\Coxis\Core\Inputs\Session::has('messages'))
 			$this->messages = \Coxis\Core\Inputs\Session::get('messages');
 	}
 
-	private function persist() {
+	protected function persist() {
 		\Coxis\Core\Inputs\Session::set('messages', $this->messages);
 	}
 

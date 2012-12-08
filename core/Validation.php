@@ -2,7 +2,7 @@
 namespace Coxis\Core;
 
 class Validation {
-	private $rules = array();
+	protected $rules = array();
 
 	public function __construct() {
 		$this->register('same', function($attribute, $value, $params, $validator) {

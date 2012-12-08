@@ -26,7 +26,7 @@ class Time {
 		return $this->format('d/m/Y');
 	}
 	
-	private static function escape($str) {
+	protected static function escape($str) {
 		return '\\'.implode('\\', str_split($str));
 	}
 

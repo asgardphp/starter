@@ -4,8 +4,8 @@ namespace Coxis\Core\DB;
 class DBException extends \Exception {}
 
 class DB {
-	private $db;
-	private $config;
+	protected $db;
+	protected $config;
 
 	public function __construct($config, $db=null) {
 		$this->config = $config;
@@ -45,8 +45,8 @@ class DB {
 }
 
 class Query {
-	private $db;
-	private $rsc;
+	protected $db;
+	protected $rsc;
 
 	public function __construct($db, $sql, $args=array()) {
 		$this->db = $db;

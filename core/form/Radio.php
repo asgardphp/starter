@@ -2,7 +2,7 @@
 namespace Coxis\Core\Form;
 
 class Radio extends WidgetHelper implements \ArrayAccess {
-	private $pos=0;
+	protected $pos=0;
 	
 	function __construct($dad, $name, $params, $value) {
 		$this->name = $name;

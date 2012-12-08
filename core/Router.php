@@ -3,7 +3,7 @@ namespace Coxis\Core;
 
 class Router {
 	public $request;
-	private $routes = array();
+	protected $routes = array();
 
 	public function addRoute($route) {
 		$this->routes[] = $route;
@@ -24,7 +24,7 @@ class Router {
 			throw new \Coxis\Core\ControllerException('Page not found', \Response::setCode(404));
 	}
 	
-	private static function runAction($controller, $actionName, $params=array(), $src=null, $showView=true) {
+	protected static function runAction($controller, $actionName, $params=array(), $src=null, $showView=true) {
 		$actionName = strtolower($actionName);
 		
 		if($src != null)

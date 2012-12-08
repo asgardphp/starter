@@ -6,7 +6,7 @@ class Form extends AbstractGroup {
 		'method'	=>	'post',
 		'action'	=>	'',
 	);
-	private $callbacks = array();
+	protected $callbacks = array();
 
 	function __construct($param1=null, $param2=array(), $param3=array()) {
 		static::generateTokens();
@@ -62,7 +62,7 @@ class Form extends AbstractGroup {
 			return null;
 	}
 	
-	private static function generateTokens() {	
+	protected static function generateTokens() {	
 		if(\Coxis\Core\Inputs\Session::get('_csrf_token') === null)
 			\Coxis\Core\Inputs\Session::set('_csrf_token', Tools::randstr());
 	}
@@ -71,7 +71,7 @@ class Form extends AbstractGroup {
 		return $this->params['name'];
 	}
 	
-	private function convertTo($type, $files) {
+	protected function convertTo($type, $files) {
 		$res = array();
 		foreach($files as $name=>$file)
 			if(is_array($file))
@@ -82,7 +82,7 @@ class Form extends AbstractGroup {
 		return $res;
 	}
 	
-	private function merge_all($name, $type, $tmp_name, $error, $size) {
+	protected function merge_all($name, $type, $tmp_name, $error, $size) {
 		foreach($name as $k=>$v) {
 			if(isset($v['name']) && !is_array($v['name'])) {
 				$name[$k] = array_merge($v, $type[$k], $tmp_name[$k], $error[$k], $size[$k]);

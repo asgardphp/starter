@@ -66,7 +66,7 @@ class Controller {
 		return null;
 	}
 	
-	private function component($controller, $action, $args=array()) {
+	protected function component($controller, $action, $args=array()) {
 		echo Router::run($controller, $action, $args);
 	}
 
@@ -85,7 +85,7 @@ class Controller {
 		$this->view = $view;
 	}
 		
-	private function showView($_viewfile, $_args) {
+	protected function showView($_viewfile, $_args) {
 		foreach($_args as $_key=>$_value)
 			$$_key = $_value;#TODO, watchout keywords
 

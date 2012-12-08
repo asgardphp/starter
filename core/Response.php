@@ -2,11 +2,11 @@
 namespace Coxis\Core;
 
 class Response {
-	private $instance;#todo what for ?
+	protected $instance;#todo what for ?
 	public $content;
 	public $code = 200;
 	public $headers = array();
-	private static $codes = array(
+	protected static $codes = array(
 		200 => 'OK',
 		201 => 'Created',
 		204 => 'No Content',
