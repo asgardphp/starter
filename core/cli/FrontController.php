@@ -24,6 +24,8 @@ class FrontController extends CLIController {
 
 		/* CONFIG */
 		\Config::loadConfigDir('config');
+		// if(\Config::get('error_display'))
+		// 	\Error::display(true);
 			
 		\BundlesManager::loadBundles();
 		

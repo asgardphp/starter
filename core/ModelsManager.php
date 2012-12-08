@@ -7,13 +7,13 @@ class ModelDefinition {
 	public $meta = array();
 	public $properties = array();
 	public $behaviors = array();
-	public $relations = array();
+	public $relationships = array();
 	public $messages = array();
 
 	function __construct($modelClass) {
 		$this->modelClass = $modelClass;
 
-		$this->relations = isset($modelClass::$relations) ? $modelClass::$relations:array();
+		$this->relationships = isset($modelClass::$relationships) ? $modelClass::$relationships:array();
 		$this->meta = isset($modelClass::$meta) ? $modelClass::$meta:array();
 		$this->messages = isset($modelClass::$messages) ? $modelClass::$messages:array();
 
@@ -102,8 +102,8 @@ class ModelDefinition {
 		return $this->behaviors;
 	}
 
-	public function relations() {
-		return $this->relations;
+	public function relationships() {
+		return $this->relationships;
 	}
 
 	/* HOOKS */

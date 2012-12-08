@@ -2,11 +2,12 @@
 namespace Coxis\Core\Tools;
 
 class Time {
-	public $timestamp = 0;
+	public $timestamp = null;
 
 	public function __construct($t=null) {
-		if(!$t)
-			$t = time();
+		#todo
+		// if(!$t)
+		// 	$t = time();
 		$this->timestamp = $t;
 	}
 
@@ -18,7 +19,7 @@ class Time {
 		return $this->format('Y-d-m H:i:s');
 	}
 	
-	public function date($format) {
+	public function date() {
 		return $this->format('d/m/Y');
 	}
 	
@@ -28,13 +29,11 @@ class Time {
 
 	#todo put i18n somewhere else, SoC
 	public function format($format) {
-		// d(static::escape('aaaa'));
+		if(!$this->timestamp)
+			return '';
 		$format = str_replace('F', static::escape(Tools::$months[date('F', $this->timestamp)]), $format);
-		// d($format);
 
-	//~ try {
 		return date($format, $this->timestamp);
-		//~ }catch(Exception $e){d($this->timestamp, $e);}
 	}
 
 	public static function dateToSQLFormat($date) {

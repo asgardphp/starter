@@ -6,13 +6,12 @@ class <?php echo ucfirst($bundle['model']['meta']['name']) ?>AdminController ext
 	static $_model = '<?php echo ucfirst($bundle['model']['meta']['name']) ?>';
 	static $_models = '<?php echo $bundle['model']['meta']['plural'] ?>';
 
-	function __construct() {
-		$this->__messages = array(
+	public static function _autoload() {
+		static::$_messages = array(
 		<?php foreach($bundle['coxis_admin']['messages'] as $k=>$v): ?>
 			'<?php echo $k ?>'			=>	__('<?php echo $v ?>'),
 		<?php endforeach ?>
 		);
-		parent::__construct();
 	}
 	
 	public function formConfigure($model) {

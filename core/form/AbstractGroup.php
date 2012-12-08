@@ -56,7 +56,7 @@ abstract class AbstractGroup implements \ArrayAccess, \Iterator {
 					//~ return new Group($widgets, $this, $name);
 			}
 			elseif(is_object($widgets) && is_subclass_of($widgets, 'Coxis\Core\Form\WidgetHelper')) {
-				if(in_array($name, array('groupName', 'dad', 'data', 'widgets', 'params', 'files'), true))#todo use _keyword ?
+				if(in_array($name, array('groupName', 'dad', 'data', 'widgets', 'params', 'files'), true))
 					throw new \Exception('Can\'t use keyword "'.$name.'" for form widget');
 				$widget = $widgets;
 				$widget->setName($name);
@@ -186,6 +186,13 @@ abstract class AbstractGroup implements \ArrayAccess, \Iterator {
 	
 	public function errors() {
 		$errors = array();
+
+		#check post_max_size
+		if($_SERVER['CONTENT_LENGTH'] > (int)ini_get('post_max_size')*1024*1024)
+			$errors['_form'] = __('Data exceeds upload size limit. Maybe your file is too heavy.');
+
+		if(!$this->isSent())
+			return $errors;
 	
 		foreach($this->widgets as $name=>$widget)
 			if($widget instanceof \Coxis\Core\Form\AbstractGroup) {
@@ -219,6 +226,10 @@ abstract class AbstractGroup implements \ArrayAccess, \Iterator {
 		$validator->setMessages($messages);
 
 		return $validator->errors($this->data);
+	}
+
+	public function addErrors($errors) {
+		$this->errors = array_merge($this->errors, $errors);
 	}
 	
 	public function save() {

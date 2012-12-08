@@ -19,7 +19,7 @@ class Validation {
 
 		$this->register('unique', function($attribute, $value, $params, $validator) {
 			$modelName = get_class($validator->model);
-			if($modelName::where(array($attribute => $value))->count() > 0) {
+			if($modelName::where(array($attribute => $value, 'id!=?'=>$params[1]['id']))->count() > 0) {
 				$msg = $validator->getMessage('unique', $attribute, __('":value" is already used.'));
 				return Validation::format($msg, array(
 					'attribute'	=>	str_replace('_', ' ', $attribute),
@@ -71,7 +71,18 @@ class Validation {
 		$this->register('email', function($attribute, $value, $params, $validator) {
 			if(!filter_var($value, FILTER_VALIDATE_EMAIL)) {
 				$msg = $validator->getMessage('email', $attribute, __('The field ":attribute" must be a valid e-mail address.'));
-				return static::format($msg, array(
+				return Validation::format($msg, array(
+					'attribute'	=>	str_replace('_', ' ', $attribute),
+				));
+			}
+		});
+		
+		$this->register('date', function($attribute, $value, $params, $validator) {
+			if(!$value)
+				return;
+			if(!preg_match('/[0-9]{2}\/[0-9]{2}\/[0-9]{4}/', $value)) {
+				$msg = $validator->getMessage('email', $attribute, __('The field ":attribute" must be a date (dd/mm/yyyy).'));
+				return Validation::format($msg, array(
 					'attribute'	=>	str_replace('_', ' ', $attribute),
 				));
 			}

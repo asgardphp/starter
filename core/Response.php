@@ -96,6 +96,10 @@ class Response {
 
 		static::send(new Result($headers, $this->content));
 	}
+
+	public function back() {
+		return $this->redirect(Server::get('HTTP_REFERER'), false);
+	}
 	
 	public function redirect($url='', $relative=true) {
 		if($relative)

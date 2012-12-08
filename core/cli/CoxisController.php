@@ -160,8 +160,8 @@ class CoxisController extends CLIController {
 				
 			if(!isset($bundle['model']['properties']))
 				$bundle['model']['properties'] = array();
-			if(!isset($bundle['model']['relations']))
-				$bundle['model']['relations'] = array();
+			if(!isset($bundle['model']['relationships']))
+				$bundle['model']['relationships'] = array();
 			if(!isset($bundle['model']['files']))
 				$bundle['model']['files'] = array();
 			if(!isset($bundle['model']['behaviors']))
@@ -214,7 +214,7 @@ class CoxisController extends CLIController {
 			if(!isset($bundle['coxis_admin']['form']['display'])) {
 				$bundle['coxis_admin']['form']['display'] = array_merge(
 					array_keys($modelName::properties()),
-					array_keys($modelName::$relations)
+					array_keys($modelName::$relationships)
 				);
 			}
 			

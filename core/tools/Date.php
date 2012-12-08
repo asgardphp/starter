@@ -7,16 +7,16 @@ class Date extends Time {
 	}
 	
 	public static function fromDatetime($v) {
-		if(strtotime($v))
-			$timestamp = strtotime($v);
-		else
-			$timestamp = 0;
+		if(is_object($v))
+			return $v;
+		list($d, $m, $y) = explode('/', $v);
+		$timestamp = mktime(0, 0, 0, $m, $d, $y);
 		return new static($timestamp);
 	}
 	
 	public static function fromDate($v) {
 		if(!$v)
-			return 0;
+			return new static(null);
 		if($v instanceof Time)
 			return $v;
 		list($d, $m, $y) = explode('/', $v);

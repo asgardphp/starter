@@ -12,7 +12,7 @@ class BooleanProperty extends BaseProperty {
 		return 'int(1)';
 	}
 
-	public function getDefault() {
+	public function _getDefault() {
 		return false;
 	}
 }

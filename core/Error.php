@@ -112,17 +112,25 @@ class Error {
 					$pos = $trace['line']-$start;
 					
 					$code = '';
-
-
+					
+					$handle = fopen($trace['file'], "r");
+					if($handle) {
+						for($j=1; $j<$start; $j++)
+							fgets($handle, 4096);
+						for($j=$start; $j<=$end; $j++)
+							$code .= fgets($handle, 4096);
+								
+						fclose($handle);
+					}
+					
 					ob_start();
-					highlight_string(file_get_contents($trace['file']));
+					#todo highlight all file and then extract lines, instead of the opposite
+					//~ highlight_string('<?php'."\n".$code);
 					$code = ob_get_contents();
 					ob_end_clean();
-					$code = explode('<br />', $code);
-					$code = array_slice($code, $start, 7);
 					
 					echo '<code>';
-					foreach($code as $k=>$line)
+					foreach(array_slice(explode('<br />', $code), 1) as $k=>$line)
 						if($pos == $k)
 							echo '<span style="float:left; display:inline-block; width:50px; color:#000">'.($start++).'</span>'.'<div class="current_line" style="display:inline-block; background-color:#ccc;">'.$line.'</div><br>';
 						else

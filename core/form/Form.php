@@ -35,11 +35,11 @@ class Form extends AbstractGroup {
 		
 		$this->addWidget(
 			new Widget(array(
-				'rules'	=>	array(
-					'eq'	=>	\Session::get('_csrf_token'),
+				'validation'	=>	array(
+					'equal'	=>	\Session::get('_csrf_token'),
 				),
 				'messages'	=>	array(
-					'eq'	=>	'Invalid CSRF token.',
+					'equal'	=>	'Invalid CSRF token.',
 				),
 				'view'	=>	array(
 					'value'	=>	\Session::get('_csrf_token'),
@@ -175,5 +175,11 @@ class Form extends AbstractGroup {
 		}
 		
 		return $res;
+	}
+
+	public function showErrors() {
+		foreach(Tools::flateArray($this->errors) as $error) {
+			echo '<span class="error">'.$error.'</span><br>';
+		}
 	}
 }
