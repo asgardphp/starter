@@ -8,6 +8,11 @@ class ModelForm extends Form {
 		$model, 
 		$params=array('action' => '', 'method' => 'post')
 	) {
+		if(isset($params['widgetClass']))
+			$widgetClass = $params['widgetClass'];
+		else
+			$widgetClass = 'Widget';
+
 		$this->model = $model;
 	
 		$widgets = array();
@@ -36,14 +41,14 @@ class ModelForm extends Form {
 			if($properties->multiple)
 				$widget_params['multiple'] = true;
 
-			$widgets[$name] = new Widget($widget_params);
+			$widgets[$name] = new $widgetClass($widget_params);
 		}
 		
 		foreach($model::getDefinition()->relations() as $name=>$relation) {
 			if(isset($params['only']) && !in_array($name, $params['only']))
-					continue;
+				continue;
 			if(isset($params['except']) && in_array($name, $params['except']))
-					continue;
+				continue;
 		
 			$property_name = $name;
 			#todo why using _id instead of name?!
@@ -58,7 +63,7 @@ class ModelForm extends Form {
 					'choices'		=>	$ids,
 					'default'	=>	(isset($model->$property_name->id) ? $model->$property_name->id:null),
 				);
-				$widgets[$property_name] = new Widget($widget_params);
+				$widgets[$property_name] = new $widgetClass($widget_params);
 			}
 			elseif($relation['type'] == 'HMABT' || $relation['type'] == 'hasMany') {
 				$defaults = array();
@@ -68,12 +73,12 @@ class ModelForm extends Form {
 					'choices'		=>	$ids,
 					'default'	=>	$defaults,
 				);
-				$widgets[$property_name] = new Widget($widget_params);
+				$widgets[$property_name] = new $widgetClass($widget_params);
 			}
 		}
 
 		parent::__construct(
-			$model->getModelName(),
+			isset($params['name']) ? $params['name']:$model->getModelName(),
 			$params,
 			$widgets
 		);
@@ -84,6 +89,13 @@ class ModelForm extends Form {
 			$widget = $this;
 			
 		$errors = array();
+
+		#check post_max_size
+		if(\Server::get('CONTENT_LENGTH') > (int)ini_get('post_max_size')*1024*1024)
+			$errors['_form'] = __('Data exceeds upload size limit. Maybe your file is too heavy.');
+
+		if(!$this->isSent())
+			return $errors;
 		
 		if(is_subclass_of($widget, 'Coxis\Core\Form\AbstractGroup')) {
 			if($widget instanceof \Coxis\Core\Form\ModelForm)

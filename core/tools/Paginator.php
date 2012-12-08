@@ -6,6 +6,7 @@ class Paginator {
 	public $total;
 	public $page;
 	
+	#todo use the same api as orm::paginate
 	function __construct($per_page, $total, $page) {
 		$this->per_page		= $per_page;
 		$this->total		= $total;

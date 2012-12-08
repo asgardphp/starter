@@ -14,9 +14,12 @@ class Flash {
 	}
 
 	public function addSuccess($message) {
+		// if(is_array($message))
+		// 	foreach($message as $one_message)
+		// 		$this->messages['success'][] = $one_message;
+		// else
 		if(is_array($message))
-			foreach($message as $one_message)
-				$this->messages['success'][] = $one_message;
+			$this->messages['success'] = array_merge($this->messages['success'], $message);
 		else
 			$this->messages['success'][] = $message;
 			
@@ -25,9 +28,12 @@ class Flash {
 	}
 	
 	public function addError($message) {
+		// if(is_array($message))
+		// 	foreach($message as $one_message)
+		// 		$this->messages['error'][] = $one_message;
+		// else
 		if(is_array($message))
-			foreach($message as $one_message)
-				$this->messages['error'][] = $one_message;
+			$this->messages['error'] = array_merge($this->messages['error'], $message);
 		else
 			$this->messages['error'][] = $message;
 			
@@ -35,22 +41,40 @@ class Flash {
 		return true;
 	}
 	
-	public function showAll() {
-		$this->showSuccess();
-		$this->showError();
+	public function showAll($cat=null) {
+		// d($this->messages);
+		$this->showSuccess($cat);
+		$this->showError($cat);
 	}
 	
-	public function showSuccess() {
-		foreach(Tools::flateArray($this->messages['success']) as $msg)
+	public function showSuccess($cat=null) {
+		if($cat)
+			$messages = isset($this->messages['success'][$cat]) ? Tools::flateArray($this->messages['success'][$cat]):array();
+		else
+			$messages = Tools::flateArray($this->messages['success']);
+		foreach($messages as $msg)
 			echo '<div class="message success"><p>'.$msg.'</p></div>'."\n";
-		$this->messages['success'] = array();	
+		if($cat)
+			unset($this->messages['success'][$cat]);
+		else
+			$this->messages['success'] = array();	
 		$this->persist();
 	}
 	
-	public function showError() {
-		foreach(Tools::flateArray($this->messages['error']) as $msg)
+	public function showError($cat=null) {
+		// d($this->messages, $cat);
+		if($cat)
+			$messages = isset($this->messages['error'][$cat]) ? Tools::flateArray($this->messages['error'][$cat]):array();
+		// d($messages);
+		else
+			$messages = Tools::flateArray($this->messages['error']);
+		// d($messages);
+		foreach($messages as $msg)
 			echo '<div class="message errormsg"><p>'.$msg.'</p></div>'."\n";
-		$this->messages['error'] = array();	
+		if($cat)
+			unset($this->messages['error'][$cat]);
+		else
+			$this->messages['error'] = array();	
 		$this->persist();
 	}
 }

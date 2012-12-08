@@ -157,12 +157,14 @@ class Widget extends WidgetHelper {
 			
 		if($multiple) {
 			$params = array(
+				'id'		=>	$this->getID(),
 				'name'	=>	$this->getName($this->name).'[]',
 				'multiple'	=>	'multiple',
 			);
 		}
 		else {
 			$params = array(
+				'id'		=>	$this->getID(),
 				'name'	=>	$this->getName($this->name),
 			);
 		}

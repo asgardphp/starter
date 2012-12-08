@@ -19,7 +19,6 @@ class DB {
 		else
 			$this->db = $db;
 		$this->db->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-		$this->query("SET NAMES 'utf8'");
 	}
 	
 	public function getDB() {
@@ -59,7 +58,7 @@ class Query {
 				$rsc = $db->query($sql);
 			$this->rsc = $rsc;
 		} catch(\PDOException $e) {
-			throw new DBException($e->getMessage().'<br/>'."\n".'SQL: '.$sql.'<br>('.implode(', ', $args).')');
+			throw new DBException($e->getMessage().'<br/>'."\n".'SQL: '.$sql);
 		}
 	}
 	
