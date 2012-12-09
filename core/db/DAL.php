@@ -70,8 +70,8 @@ class DAL {
 		return $this;
 	}
 	
-	public function query($sql, $args) {
-		return $this->db->query($sql);
+	public function query($sql, $args=array()) {
+		return $this->db->query($sql, $args);
 	}
 	
 	/* GETTERS */
@@ -416,7 +416,7 @@ class DAL {
 		
 		$table = get(array_keys($this->tables), 0);
 
-		list($where, $whereparams) = $this->buildWhere($default);
+		list($where, $whereparams) = $this->buildWhere($table);
 		$params = array_merge($params, $whereparams);
 	
 		$sql = 'DELETE FROM '.$table.$where;

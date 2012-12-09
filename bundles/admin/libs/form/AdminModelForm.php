@@ -197,8 +197,8 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 	
 	public function file($widget, $options=array()) {
 		$label = $this->prepareLabel($widget, $options);
-		
-		if($this->$widget->params['type'] != 'file')
+
+		if($this->model->property($widget)->type != 'file')
 			throw new \Exception($widget.' should be a file.');
 
 		$path = $this->model->$widget->get();
@@ -267,18 +267,16 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 		}
 		else {
 			AdminForm::file($this->$widget, $label, $options);
-							
-			if(!$this->model->isNew() && $this->model->$widget->exists()) {
-				if($this->model->$widget->type() == 'image') {
+
+			if(!$this->model->isNew() && $this->model->$widget->exists() && $path) {
+				if($this->model->$widget->type() == 'image')
 					echo '<p>
 						<a href="../'.$path.'" rel="facebox"><img src="../'.ImageCache::src($path, 'admin_thumb').'" alt=""/></a>
 					</p>';
-				}
-				else {
+				else
 					echo '<p>
 						<a href="../'.$path.'">'.__('Download').'</a>
 					</p>';
-				}
 				
 				if($optional && !$this->model->isNew()):
 					?>

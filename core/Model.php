@@ -110,9 +110,9 @@ class Model {
 			throw new \Exception('Cannot destroy non-persistent models');
 	}
 
-	public static function create($values=array()) {
-		$m = new static($values);
-		return $m->save();
+	public static function create($values=array(), $force=false) {
+		$m = new static;
+		return $m->save($values, $force);
 	}
 	
 	/* VALIDATION */
@@ -248,6 +248,16 @@ class Model {
 		}
 		
 		return $vars;
+	}
+
+	public function toJSON() {
+		$arr = $this->toArray();
+		foreach($arr as $k=>$v)
+			if(method_exists($this->property($k), 'prepareForJSON'))
+				$arr[$k] = $this->property($k)->prepareForJSON($v);
+			elseif(method_exists($v, '__toString'))
+				$arr[$k] = $v->__toString();
+		return json_encode($arr);
 	}
 	
 	/* Definition */

@@ -33,8 +33,9 @@ class ModelForm extends Form {
 			#todo useless? might be needed for form input def
 			// if($properties->type == 'boolean')
 			// 	$widget_params['type'] = 'boolean';
-			// elseif($properties->type == 'file')
-			// 	$widget_params['type'] = 'file';
+			#needed for <form enctype>
+			if($properties->type == 'file')
+				$widget_params['type'] = 'file';
 			if($properties->in)
 				foreach($properties->in as $v)
 					$widget_params['choices'][$v] = $v;
@@ -130,7 +131,7 @@ class ModelForm extends Form {
 			return $v !== null;
 		});
 		foreach($data as $k=>$v)
-			if(!$v && $this->model->property($k)->form_hidden)
+			if(!$v && $this->model->hasProperty($k) && $this->model->property($k)->form_hidden)
 				unset($data);
 		$this->model->set($data);
 

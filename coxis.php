@@ -7,7 +7,7 @@ ini_set('error_reporting', E_ALL);
 ini_set('display_errors', 1); #todo a verifier
 set_include_path(get_include_path() . PATH_SEPARATOR . dirname(__FILE__));
 define('_DIR_', dirname(__FILE__).'/');
-define('_WEB_DIR_', 'web');#todo: remove..
+define('_WEB_DIR_', _DIR_.'web/');#todo: remove..
 
 /* UTILS */
 function d() {
@@ -52,7 +52,7 @@ spl_autoload_register(array(\Coxis\Core\Context::get('autoloader'), 'loadClass')
 
 /* ERRORS/EXCEPTIONS */
 set_error_handler(function ($errno, $errstr, $errfile, $errline) {
-	if(Config::get('errno')!=null && $errno <= Config::get('errno'))
+	if(defined('_ENV_') && Config::get('errno')!=null && $errno <= Config::get('errno'))
 		return;
 	throw new \ErrorException($errstr, $errno, 0, $errfile, $errline);
 });

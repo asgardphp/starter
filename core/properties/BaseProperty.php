@@ -4,7 +4,7 @@ namespace Coxis\Core\Properties;
 class BaseProperty {
 	protected $model = null;
 	protected $name = null;
-	protected $params = array();
+	public $params = array();
 
 	function __construct($model, $name, $params) {
 		$this->model = $model;

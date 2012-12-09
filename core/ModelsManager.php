@@ -85,6 +85,13 @@ class ModelDefinition {
 		});
 
 		$this->properties[$property] = new $propertyClass($this->modelClass, $property, $params);
+		uasort($this->properties, function($a, $b) {
+			if($a->position===null)
+				return 1;
+			if($b->position===null)
+				return -1;
+			return $a->position > $b->position;
+		});
 	}
 
 	public function hasProperty($name) {

@@ -51,8 +51,18 @@ class Controller {
 		$result = call_user_func_array(array($this, $actionName), $params);
 		$controllerBuffer =  ob_get_clean();
 
-		if($result!==null)
-			return $result;
+		if($result!==null) {
+			if($result instanceof \Coxis\Core\Model) {
+				\Response::setHeader('Content-Type', 'application/json');
+				return \Response::setContent(json_encode($result->toArray()));
+			}
+			elseif(is_array($result)) {
+				\Response::setHeader('Content-Type', 'application/json');
+				return \Response::setContent(json_encode(Tools::modelsToArray($result)));
+			}
+			else
+				return $result;
+		}
 		elseif($controllerBuffer)
 			return $controllerBuffer;
 		elseif(!$showView) #todo still necessary?
@@ -86,14 +96,7 @@ class Controller {
 	}
 		
 	protected function showView($_viewfile, $_args) {
-		foreach($_args as $_key=>$_value)
-			$$_key = $_value;#TODO, watchout keywords
-
-		ob_start();
-		\Memory::set('in_view', true);
-		include($_viewfile);
-		\Memory::set('in_view', false);
-		return ob_get_clean();
+		return View::render($_viewfile, $_args);
 	}
 	
 	public function render($view, $args=array()) {

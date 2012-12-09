@@ -13,14 +13,14 @@ class ORMHandler {
 			'type' => 'text', 
 			'editable'=>false, 
 			'required'=>false,
+			'position'	=>	1,
 			'orm'	=>	array(
 				'type'	=>	'int(11)',
 				'auto_increment'	=>	true,
 				'key'	=>	'PRI',
 				'nullable'	=>	false,
-				'position' => 1,
 			),
-		));
+		));	
 		static::loadrelations($modelDefinition);
 	}
 
@@ -207,7 +207,22 @@ class ORMHandler {
 	}
 
 	public function destroy($model) {
-		return static::myORM($model)->delete();
+		$orms = array();
+		foreach($model->getDefinition()->relations() as $name=>$relation)
+			if(isset($relation['cascade']['delete'])) {
+				$orm = $model->$name();
+				if(!is_object($orm))
+					continue;
+				$orm->dal()->rsc();
+				$orms[] = $orm;
+			}
+
+		$r = static::myORM($model)->dal()->delete();
+
+		foreach($orms as $orm)
+			$orm->delete();
+
+		return $r;
 	}
 
 	public function save($model) {

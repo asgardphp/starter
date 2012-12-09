@@ -67,8 +67,7 @@ class Query {
 				$rsc->execute($args);
 			}
 			else
-				// $rsc = $db->query($sql);
-				$rsc = $db->exec($sql);
+				$rsc = $db->query($sql);
 			$this->rsc = $rsc;
 		} catch(\PDOException $e) {
 			throw new DBException($e->getMessage().'<br/>'."\n".'SQL: '.$sql);

@@ -9,7 +9,8 @@ class CoxisController extends CLIController {
 	}
 
 	public function getAction($request) {
-		echo Browser::get($request[0]);
+		$browser = new Browser;
+		echo $browser->get($request[0]);
 	}
 
 	public function publishAction($request) {

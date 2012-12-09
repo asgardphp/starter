@@ -125,6 +125,12 @@ class Tools {
 				'94'	=>	'Val-de-Marne',
 				'95'	=>	'Val-d\'Oise',
 	);
+
+	public static function modelsToArray($models) {
+		foreach($models as $k=>$v)
+			$models[$k] = json_decode($v->toJSON());
+		return json_encode($models);
+	}
 	
 	public static function prependHttp($url) {
 	    if (!preg_match("~^(?:f|ht)tps?://~i", $url)) {

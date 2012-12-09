@@ -236,7 +236,11 @@ class ORM {
 	}
 	
 	public function delete() {
-		return $this->dal->delete();
+		$count = 0;
+		while($model = $this->next())
+			$count += $model->destroy();
+
+		return $count;
 	}
 	
 	public function update($values) {
