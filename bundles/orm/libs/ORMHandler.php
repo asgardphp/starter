@@ -56,7 +56,10 @@ class ORMHandler {
 	}
 
 	public static function getTable($modelName) {
-		return \Config::get('database', 'prefix').$modelName::getModelName();
+		if(isset($modelName::getDefinition()->meta['table']) && $modelName::getDefinition()->meta['table'])
+			return \Config::get('database', 'prefix').$modelName::getDefinition()->meta['table'];
+		else
+			return \Config::get('database', 'prefix').$modelName::getModelName();
 	}
 	
 	public static function relationData($model, $name) {

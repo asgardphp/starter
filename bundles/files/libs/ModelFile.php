@@ -10,6 +10,7 @@ class ModelFile {
 	function __construct($model, $file, $name=null, $tmp_file=array()) {
 		if(!$model::hasProperty($file))
 			throw new \Exception('File '.$file.' does not exist for model '.get_class($model));
+
 		$this->model = $model;
 		$this->file = $file;
 		$this->params = $model::property($file);
@@ -124,7 +125,7 @@ class ModelFile {
 				$filename = \Coxis\Core\Tools\ImageManager::load($file['tmp_name'])->save($to, $format);
 			}
 			else
-				$filename = \Coxis\Core\Tools\FileManager::move_uploaded($file['tmp_name'], $to);
+				$filename = \Coxis\Core\Tools\FileManager::move($file['tmp_name'], $to);
 			
 			if($this->multiple()) {
 				if(!is_array($this->name))

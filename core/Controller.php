@@ -71,7 +71,7 @@ class Controller {
 			if($this->view === null)
 				if(!$this->setRelativeView($action.'.php'))
 					return null;
-			return $this->showView($this->view, $this);
+			return $this->render($this->view, $this);
 		}
 		return null;
 	}
@@ -94,14 +94,18 @@ class Controller {
 	public function setView($view) {
 		$this->view = $view;
 	}
-		
-	protected function showView($_viewfile, $_args) {
-		return View::render($_viewfile, $_args);
-	}
 	
-	public function render($view, $args=array()) {
+	public function render($_view, $_args=array()) {
 		$reflection = new \ReflectionObject($this);	
 		$dir = dirname($reflection->getFileName());
-		return $this->showView($dir.'/../views/'.strtolower(preg_replace('/Controller$/i', '', Importer::basename(get_class($this)))).'/'.$view, $args);
+
+		foreach($_args as $_key=>$_value)
+			$$_key = $_value;#TODO, watchout keywords
+
+		ob_start();
+		\Memory::set('in_view', true);
+		include($_view);
+		\Memory::set('in_view', false);
+		return ob_get_clean();
 	}
 }

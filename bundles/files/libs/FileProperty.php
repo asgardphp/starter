@@ -51,9 +51,4 @@ class FileProperty extends \Coxis\Core\Properties\BaseProperty {
 		else
 			return new \Coxis\Bundles\Files\Libs\ModelFile($this->model, $this->name, null, array('name'=>basename($val), 'tmp_name'=>$val));
 	}
-
-	public function get() {
-		d();#todo
-		return Date::fromDatetime($val);
-	}
 }

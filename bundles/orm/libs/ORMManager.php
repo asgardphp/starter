@@ -74,9 +74,13 @@ class ORMManager {
 			$table = get(array_values($v), 0);
 			$oldSchemas[$table] = static::tableSchema($table);
 		}
+
 		foreach(get_declared_classes() as $class) {
 			if(is_subclass_of($class, 'Coxis\Core\Model')) {
 				if($class == 'Coxis\Core\Model')
+					continue;
+				$reflection = new \ReflectionClass($class);
+				if($reflection->isAbstract())
 					continue;
 				
 				$schema = array();
