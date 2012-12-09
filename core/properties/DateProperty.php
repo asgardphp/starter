@@ -18,8 +18,7 @@ class DateProperty extends BaseProperty {
 			return '';
 		$d = $obj->date();
 		list($d, $m, $y) = explode('/', $d);
-		$d = $y.'-'.$m.'-'.$d;
-		return $d;
+		return $y.'-'.$m.'-'.$d;
 	}
 
 	public function unserialize($str) {

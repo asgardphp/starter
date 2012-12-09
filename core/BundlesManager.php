@@ -205,17 +205,19 @@ namespace Coxis\Core {
 						continue;
 					$method_reflection = new \ReflectionAnnotatedMethod($classname, $method);
 				
-					if($method_reflection->getAnnotation('Route')) {
-						$route = \Router::formatRoute($prefix.'/'.$method_reflection->getAnnotation('Route')->value);
+					if($method_reflection->getAllAnnotations('Route')) {
+						foreach($method_reflection->getAllAnnotations('Route') as $annotation) {
+							$route = \Router::formatRoute($prefix.'/'.$annotation->value);
 
-						$routes[] = array(
-							'route'	=>	$route,
-							'controller'		=>	static::formatControllerName($classname), 
-							'action'			=>	static::formatActionName($method),
-							'requirements'	=>	$method_reflection->getAnnotation('Route')->requirements,
-							'method'	=>	$method_reflection->getAnnotation('Route')->method,
-							'name'	=>	isset($method_reflection->getAnnotation('Route')->name) ? $method_reflection->getAnnotation('Route')->name:null
-						);
+							$routes[] = array(
+								'route'	=>	$route,
+								'controller'		=>	static::formatControllerName($classname), 
+								'action'			=>	static::formatActionName($method),
+								'requirements'	=>	$method_reflection->getAnnotation('Route')->requirements,
+								'method'	=>	$method_reflection->getAnnotation('Route')->method,
+								'name'	=>	isset($method_reflection->getAnnotation('Route')->name) ? $method_reflection->getAnnotation('Route')->name:null
+							);
+						}
 					}
 					if($method_reflection->getAnnotation('Hook')) {
 						$hook = $method_reflection->getAnnotation('Hook')->value;
