@@ -1,7 +1,7 @@
 <?php
 namespace Coxis\Core\Form;
 
-abstract class AbstractGroup implements \ArrayAccess, \Iterator {
+abstract class AbstractGroup extends Hookable implements \ArrayAccess, \Iterator {
 	protected $groupName = null;
 	protected $dad;
 	public $data = array();
@@ -325,4 +325,8 @@ abstract class AbstractGroup implements \ArrayAccess, \Iterator {
 		$var = ($key !== NULL && $key !== FALSE);
 		return $var;
     }
+
+	public function trigger($name, $args=array(), $cb=null) {
+		return parent::trigger($name, array_merge(array($this), $args), $cb);
+	}
 }

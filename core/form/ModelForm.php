@@ -145,7 +145,7 @@ class ModelForm extends Form {
 			throw $e;
 		}
 	
-		$this->callback('pre_save');
+		$this->trigger('pre_save');
 	
 		return $this->_save();
 	}

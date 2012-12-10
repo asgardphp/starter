@@ -1,7 +1,7 @@
 <?php
 namespace Coxis\Core;
 
-class ModelDefinition {
+class ModelDefinition extends Hookable {
 	protected $modelClass;
 
 	public $meta = array();
@@ -116,36 +116,6 @@ class ModelDefinition {
 
 	public function relations() {
 		return $this->relations;
-	}
-
-	/* HOOKS */
-	#cannot use references with get_func_args
-	public function trigger($name, $args=array(), $cb=null) {
-		return \Hook::trigger(array('modelDefinitions', $this->modelClass, $name), $args, $cb);
-	}
-
-	#cannot use references with get_func_args
-	public function triggerChain($chain, $name, $args=array(), $cb=null) {
-		return \Hook::triggerChain($chain, array('modelDefinitions', $this->modelClass, $name), $args, $cb);
-	}
-
-	public function hook() {
-		return call_user_func_array(array('Hook', 'hook'), func_get_args());
-	}
-
-	public function hookOn($hookName, $cb) {
-		$args = array(array_merge(array('modelDefinitions', $this->modelClass), array($hookName)), $cb);
-		return call_user_func_array(array('Hook', 'hookOn'), $args);
-	}
-
-	public function hookBefore($hookName, $cb) {
-		$args = array(array_merge(array('modelDefinitions', $this->modelClass), array($hookName)), $cb);
-		return call_user_func_array(array('Hook', 'hookBefore'), $args);
-	}
-
-	public function hookAfter($hookName, $cb) {
-		$args = array(array_merge(array('modelDefinitions', $this->modelClass), array($hookName)), $cb);
-		return call_user_func_array(array('Hook', 'hookBefore'), $args);
 	}
 
 	public function isI18N() {

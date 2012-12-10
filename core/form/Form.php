@@ -49,19 +49,6 @@ class Form extends AbstractGroup {
 		);
 	}
 	
-	public function setCallback($name, $cb) {
-		$this->callbacks[$name] = $cb;
-	}
-	
-	public function callback($name, $args=array()) {
-		if(isset($this->callbacks[$name])) {
-			$args = array_merge(array($this), $args);
-			return call_user_func_array($this->callbacks[$name], $args);
-		}
-		else
-			return null;
-	}
-	
 	protected static function generateTokens() {	
 		if(\Coxis\Core\Inputs\Session::get('_csrf_token') === null)
 			\Coxis\Core\Inputs\Session::set('_csrf_token', Tools::randstr());
