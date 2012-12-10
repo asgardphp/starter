@@ -54,11 +54,11 @@ class Controller {
 		if($result!==null) {
 			if($result instanceof \Coxis\Core\Model) {
 				\Response::setHeader('Content-Type', 'application/json');
-				return \Response::setContent(json_encode($result->toArray()));
+				return \Response::setContent($result->toJSON());
 			}
 			elseif(is_array($result)) {
 				\Response::setHeader('Content-Type', 'application/json');
-				return \Response::setContent(json_encode(Tools::modelsToArray($result)));
+				return \Response::setContent(Model::arrayToJSON($result));
 			}
 			else
 				return $result;

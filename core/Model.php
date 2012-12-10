@@ -5,7 +5,7 @@ class ModelException extends \Exception {
 	public $errors = array();
 }
 
-class Model {
+abstract class Model {
 	#public for behaviors
 	public $data = array(
 		'properties'	=>	array(),
@@ -143,7 +143,7 @@ class Model {
 			if($params)
 				\Hook::trigger('behaviors_presave_'.$behavior, $this);
 				
-		$data = $this->toArray();
+		$data = $this->toArrayRaw();
 
 		$errors = null;
 		$this->trigger('validation', array($this, &$data, &$errors), function($chain, $model, &$data, &$errors) {
@@ -236,7 +236,7 @@ class Model {
 		return $res;
 	}
 	
-	public function toArray() {
+	public function toArrayRaw() {
 		$attrs = $this->propertyNames();
 		$vars = array();
 		
@@ -249,15 +249,50 @@ class Model {
 		
 		return $vars;
 	}
+	
+	public function toArray() {
+		$vars = array();
+		
+		foreach($this->properties() as $name=>$property) {
+			if(!isset($this->data['properties'][$name]))
+				$vars[$name] = null;
+			else {
+				$v = $this->data['properties'][$name];
+				if(method_exists($property, 'toArray'))
+					$vars[$name] = $property->toArray($v);
+				elseif(method_exists($v, '__toString'))
+					$vars[$name] = $v->__toString();
+				else
+					$vars[$name] = $this->data['properties'][$name];
+			}
+		}
+		
+		foreach($this->getDefinition()->relations() as $name=>$relation) {
+			if(isset($this->data[$name])) {
+				if(is_array($this->data[$name])) {
+					$res = array();
+					foreach($this->data[$name] as $relation_model)
+						$res[] = $relation_model->toArray();
+				}
+				else
+					$res = $this->data[$name]->toArray();
+
+				$vars[$name] = $res;
+			}
+		}
+		
+		return $vars;
+	}
+
+	public static function arrayToJSON($arr) {
+		$res = array();
+		foreach($arr as $relation_model)
+			$res[] = $relation_model->toArray();
+		return json_encode($res);
+	}
 
 	public function toJSON() {
-		$arr = $this->toArray();
-		foreach($arr as $k=>$v)
-			if(method_exists($this->property($k), 'prepareForJSON'))
-				$arr[$k] = $this->property($k)->prepareForJSON($v);
-			elseif(method_exists($v, '__toString'))
-				$arr[$k] = $v->__toString();
-		return json_encode($arr);
+		return json_encode($this->toArray());
 	}
 	
 	/* Definition */

@@ -82,7 +82,7 @@ class ORM {
 		
 		if(sizeof($this->with)) {
 			foreach($this->with as $relation_name=>$closure) {
-				$rel = Model::relationData($current_model, $relation_name);
+				$rel = ORMHandler::relationData($current_model, $relation_name);
 				$relation_type = $rel['type'];
 				$relation_model = $rel['model'];
 				

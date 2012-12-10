@@ -11,6 +11,10 @@ class ModelDefinition extends Hookable {
 	public $messages = array();
 
 	function __construct($modelClass) {
+		$reflectionClass = new \ReflectionClass($modelClass);
+		if(!$reflectionClass->IsInstantiable())
+			return;
+
 		$this->modelClass = $modelClass;
 
 		$this->relations = isset($modelClass::$relations) ? $modelClass::$relations:array();

@@ -2,6 +2,7 @@
 namespace Coxis\Core;
 
 class Hookable {
+	/* INSTANCE */
 	public function trigger($name, $args=array(), $cb=null) {
 		return \Hook::trigger(array('instances', spl_object_hash($this), $name), $args, $cb);
 	}
