@@ -6,6 +6,7 @@ class DAL {
 	public $db = null;
 	public $tables = null;
 	
+	public $select = null;
 	public $where = null;
 	public $offset = null;
 	public $limit = null;
@@ -94,6 +95,11 @@ class DAL {
 	}
 
 	/* SETTERS */
+	public function select($select) {
+		$this->select = $select;
+		return $this;
+	}
+
 	public function offset($offset) {
 		$this->offset = $offset;
 		return $this;
@@ -226,6 +232,12 @@ class DAL {
 	}
 	
 	/* BUILDERS */
+	public function buildSelect() {
+		if($this->select)
+			return $this->select;
+		else
+			return '*';
+	}
 	public function buildTables() {
 		$tables = array();
 		foreach($this->tables as $table=>$alias)
@@ -347,6 +359,8 @@ class DAL {
 		
 		$default = $this->getDefaultTable();
 		
+		$select = $this->buildSelect();
+		
 		$orderBy = $this->buildorderby($default);
 				
 		$limit = $this->buildLimit();
@@ -366,7 +380,7 @@ class DAL {
 
 		$groupby = $this->buildGroupby();
 
-		return array('SELECT * FROM '.$tables.$rightjoin.$leftjoin.$innerjoin.$where.$groupby.$orderBy.$limit, $params);
+		return array('SELECT '.$select.' FROM '.$tables.$rightjoin.$leftjoin.$innerjoin.$where.$groupby.$orderBy.$limit, $params);
 	}
 	
 	/* FUNCTIONS */

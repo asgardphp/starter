@@ -79,6 +79,8 @@ class Validation {
 		});
 		
 		$this->register('email', function($attribute, $value, $params, $validator) {
+			if(!$value)
+				return;
 			if(!filter_var($value, FILTER_VALIDATE_EMAIL)) {
 				$msg = $validator->getMessage('email', $attribute, __('The field ":attribute" must be a valid e-mail address.'));
 				return Validation::format($msg, array(

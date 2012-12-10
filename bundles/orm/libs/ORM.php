@@ -10,9 +10,13 @@ class ORM {
 		$this->model = $model;
 		
 		$this->dal = new \Coxis\Core\DB\DAL(array($model::getTable() => 'a'));
-			
-		#todo buggy when the translation row does not exist (should reverse the leftjoin to rightjoin and a./t. tables)
+
 		if($model::isI18N()){
+			$select = 'a . *';
+			foreach($model::getDefinition()->properties() as $name=>$property)
+				if($property->i18n)
+					$select .= ', t.`'.$name.'`';
+			$this->select($select);
 			$this->leftjoin(array(
 				'a.Translation t'	=>	array(
 					'a.id = t.id',
@@ -179,6 +183,12 @@ class ORM {
 	
 	public function setTables($tables) {
 		$this->dal->setTables($tables);
+		
+		return $this;
+	}
+	
+	public function select($select) {
+		$this->dal->select($select);
 		
 		return $this;
 	}

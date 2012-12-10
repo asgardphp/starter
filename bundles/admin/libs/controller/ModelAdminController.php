@@ -88,6 +88,7 @@ class ModelAdminController extends AdminParentController {
 		\Hook::trigger('coxisadmin_'.static::$_model.'_index', array($this));
 
 		$this->paginator = null;
+
 		$this->$_models = $this->orm->paginate(
 			isset($request['page']) ? $request['page']:1,
 			10,
