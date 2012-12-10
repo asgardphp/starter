@@ -59,6 +59,7 @@ class DAL {
 	}
 	
 	public function reset() {
+		$this->select = null;
 		$this->where = null;
 		$this->offset = null;
 		$this->limit = null;
