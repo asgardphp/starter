@@ -44,7 +44,8 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 	
 		$modelName = get_class($this->model);
 	
-		$relation = get($modelName::$relations, $relation);
+		// $relation = get($modelName::$relations, $relation);
+		$relation = ORMHandler::relationData($modelName, $relation);
 		$relation_model = $relation['model'];
 		$widget = $relation;
 				

@@ -29,7 +29,7 @@ class Actualite extends \Coxis\Core\Model {
 			'model'	=>	'\Coxis\Tests\App\Actualite\Models\Commentaire',
 			//~ 'type'		=>	'HMABT',
 			//~ 'type'		=>	'hasOne',
-			'type'		=>	'hasMany',
+			'has'		=>	'many',
 			//~ 'type'		=>	'hasMany',
 			//~ HMABT
 		),

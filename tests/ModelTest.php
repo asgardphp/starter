@@ -13,7 +13,6 @@ class ModelTest extends PHPUnit_Framework_TestCase {
 	public function tearDown(){}
 
 	public function test0() {
-		$article = new \Coxis\Tests\App\Article\Models\Article(1);
 	}
 
 	#model errors

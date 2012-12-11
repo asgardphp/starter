@@ -46,6 +46,8 @@ class ModelForm extends Form {
 		}
 		
 		foreach($model::getDefinition()->relations() as $name=>$relation) {
+			$relation = ORMHandler::relationData($model, $name);
+
 			if(isset($params['only']) && !in_array($name, $params['only']))
 				continue;
 			if(isset($params['except']) && in_array($name, $params['except']))

@@ -61,40 +61,78 @@ class ORMHandler {
 		else
 			return \Config::get('database', 'prefix').$modelName::getModelName();
 	}
+
+	public static function getRelationType($rel1, $rel2) {
+		if($rel1['has'] == 'one') {
+			if($rel2['has'] == 'one')
+				$rel1['type'] = 'hasOne';
+			elseif($rel2['has'] == 'many')
+				$rel1['type'] = 'belongsTo';
+		}
+		elseif($rel1['has'] == 'many') {
+			if($rel2['has'] == 'one')
+				$rel1['type'] = 'hasMany';
+			elseif($rel2['has'] == 'many')
+				$rel1['type'] = 'HMABT';
+		}
+
+		if(!isset($rel1['type']))
+			throw new \Exception('Problem with relation type');
+
+		return $rel1['type'];
+	}
+
+	#todo rename reverse=>opposite
+	public static function reverseRelation($model, $name) {
+		if(is_string($model) || !$model instanceof \Coxis\Core\ModelDefinition)
+			$model = $model::getDefinition();
+
+		$modelName = strtolower($model->getClass());
+		$modelName = preg_replace('/^\\\/', '', $modelName);
+
+		$relations = $model->relations;
+		$relation = $relations[$name];
+		$relation_model = $relation['model'];
+
+		$rev_relations = array();
+		foreach($relation_model::getDefinition()->relations() as $rev_rel_name=>$relation) {
+			$all_rel = $relation_model::getDefinition()->relations();
+			$rev_rel = $all_rel[$rev_rel_name];
+			$relModelClass = preg_replace('/^\\\/', '', strtolower($rev_rel['model']));
+
+			if($relModelClass == $modelName) {
+				if(isset($relation['for']) && $relation['for']!=$rev_rel_name)
+					continue;
+				if(isset($rev_rel['for']) && $rev_rel['for']!=$name)
+					continue;
+				$rev_relations[] = array_merge(array('name'=>$rev_rel_name), $rev_rel);
+			}
+		}
+
+		if(count($rev_relations) == 0)
+			throw new \Exception('No reverse relation for '.$modelName.': '.$name);
+		elseif(count($rev_relations) > 1)
+			throw new \Exception('Multiple reverse relations for '.$modelName.': '.$name);
+		else
+			return $rev_relations[0];
+	}
 	
+	#todo put this parsing in loading, instead of each call to relationData
 	public static function relationData($model, $name) {
 		if(is_string($model) || !$model instanceof \Coxis\Core\ModelDefinition)
 			$model = $model::getDefinition();
 		$relations = $model->relations;
 		$relation = $relations[$name];
 		
+		$rev_rel = static::reverseRelation($model, $name);
+
 		$res = array();
-		$res['type'] = $relation['type'];
+		$res['has'] = $relation['has'];
 		$res['model'] = $relation_model = $relation['model'];
-		if($res['type'] == 'hasMany') {
-			if(isset($relation['link']))
-				$res['link'] = $relation['link'];
-			else {
-				#todo pouvoir creer une correspondance entre deux relations
-				// if(is_string($model))
-				// 	$modelName = strtolower($model);
-				// else
-				// 	$modelName = strtolower(get_class($model));
-				$modelName = strtolower($model->getClass());
-				$modelName = preg_replace('/^\\\/', '', $modelName);
-				// d($relation_model::getDefinition()->relations);
-				foreach($relation_model::getDefinition()->relations as $name=>$relation) {
-					$rel = static::relationData($relation_model::getDefinition(), $name);
-					$relModelClass = preg_replace('/^\\\/', '', strtolower($rel['model']));
-					if($rel['type'] == 'belongsTo' && $relModelClass == $modelName) {
-						$res['link'] = $rel['link'];
-						break;
-					}
-				}
-				if(!isset($res['link']))
-					throw new \Exception('Could not find the opposite relation.');
-			}
-		}
+		$res['type'] = static::getRelationType($res, $rev_rel);
+
+		if($res['type'] == 'hasMany')
+			$res['link'] = $rev_rel['name'].'_id';
 		elseif($res['type'] == 'HMABT') {
 			$modelClass = $model->getClass();
 			$res['link_a'] = $modelClass::getModelName().'_id';
@@ -112,7 +150,7 @@ class ORMHandler {
 			$res['link'] = $name.'_id';
 		elseif($res['type'] == 'belongsTo')
 			$res['link'] = $name.'_id';
-		
+
 		return $res;
 	}
 	
@@ -120,12 +158,12 @@ class ORMHandler {
 		$model_relations = $model->relations();
 		
 		if(is_array($model_relations))
-			foreach($model_relations as $relation => $params)
-				#todo and hasOne ?
-				if($params['type'] == 'belongsTo' || $params['type'] == 'hasOne') {
+			foreach($model_relations as $relation => $params) {
+				if($params['has'] == 'one') {
 					$rel = ORMHandler::relationData($model, $relation);
 					$model->addProperty($rel['link'], array('type' => 'integer', 'required' => (isset($params['required']) && $params['required']), 'editable'=>false));
 				}
+			}
 	}
 	
 	public static function getI18N($model, $lang) {
@@ -229,7 +267,7 @@ class ORMHandler {
 	}
 
 	public function save($model) {
-		$vars = $model->toArray();
+		$vars = $model->toArrayRaw();
 		
 		#apply filters before saving
 		foreach($vars as $col => $var) {
