@@ -2,8 +2,8 @@
 if(!defined('_ENV_'))
 	define('_ENV_', 'test');
 require_once(dirname(__FILE__).'/../../../coxis.php');
-// BundlesManager::$directories[] = 'tests/app';
-require_once('core/load.php');
+// \Config::set('bundle_directories', array_merge(\Config::get('bundle_directories'), array('tests/app')));
+\BundlesManager::loadBundles();
 
 class AdminTest extends PHPUnit_Framework_TestCase {
 	public function setUp(){
@@ -26,7 +26,6 @@ class AdminTest extends PHPUnit_Framework_TestCase {
 // libs/form/SimpleAdminForm.php
 
 	public function test0() {
-		
 	}
 }
 ?>

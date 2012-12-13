@@ -5,6 +5,8 @@ namespace Coxis\Bundles\ORM\CLI;
 class MigrationController extends \Coxis\Core\CLI\CLIController {
 	/**
 	@Shortcut('automigrate')
+	@Usage('automigrate')
+	@Description('Automacally build and process a migration from the models')
 	*/
 	public function automigrateAction($request) {
 		$this->diffAction($request);
@@ -13,6 +15,8 @@ class MigrationController extends \Coxis\Core\CLI\CLIController {
 
 	/**
 	@Shortcut('diff')
+	@Usage('diff')
+	@Description('Automatically build a migration from the models')
 	*/
 	public function diffAction($request) {
 		#todo check migration version
@@ -27,6 +31,8 @@ class MigrationController extends \Coxis\Core\CLI\CLIController {
 
 	/**
 	@Shortcut('migrate')
+	@Usage('migrate')
+	@Description('Automatically process migrations')
 	*/
 	public function migrateAction($request) {
 		CLIRouter::run('Coxis\Core\Cli\DB', 'backup', $request);

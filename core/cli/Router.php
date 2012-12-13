@@ -2,8 +2,10 @@
 namespace Coxis\Core\Cli;
 
 class Router {
-	public function addRoute($route, $action) {
-		$this->routes[$route] = $action;
+	public function addRoute($route, $action, $usage='', $description='') {
+		$this->routes[$route]['route'] = $action;
+		$this->routes[$route]['usage'] = $usage;
+		$this->routes[$route]['description'] = $description;
 	}
 
 	public $routes = array(
@@ -11,25 +13,94 @@ class Router {
 		//~ 'init'	=>	'coxis:test',
 		#git clone https://leyou@bitbucket.org/leyou/coxis.git
 		//~ git clone ...
-		'get'	=>	array('Coxis\Core\Cli\Coxis', 'get'),	#set config var
-		'set'	=>	array('Coxis\Core\Cli\Coxis', 'set'),	#set config var
+		'get'	=>	array(
+			'usage'	=>	'get [relative_url]',
+			'description'	=>	'Make a GET request on an url',
+			'route'	=>	array('Coxis\Core\Cli\Coxis', 'get'),	#set config var
+		),
+		// 'set'	=>	array(
+		// 	'usage'	=>	'set ',
+		// 	'route'	=>	array('Coxis\Core\Cli\Coxis', 'set'),	#set config var
+		// ),
 		//~ 'search'	=>	'coxis:test',	#search for bundles
-		'import'	=>	array('Coxis\Core\Cli\Coxis', 'import'),	#import bundle
-		'build'	=>	array('Coxis\Core\Cli\Coxis', 'build'),	#build bundles from build.yml
-		'install'	=>	array('Coxis\Core\Cli\Coxis', 'install'),	
-		'install-all'	=>	array('Coxis\Core\Cli\Coxis', 'installAll'),	
-		'console'	=>	array('Coxis\Core\Cli\Coxis', 'console'),	
-		'publish'	=>	array('Coxis\Core\Cli\Coxis', 'publish'),
+		'import'	=>	array(
+			'usage'	=>	'import bundle',
+			'description'	=>	'Import a new bundle',
+			'route'	=>	array('Coxis\Core\Cli\Coxis', 'import'),	#import bundle
+		),
+		'build'	=>	array(
+			'usage'	=>	'build build.yml',
+			'description'	=>	'Build bundles from a yml file',
+			'route'	=>	array('Coxis\Core\Cli\Coxis', 'build'),	#build bundles from build.yml
+		),
+		'install'	=>	array(
+			'usage'	=>	'install bundle',
+			'description'	=>	'Install a bundle',
+			'route'	=>	array('Coxis\Core\Cli\Coxis', 'install'),	
+		),
+		'install-all'	=>	array(
+			'usage'	=>	'installAll',
+			'description'	=>	'Install all bundles',
+			'route'	=>	array('Coxis\Core\Cli\Coxis', 'installAll'),	
+		),
+		'console'	=>	array(
+			'usage'	=>	'console',
+			'description'	=>	'Open a PHP console',
+			'route'	=>	array('Coxis\Core\Cli\Coxis', 'console'),	
+		),
+		'publish'	=>	array(
+			'usage'	=>	'publish [bundle]',
+			'description'	=>	'Publish a bundle assets',
+			'route'	=>	array('Coxis\Core\Cli\Coxis', 'publish'),
+		),
 
-		'generate-tests'	=>	array('Coxis\Core\Cli\Coxis', 'generateTests'),
+		'test-all'	=>	array(
+			'usage'	=>	'test-all',
+			'description'	=>	'Test the core and all the bundles',
+			'route'	=>	array('Coxis\Core\Cli\Coxis', 'testAll'),
+		),
+		'generate-tests'	=>	array(
+			'usage'	=>	'generate-tests',
+			'description'	=>	'Generate an AutoTest file to tests your application',
+			'route'	=>	array('Coxis\Core\Cli\Coxis', 'generateTests'),
+		),
+		'generate-testsuite'	=>	array(
+			'usage'	=>	'generate-testsuite [output.xml]',
+			'description'	=>	'Generate a testsuite file for testing all your bundles with phpunit',
+			'route'	=>	array('Coxis\Core\Cli\Coxis', 'generateTestSuite'),
+		),
 		
-		'dump'	=>	array('Coxis\Core\Cli\DB', 'dump'),	#dump data into data.yml
-		'backup-db'	=>	array('Coxis\Core\Cli\DB', 'backup'),	#dump data into default yml file
-		'backup-files'	=>	array('Coxis\Core\Cli\DB', 'backupFiles'),	#dump data into default yml file
-		'load-all'	=>	array('Coxis\Core\Cli\DB', 'loadAll'),	#load all data (including bundles), usually for startup
-		'load'	=>	array('Coxis\Core\Cli\DB', 'load'),	#load specific data file
+		'dump'	=>	array(
+			'usage'	=>	'dump output.yml',
+			'description'	=>	'Dump your database into a yml file',
+			'route'	=>	array('Coxis\Core\Cli\DB', 'dump'),	#dump data into data.yml
+		),
+		'backup-db'	=>	array(
+			'usage'	=>	'backup',
+			'description'	=>	'Dump DB into a timestamp named file',
+			'route'	=>	array('Coxis\Core\Cli\DB', 'backup'),	#dump data into default yml file
+		),
+		'backup-files'	=>	array(
+			'usage'	=>	'backup-files',
+			'description'	=>	'Backup the upload folder',
+			'route'	=>	array('Coxis\Core\Cli\DB', 'backupFiles'),	#dump data into default yml file
+		),
+		'load-all'	=>	array(
+			'usage'	=>	'load-all',
+			'description'	=>	'Load all bundles data',
+			'route'	=>	array('Coxis\Core\Cli\DB', 'loadAll'),	#load all data (including bundles), usually for startup
+		),
+		'load'	=>	array(
+			'usage'	=>	'load',
+			'description'	=>	'Load a specific data file',
+			'route'	=>	array('Coxis\Core\Cli\DB', 'load'),	#load specific data file
+		),
 		
-		'version'	=>	array('Coxis\Core\Cli\Coxis', 'version'),
+		'version'	=>	array(
+			'usage'	=>	'version',
+			'description'	=>	'Give coxis version',
+			'route'	=>	array('Coxis\Core\Cli\Coxis', 'version'),
+		),
 	);
 
 	public function run($controller, $action, $params=array()) {
@@ -39,10 +110,10 @@ class Router {
 	}
 
 	public function dispatch($route, $args=array()) {
-		if(!isset($this->routes[$route]))
+		if(!isset($this->routes[$route]['route']))
 			return false;
 
-		$route = $this->routes[$route];
+		$route = $this->routes[$route]['route'];
 		$controller = $route[0];
 		$action = $route[1];
 

@@ -35,7 +35,15 @@ class FrontController extends CLIController {
 	}
 	
 	public static function usage() {
-		echo 'usage...';
+		echo 'Usage: '."\n";
+		foreach(\CLIRouter::inst()->routes as $name=>$route) {
+			echo $name;
+			if(isset($route['usage']) && $route['usage'])
+				echo ": ".$route['usage'];
+			echo "\n";
+			if(isset($route['description']) && $route['description'])
+				echo "    ".$route['description']."\n";
+		}
 		die();
 	}
 	

@@ -306,6 +306,37 @@ class CoxisController extends CLIController {
 			rename($src, $dst);
 	}
 
+	public function testAllAction($request) {
+		$this->generateTestSuiteAction(array('autotest.xml'));
+		$output = null;
+		exec('phpunit --configuration autotest.xml', $output);
+		foreach($output as $l)
+			echo $l."\n";
+	}
+
+	public function generateTestSuiteAction($request) {
+		if(isset($request[0]))
+			$output = $request[0];
+		else
+			$output = 'testsuite.xml';
+
+		$content = '<phpunit>
+  <testsuites>
+    <testsuite name="Coxis">
+      <directory>tests</directory>';
+
+    	foreach(BundlesManager::getBundles() as $bundle_dir) {
+    		if(file_exists($bundle_dir.'/tests') && is_dir($bundle_dir.'/tests'))
+    			$content .= "\n".'      <directory>'.$bundle_dir.'/tests</directory>';
+    	}
+
+    	$content .= "\n".'    </testsuite>
+  </testsuites>
+</phpunit>';
+
+		FileManager::put($output, $content);
+	}
+
 	public function generateTestsAction($request) {
 		if(isset($request['dir']))
 			$directory = $request['dir'];

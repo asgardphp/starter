@@ -12,6 +12,8 @@ namespace {
 		public $method;
 	}
 	class Annootate_Shortcut extends Annotation {}
+	class Annootate_Usage extends Annotation {}
+	class Annootate_Description extends Annotation {}
 }
 
 namespace Coxis\Core {
@@ -90,8 +92,14 @@ namespace Coxis\Core {
 							continue;
 						$method_reflection = new \ReflectionAnnotatedMethod($classname, $method);
 					
-						if($v = $method_reflection->getAnnotation('Shortcut'))
-							\CLIRouter::addRoute($v->value, array(static::formatControllerName($classname), static::formatActionName($method)));
+						if($v = $method_reflection->getAnnotation('Shortcut')) {
+							$usage = $description = '';
+							if($u = $method_reflection->getAnnotation('Usage'))
+								$usage = $u->value;
+							if($d = $method_reflection->getAnnotation('Description'))
+								$description = $d->value;
+							\CLIRouter::addRoute($v->value, array(static::formatControllerName($classname), static::formatActionName($method)), $usage, $description);
+						}
 					}
 				}
 

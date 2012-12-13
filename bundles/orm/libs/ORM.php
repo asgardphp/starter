@@ -80,12 +80,12 @@ class ORM {
 			$ids[] = $row['id'];
 		}
 		
-		if(sizeof($this->with)) {
+		if(sizeof($models) && sizeof($this->with)) {
 			foreach($this->with as $relation_name=>$closure) {
 				$rel = ORMHandler::relationData($current_model, $relation_name);
 				$relation_type = $rel['type'];
 				$relation_model = $rel['model'];
-				
+
 				switch($relation_type) {
 					case 'hasOne':
 					case 'belongsTo':

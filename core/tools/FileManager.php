@@ -57,4 +57,9 @@ class FileManager {
 			return mkdir($dir, 0777, true);
 		return true;
 	}
+
+	public static function put($file, $content) {
+		static::mkdir(dirname($file));
+		file_put_contents($file, $content);
+	}
 }
