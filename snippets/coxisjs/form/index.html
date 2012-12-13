@@ -1,0 +1,29 @@
+<script src="../jquery.min.js"></script>
+<script src="jquery.form.js"></script>
+<script type="text/javascript">
+$(function() {
+	$('form').ajaxForm({
+		statusCode: {
+			200: function(responseText, statusText, xhr, jQueryform) {
+				//~ dialog('Votre message nous a bien été transmis.<br/>Nous vous donnerons une réponse dans les plus brefs délais.');
+				alert('Success!');
+			},
+			500: function(jqXHR, textStatus, errorThrown) {
+				alert(jqXHR.responseText);
+			}
+		}
+	});
+});
+</script>
+
+<form action="http://127.0.0.1/coxis3/contact" method="post">					Vous souhaitez* :<br>
+					<input id="contactform-souhaitez-renseignement" type="checkbox" name="contactform[souhaitez][]" value="renseignement"> Un renseignement<br><input id="contactform-souhaitez-adherer" type="checkbox" name="contactform[souhaitez][]" value="adherer"> Adhérer à l'ARPA<br>					<label>Nom* :</label> <input id="contactform-nom" type="text" name="contactform[nom]" value=""><br>
+					<label>Prénom* :</label> <input id="contactform-prenom" type="text" name="contactform[prenom]" value=""><br>
+					<label>Téléphone* :</label> <input id="contactform-telephone" type="text" name="contactform[telephone]" value=""><br>
+					<label>E-mail* :</label> <input id="contactform-email" type="text" name="contactform[email]" value=""><br>
+					<label style="width:auto;">Votre question / demande :</label> <br>
+					<textarea style="height:150px; width:230px;" id="contactform-question" name="contactform[question]"></textarea>					<span style="font-size:11px; font-style:italic; font-family:Arial; color:#c2c3c5; display:block; text-align:right; width:230px;">600 caractères max.</span>
+					
+					<input type="image" src="images/contact/envoyer.png" style="margin:20px 0 0 120px;">
+					
+					<input id="contactform-_csrf_token" type="hidden" name="contactform[_csrf_token]" value="JZ7RscMYcV"></form>

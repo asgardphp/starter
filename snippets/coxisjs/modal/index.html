@@ -1,0 +1,27 @@
+<script src="../jquery.min.js"></script>
+<script src="modal.js"></script>
+<script type="text/javascript">
+$(function(){
+	prepareModal('#open', '#my-modal');
+});
+</script>
+
+<style>
+* {margin:0;padding:0;}
+.modal {
+	display:none;
+	
+	background-color:yellow;
+	border:2px solid red;
+}
+</style>
+
+<span id="open">Open</span>
+
+<div id="my-modal" class="modal">
+	<div style="width:500px;height:500px; padding:20px; text-align:center;">
+		Bonjour<br/>
+		<br/>
+		<span class="close">Close</span>
+	</div>
+</div>
