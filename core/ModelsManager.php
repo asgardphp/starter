@@ -47,9 +47,11 @@ class ModelDefinition extends Hookable {
 
 		\Hook::trigger('behaviors_pre_load', $this);
 
-		foreach($this->behaviors as $behavior => $params)
-			if($params)
+		foreach($this->behaviors as $behavior => $params) {
+			if($params) {
 				\Hook::trigger('behaviors_load_'.$behavior, $this);
+			}
+		}
 
 		$modelClass::configure($this);
 	}

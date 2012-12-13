@@ -21,7 +21,7 @@ class ORMHandler {
 				'nullable'	=>	false,
 			),
 		));	
-		static::loadrelations($modelDefinition);
+		static::loadRelations($modelDefinition);
 	}
 
 	public function isNew($model) {
@@ -87,27 +87,26 @@ class ORMHandler {
 		if(is_string($model) || !$model instanceof \Coxis\Core\ModelDefinition)
 			$model = $model::getDefinition();
 
-		$modelName = strtolower($model->getClass());
-		$modelName = preg_replace('/^\\\/', '', $modelName);
+		$origModelName = strtolower($model->getClass());
+		$modelName = preg_replace('/^\\\/', '', $origModelName);
 
 		$relations = $model->relations;
 		$relation = $relations[$name];
 		$relation_model = $relation['model'];
 
 		$rev_relations = array();
-		foreach($relation_model::getDefinition()->relations() as $rev_rel_name=>$relation) {
-			$all_rel = $relation_model::getDefinition()->relations();
-			$rev_rel = $all_rel[$rev_rel_name];
-			$relModelClass = preg_replace('/^\\\/', '', strtolower($rev_rel['model']));
+		if(isset($relation_model::$relations))
+			foreach($relation_model::$relations as $rev_rel_name=>$rev_rel) {
+				$relModelClass = preg_replace('/^\\\/', '', strtolower($rev_rel['model']));
 
-			if($relModelClass == $modelName) {
-				if(isset($relation['for']) && $relation['for']!=$rev_rel_name)
-					continue;
-				if(isset($rev_rel['for']) && $rev_rel['for']!=$name)
-					continue;
-				$rev_relations[] = array_merge(array('name'=>$rev_rel_name), $rev_rel);
+				if($relModelClass == $modelName) {
+					if(isset($relation['for']) && $relation['for']!=$rev_rel_name)
+						continue;
+					if(isset($rev_rel['for']) && $rev_rel['for']!=$name)
+						continue;
+					$rev_relations[] = array_merge(array('name'=>$rev_rel_name), $rev_rel);
+				}
 			}
-		}
 
 		if(count($rev_relations) == 0)
 			throw new \Exception('No reverse relation for '.$modelName.': '.$name);
@@ -122,22 +121,19 @@ class ORMHandler {
 		if(is_string($model) || !$model instanceof \Coxis\Core\ModelDefinition)
 			$model = $model::getDefinition();
 		$relations = $model->relations;
-		$relation = $relations[$name];
-		
-		$rev_rel = static::reverseRelation($model, $name);
+		$res = $relations[$name];
 
-		$res = array();
-		$res['has'] = $relation['has'];
-		$res['model'] = $relation_model = $relation['model'];
-		$res['type'] = static::getRelationType($res, $rev_rel);
+		$relation_model = $res['model'];
 
-		if($res['type'] == 'hasMany')
+		if($res['type'] == 'hasMany') {
+			$rev_rel = static::reverseRelation($model, $name);
 			$res['link'] = $rev_rel['name'].'_id';
+		}
 		elseif($res['type'] == 'HMABT') {
 			$modelClass = $model->getClass();
 			$res['link_a'] = $modelClass::getModelName().'_id';
 			$res['link_b'] = $relation_model::getModelName().'_id';
-			if(isset($relation['sortable']) && $relation['sortable'])
+			if(isset($res['sortable']) && $res['sortable'])
 				$res['sortable'] = $modelClass::getModelName().'_position';
 			else
 				$res['sortable'] = false;
@@ -154,16 +150,21 @@ class ORMHandler {
 		return $res;
 	}
 	
-	public static function loadrelations($model) {
+	public static function loadRelations($model) {
 		$model_relations = $model->relations();
 		
-		if(is_array($model_relations))
+		if(is_array($model_relations)) {
 			foreach($model_relations as $relation => $params) {
+				$rev_rel = ORMHandler::reverseRelation($model, $relation);
+
+				$model->relations[$relation]['type'] = static::getRelationType($params, $rev_rel);
+
 				if($params['has'] == 'one') {
 					$rel = ORMHandler::relationData($model, $relation);
 					$model->addProperty($rel['link'], array('type' => 'integer', 'required' => (isset($params['required']) && $params['required']), 'editable'=>false));
 				}
 			}
+		}
 	}
 	
 	public static function getI18N($model, $lang) {
