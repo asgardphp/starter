@@ -97,9 +97,9 @@ class ORMManager {
 							#match type
 							#and length
 							switch($prop->type) {
-								case 'datetime':
-									$neworm['type'] = 'datetime';
-									break;
+								// case 'datetime':
+								// 	$neworm['type'] = 'datetime';
+								// 	break;
 								default:
 									throw new \Exception('Cannot convert '.$prop->type.' type');
 							}
@@ -190,19 +190,21 @@ class ORMManager {
 		$oldSchemas = array_filter($oldSchemas);
 
 		$up = static::diffBetween($newSchemas, $oldSchemas);
-		$down = static::diffBetween($oldSchemas, $newSchemas);
+		$down = static::diffBetween($oldSchemas, $newSchemas, true);
 
 		return array($up, $down);
 	}
 	
-	private static function diffBetween($newSchemas, $oldSchemas) {
+	private static function diffBetween($newSchemas, $oldSchemas, $down=false) {
 		$migrations = array();
 		$migration = '';
 		foreach($newSchemas as $class=>$schema) {
 			$table = $class;
 			if(!in_array($class, array_keys($oldSchemas))) {
-				$migration = static::buildTableFor($class, $newSchemas[$class]);
-				$migrations[] = $migration;
+				if(!$down) {
+					$migration = static::buildTableFor($class, $newSchemas[$class]);
+					$migrations[] = $migration;
+				}
 				continue;
 			}
 			$tableSchema = $oldSchemas[$class];

@@ -27,6 +27,11 @@
 						
 							<% \Coxis\Core\Flash::showAll() %>
 						
+							<%
+							if(!$<?php echo $bundle['model']['meta']['plural'] ?>):
+								echo '<tr><td>'.__('No result').'</td></tr>';
+							else:
+							%>
 							<form action="" method="post">
 								<table cellpadding="0" cellspacing="0" width="100%" class="sortable">
 								
@@ -40,8 +45,7 @@
 									</thead>
 									
 									<tbody>
-										<%
-										foreach($<?php echo $bundle['model']['meta']['plural'] ?> as $<?php echo $bundle['model']['meta']['name'] ?>) { %>								
+										<% foreach($<?php echo $bundle['model']['meta']['plural'] ?> as $<?php echo $bundle['model']['meta']['name'] ?>) { %>								
 											<tr>
 												<td><input type="checkbox" name="id[]" value="<% echo $<?php echo $bundle['model']['meta']['name'] ?>->id %>" /></td>
 												<td><% echo $<?php echo $bundle['model']['meta']['name'] ?>->created_at %></td>
@@ -75,6 +79,7 @@
 								%>
 								
 							</form>
+							<% endif %>
 						</div>		<!-- .block_content ends -->
 						<!-- <div class="bendl"></div>
 						<div class="bendr"></div>
