@@ -27,6 +27,10 @@ class ORM {
 		$this->orderBy($model::getDefinition()->meta['order_by']);
 	}
 
+	public function __call($name) {
+		d($name);
+	}
+
 	public function toModel($raw) {
 		$current_model = $this->model;
 		$new = new $current_model;
