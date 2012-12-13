@@ -142,8 +142,10 @@ class ORMHandler {
 			else
 				$res['join_table'] = \Config::get('database', 'prefix').$relation_model::getModelName().'_'.$modelClass::getModelName();
 		}
-		elseif($res['type'] == 'hasOne')
-			$res['link'] = $name.'_id';
+		elseif($res['type'] == 'hasOne') {
+			$rev_rel = static::reverseRelation($model, $name);
+			$res['link'] = $rev_rel['name'].'_id';
+		}
 		elseif($res['type'] == 'belongsTo')
 			$res['link'] = $name.'_id';
 

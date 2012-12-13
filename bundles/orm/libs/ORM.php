@@ -27,8 +27,14 @@ class ORM {
 		$this->orderBy($model::getDefinition()->meta['order_by']);
 	}
 
-	public function __call($name) {
-		d($name);
+	public function __get($name) {
+		$res = array();
+		while($one = $this->next())
+			if(is_array($r = $one->$name))
+				$res[] = array_merge($res, $r);
+			elseif($r)
+				$res[] = $r;
+		return $res;
 	}
 
 	public function toModel($raw) {
