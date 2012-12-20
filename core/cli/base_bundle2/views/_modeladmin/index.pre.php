@@ -7,12 +7,14 @@
 						<li><a href="<% echo $this->url_for('new') %>">Ajouter</a></li>
 					</ul>
 					<%
-					$searchForm->start('', 'get')
-					->search->input(array(
-						'class'	=>	'text',
-						'placeholder'	=>	'Search',
+					$searchForm->open();
+					echo $searchForm->search->def(array(
+						'attrs'	=>	array(
+							'class'	=>	'text',
+							'placeholder'	=>	'Search',
+						),
 					));
-					$searchForm->end();
+					$searchForm->close();
 					%>
 				</div>	
 				

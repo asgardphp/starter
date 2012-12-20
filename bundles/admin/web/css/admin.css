@@ -772,11 +772,11 @@ a:hover {
 	}
 
 .block form .note {
-	padding-left: 10px;
+/*	padding-left: 10px;
 	font-size: 11px;
 	font-weight: bold;
 	color: #757575;
-	vertical-align: middle;
+	vertical-align: middle;*/
 	}
 
 .block form .note.error { color: #e3302c; }
@@ -1027,7 +1027,16 @@ a:hover {
 	display: inline-block;
 	width: 30px;
 }
-span.error {
+.login label {
+	display:inline !important;
+}
+.block_content form span.error, span.note {
+	display:block;
+}
+.block_content form span.error {
 	color:red;
 	font-weight: bold;
+}
+.block_content form label {
+	display:block;
 }
