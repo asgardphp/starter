@@ -14,13 +14,15 @@
 					<?php echo !$administrator->isNew() ? $administrator:'Nouveau' ?>
 					</a></p>
 				
-					<?php Flash::showAll() ?>
+					<?php Flash::showSuccess() ?>
+					<?php $form->showErrors() ?>
 					
 					<?php
-					$form->start();
-					$form->input('username', array('label'	=>	__('Username')));
-					$form->password('password', array('label'	=>	__('Password')));
-					$form->end();
+					$form->open();
+					echo
+						$form->username->def(array('label'	=>	__('Username'))).
+						$form->password->password(array('label'	=>	__('password')));
+					$form->close();
 					?>
 					
 				</div>		<!-- .block_content ends -->

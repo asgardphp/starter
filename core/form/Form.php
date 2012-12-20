@@ -133,6 +133,7 @@ class Form extends AbstractGroup {
 	
 	//todo should not pass this args here but when defining the form
 	public function open($options=array()) {
+		$options = $this->params+$options;
 		$action = isset($options['action']) ? $options['action']:'';
 		$method = isset($options['method']) ? $options['method']:'post';
 		$enctype = isset($options['enctype']) ? $options['enctype']:($this->hasFile() ? ' enctype="multipart/form-data"':'');

@@ -51,8 +51,8 @@ class ModelAdminController extends AdminParentController {
 		$_model = static::$_model;
 		$_models = static::$_models;
 		
-		// $this->searchForm = new \Coxis\Core\Form\Form();
-		// $this->searchForm->search = new \Coxis\Core\Form\Widget();
+		$this->searchForm = new \Coxis\Core\Form\Form(array('method'=>'get'));
+		$this->searchForm->search = new \Coxis\Core\Form\TextField;
 	
 		//submitted
 		$i = 0;
@@ -68,29 +68,33 @@ class ModelAdminController extends AdminParentController {
 		#Search
 		if(isset($request['search']) && $request['search']) {
 			$conditions['or'] = array();
-			foreach($_model::propertyNames() as $property)
-				$conditions['or']["`$property` LIKE ?"] = '%'.$request['search'].'%';
+			foreach($_model::propertyNames() as $property) {
+				if($property != 'id')
+					$conditions['or']["`$property` LIKE ?"] = '%'.$request['search'].'%';
+			}
 		}
 		#Filters
 		elseif(isset($request['filter']) && $request['filter']) {
 			$conditions['and'] = array();
-			foreach($request['filter'] as $key=>$value)
+			foreach($request['filter'] as $key=>$value) {
 				if($value)
 					$conditions['and']["`$key` LIKE ?"] = '%'.$value.'%';
+			}
 		}
-		
+
 		$pagination = $_model::where($conditions);
+		
 		if(isset(static::$_orderby))
 			$pagination->orderBy(static::$_orderby);
 
-		$this->orm = $_model::where($conditions);
+		$this->orm = $pagination;
 
 		\Hook::trigger('coxisadmin_'.static::$_model.'_index', array($this));
 
 		$this->paginator = null;
 
 		$this->$_models = $this->orm->paginate(
-			isset($request['page']) ? $request['page']:1,
+			GET::get('page', 1),
 			10,
 			$this->paginator
 		);
@@ -115,7 +119,7 @@ class ModelAdminController extends AdminParentController {
 				if(isset($_POST['send']))
 					return \Response::redirect('admin/'.static::$_index);
 			} catch(\Coxis\Core\Form\FormException $e) {
-				\Flash::addError($e->errors);
+				// \Flash::addError($e->errors);
 			}
 		
 		$this->setRelativeView('form.php');
@@ -136,7 +140,7 @@ class ModelAdminController extends AdminParentController {
 			try {
 				$this->form->save();
 				\Hook::trigger('coxisadmin_'.static::$_model.'_new', array($this, $this->$modelName));
-				\Flash::addSuccess(static::$_messages['created']);
+				\Flash::addSuccess($this->_messages['created']);
 				if(isset($_POST['send']))
 					return \Response::redirect('admin/'.static::$_index);
 				else {

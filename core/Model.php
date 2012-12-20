@@ -188,6 +188,7 @@ abstract class Model {
 				else
 					$this->data['properties'][$name] = static::getDefinition()->property($name)->set($value, $this);
 			}
+			#todo use Hookable and hasHook?
 			elseif(!$raw && isset(static::getDefinition()->meta['hooks']['set'][$name])) {
 				$hook = static::getDefinition()->meta['hooks']['set'][$name];
 				$hook($this, $value);

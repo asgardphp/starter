@@ -3,7 +3,7 @@ namespace Coxis\Bundles\Admin\Libs\Form;
 
 class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 	public $controller = null;
-	
+
 	function __construct($model, $controller, $params=array()) {
 		parent::__construct($model, $params);
 		$this->controller = $controller;
@@ -54,7 +54,7 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 			if($error=$field->getError())
 				$str .= '<span class="error">'.$error.'</span>';
 			if(isset($options['note']))
-				$str .= '<span>'.$options['note'].'</span>';
+				$str .= '<span class="note">'.$options['note'].'</span>';
 			$str .= $widget->render().'
 			</p>';
 

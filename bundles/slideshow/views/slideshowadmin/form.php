@@ -6,22 +6,22 @@
 				</div>		<!-- .block_head ends -->
 				
 				<div class="block_content">
-					<?php Flash::showAll() ?>
+					<?php Flash::showSuccess() ?>
+					<?php $form->showErrors() ?>
 					
 					<?php
-					$form->start()
-						->def('image1', array('label'=>'Image Slideshow 1', 'note'=>'Image real size: '.Config::get('slideshow', 'width').'/'.Config::get('slideshow', 'height').'px'))
-						->textarea('description1', array('label'=>'Description'))
-						->def('image2', array('label'=>'Image Slideshow 2', 'note'=>'Image real size: '.Config::get('slideshow', 'width').'/'.Config::get('slideshow', 'height').'px'))
-						->textarea('description2', array('label'=>'Description'))
-						->def('image3', array('label'=>'Image Slideshow 3', 'note'=>'Image real size: '.Config::get('slideshow', 'width').'/'.Config::get('slideshow', 'height').'px'))
-						->textarea('description3', array('label'=>'Description'))
-						->def('image4', array('label'=>'Image Slideshow 4', 'note'=>'Image real size: '.Config::get('slideshow', 'width').'/'.Config::get('slideshow', 'height').'px'))
-						->textarea('description4', array('label'=>'Description'))
-					->end();
+					$form->open();
+					echo
+						$form->image1->def(array('label'=>'Image Slideshow 1', 'note'=>'Image real size: '.Config::get('slideshow', 'width').'/'.Config::get('slideshow', 'height').'px')).
+						$form->description1->textarea(array('label'=>'Description')).
+						$form->image2->def(array('label'=>'Image Slideshow 2', 'note'=>'Image real size: '.Config::get('slideshow', 'width').'/'.Config::get('slideshow', 'height').'px')).
+						$form->description2->textarea(array('label'=>'Description')).
+						$form->image3->def(array('label'=>'Image Slideshow 3', 'note'=>'Image real size: '.Config::get('slideshow', 'width').'/'.Config::get('slideshow', 'height').'px')).
+						$form->description3->textarea(array('label'=>'Description')).
+						$form->image4->def(array('label'=>'Image Slideshow 4', 'note'=>'Image real size: '.Config::get('slideshow', 'width').'/'.Config::get('slideshow', 'height').'px')).
+						$form->description4->textarea(array('label'=>'Description'));
+					$form->close();
 					?>
-					<!-- <p><input name="stay" type="submit" class="submit long" value="Save"> </p> -->
-					
 				</div>		<!-- .block_content ends -->
 				<div class="bendl"></div>
 				<div class="bendr"></div>

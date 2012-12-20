@@ -8,22 +8,18 @@
 				<div class="block_content">
 					<p class="breadcrumb"><a href="preferences">Preferences</a></p>
 				
-					<?php \Flash::showAll() ?>
+					<?php Flash::showSuccess() ?>
+					<?php $form->showErrors() ?>
 					
 					<?php
-					$form->start();
-						
-					$form->values['name']->def('value', array('label'=>'Nom'));
-						
-					$form->values['adresse']->def('value', array('label'=>'Adresse'));
-						
-					$form->values['telephone']->def('value', array('label'=>'Téléphone'));
-
-					$form->values['email']->def('value', array('label'=>'Email'));					
-					
-					$form->values['head_script']->textarea('value', array('label'=>'Script'));
-					
-					$form->end();
+					$form->open();
+					echo
+						$form->values['name']->value->def(array('label'=>__('Nom'))).
+						$form->values['adresse']->value->def(array('label'=>__('Adresse'))).
+						$form->values['telephone']->value->def(array('label'=>__('Téléphone'))).
+						$form->values['email']->value->def(array('label'=>__('Email'))).
+						$form->values['head_script']->value->def(array('label'=>__('Script')));
+					$form->close();
 					?>
 					
 					

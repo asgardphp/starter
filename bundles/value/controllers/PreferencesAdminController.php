@@ -5,18 +5,21 @@ namespace Coxis\Bundles\Value\Controllers;
 @Prefix('admin/preferences')
 */
 class PreferencesAdminController extends \Coxis\Bundles\Admin\Libs\Controller\AdminParentController {
-	static $_messages = array(
-		'modified'			=>	'Préférences mises à jour avec succès.',
-	);
+	function __construct() {
+		$this->_messages = array(
+			'modified'			=>	__('Preferences updated with success.'),
+		);
+	}
 	
 	public function formConfigure() {
-		$form = new AdminSimpleForm();
+		$form = new AdminSimpleForm($this);
 		
 		$form->values = array();
 		$vars = array('name', 'email', 'head_script', 'adresse', 'telephone');
 		foreach($vars as $valueName) {
 			$value = Value::fetch($valueName);
 			$a = new AdminModelForm($value, $this);
+			// $a = new ModelForm($value, $this); #todo replace AdminModelForm
 			unset($a->key);
 			$form->values[$value->key] = $a;
 		}
@@ -36,12 +39,10 @@ class PreferencesAdminController extends \Coxis\Bundles\Admin\Libs\Controller\Ad
 		if($this->form->isSent())
 			try {
 				$this->form->save();
-				\Flash::addSuccess(static::$_messages['modified']);
-				if(isset($_POST['send']))
-					return \Response::redirect('admin/'.static::$_index, true);
-			} catch(FormException $e) {
-				\Flash::addError($e->errors);
-			}
+				\Flash::addSuccess($this->_messages['modified']);
+				if(POST::has('send'))
+					return \Response::back();
+			} catch(FormException $e) {}
 		
 		$this->setRelativeView('form.php');
 	}

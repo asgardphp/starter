@@ -73,7 +73,6 @@ abstract class AbstractGroup extends Hookable implements \ArrayAccess, \Iterator
 					(isset($this->files[$name]) ? $this->files[$name]:array())
 				);
 			}
-			// elseif(is_object($fields) && is_subclass_of($fields, 'Coxis\Core\Form\FieldHelper')) {
 			elseif(is_object($fields) && is_subclass_of($fields, 'Coxis\Core\Form\Fields\Field')) {
 				#todo
 				if(in_array($name, array('groupName', 'dad', 'data', 'fields', 'params', 'files'), true))
@@ -100,8 +99,8 @@ abstract class AbstractGroup extends Hookable implements \ArrayAccess, \Iterator
 				$form = $fields;
 				$form->setName($name);
 				$form->setDad($this);
-				//~ if(isset($this->data[$name]))
-					//~ $form->setData($this->data[$name], (isset($this->files[$name]) ? $this->files[$name]:array()));
+				// if(isset($this->data[$name]))
+				// 	$form->setData($this->data[$name], (isset($this->files[$name]) ? $this->files[$name]:array()));
 				$form->setData(
 					(isset($this->data[$name]) ? $this->data[$name]:array()),
 					(isset($this->files[$name]) ? $this->files[$name]:array())
@@ -111,7 +110,7 @@ abstract class AbstractGroup extends Hookable implements \ArrayAccess, \Iterator
 			}
 	}
 	
-	public function addFields($fields, $name=null) {	
+	public function addFields($fields, $name=null) {
 		foreach($fields as $name=>$sub_fields)
 			$this->fields[$name] = $this->parseFields($sub_fields, $name);
 			
@@ -185,8 +184,6 @@ abstract class AbstractGroup extends Hookable implements \ArrayAccess, \Iterator
 	
 	#todo what's this method for?
 	protected function updateChilds() {
-		// if($this->fields)
-		// 		d($this->fields);
 		foreach($this->fields as $name=>$field) {
 			if($field instanceof \Coxis\Core\Form\AbstractGroup) {
 				$field->setData(
@@ -194,25 +191,24 @@ abstract class AbstractGroup extends Hookable implements \ArrayAccess, \Iterator
 					(isset($this->files[$name]) ? $this->files[$name]:array())
 				);
 			}
-			elseif($field instanceof \Coxis\Core\Form\Field) {
-				// if($field->params['type'] == 'file') {
+			elseif($field instanceof \Coxis\Core\Form\Fields\Field) {
 				if($field instanceof \Coxis\Core\Form\Fields\FileField) {
 					if(isset($this->files[$name]))
-						$field->value = $this->files[$name];
-					else
-						$field->value = null;
+						$field->setValue($this->files[$name]);
+					// else
+					// 	$field->setValue(null);
 				}
 				elseif(isset($this->data[$name]))
-					$field->value = $this->data[$name];
+					$field->setValue($this->data[$name]);
 				else {
 					if($this->isSent()) {
 						if(isset($field->params['multiple']) && $field->params['multiple'])
-							$field->value = array();
+							$field->setValue(array());
 						else
-							$field->value = '';
+							$field->setValue('');
 					}
-					else
-						$field->value = null;
+					// else
+					// 	$field->setValue(null);
 				}
 			}
 		}

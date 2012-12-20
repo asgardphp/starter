@@ -140,11 +140,8 @@ class ModelForm extends Form {
 	public function my_errors() {
 		$data = $this->getData();
 		$data = array_filter($data, function($v) {
-			return $v !== null;
+			return $v !== null; 
 		});
-		foreach($data as $k=>$v)
-			if(!$v && $this->model->hasProperty($k) && $this->model->property($k)->form_hidden)
-				unset($data);
 		if($this->i18n)
 			$this->model->set($data, 'all');
 		else

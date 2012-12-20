@@ -441,6 +441,16 @@ class DAL {
 
 	protected function _function($fct, $what=null, $group_by=null) {
 		$params = array();
+				
+		#todo put ` around table only, ie `like` l and not `like l`
+		list($rightjoin, $rjparams) = $this->buildRightjoin();
+		$params = array_merge($params, $rjparams);
+		
+		list($leftjoin, $ljparams) = $this->buildLeftjoin();
+		$params = array_merge($params, $ljparams);
+				
+		list($innerjoin, $ijparams) = $this->buildInnerjoin();
+		$params = array_merge($params, $ijparams);
 
 		list($where, $whereparams) = $this->buildWhere();
 		$params = array_merge($params, $whereparams);
@@ -453,14 +463,14 @@ class DAL {
 			$what = '*';
 
 		if($group_by) {
-			$sql = 'SELECT `'.$group_by.'` as groupby, '.$fct.'('.$what.') as '.$fct.' FROM `'.$this->table.'`'.$where.' GROUP BY '.$group_by;#todo $this->table
+			$sql = 'SELECT `'.$group_by.'` as groupby, '.$fct.'('.$what.') as '.$fct.' FROM `'.$this->table.'`'.$rightjoin.$leftjoin.$innerjoin.$where.' GROUP BY '.$group_by;#todo $this->table
 			$res = array();
 			foreach($this->db->query($sql, $params)->all() as $v)
 				$res[$v['groupby']] = $v[$fct];
 			return $res;
 		}
 		else {
-			$sql = 'SELECT '.$fct.'('.$what.') as '.$fct.' FROM '.$tables.$where;
+			$sql = 'SELECT '.$fct.'('.$what.') as '.$fct.' FROM '.$tables.$rightjoin.$leftjoin.$innerjoin.$where;
 			$res = $this->db->query($sql, $params)->first();
 			return $res[$fct];
 		}
