@@ -2,11 +2,11 @@
 namespace Coxis\Core\Form;
 
 class Group extends AbstractGroup {
-	function __construct($widgets, $dad=null, $name=null, $data=null, $files=null) {	
+	function __construct($fields, $dad=null, $name=null, $data=null, $files=null) {	
 		$this->dad = $dad;
 		$this->data = $data;
 		$this->files = $files;
 		$this->groupName = $name;
-		$this->addWidgets($widgets);
+		$this->addFields($fields);
 	}
 }

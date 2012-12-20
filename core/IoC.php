@@ -14,6 +14,10 @@ class IoC {
 			unset($params[0]);
 		return call_user_func_array($this->registry[$name], $params);
 	}
+	
+	public function set($name, $object) {
+		$this->registry[$name] = $object;
+	}
 
 	public function registered($name) {
 		return isset($this->registry[$name]);

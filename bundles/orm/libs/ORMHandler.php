@@ -208,8 +208,7 @@ class ORMHandler {
 			case 'hasOne':
 				if($model->isNew())
 					return null;
-					
-				#todo bug?
+				
 				$link = $rel['link'];
 				return $relmodel::where(array($link => $model->id))->first();
 			case 'belongsTo':
@@ -220,8 +219,8 @@ class ORMHandler {
 				return $relmodel::where(array('id' => $model->$link))->first();
 			case 'hasMany':
 			case 'HMABT':
-				if($model->isNew())
-					return array();
+				// if($model->isNew())
+				// 	return array();
 
 				$collection = new \Coxis\Bundles\ORM\Libs\CollectionORM($model, $name);
 				return $collection;
@@ -244,7 +243,7 @@ class ORMHandler {
 	public static function unserializeSet($model, $data, $lang=null) {
 		foreach($data as $k=>$v)
 			if($model->hasProperty($k))
-				$data[$k] = $model->property($k)->unserialize($v);
+				$data[$k] = $model->property($k)->unserialize($v, $model);
 			else
 				unset($data[$k]);
 		return $model->set($data, $lang, true);

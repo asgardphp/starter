@@ -8,21 +8,21 @@ class Form extends AbstractGroup {
 	);
 	protected $callbacks = array();
 
+	public $render_callbacks = array();
+
 	function __construct($param1=null, $param2=array(), $param3=array()) {
-		static::generateTokens();
-	
 		//$param1		=	form params
-		//$param2	=	form widgets
+		//$param2	=	form fields
 		//OR
 		//$param1		=	form name
 		//$param2	=	form params
-		//$param3	=	form widgets
+		//$param3	=	form fields
 		if(is_array($param1)) {
 			$name = null;
 			$params = $param1;
 			$this->params = array_merge($this->params, $params);
 			$this->fetch();
-			$this->setWidgets($param2);
+			$this->setFields($param2);
 		}
 		else {
 			$name = $param1;
@@ -30,28 +30,43 @@ class Form extends AbstractGroup {
 			$this->params = array_merge($this->params, $params);
 			$this->groupName = $name;
 			$this->fetch();
-			$this->setWidgets($param3);
+			$this->setFields($param3);
 		}
-		
-		$this->addWidget(
-			new Widget(array(
-				'validation'	=>	array(
-					'equal'	=>	\Coxis\Core\Inputs\Session::get('_csrf_token'),
-				),
-				'messages'	=>	array(
-					'equal'	=>	'Invalid CSRF token.',
-				),
-				'view'	=>	array(
-					'value'	=>	\Coxis\Core\Inputs\Session::get('_csrf_token'),
-				),
-			)),
-			'_csrf_token'
-		);
+
+		$this->add('_csrf_token', 'csrf');
 	}
-	
-	protected static function generateTokens() {	
-		if(\Coxis\Core\Inputs\Session::get('_csrf_token') === null)
-			\Coxis\Core\Inputs\Session::set('_csrf_token', Tools::randstr());
+
+	public function render($render_callback, $field, $options=array()) {
+		if($this->dad)
+			return $this->dad->render($render_callback, $field, $options);
+
+		if(is_function($render_callback))
+			$cb = $render_callback;
+		elseif(isset($this->render_callbacks[$render_callback]))
+			$cb = $this->render_callbacks[$render_callback];
+		else {
+			$cb = function($field, $options=array()) use($render_callback) {
+				return HTMLWidget::$render_callback($field->getName(), $field->getValue(), $options);
+			};
+		}
+
+		if(!$cb)
+			throw new \Exception('Render callback "'.$render_callback.'" does not exist.');
+
+		$options = $field->options+$options;
+		$options['field'] = $field;
+		$options['id'] = $field->getID();
+
+		if($this->hasHook('render'))
+			$res = $this->trigger('render', array($field, $cb($field, $options), $options));
+		else
+			return $cb($field, $options);
+
+		return $res;
+	}
+
+	public function setRenderCallback($name, $callback) {
+		$this->render_callbacks[$name] = $callback;
 	}
 	
 	public function __toString() {
@@ -71,13 +86,10 @@ class Form extends AbstractGroup {
 	
 	protected function merge_all($name, $type, $tmp_name, $error, $size) {
 		foreach($name as $k=>$v) {
-			if(isset($v['name']) && !is_array($v['name'])) {
+			if(isset($v['name']) && !is_array($v['name']))
 				$name[$k] = array_merge($v, $type[$k], $tmp_name[$k], $error[$k], $size[$k]);
-			}
-			else {
-				//continue recursive
+			else 
 				$name[$k] = $this->merge_all($name[$k], $type[$k], $tmp_name[$k], $error[$k], $size[$k]);
-			}
 		}
 		
 		return $name;
@@ -87,11 +99,12 @@ class Form extends AbstractGroup {
 		$raw = array();
 		$files = array();
 			
-		if($this->groupName)
+		if($this->groupName) {
 			if(\File::get($this->groupName) !== null)
 				$raw = \File::get($this->groupName);
 			else
 				$raw = array();
+		}
 		else
 			$raw = \File::all();
 			
@@ -106,28 +119,30 @@ class Form extends AbstractGroup {
 		}
 	
 		$this->data = array();
-		if($this->groupName)
+		if($this->groupName) {
 				$this->setData(
 					\POST::get($this->groupName, array()),
 					$files
 				);
+		}
 		else
-			// if(isset($_POST))
-				$this->setData(\POST::all(), \File::all());
+			$this->setData(\POST::all(), \File::all());
 						
 		return $this;
 	}
 	
 	//todo should not pass this args here but when defining the form
-	public function start($action='', $method='post', $enctype='') {
-	//~ d($this->hasFile());
-		echo '<form action="'.$action.'" method="'.$method.'"'.($enctype ? ' '.$enctype:($this->hasFile() ? ' enctype="multipart/form-data"':'')).'>';
+	public function open($options=array()) {
+		$action = isset($options['action']) ? $options['action']:'';
+		$method = isset($options['method']) ? $options['method']:'post';
+		$enctype = isset($options['enctype']) ? $options['enctype']:($this->hasFile() ? ' enctype="multipart/form-data"':'');
+		echo '<form action="'.$action.'" method="'.$method.'"'.$enctype.'>'."\n";
 		
 		return $this;
 	}
 	
-	public function end() {
-		$this->_csrf_token->hidden();
+	public function close() {
+		echo $this->_csrf_token->def();
 		echo '</form>';
 		
 		return $this;
@@ -141,32 +156,30 @@ class Form extends AbstractGroup {
 		
 		return $this;
 	}
-	
-	public function getData() {
-		$res = array();
-		
-		foreach($this->widgets as $widget) {
-			if($widget instanceof \Coxis\Core\Form\WidgetHelper) {
-				#todo move it into the widget?
-				if($widget->params['type'] == 'file') {
-					if(get($widget->val(), 'error') === 0)
-						$res[$widget->name] = $widget->val();
-					else
-						$res[$widget->name] = null;
-				}
-				elseif($widget->params['type'] == 'boolean')
-					$res[$widget->name] = (boolean)$widget->val();
-				else
-					$res[$widget->name] = $widget->val();
-			}
-		}
-		
-		return $res;
-	}
 
 	public function showErrors() {
-		foreach(Tools::flateArray($this->errors) as $error) {
-			echo '<span class="error">'.$error.'</span><br>';
+		if(!$this->errors)
+			return;
+		$error_found = false;
+		foreach($this->errors as $field_name=>$errors) {
+			if(!$this->has($field_name) || is_subclass_of($this->$field_name, 'Coxis\Core\Form\Fields\HiddenField')) {
+				if(!$error_found) {
+					echo '<ul>';
+					$error_found = true;
+				}
+				if(is_array($errors)) {
+					foreach(Tools::flateArray($errors) as $error)
+						echo '<li class="error">'.$error.'</li>';
+				}
+				else
+					echo '<li class="error">'.$errors.'</li>';
+			}
 		}
+		if($error_found)
+			echo '</ul>';
+	}
+
+	public function isOk() {
+		return !$this->errors();
 	}
 }

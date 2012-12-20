@@ -57,6 +57,12 @@ class Context {
 		}
 	}
 
+	public static function newDefault() {
+		$rand = Tools::randstr(10);
+		Context::setDefault($rand);
+		static::get('autoloader')->preloadDir(_DIR_.'core');
+	}
+
 	public static function getDefault() {
 		return static::$default;
 	}

@@ -2,16 +2,24 @@
 namespace Coxis\Core\Form;
 
 class HTMLHelper {
-	public static function tag($tag, $attrs) {
-		$attrs_str = '';
+	public static function tag($tag, $attrs, $inner=null) {
+		$str = '';
 		
 		foreach($attrs as $k=>$v)
-			$attrs_str .= $k.'="'.$v.'" ';
+			$str .= $k.'="'.$v.'" ';
 		
-		return '<'.$tag.' '.trim($attrs_str).'>';
-	}
-	
-	public static function endTag($tag) {
-		return '</'.$tag.'>';
+		$str = '<'.$tag.' '.trim($str).'>';
+
+		if($inner === null)
+			return $str;
+
+		if(is_callable($inner))
+			$str .= $inner();
+		else
+			$str .= $inner;
+
+		$str .= '</'.$tag.'>';
+		
+		return $str;
 	}
 }

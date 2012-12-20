@@ -39,6 +39,17 @@ class Hook {
 		return $chain->run($args, $print);
 	}
 
+	public function has($path) {
+		$result = $this->registry;
+		foreach($path as $key)
+			if(!isset($result[$key]))
+				return false;
+			else
+				$result = $result[$key];
+		
+		return true;
+	}
+
 	protected function set($path, $cb) {
 		$arr =& $this->registry;
 		$key = array_pop($path);

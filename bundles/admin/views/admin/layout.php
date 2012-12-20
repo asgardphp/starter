@@ -97,7 +97,7 @@
 		'onComplete' : function(event, ID, fileObj, response, data) {
 			var result = JSON.parse(response);
 			$('.imglist').append('<li>\
-							<img src="../imagecache/admin_thumb/'+result.url+'" alt=""/>\
+							<img src="<?php echo \URL::to('imagecache/admin_thumb/') ?>'+result.url+'" alt=""/>\
 							<ul>\
 								<li class="view"><a href="../'+result.url+'" rel="facebox"><?php echo __('See') ?></a></li>\
 								<li class="delete"><a href="'+result.deleteurl+'"><?php echo __('Delete') ?></a></li>\

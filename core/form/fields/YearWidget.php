@@ -1,7 +1,7 @@
 <?php
-namespace Coxis\Core\Form\Widgets;
+namespace Coxis\Core\Form\Fields;
 
-class YearWidget extends Widget {
+class YearField extends Field {
 	function __construct($params=array()) {
 		$params['validation']['type'] = 'integer';
 		$params['choices'] = array('Year');

@@ -6,13 +6,35 @@ abstract class AbstractGroup extends Hookable implements \ArrayAccess, \Iterator
 	protected $dad;
 	public $data = array();
 	public $files = array();
-	protected $widgets = array();
+	protected $fields = array();
 	public $errors = array();
-	
-	public function getWidgets() {
-		return $this->widgets;
+
+	public function render($render_callback, $field, $options=array()) {
+		return $this->dad->render($render_callback, $field, $options);
+	}
+
+	// public function getRenderCallback($name) {
+	// 	if(isset($this->render_callbacks[$name]))
+	// 		return $this->render_callbacks[$name];
+	// 	elseif($this->dad) 
+	// 		return $this->dad->getRenderCallback($name);
+	// 	else
+	// 		return Form::getDefaultRanderCallback($name);
+	// }
+
+	public function setErrors($errors) {
+		foreach($errors as $name=>$error)
+			$this->fields[$name]->setErrors($error);
+	}
+
+	public function getFields() {
+		return $this->fields;
 	}
 	
+	public function has($field_name) {
+		return isset($this->fields[$field_name]);
+	}
+
 	public function getParents() {
 		$parents = array();
 		
@@ -44,43 +66,38 @@ abstract class AbstractGroup extends Hookable implements \ArrayAccess, \Iterator
 					return true;
 	}
 
-	public function parseWidgets($widgets, $name) {
-			if(is_array($widgets)) {
-				return new Group($widgets, $this, $name, 
+	public function parseFields($fields, $name) {
+			if(is_array($fields)) {
+				return new Group($fields, $this, $name, 
 					(isset($this->data[$name]) ? $this->data[$name]:array()), 
 					(isset($this->files[$name]) ? $this->files[$name]:array())
 				);
-				//~ if(isset($this->data[$name]))
-					//~ return new Group($widgets, $this, $name, $this->data[$name], $this->files[$name]);
-				//~ else
-					//~ return new Group($widgets, $this, $name);
 			}
-			elseif(is_object($widgets) && is_subclass_of($widgets, 'Coxis\Core\Form\WidgetHelper')) {
-				if(in_array($name, array('groupName', 'dad', 'data', 'widgets', 'params', 'files'), true))
-					throw new \Exception('Can\'t use keyword "'.$name.'" for form widget');
-				$widget = $widgets;
-				$widget->setName($name);
-				$widget->setDad($this);
+			// elseif(is_object($fields) && is_subclass_of($fields, 'Coxis\Core\Form\FieldHelper')) {
+			elseif(is_object($fields) && is_subclass_of($fields, 'Coxis\Core\Form\Fields\Field')) {
+				#todo
+				if(in_array($name, array('groupName', 'dad', 'data', 'fields', 'params', 'files'), true))
+					throw new \Exception('Can\'t use keyword "'.$name.'" for form field');
+				$field = $fields;
+				$field->setName($name);
+				$field->setDad($this);
 				
-				if($widget->params['type'] == 'file')
-					if(isset($this->files[$name]))
-						$widget->setValue($this->files[$name]);
-					else
-						$widget->setValue(array());
-				elseif(isset($this->data[$name]))
-					$widget->setValue($this->data[$name]);
+				if(isset($this->data[$name]))
+					$field->setValue($this->data[$name]);
+				elseif(isset($this->files[$name]))
+					$field->setValue($this->files[$name]);
 				else
 					if($this->isSent()) {
-						if(isset($widget->params['multiple']) && $widget->params['multiple'])
-							$widget->value = array();
+						if(isset($field->params['multiple']) && $field->params['multiple'])
+							$field->setValue(array());
 						else
-							$widget->value = '';
+							$field->setValue('');
 					}
 					
-				return $widget;
+				return $field;
 			}
-			elseif(is_object($widgets) && (is_subclass_of($widgets, 'Coxis\Core\Form\Form') || is_a($widgets, 'Coxis\Core\Form\Form'))) {
-				$form = $widgets;
+			elseif(is_object($fields) && (is_subclass_of($fields, 'Coxis\Core\Form\Form') || is_a($fields, 'Coxis\Core\Form\Form'))) {
+				$form = $fields;
 				$form->setName($name);
 				$form->setDad($this);
 				//~ if(isset($this->data[$name]))
@@ -94,21 +111,21 @@ abstract class AbstractGroup extends Hookable implements \ArrayAccess, \Iterator
 			}
 	}
 	
-	public function addWidgets($widgets, $name=null) {	
-		foreach($widgets as $name=>$sub_widgets) {
-			$this->widgets[$name] = $this->parseWidgets($sub_widgets, $name);
+	public function addFields($fields, $name=null) {	
+		foreach($fields as $name=>$sub_fields) {
+			$this->fields[$name] = $this->parseFields($sub_fields, $name);
 		}
 			
 		//todo
-		//~ reset data (widgets values) after adding new widgets
+		//~ reset data (fields values) after adding new fields
 			
 		return $this;
 	}
 	
-	public function addWidget($widget, $name=null) {
-		if(in_array($name, array('groupName', 'dad', 'data', 'widgets', 'params')))
-			throw new \Exception('Can\'t use keyword '.$name.' for form widget');
-		$this->widgets[$name] = $this->parseWidgets($widget, $name);
+	public function addField($field, $name=null) {
+		if(in_array($name, array('groupName', 'dad', 'data', 'fields', 'params')))
+			throw new \Exception('Can\'t use keyword '.$name.' for form field');
+		$this->fields[$name] = $this->parseFields($field, $name);
 		
 		return $this;
 	}
@@ -118,9 +135,9 @@ abstract class AbstractGroup extends Hookable implements \ArrayAccess, \Iterator
 		$this->remove('_csrf_token');
 	}
 	
-	public function setWidgets($widgets) {
-		$this->widgets = array();
-		$this->addWidgets($widgets, $this);
+	public function setFields($fields) {
+		$this->fields = array();
+		$this->addFields($fields, $this);
 	}
 	
 	public function setName($name) {
@@ -142,69 +159,91 @@ abstract class AbstractGroup extends Hookable implements \ArrayAccess, \Iterator
 		return $this;
 	}
 	
+	public function getData() {
+		$res = array();
+		
+		foreach($this->fields as $field)
+			if($field instanceof \Coxis\Core\Form\Fields\Field)
+				$res[$field->name] = $field->getValue();
+			elseif($field instanceof \Coxis\Core\Form\Group)
+				$res[$field->groupName] = $field->getData();
+		
+		return $res;
+	}
+	
 	public function hasFile() {
-		foreach($this->widgets as $name=>$widget) {
-			if(is_subclass_of($widget, 'Coxis\Core\Form\AbstractGroup')) {
-				if($widget->hasFile())
+		foreach($this->fields as $name=>$field) {
+			if(is_subclass_of($field, 'Coxis\Core\Form\AbstractGroup')) {
+				if($field->hasFile())
 					return true;
 			}
-			elseif($widget->params['type'] == 'file')
+			elseif($field instanceof \Coxis\Core\Form\Fields\FileField)
 				return true;
 		}
 		
 		return false;
 	}
 	
+	#todo what's this method for?
 	protected function updateChilds() {
-		foreach($this->widgets as $name=>$widget)
-			if($widget instanceof \Coxis\Core\Form\AbstractGroup)
-				$widget->setData(
+		// if($this->fields)
+		// 		d($this->fields);
+		foreach($this->fields as $name=>$field) {
+			if($field instanceof \Coxis\Core\Form\AbstractGroup) {
+				$field->setData(
 					(isset($this->data[$name]) ? $this->data[$name]:array()),
 					(isset($this->files[$name]) ? $this->files[$name]:array())
 				);
-			elseif($widget instanceof \Coxis\Core\Form\Widget) {
-				if($widget->params['type'] == 'file') {
+			}
+			elseif($field instanceof \Coxis\Core\Form\Field) {
+				// if($field->params['type'] == 'file') {
+				if($field instanceof \Coxis\Core\Form\Fields\FileField) {
 					if(isset($this->files[$name]))
-						$widget->value = $this->files[$name];
+						$field->value = $this->files[$name];
 					else
-						$widget->value = null;
+						$field->value = null;
 				}
 				elseif(isset($this->data[$name]))
-					$widget->value = $this->data[$name];
+					$field->value = $this->data[$name];
 				else {
 					if($this->isSent()) {
-						if(isset($widget->params['multiple']) && $widget->params['multiple'])
-							$widget->value = array();
+						if(isset($field->params['multiple']) && $field->params['multiple'])
+							$field->value = array();
 						else
-							$widget->value = '';
+							$field->value = '';
 					}
 					else
-						$widget->value = null;
+						$field->value = null;
 				}
 			}
+		}
 	}
 	
 	public function errors() {
 		$errors = array();
 
 		#check post_max_size
-		if($_SERVER['CONTENT_LENGTH'] > (int)ini_get('post_max_size')*1024*1024)
+		if(SERVER::get('CONTENT_LENGTH') > (int)ini_get('post_max_size')*1024*1024)
 			$errors['_form'] = __('Data exceeds upload size limit. Maybe your file is too heavy.');
 
 		if(!$this->isSent())
-			return $errors;
+			return $this->errors = $errors;
 	
-		foreach($this->widgets as $name=>$widget)
-			if($widget instanceof \Coxis\Core\Form\AbstractGroup) {
-				$errors[$name] = $widget->errors();
+		foreach($this->fields as $name=>$field)
+			if($field instanceof \Coxis\Core\Form\AbstractGroup) {
+				$errors[$name] = $field->errors();
 				if(sizeof($errors[$name]) == 0)
 					unset($errors[$name]);
 			}
+
+		$this->errors = array_merge($errors, $this->my_errors());
+
+		$this->setErrors($this->errors);
+
+		#file in memory
+		// $this->trigger('afterErrors', array($this));
 		
-		$errors = array_merge($this->my_errors(), $errors);
-		$this->errors = $errors;
-		
-		return $errors;
+		return $this->errors;
 	}
 	
 	public function my_errors() {
@@ -212,14 +251,16 @@ abstract class AbstractGroup extends Hookable implements \ArrayAccess, \Iterator
 		$constrains = array();
 		$messages = array();
 		
-		foreach($this->widgets as $name=>$widget)
-			if($widget instanceof \Coxis\Core\Form\Widget) {
-				if(isset($widget->params['validation']))
-					$constrains[$name] = $widget->params['validation'];
-				if(isset($widget->params['messages']))
-					$messages[$name] = $widget->params['messages'];
-				if(isset($widget->params['choices']))
-					$constrains[$name]['in']	=	array_keys($widget->params['choices']);
+		foreach($this->fields as $name=>$field)
+			if(is_subclass_of($field, 'Coxis\Core\Form\Fields\Field')) {
+				if(isset($field->options['validation']))
+					$constrains[$name] = $field->options['validation'];
+				if(isset($field->options['messages']))
+					$messages[$name] = $field->options['messages'];
+				if(isset($field->options['choices']))
+					if(is_string($field->options['choices']))
+						d($field);
+					// $constrains[$name]['in']	=	array_keys($field->options['choices']);
 			}
 
 		$validator->setConstrains($constrains);
@@ -247,9 +288,9 @@ abstract class AbstractGroup extends Hookable implements \ArrayAccess, \Iterator
 			$group = $this;
 			
 		if($group instanceof \Coxis\Core\Form\AbstractGroup)
-			foreach($group->widgets as $name=>$widget)
-				if($widget instanceof \Coxis\Core\Form\AbstractGroup)
-					$widget->_save($widget);
+			foreach($group->fields as $name=>$field)
+				if($field instanceof \Coxis\Core\Form\AbstractGroup)
+					$field->_save($field);
 	}
 	
 	public function isValid() {
@@ -257,7 +298,7 @@ abstract class AbstractGroup extends Hookable implements \ArrayAccess, \Iterator
 	}
 	
 	public function remove($name) {
-		unset($this->widgets[$name]);
+		unset($this->fields[$name]);
 		unset($this->params[$name]);
 	}
 	
@@ -266,7 +307,12 @@ abstract class AbstractGroup extends Hookable implements \ArrayAccess, \Iterator
 	}
 
 	public function get($name) {
-		return $this->widgets[$name];
+		return $this->fields[$name];
+	}
+
+	public function add($name, $field, $options=array()) {
+		$fieldClass = $field.'Field';
+		$this->__set($name, new $fieldClass($options));
 	}
 	
 	public function __get($name) {
@@ -274,54 +320,54 @@ abstract class AbstractGroup extends Hookable implements \ArrayAccess, \Iterator
 	}
 	
 	public function __set($k, $v) {
-		$this->widgets[$k] = $this->parseWidgets($v, $k);
+		$this->fields[$k] = $this->parseFields($v, $k);
 		
 		return $this;
 	}
 
 	public function __isset($name) {
-		return isset($this->widgets[$name]);
+		return isset($this->fields[$name]);
 	}
 	
 	/* IMPLEMENTS */
 	
     public function offsetSet($offset, $value) {
 		if(is_null($offset))
-			$this->widgets[] = $this->parseWidgets($value, sizeof($this->widgets));
+			$this->fields[] = $this->parseFields($value, sizeof($this->fields));
 		else
-			$this->widgets[$offset] = $this->parseWidgets($value, $offset);
+			$this->fields[$offset] = $this->parseFields($value, $offset);
     }
 	
     public function offsetExists($offset) {
-		return isset($this->widgets[$offset]);
+		return isset($this->fields[$offset]);
     }
 	
     public function offsetUnset($offset) {
-		unset($this->widgets[$offset]);
+		unset($this->fields[$offset]);
     }
 	
     public function offsetGet($offset) {
-		return isset($this->widgets[$offset]) ? $this->widgets[$offset] : null;
+		return isset($this->fields[$offset]) ? $this->fields[$offset] : null;
     }
 	
     public function rewind() {
-		reset($this->widgets);
+		reset($this->fields);
     }
   
     public function current() {
-		return current($this->widgets);
+		return current($this->fields);
     }
   
     public function key()  {
-		return key($this->widgets);
+		return key($this->fields);
     }
   
     public function next()  {
-		return next($this->widgets);
+		return next($this->fields);
     }
 	
     public function valid() {
-		$key = key($this->widgets);
+		$key = key($this->fields);
 		$var = ($key !== NULL && $key !== FALSE);
 		return $var;
     }

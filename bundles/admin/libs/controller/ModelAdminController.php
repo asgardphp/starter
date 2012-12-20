@@ -51,8 +51,8 @@ class ModelAdminController extends AdminParentController {
 		$_model = static::$_model;
 		$_models = static::$_models;
 		
-		$this->searchForm = new \Coxis\Core\Form\Form();
-		$this->searchForm->search = new \Coxis\Core\Form\Widget();
+		// $this->searchForm = new \Coxis\Core\Form\Form();
+		// $this->searchForm->search = new \Coxis\Core\Form\Widget();
 	
 		//submitted
 		$i = 0;
@@ -181,6 +181,7 @@ class ModelAdminController extends AdminParentController {
 	@Route(':id/:file/add')
 	*/
 	public function addFileAction($request) {
+		Memory::set('layout', false);
 		$modelName = static::$_model;;
 		if(!($model = $modelName::load($request['id'])))
 			$this->forward404();

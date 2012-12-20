@@ -43,6 +43,8 @@ class BaseProperty {
 		$res[$res['type']] = true;
 		unset($res['type']);
 		unset($res['setHook']);
+		if($this->i18n)
+			$res['is_array'] = true;
 		return $res;
 	}
 

@@ -3,6 +3,10 @@ namespace Coxis\Core;
 
 class Hookable {
 	/* INSTANCE */
+	public function hasHook($name) {
+		return \Hook::has(array('instances', spl_object_hash($this), $name));
+	}
+
 	public function trigger($name, $args=array(), $cb=null) {
 		return \Hook::trigger(array('instances', spl_object_hash($this), $name), $args, $cb);
 	}
@@ -12,7 +16,7 @@ class Hookable {
 	}
 
 	public function hook() {
-		return call_user_func_array(array('Hook', 'hook'), func_get_args());
+		return call_user_func_array(array($this, 'hookOn'), func_get_args());
 	}
 
 	public function hookOn($hookName, $cb) {

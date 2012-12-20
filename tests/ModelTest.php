@@ -33,7 +33,9 @@ class ModelTest extends PHPUnit_Framework_TestCase {
 			'introduction'=>'introduction',
 			'contenu'=>'contenu',
 		));
+		try{
 		$actu->save();
+	}catch(\Exception $e) {d($e->errors);}
 	}
     
 	#hasMany
@@ -70,4 +72,3 @@ class ModelTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals($article->id, 2);
 	}
 }
-?>

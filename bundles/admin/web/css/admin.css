@@ -210,7 +210,7 @@ a:hover {
 
 /* 3rd Menu */
 #header #nav li:hover li:hover li a,
-#header #nav li.iehover li.iehover li a, #header #nav span {
+#header #nav li.iehover li.iehover li a {
 	float: none;
 	color: #999;
 	background: url(../img/mbg.png) 0 0 repeat;
@@ -1027,8 +1027,7 @@ a:hover {
 	display: inline-block;
 	width: 30px;
 }
-
-.error {
-	border:1px solid #f00 !important;
-	background-color: #FFCACA !important;
+span.error {
+	color:red;
+	font-weight: bold;
 }

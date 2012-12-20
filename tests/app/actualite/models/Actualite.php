@@ -14,6 +14,7 @@ class Actualite extends \Coxis\Core\Model {
 		'contenu',
 		'test'	=>	array(
 			'i18n'	=>	true,
+			'required'	=>	false,
 		),
 		'image' => array(
 			'type'	=>	'file',

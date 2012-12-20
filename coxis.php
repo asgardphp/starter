@@ -38,6 +38,9 @@ function get() {
 function __($key, $params=array()) {
 	return \Locale::translate($key, $params);
 }
+function is_function($f) {
+    return (is_object($f) && ($f instanceof \Closure));
+}
 
 ob_start();
 
@@ -65,6 +68,8 @@ register_shutdown_function(function () {
 	chdir(dirname(__FILE__));//wtf?
 	#todo get the full backtrace for shutdown errors
 	if($e=error_get_last()) {
+		// if($e['type'] > 1)
+		// 	exit();
 		while(ob_get_level()){ ob_end_clean(); }
 		$response = \Coxis\Core\Error::report("($e[type]) $e[message]<br>
 			$e[file] ($e[line])".debug_backtrace(), array(array('file'=>$e['file'], 'line'=>$e['line'])));

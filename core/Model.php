@@ -74,7 +74,7 @@ abstract class Model {
 
 	public function loadDefault() {
 		foreach(static::properties() as $name=>$property)
-			$this->set($name, $property->getDefault());
+			$this->set($name, $property->getDefault($this));
 				
 		return $this;
 	}
@@ -149,7 +149,7 @@ abstract class Model {
 		$this->trigger('validation', array($this, &$data, &$errors), function($chain, $model, &$data, &$errors) {
 			$errors = $model->getValidator()->errors($data);
 		});
-		
+				
 		return $errors;
 	}
 
@@ -177,16 +177,16 @@ abstract class Model {
 							if($raw)
 								$this->data['properties'][$name][$one] = $v;
 							else
-								$this->data['properties'][$name][$one] = static::getDefinition()->property($name)->set($v);
+								$this->data['properties'][$name][$one] = static::getDefinition()->property($name)->set($v, $this);
 					elseif($raw)
 						$this->data['properties'][$name][$lang] = $value;
 					else
-						$this->data['properties'][$name][$lang] = static::getDefinition()->property($name)->set($value);
+						$this->data['properties'][$name][$lang] = static::getDefinition()->property($name)->set($value, $this);
 				}
 				elseif($raw)
 					$this->data['properties'][$name] = $value;
 				else
-					$this->data['properties'][$name] = static::getDefinition()->property($name)->set($value);
+					$this->data['properties'][$name] = static::getDefinition()->property($name)->set($value, $this);
 			}
 			elseif(!$raw && isset(static::getDefinition()->meta['hooks']['set'][$name])) {
 				$hook = static::getDefinition()->meta['hooks']['set'][$name];

@@ -22,8 +22,8 @@ class FileProperty extends \Coxis\Core\Properties\BaseProperty {
 		return 'varchar(255)';
 	}
 
-	public function getDefault() {
-		return new \Coxis\Bundles\Files\Libs\ModelFile($this->model, $this->name, null);
+	public function getDefault($model=null) {
+		return new \Coxis\Bundles\Files\Libs\ModelFile($model, $this->name, null);
 	}
 
 	public function serialize($obj) {
@@ -33,22 +33,22 @@ class FileProperty extends \Coxis\Core\Properties\BaseProperty {
 			return $obj->name;
 	}
 
-	public function unserialize($str) {
+	public function unserialize($str, $model=null) {
 		if($this->multiple)
-			return new \Coxis\Bundles\Files\Libs\ModelFile($this->model, $this->name, unserialize($str));
+			return new \Coxis\Bundles\Files\Libs\ModelFile($model, $this->name, unserialize($str));
 		else
-			return new \Coxis\Bundles\Files\Libs\ModelFile($this->model, $this->name, $str);
+			return new \Coxis\Bundles\Files\Libs\ModelFile($model, $this->name, $str);
 	}
 
-	public function set($val) {
+	public function set($val, $model=null) {
 		if($val instanceof \Coxis\Bundles\Files\Libs\ModelFile)
 			return $val;
 		if(is_array($val))
-			return new \Coxis\Bundles\Files\Libs\ModelFile($this->model, $this->name, null, $val);
+			return new \Coxis\Bundles\Files\Libs\ModelFile($model, $this->name, null, $val);
 		#todo should use unserialize instead..
 		elseif($this->multiple)
-			return new \Coxis\Bundles\Files\Libs\ModelFile($this->model, $this->name, unserialize($val));
+			return new \Coxis\Bundles\Files\Libs\ModelFile($model, $this->name, unserialize($val));
 		else
-			return new \Coxis\Bundles\Files\Libs\ModelFile($this->model, $this->name, null, array('name'=>basename($val), 'tmp_name'=>$val));
+			return new \Coxis\Bundles\Files\Libs\ModelFile($model, $this->name, null, array('name'=>basename($val), 'tmp_name'=>$val));
 	}
 }

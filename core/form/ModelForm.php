@@ -3,93 +3,109 @@ namespace Coxis\Core\Form;
 
 class ModelForm extends Form {
 	protected $model;
+	protected $i18n = false;
+
+	public function getNewField($model, $name, $properties, $locale=null) {
+		$field_params = array();
+
+		$field_params['form'] = $this;
+
+		if($properties->form_hidden)
+			$field_params['default'] = '';
+		elseif($model->isOld())
+			$field_params['default'] = $model->get($name, $locale);
+
+		$field_type = 'text';
+		if($properties->type == 'boolean')
+			$field_type = 'boolean';
+		elseif($properties->type == 'file') {
+			if($properties->multiple)
+				$field_type = 'MultipleFile';
+			else
+				$field_type = 'file';
+		}
+		elseif($properties->type == 'date')
+			$field_type = 'date';
+
+		if($properties->in) {
+			foreach($properties->in as $v)
+				$field_params['choices'][$v] = $v;
+			if($properties->multiple)
+				$field_type = 'multipleselect';
+			else
+				$field_type = 'select';
+		}
+
+		$field_class = $field_type.'Field';
+
+		return new $field_class($field_params);
+	}
 
 	function __construct(
 		$model, 
-		$params=array('action' => '', 'method' => 'post')
+		$params=array()
 	) {
-		if(isset($params['widgetClass']))
-			$widgetClass = $params['widgetClass'];
-		else
-			$widgetClass = 'Widget';
-
 		$this->model = $model;
+
+		$this->i18n = isset($params['i18n']) && $params['i18n'];
 	
-		$widgets = array();
+		$fields = array();
 		foreach($model->properties() as $name=>$properties) {
 			if(isset($params['only']) && !in_array($name, $params['only']))
 					continue;
 			if(isset($params['except']) && in_array($name, $params['except']))
 					continue;
-		
-			$widget_params = array();
-
 			if($properties->editable === false)
 				continue;
-			if($properties->form_hidden)
-				$widget_params['default'] = '';
-			elseif($model->isOld())
-				$widget_params['default'] = $model->$name;
-			#todo useless? might be needed for form input def
-			// if($properties->type == 'boolean')
-			// 	$widget_params['type'] = 'boolean';
-			#needed for <form enctype>
-			if($properties->type == 'file')
-				$widget_params['type'] = 'file';
-			if($properties->in)
-				foreach($properties->in as $v)
-					$widget_params['choices'][$v] = $v;
-			if($properties->multiple)
-				$widget_params['multiple'] = true;
 
-			$widgets[$name] = new $widgetClass($widget_params);
+			if($this->i18n && $properties->i18n) {
+				$i18ngroup = array();
+				foreach(\Config::get('locales') as $locale)
+					$i18ngroup[$locale] = $this->getNewField($model, $name, $properties, $locale);
+				$fields[$name] = $i18ngroup;
+			}
+			else
+				$fields[$name] = $this->getNewField($model, $name, $properties);
 		}
 		
 		foreach($model::getDefinition()->relations() as $name=>$relation) {
-			$relation = ORMHandler::relationData($model, $name);
-
 			if(isset($params['only']) && !in_array($name, $params['only']))
 				continue;
 			if(isset($params['except']) && in_array($name, $params['except']))
 				continue;
-		
-			$property_name = $name;
-			#todo why using _id instead of name?!
-			
+
+			$relation = ORMHandler::relationData($model, $name);
+
 			$ids = array();
 			foreach($relation['model']::all() as $v)
 				$ids[$v->id] = (string)$v;
 					
-			if($relation['type'] == 'hasOne' || $relation['type'] == 'belongsTo') {
-				$widget_params = array(
+			if($relation['has'] == 'one') {
+				$fields[$name] = new SelectField(array(
 					'type'	=>	'integer',
 					'choices'		=>	$ids,
-					'default'	=>	(isset($model->$property_name->id) ? $model->$property_name->id:null),
-				);
-				$widgets[$property_name] = new $widgetClass($widget_params);
+					'default'	=>	(isset($model->$name->id) ? $model->$name->id:null),
+				));
 			}
-			elseif($relation['type'] == 'HMABT' || $relation['type'] == 'hasMany') {
-				$defaults = array();
-				foreach($this->model->$name as $r)
-					$defaults[] = $r->id;
-				$widget_params = array(
+			elseif($relation['has'] == 'many') {
+				$fields[$name] = new MultipleSelectField(array(
+					'type'	=>	'integer',
 					'choices'		=>	$ids,
-					'default'	=>	$defaults,
-				);
-				$widgets[$property_name] = new $widgetClass($widget_params);
+					'default'	=>	$this->model->$name()->ids(),
+				));
 			}
 		}
 
 		parent::__construct(
 			isset($params['name']) ? $params['name']:$model->getModelName(),
 			$params,
-			$widgets
+			$fields
 		);
 	}
 	
-	public function errors($widget=null) {
-		if(!$widget)
-			$widget = $this;
+	public function errors($field=null) {
+		if(!$field)
+			$field = $this;
 			
 		$errors = array();
 
@@ -99,22 +115,23 @@ class ModelForm extends Form {
 
 		if(!$this->isSent())
 			return $errors;
-		
-		if(is_subclass_of($widget, 'Coxis\Core\Form\AbstractGroup')) {
-			if($widget instanceof \Coxis\Core\Form\ModelForm)
-				$errors = $widget->my_errors();
-			elseif($widget instanceof \Coxis\Core\Form\Form)
-				$errors = $widget->errors();
+
+		if(is_subclass_of($field, 'Coxis\Core\Form\AbstractGroup')) {
+			if($field instanceof \Coxis\Core\Form\ModelForm)
+				$errors = $field->my_errors();
+			elseif($field instanceof \Coxis\Core\Form\Form)
+				$errors = $field->errors();
 				
-			foreach($widget as $name=>$sub_widget) {
-				if(is_subclass_of($sub_widget, 'Coxis\Core\Form\AbstractGroup')) {
-					$widget_errors = $this->errors($sub_widget);
-					if(sizeof($widget_errors) > 0)
-						$errors[$sub_widget->name] = $widget_errors;
+			foreach($field as $name=>$sub_field) {
+				if(is_subclass_of($sub_field, 'Coxis\Core\Form\AbstractGroup')) {
+					$field_errors = $this->errors($sub_field);
+					if(sizeof($field_errors) > 0)
+						$errors[$sub_field->name] = $field_errors;
 				}
 			}
 		}
 		
+		$this->setErrors($errors);
 		$this->errors = $errors;
 
 		return $errors;
@@ -126,21 +143,24 @@ class ModelForm extends Form {
 	
 	public function my_errors() {
 		$data = $this->getData();
-		$res = $this->callback('pre_test', array($data));
-		if($res)
-			$data = $res;			
 		$data = array_filter($data, function($v) {
 			return $v !== null;
 		});
 		foreach($data as $k=>$v)
 			if(!$v && $this->model->hasProperty($k) && $this->model->property($k)->form_hidden)
 				unset($data);
-		$this->model->set($data);
+		if($this->i18n)
+			$this->model->set($data, 'all');
+		else
+			$this->model->set($data);
 
 		return array_merge(parent::my_errors(), $this->model->errors());
 	}
 	
 	public function save() {
+		if(!$this->isSent())
+			return;
+
 		if($errors = $this->errors()) {
 			$e = new FormException;
 			$e->errors = $errors;
@@ -158,10 +178,10 @@ class ModelForm extends Form {
 			
 		if(is_a($group, 'Coxis\Core\Form\ModelForm') || is_subclass_of($group, 'Coxis\Core\Form\ModelForm'))
 			$group->model->save();
-			
+
 		if(is_subclass_of($group, 'Coxis\Core\Form\AbstractGroup'))
-			foreach($group->widgets as $name=>$widget)
-				if(is_subclass_of($widget, 'Coxis\Core\Form\AbstractGroup'))
-					$this->_save($widget);
+			foreach($group->fields as $name=>$field)
+				if(is_subclass_of($field, 'Coxis\Core\Form\AbstractGroup'))
+					$this->_save($field);
 	}
 }

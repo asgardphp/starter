@@ -39,14 +39,13 @@ class Validator {
 				// 	if(!is_array($params))
 				// 		$params = array($params);
 					
-				$res[$attribute][] = array(
+				$res[$attribute][$rule] = array(
 					'rule'	=>	$rule, 
 					'params'	=>	$params,
 					'callback'	=>	$callback,
 				);
 			}
-		}
-		$this->constrains = $res;
+		}		$this->constrains = $res;
 		
 		return $this;
 	}
@@ -66,7 +65,10 @@ class Validator {
 		foreach($data as $attribute=>$val) {
 			$res = $this->attributeError($attribute, $val, $data);
 			if($res)
-				$errors[$attribute][] = $res;
+				if(is_array($res))
+					$errors[$attribute] = $res;
+				else
+					$errors[$attribute][] = $res;
 		}
 		
 		return array_filter($errors);
@@ -87,7 +89,23 @@ class Validator {
 		return $msg;
 	}
 	
-	public function attributeError($attribute, $val, $data) {
+	public function attributeError($attribute, $val, $data, $checkArray=true) {
+		if($checkArray && isset($this->constrains[$attribute]['is_array']) && $constrain=$this->constrains[$attribute]['is_array']) {
+			$params = array($constrain['params'], $data);
+			if($msg = $this->error($constrain['rule'], $constrain['callback'], $attribute, $val, $params))
+				return $msg;
+			else {
+				$messages = array();
+				foreach($val as $k=>$v) {
+					if($err = $this->attributeError($attribute, $v, $params, false))
+						$messages[$k] = $err;
+				}
+				if(!$messages)
+					return false;
+				return $messages;
+			}
+		}
+
 		if(!isset($this->constrains[$attribute]))
 			return false;
 		foreach($this->constrains[$attribute] as $constrain) {

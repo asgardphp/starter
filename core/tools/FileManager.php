@@ -15,10 +15,10 @@ class FileManager {
 		return $output;
 	}
 
-	public static function move($src, $output) {
+	public static function move($src, $output, $absolute=false) {
 		$output = static::getNewFileName($output);
 			
-		static::mkdir(dirname($output));
+		static::mkdir(dirname($output), $absolute);
 			
 		if(!copy($src, $output))
 			return false;
@@ -52,8 +52,10 @@ class FileManager {
 			return false;
 	}
 	
-	public static function mkdir($dir) {		
-		if(!file_exists(_DIR_.$dir))
+	public static function mkdir($dir, $absolute=false) {
+		if(!$absolute)
+			$dir = _DIR_.$dir;
+		if(!file_exists($dir))
 			return mkdir($dir, 0777, true);
 		return true;
 	}
