@@ -41,6 +41,30 @@ class ModelForm extends Form {
 		return new $field_class($field_params);
 	}
 
+	public function addRelation($name) {
+		$model = $this->model;
+		$relation = ORMHandler::relationData($model, $name);
+
+		$ids = array();
+		foreach($relation['model']::all() as $v)
+			$ids[$v->id] = (string)$v;
+				
+		if($relation['has'] == 'one') {
+			$this->addField(new SelectField(array(
+				'type'	=>	'integer',
+				'choices'		=>	$ids,
+				'default'	=>	(isset($model->$name->id) ? $model->$name->id:null),
+			)), $name);
+		}
+		elseif($relation['has'] == 'many') {
+			$this->addField(new MultipleSelectField(array(
+				'type'	=>	'integer',
+				'choices'		=>	$ids,
+				'default'	=>	$this->model->$name()->ids(),
+			)), $name);
+		}
+	}
+
 	function __construct(
 		$model, 
 		$params=array()
@@ -66,34 +90,6 @@ class ModelForm extends Form {
 			}
 			else
 				$fields[$name] = $this->getNewField($model, $name, $properties);
-		}
-		
-		foreach($model::getDefinition()->relations() as $name=>$relation) {
-			if(isset($params['only']) && !in_array($name, $params['only']))
-				continue;
-			if(isset($params['except']) && in_array($name, $params['except']))
-				continue;
-
-			$relation = ORMHandler::relationData($model, $name);
-
-			$ids = array();
-			foreach($relation['model']::all() as $v)
-				$ids[$v->id] = (string)$v;
-					
-			if($relation['has'] == 'one') {
-				$fields[$name] = new SelectField(array(
-					'type'	=>	'integer',
-					'choices'		=>	$ids,
-					'default'	=>	(isset($model->$name->id) ? $model->$name->id:null),
-				));
-			}
-			elseif($relation['has'] == 'many') {
-				$fields[$name] = new MultipleSelectField(array(
-					'type'	=>	'integer',
-					'choices'		=>	$ids,
-					'default'	=>	$this->model->$name()->ids(),
-				));
-			}
 		}
 
 		parent::__construct(

@@ -112,9 +112,8 @@ abstract class AbstractGroup extends Hookable implements \ArrayAccess, \Iterator
 	}
 	
 	public function addFields($fields, $name=null) {	
-		foreach($fields as $name=>$sub_fields) {
+		foreach($fields as $name=>$sub_fields)
 			$this->fields[$name] = $this->parseFields($sub_fields, $name);
-		}
 			
 		//todo
 		//~ reset data (fields values) after adding new fields
