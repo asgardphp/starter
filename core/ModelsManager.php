@@ -39,8 +39,6 @@ class ModelDefinition extends Hookable {
 					array($v => array()) +
 					\Coxis\Core\Tools\Tools::array_after($properties, $k);
 			}
-			elseif(is_string($v))
-					$properties[$k] = array('type'=>$v);
 		}
 		foreach($properties as $k=>$params)
 			$this->addProperty($k, $params);
@@ -71,6 +69,8 @@ class ModelDefinition extends Hookable {
 	}
 
 	public function addProperty($property, $params) {
+		if(is_string($params))
+				$params = array('type'=>$params);
 		foreach($params as $k=>$v)
 			if(is_int($k)) {
 				unset($params[$k]);

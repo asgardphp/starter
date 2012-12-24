@@ -41,7 +41,9 @@ class ORMHandler {
 	}
 	
 	public function getORM() {
-		return new ORM($this->model->getClass());
+		$orm = new ORM($this->model->getClass());
+		$this->model->trigger('getorm', array($orm));
+		return $orm;
 	}
 	
 	public function myORM($model) {
