@@ -66,7 +66,7 @@ class SortableBehaviorController extends \Coxis\Core\Controller {
 			$over_model->position = $old;
 			$model->save(null, true);
 			$over_model->save(null, true);
-			\Flash::addSuccess('Ordre modifié avec succès.');
+			\Flash::addSuccess(__('Ordre modifié avec succès.'));
 		} catch(\Exception $e) {}
 		
 		return \Response::redirect(\URL::url_for(array($request['_controller'], 'index')));
@@ -86,14 +86,14 @@ class SortableBehaviorController extends \Coxis\Core\Controller {
 			$below_model->position = $old;
 			$model->save(null, true);
 			$below_model->save(null, true);
-			\Flash::addSuccess('Ordre modifié avec succès.');
+			\Flash::addSuccess(__('Ordre modifié avec succès.'));
 		} catch(\Exception $e) {}
 		
 		return \Response::redirect(\URL::url_for(array($request['_controller'], 'index')));
 	}
 	
 	public static function reset($modelName) {
-		$all = $modelName::orderBy('position ASC')->all();
+		$all = $modelName::orderBy('position ASC')->get();
 		
 		#reset positions
 		foreach($all as $i=>$one_model) {

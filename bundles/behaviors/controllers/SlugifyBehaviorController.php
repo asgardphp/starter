@@ -22,8 +22,8 @@ class SlugifyBehaviorController extends \Coxis\Core\Controller {
 				$inc++;
 			}
 			while($model::where(array(
-				'id != ?' => $model->id,
-				'slug' => $model->slug,
+				'a.id != ?' => $model->id,
+				'a.slug' => $model->slug,
 			))->count());
 		}
 	}
