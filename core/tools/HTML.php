@@ -113,6 +113,32 @@ class HTML {
 		$this->show_code_css();
 		$this->show_code();
 	}
+
+	public function minify_js() {
+		$files = '';
+		foreach($this->include_js as $js) {
+			if(preg_match('/^http:/', $js))
+				echo '<script type="text/javascript" src="'.$js.'"></script>';
+			else
+				$files .= ($files ? ',':'').$js;
+		}
+		if($files)
+			echo '<script type="text/javascript" src="'.\URL::to('min/index.php?f='.$files).'"></script>';
+		return;
+	}
+
+	public function minify_css() {
+		$files = '';
+		foreach($this->include_css as $css) {
+			if(preg_match('/^http:/', $css))
+				echo '<link rel="stylesheet" href="'.$css.'"/>';
+			else
+				$files .= ($files ? ',':'').$css;
+		}
+		if($files)
+			echo '<link rel="stylesheet" href="'.\URL::to('min/index.php?f='.$files).'"/>';
+		return;
+	}
 	
 	static public function sanitize($html) {
 		return htmlentities($html, ENT_NOQUOTES, 'UTF-8');
