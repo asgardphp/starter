@@ -321,7 +321,7 @@ class ORMHandler {
 			$model->id = $orm->insert($values);
 		//existing
 		elseif(sizeof($vars) > 0) {
-			if(!$orm->where(array('id'=>$model->id))->update($values))
+			if(!$orm->reset()->where(array('id'=>$model->id))->update($values))
 				$model->id = $orm->insert($values);
 		}		
 		

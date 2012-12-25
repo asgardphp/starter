@@ -116,9 +116,10 @@ class ModelAdminController extends AdminParentController {
 			try {
 				$this->form->save();
 				\Flash::addSuccess($this->_messages['modified']);
-				if(isset($_POST['send']))
+				if(\POST::has('send'))
 					return \Response::redirect('admin/'.static::$_index);
 			} catch(\Coxis\Core\Form\FormException $e) {
+				\Response::setCode(400);
 				// \Flash::addError($e->errors);
 			}
 		
@@ -141,13 +142,13 @@ class ModelAdminController extends AdminParentController {
 				$this->form->save();
 				\Hook::trigger('coxisadmin_'.static::$_model.'_new', array($this, $this->$modelName));
 				\Flash::addSuccess($this->_messages['created']);
-				if(isset($_POST['send']))
+				if(\POST::has('send'))
 					return \Response::redirect('admin/'.static::$_index);
-				else {
+				else
 					return \Response::redirect('admin/'.static::$_index.'/'.$this->$modelName->id.'/edit');
-				}
 			} catch(\Coxis\Core\Form\FormException $e) {
-				\Flash::addError($e->errors);
+				\Response::setCode(400);
+				// \Flash::addError($e->errors);
 			}
 		
 		$this->setRelativeView('form.php');

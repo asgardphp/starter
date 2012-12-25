@@ -193,6 +193,7 @@ class CoxisController extends CLIController {
 				'_Model.php' =>	ucfirst($bundle['model']['meta']['name']).'.php',
 				'_model' =>	$bundle['model']['meta']['name'],
 				'_modeladmin' =>	$bundle['model']['meta']['name'].'admin',
+				'_ModelAdminTest.php' =>	ucfirst($bundle['model']['meta']['name']).'Admintest.php',
 			);
 			
 			static::copyDir('core/cli/base_bundle/', 'app/'.strtolower($bundle['name']).'/');
@@ -208,6 +209,7 @@ class CoxisController extends CLIController {
 				'_Model.php' =>	ucfirst($bundle['model']['meta']['name']).'.php',
 				'_model' =>	$bundle['model']['meta']['name'],
 				'_modeladmin' =>	$bundle['model']['meta']['name'].'admin',
+				'_ModelAdminTest.php' =>	ucfirst($bundle['model']['meta']['name']).'Admintest.php',
 			);
 			
 			$modelName = $bundle['model']['meta']['name'];

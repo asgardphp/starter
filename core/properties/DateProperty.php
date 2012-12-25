@@ -16,6 +16,8 @@ class DateProperty extends BaseProperty {
 	public function serialize($obj) {
 		if($obj == null)
 			return '';
+		if(!is_object($obj))
+			return '';
 		$d = $obj->date();
 		list($d, $m, $y) = explode('/', $d);
 		return $y.'-'.$m.'-'.$d;

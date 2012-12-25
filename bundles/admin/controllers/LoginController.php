@@ -14,8 +14,8 @@ class LoginController extends \Coxis\Core\Controller {
 			return \Response::redirect('admin');
 	
 		$administrator = null;
-		if(isset($_POST['username']))
-			$administrator = Administrator::where(array('username' => $_POST['username'], 'password' => sha1(\Config::get('salt').$_POST['password'])))->first();
+		if(\POST::has('username'))
+			$administrator = Administrator::where(array('username' => \POST::get('username'), 'password' => sha1(\Config::get('salt').\POST::get('password'))))->first();
 		elseif(\Cookie::has('coxis_remember')) {
 			$remember = \Cookie::get('coxis_remember');
 			$administrator = Administrator::where(array('MD5(CONCAT(username, \'-\', password))' => $remember))->first();
@@ -23,14 +23,14 @@ class LoginController extends \Coxis\Core\Controller {
 		
 		if($administrator) {
 			\Session::set('admin_id', $administrator->id);
-			if(isset($_POST['remember']) && $_POST['remember']=='yes')
+			if(\POST::get('remember')=='yes')
 				\Cookie::set('coxis_remember', md5($administrator->username.'-'.$administrator->password));
-			if(isset($_SESSION['redirect_to']))
-				return \Response::redirect($_SESSION['redirect_to'], false);
+			if(\SESSION::has('redirect_to'))
+				return \Response::redirect(\SESSION::get('redirect_to'), false);
 			else
 				return \Response::redirect('admin');
 		}
-		elseif(isset($_POST['username']))
+		elseif(\POST::has('username'))
 			\Flash::addError(__('Invalid username or password.'));
 	}
 	

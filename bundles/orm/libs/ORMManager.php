@@ -22,8 +22,10 @@ class ORMManager {
 					if(!$class::hasProperty($k))
 						unset($raw_model[$k]);
 
-				$model = new $class($raw_model);
+				$model = new $class;
+				$model->set($raw_model, 'all');
 				$model->save(array(), true);
+				$model->save(null, true);
 				$models[$class][$name] = $model;
 			}
 		}
@@ -39,7 +41,7 @@ class ORMManager {
 					$relationClass = $rel['model'];
 
 					if(is_array($relationFixtures))
-						foreach($relationFixtures as $k=>$v)
+						foreach($relationFixtures as $v)
 							$relationFixtures[$k] = $models[$relationClass][$v]->id;
 					else
 						$relationFixtures = $models[$relationClass][$relationFixtures]->id;

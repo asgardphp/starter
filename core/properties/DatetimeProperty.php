@@ -28,7 +28,9 @@ class DatetimeProperty extends BaseProperty {
 	public function set($val) {
 		if(!$val)
 			return null;
-		preg_match('/([0-9]+)\/([0-9]+)\/([0-9]+) ([0-9]+):([0-9]+):([0-9]+)/', $val, $r);
+		$b = preg_match('/([0-9]+)\/([0-9]+)\/([0-9]+) ([0-9]+):([0-9]+):([0-9]+)/', $val, $r);
+		if(!$b)
+			return null;
 		$t = mktime($r[4], $r[5], $r[6], $r[2], $r[3], $r[1]);
 		return new \Coxis\Core\Tools\Datetime($t);
 	}
