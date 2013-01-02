@@ -24,7 +24,9 @@ class SlideshowAdminController extends \Coxis\Bundles\Admin\Libs\Controller\Admi
 			try {
 				$this->form->save();
 				Flash::addSuccess('The slideshow was saved successfully.');
-			} catch(\Coxis\Core\Form\FormException $e) {}
+			} catch(\Coxis\Core\Form\FormException $e) {
+				\Response::setCode(400);
+			}
 		$this->setRelativeView('form.php');
 	}
 	

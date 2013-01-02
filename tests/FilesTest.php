@@ -21,11 +21,13 @@ class FilesTest extends PHPUnit_Framework_TestCase {
 		// d(actualite::$properties);
 		// d($actualite);
 		$file = array(
-			'tmp_name' => 'tests\test.jpg',
+			'path' => 'tests\test.jpg',
 			'name' => 'test.jpg',
-			'type' => 'image/png',
-			'size'	=>	'10',
-			'error'	=>	'0',
+			// 'tmp_name' => 'tests\test.jpg',
+			// 'name' => 'test.jpg',
+			// 'type' => 'image/png',
+			// 'size'	=>	'10',
+			// 'error'	=>	'0',
 		);
 		#tmp path
 		#tmp name
