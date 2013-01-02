@@ -66,7 +66,7 @@ class Browser {
 		\URL::setServer('localhost');
 		\URL::setRoot('');
 
-		$res = require('core/getresponse.php');
+		$res = FrontController::getResponse();
 
 		$this->last = $res;
 		$this->cookies = $request->cookie;
