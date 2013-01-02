@@ -3,51 +3,44 @@ namespace Coxis\Bundles\Files\Libs;
 
 class ModelFile {
 	public $model;
-	public $params;
-	public $name;
-	public $tmp_file = array();
+	public $property;
+	// public $name;
+	public $file;
+	public $saved = true;
+	// public $tmp_file;
 	
-	function __construct($model, $file, $name=null, $tmp_file=array()) {
-		if(!$model::hasProperty($file))
-			throw new \Exception('File '.$file.' does not exist for model '.get_class($model));
+	function __construct($model, $name, $file=array()) {
+		if(!$model::hasProperty($name))
+			throw new \Exception('File '.$name.' does not exist for model '.get_class($model));
 
 		$this->model = $model;
+		$this->property = $model::property($name);
+		if(is_array($file)) {
+			if(!$file['name'])
+				return;
+			$this->saved = false;
+		}
 		$this->file = $file;
-		$this->params = $model::property($file);
-		$this->name = $name;
-		$this->tmp_file = $tmp_file;
 	}
 
 	public function extension() {
-		if(isset($this->tmp_file['name']))
-			$name = $this->tmp_file['name'];
+		if(is_array($this->file))
+			$name = $this->file['name'];
 		else
 			$name = $this->get();
 		if(!$name)
-			return null;
-		if(is_array($name)) {
-			$res = array();
-			foreach($name as $v)
-				$res[] = pathinfo($v, PATHINFO_EXTENSION);
-			return $res;
-		}
-		else
-			return pathinfo($name, PATHINFO_EXTENSION);
+			return;
+	
+		return pathinfo($name, PATHINFO_EXTENSION);
 	}
 
 	public function notAllowed() {
 		if(!$this->exists())
 			return false;
-		$params = $this->params;
-		if($this->multiple()) {
-			if($ext = $this->extension())
-				foreach($ext as $v)
-					if(!in_array($v, $params::$defaultallowed))
-						return $v;
-		}
-		else
-			if(!in_array($this->extension(), $params::$defaultallowed))
-				return $this->extension();
+		$property = $this->property;
+		
+		if(!in_array($this->extension(), $property::$defaultallowed))
+			return $this->extension();
 		return false;
 	}
 
@@ -56,30 +49,13 @@ class ModelFile {
 	}
 	
 	public function exists() {
-		if($this->multiple()) {
-			$files = $this->get(array(), true);
-			foreach($this->tmp_file as $file)
-				$files[] = $file['tmp_name'];
-			foreach($files as $file)
-				if(!file_exists($file))
-					return false;
-			return true;
-		}
-		else {
-			if($this->tmp_file)
-				$path = $this->tmp_file['tmp_name'];
-			else {
-				if(!$this->get())
-					return false;
-				$path = 'web/'.$this->get();
-			}
-
-			return file_exists($path);
-		}
+		if(!$path = $this->get(null, true))
+			return false;
+		return file_exists($path);
 	}
 	
 	public function dir($absolute=false) {
-		$dir = $this->params->dir;
+		$dir = $this->property->dir;
 		$dir = trim($dir, '/');
 		if($absolute)
 			$dir = 'web/upload/'.$dir.($dir ? '/':'');
@@ -89,124 +65,64 @@ class ModelFile {
 	}
 	
 	public function get($default=null, $absolute=false) {
-		$dir = $this->dir($absolute);
-		$path = $this->name;
-		
-		if($this->multiple()) {
-			if(!$path)
-				return array();
-			$result = array();
-			foreach($path as $filename)
-				$result[] = $dir.$filename;
-			return $result;
-		}
-		elseif($path)
-			return $dir.$path;
+		$file = $this->file;
+		if(is_array($file))
+			return $file['path'];
+		elseif($file)
+			return $this->dir($absolute).$file;
 		else
-			return $default;	
+			return $default;
 	}
 	
 	public function save() {
-		if(!$this->tmp_file)
+		if(!is_array($file = $this->file))
 			return;
-
-		if(!$this->multiple())
-			$files = array($this->tmp_file);
-		else
-			$files = $this->tmp_file;
-
-		foreach($files as $file) {
-			if(!$file['name'] || !$file['tmp_name'])
-				continue;
-			$to = $this->dir(true).$file['name'];
-			if($this->type() == 'image') {
-				if(!($format = $this->format()))
-					$format = IMAGETYPE_JPEG;
-				$filename = \Coxis\Core\Tools\ImageManager::load($file['tmp_name'])->save($to, $format);
-			}
-			else
-				$filename = \Coxis\Core\Tools\FileManager::move($file['tmp_name'], $to);
-			
-			if($this->multiple()) {
-				if(!is_array($this->name))
-					$this->name = array();
-				array_push($this->name, $filename);
-			}
-			else
-				$this->name = $filename;
+		$to = $this->dir(true).$file['name'];
+		if($this->type() == 'image') {
+			if(!($format = $this->format()))
+				$format = IMAGETYPE_JPEG;
+			$filename = \Coxis\Core\Tools\ImageManager::load($file['path'])->save($to, $format);
 		}
-		$this->tmp_file = array();
+		else
+			$filename = \Coxis\Core\Tools\FileManager::move($file['path'], $to);
+		
+		$this->file = $filename;
 
-		return $this;
-	}
-
-	public function add($files) {
-		if(!$this->multiple())
-			return;
-		$this->tmp_file = array_merge($this->tmp_file, $files);
 		return $this;
 	}
 	
-	public function delete($pos=null) {
-		$path = $this->get();
-		if($this->multiple()) {
-			if($pos !== null) {
-				$pos = (int)$pos;
-				if(!isset($path[$pos]))
-					return $this;
-				$path = $path[$pos];
-				\Coxis\Core\Tools\FileManager::unlink(_WEB_DIR_.$path);
-				\Coxis\Bundles\Imagecache\Libs\ImageCache::clearFile($path);
-				unset($this->name[$pos]);
-			}
-			else {
-				foreach($path as $file) {
-					\Coxis\Core\Tools\FileManager::unlink(_WEB_DIR_.$file);
-					\Coxis\Bundles\Imagecache\Libs\ImageCache::clearFile($path);
-				}
-				$this->name = null;
-			}
+	public function delete() {
+		if($path = $this->get()) {
+			\Coxis\Core\Tools\FileManager::unlink(_WEB_DIR_.$path);
+			\Coxis\Bundles\Imagecache\Libs\ImageCache::clearFile($path);
 		}
-		else {
-			if($path) {
-				\Coxis\Core\Tools\FileManager::unlink(_WEB_DIR_.$path);
-				\Coxis\Bundles\Imagecache\Libs\ImageCache::clearFile($path);
-			}
-			$this->name = null;
-		}
+		$this->file = null;
 		$this->model->save(null, true);
 		
 		return $this;
-	}
-
-	public function toArray() {
-		if($this->multiple())
-			return $this->get();
-		else
-			return (string)$this;
 	}
 	
 	public function __toString() {
 		return (string)$this->get();
 	}
 	
-	public function params() {
-		return $this->params;
+	public function property() {
+		return $this->property;
 	}
 	
 	public function required() {
-		return isset($this->params->required) && $this->params->required;
+		return isset($this->property->required) && $this->property->required;
 	}
 	
 	public function type() {
-		return $this->params->filetype;
+		return $this->property->filetype;
 	}
 	
 	public function format() {
-		return $this->params->format;
+		return $this->property->format;
 	}
 	
 	public function multiple() {
-		return $this->params->multiple;
+		return $this->property->multiple;
 	}
 }

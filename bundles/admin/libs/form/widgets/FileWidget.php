@@ -20,7 +20,7 @@ class FileWidget extends \Coxis\Core\Form\Widgets\HTMLWidget {
 
 		if($model->isOld() && $model->$name && $model->$name->exists()) {
 			$path = $model->$name->get();
-			if(!$path)
+			if(!$path || !$model->$name->saved)
 				return $str;
 			if($model->property($name)->filetype == 'image') {
 				$str .= '<p>

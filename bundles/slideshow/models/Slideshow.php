@@ -37,16 +37,12 @@ class Slideshow extends \Coxis\Core\Model {
 	
 	public static function configure($definition) {
 		$validation = function($attribute, $value, $params, $validator) {
-			#todo redo with modelfile
-			if($value->tmp_file)
-				$path = $value->tmp_file['tmp_name'];
-			else
-				$path = $value->get(null, true);
-
-			if(!$path)
+			if(!$path = $value->get(null, true))
 				return;
 
 			list($width, $height) = getimagesize($path);
+			if($width === null)
+				return;
 			if($width < Config::get('slideshow', 'width') || $height < Config::get('slideshow', 'height'))
 				return __('This picture is too small.');
 		};

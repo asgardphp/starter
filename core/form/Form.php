@@ -181,6 +181,6 @@ class Form extends AbstractGroup {
 	}
 
 	public function isValid() {
-		return !$this->errors();
+		return !$this->errors() && $this->isSent();
 	}
 }

@@ -4,6 +4,14 @@ namespace Coxis\Core\Form\Fields;
 class FileField extends Field {
 	protected $default_render = 'file';
 
+	public function getValue() {
+		$v = $this->value;
+		if(is_object($v))
+			return $v;
+		elseif(isset($v['name']) && $v['name'])
+			return array('name'=>$v['name'], 'path'=>$v['tmp_name']);
+	}
+
 	#file in memory
 	// public $file_in_session = false;
 

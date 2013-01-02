@@ -110,7 +110,7 @@ class ModelForm extends Form {
 			$errors['_form'] = __('Data exceeds upload size limit. Maybe your file is too heavy.');
 
 		if(!$this->isSent())
-			return $errors;
+			return $this->errors = $errors;
 
 		if(is_subclass_of($field, 'Coxis\Core\Form\AbstractGroup')) {
 			if($field instanceof \Coxis\Core\Form\ModelForm)
@@ -151,14 +151,13 @@ class ModelForm extends Form {
 	}
 	
 	public function save() {
-		if(!$this->isSent())
-			return;
-
 		if($errors = $this->errors()) {
 			$e = new FormException;
 			$e->errors = $errors;
 			throw $e;
 		}
+		if(!$this->isSent())
+			return;
 	
 		$this->trigger('pre_save');
 	
