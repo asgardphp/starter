@@ -10,20 +10,19 @@ class GeneralController extends \Coxis\Core\Controller {
 		HTML::setTitle('LiliChantilly');
 		\Memory::set('layout', array('\Coxis\App\Standard\Controllers\Default', 'layout'));
 	}
-	
+
 	/**
-	@Hook('filter_response')
-	**/
-	public function hook404Action($response) {
-		if($response->getCode() != 404)
-			return;
-		
+	@Hook('exception_Coxis\Core\Exceptions\NotFoundException')
+	*/
+	public function hook404ExceptionAction($exception) {
 		$request = \Router::getRequest();
-		
+		$response = \Response::inst();
+		$response->setCode(404);
 		if($request['format']=='html') {
 			$output = \Coxis\Core\Router::run('default', '_404');
 			$response->setContent($output);
 		}
+		return $response;
 	}
 	
 	/**

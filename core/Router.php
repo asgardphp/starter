@@ -21,7 +21,7 @@ class Router {
 			return static::run($controllerName, $actionName, $params, $src);
 		}
 		else
-			throw new \Coxis\Core\ControllerException('Page not found', \Response::setCode(404));
+			throw new NotFoundException('Page not found');
 	}
 	
 	protected static function runAction($controller, $actionName, $params=array(), $src=null, $showView=true) {

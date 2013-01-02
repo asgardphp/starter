@@ -3,7 +3,7 @@ namespace Coxis\Core;
 
 class Controller {
 	public function forward404($msg = 'Not found') {
-		throw new ControllerException($msg, \Response::setCode(404));
+		throw new NotFoundException($msg);
 	}
 	
 	public static function url_for($action, $params=array(), $relative=false) {

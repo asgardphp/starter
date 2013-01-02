@@ -16,23 +16,20 @@ class FrontController extends Controller {
 				\Hook::trigger('start');
 
 				$output = \Router::dispatch();
-				if($output instanceof \Coxis\Core\Response) {
-					$content = $output->content;
+				if($output instanceof \Coxis\Core\Response) 
 					$response = $output;
-				}
-				else {
-					$content = $output;
+				else 
 					$response = \Response::setContent($output);
-				}
 			} catch(\Coxis\Core\ControllerException $e) {
 				if($e->response)
 					$response = $e->response;
 				else
 					$response = \Response::setCode(500);
-				$content = '';
 			} catch(\Exception $e) {
-				$response = Coxis\Core\Coxis::getExceptionResponse($e);
-				$content = '';
+				$response = \Hook::trigger('exception_'.get_class($e), array($e));
+				
+				if($response === null)
+					$response = Coxis\Core\Coxis::getExceptionResponse($e);
 			}
 			\Hook::trigger('filter_response', array($response));
 			return $response;
