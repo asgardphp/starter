@@ -22,7 +22,6 @@ namespace Coxis\Core {
 			\Locale::importLocales($bundle.'/locales');
 
 			\Coxis\Core\Context::get('autoloader')->preloadDir($bundle.'/models');
-			// d(\Coxis\Core\Context::get('autoloader')->preloaded);
 
 			if(file_exists($bundle.'/controllers/')) {
 				\Coxis\Core\Context::get('autoloader')->preloadDir($bundle.'/controllers');

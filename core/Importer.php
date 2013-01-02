@@ -224,8 +224,12 @@ namespace Coxis\Core {
 						}
 					}
 					#if multiple classes, don't load
-					elseif(sizeof($classes) > 1)
-						throw new \Exception('There are multiple classes '.$class);
+					elseif(sizeof($classes) > 1) {
+						$classfiles = array();
+						foreach($classes as $classname)
+							$classfiles[] = $classname[1];
+						throw new \Exception('There are multiple classes '.$class.': '.implode(', ', $classfiles));
+					}
 					#if no class, don't load
 					else
 						return false;
