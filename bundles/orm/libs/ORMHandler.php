@@ -146,7 +146,7 @@ class ORMHandler {
 		}
 		elseif($res['type'] == 'hasOne') {
 			$rev_rel = static::reverseRelation($model, $name);
-			$res['link'] = $rev_rel['name'].'_id';
+			$res['link'] = $name.'_id';
 		}
 		elseif($res['type'] == 'belongsTo')
 			$res['link'] = $name.'_id';
@@ -235,7 +235,7 @@ class ORMHandler {
 		if(!ctype_digit($id) && !is_int($id))
 			return;
 
-		$res = $this->getORM()->where(array('id' => $id))->dal()->first();
+		$res = $this->getORM()->where(array('id' => $id))->getDAL()->first();
 		if($res) {
 			static::unserializeSet($model, $res);
 			$chain->found = true;
@@ -258,11 +258,11 @@ class ORMHandler {
 				$orm = $model->$name();
 				if(!is_object($orm))
 					continue;
-				$orm->dal()->rsc();
+				$orm->getDAL()->rsc();
 				$orms[] = $orm;
 			}
 
-		$r = static::myORM($model)->dal()->delete();
+		$r = static::myORM($model)->getDAL()->delete();
 
 		foreach($orms as $orm)
 			$orm->delete();

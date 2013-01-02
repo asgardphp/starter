@@ -124,6 +124,14 @@ class ModelDefinition extends Hookable {
 		return $this->relations;
 	}
 
+	public function relation($name) {
+		return $this->relations[$name];
+	}
+
+	public function hasRelation($name) {
+		return isset($this->relations[$name]);
+	}
+
 	public function isI18N() {
 		foreach($this->properties as $prop)
 			if($prop->i18n)

@@ -35,9 +35,12 @@ class FileProperty extends \Coxis\Core\Properties\BaseProperty {
 
 	public function unserialize($str, $model=null) {
 		if($this->multiple)
-			return new \Coxis\Bundles\Files\Libs\ModelFile($model, $this->name, unserialize($str));
-		else
-			return new \Coxis\Bundles\Files\Libs\ModelFile($model, $this->name, $str);
+			try {
+				return new \Coxis\Bundles\Files\Libs\ModelFile($model, $this->name, unserialize($str));
+			} catch(\Exception $e) {
+				return $this->getDefault($model);
+			}
+		return new \Coxis\Bundles\Files\Libs\ModelFile($model, $this->name, $str);
 	}
 
 	public function set($val, $model=null) {

@@ -178,6 +178,13 @@ class ModelFile {
 		
 		return $this;
 	}
+
+	public function toArray() {
+		if($this->multiple())
+			return $this->get();
+		else
+			return (string)$this;
+	}
 	
 	public function __toString() {
 		return (string)$this->get();

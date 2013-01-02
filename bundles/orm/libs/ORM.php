@@ -2,39 +2,62 @@
 namespace Coxis\Bundles\ORM\Libs;
 
 class ORM {
-	protected $model = null;
-	protected $with = null;
-	protected $dal = null;
+	protected $model;
+	protected $with;
+	protected $where = array();
+	protected $orderBy;
+	protected $limit;
+	protected $offset;
+	protected $join = array();
+
+	protected $tmp_dal = null;
 		
 	function __construct($model) {
 		$this->model = $model;
-		
-		$this->dal = new \Coxis\Core\DB\DAL(array($model::getTable() => 'a'));
 
-		if($model::isI18N()){
-			$select = 'a . *';
-			foreach($model::getDefinition()->properties() as $name=>$property)
-				if($property->i18n)
-					$select .= ', t.`'.$name.'`';
-			$this->select($select);
-			$this->leftjoin(array(
-				'a.Translation t'	=>	array(
-					'a.id = t.id',
-					't.locale'	=>	\Config::get('locale'),
-				),
-			));
-		}
+		#todo move it into orm/model
 		$this->orderBy($model::getDefinition()->meta['order_by']);
 	}
 
+	public function __call($relationName, $args) {
+		$current_model = $this->model;
+		if(!$current_model::getDefinition()->hasRelation($relationName))
+			throw new \Exception('Relation '.$relationName.' does not exist.');
+		$relation = ORMHandler::relationData($current_model, $relationName);
+		$reverse_relation = ORMHandler::reverseRelation($current_model, $relationName);
+		$reverse_relation_name = $reverse_relation['name'];
+		$relation_model = $relation['model'];
+
+		$newOrm = $relation_model::orm();
+		$newOrm->where($this->where);
+
+		$newOrm->join(array($reverse_relation_name => $this->join));
+
+		return $newOrm;
+	}
+
 	public function __get($name) {
-		$res = array();
-		while($one = $this->next())
-			if(is_array($r = $one->$name))
-				$res[] = array_merge($res, $r);
-			elseif($r)
-				$res[] = $r;
-		return $res;
+		return $this->$name()->get();
+	}
+
+	public function joinToModel($relation, $model) {
+		$this->join($relation);
+		$this->where(array($model::getTable().'.id' => $model->id));
+		return $this;
+	}
+
+	public function join($relations) {
+		$this->join[] = $relations;
+		return $this;
+	}
+
+	public function getTable() {
+		$current_model = $this->model;
+		return $current_model::getTable();
+	}
+
+	public function geti18nTable() {
+		return $this->getTable().'_translation';
 	}
 
 	public function toModel($raw) {
@@ -44,7 +67,9 @@ class ORM {
 	}
 
 	public function next() {
-		if(!($r = $this->dal()->next()))
+		if(!$this->tmp_dal)
+			$this->tmp_dal = $this->getDAL();
+		if(!($r = $this->tmp_dal->next()))
 			return false;
 		else
 			return $this->toModel($r);
@@ -61,10 +86,6 @@ class ORM {
 		return $res;
 	}
 	
-	public function dal() {
-		return $this->dal; 
-	}
-	
 	public function first() {
 		$this->limit(1);
 		
@@ -75,17 +96,126 @@ class ORM {
 	}
 	
 	public function all() {
-		$this->reset();
+		$this->joins = array();
+		$this->where = array();
 		return static::get();
+	}
+
+	public function getDAL() {
+		$current_model = $this->model;
+		$dal = new DAL;
+		$table = $this->getTable();
+		$dal->orderBy($this->orderBy);
+		$dal->limit($this->limit);
+		$dal->offset($this->offset);
+		$dal->groupBy($table.'.id');
+
+		$dal->where($this->processConditions($this->where));
+
+		if($current_model::isI18N()) {
+			$translation_table = $this->geti18nTable();
+			$selects = array($table.'.*');
+			foreach($current_model::getDefinition()->properties() as $name=>$property)
+				if($property->i18n)
+					$selects[] = $translation_table.'.`'.$name.'`';
+			$dal->select($selects);
+			$dal->setTable($table);
+			$dal->leftjoin(array(
+				$translation_table => $this->processConditions(array(
+					$table.'.id = '.$translation_table.'.id',
+					$translation_table.'.locale' => \Config::get('locale')
+				))
+			));
+		}
+		else {
+			$dal->select($table.'.*');
+			$dal->setTable($table);
+		}
+
+		$table = $current_model::getTable();
+		$this->recursiveJointures($dal, $this->join, $current_model, $table);
+
+		return $dal;
+	}
+
+	public function recursiveJointures($dal, $jointures, $current_model, $table) {
+		foreach($jointures as $k=>$v) {
+			if(is_array($v)) {
+				$relationName = get(array_keys($v), 0);
+				$recJoins = get(array_values($v), 0);
+				$relation = ORMHandler::relationData($current_model, $relationName);
+				$model = $relation['model'];
+
+				$this->jointure($dal, $relationName, $current_model, $table);
+				$this->recursiveJointures($dal, $recJoins, $model, $table);
+			}
+			else {
+				$relationName = $v;
+				$this->jointure($dal, $relationName, $current_model, $table);
+			}
+		}
+	}
+
+	public function jointure($dal, $relationName, $current_model, $ref_table) {
+		$relation = ORMHandler::relationData($current_model, $relationName);
+		$relation_model = $relation['model'];
+		switch($relation['type']) {
+			case 'hasOne':
+			case 'belongsTo':
+				$link = $relation['link'];
+				$table = $relation_model::getTable();
+				$dal->rightjoin(array(
+					$table => $this->processConditions(array(
+						$ref_table.'.'.$link.' = '.$table.'.id'
+					))
+				));
+				break;
+			case 'hasMany':
+				$link = $relation['link'];
+				$table = $relation_model::getTable();
+				$dal->rightjoin(array(
+					$table => $this->processConditions(array(
+						$ref_table.'.id'.' = '.$table.'.'.$link
+					))
+				));
+				break;
+			case 'HMABT':
+				$dal->rightjoin(array(
+					$relation['join_table'] => $this->processConditions(array(
+						$relation['join_table'].'.'.$relation['link_a'].' = '.$ref_table.'.id',
+					))
+				));
+				$dal->rightjoin(array(
+					$relation_model::getTable() => $this->processConditions(array(
+						$relation['join_table'].'.'.$relation['link_b'].' = '.$relation_model::getTable().'.id',
+					))
+				));
+				break;
+		}
+
+		if($relation_model::isI18N()) {
+			$table = $relation_model::getTable();
+			$translation_table = $table.'_translation';
+			$dal->leftjoin(array(
+				$translation_table => $this->processConditions(array(
+					$table.'.id = '.$translation_table.'.id',
+					$translation_table.'.locale' => \Config::get('locale')
+				))
+			));
+		}
 	}
 	
 	public function get() {
 		$models = array();
 		$ids = array();
 		$current_model = $this->model;
-		
-		$rows = $this->dal->get();
+
+		$dal = $this->getDAL();
+
+		$rows = $dal->get();
 		foreach($rows as $row) {
+			if(!$row['id'])
+				continue;
 			$models[] = $this->toModel($row);
 			$ids[] = $row['id'];
 		}
@@ -101,7 +231,7 @@ class ORM {
 					case 'belongsTo':
 						$link = $rel['link'];
 						
-						$res = $relation_model::where(array('a.id IN ('.implode(', ', $ids).')'))->get();
+						$res = $relation_model::where(array('id IN ('.implode(', ', $ids).')'))->get();
 						foreach($models as $model) {
 							$id = $model->$link;
 							$filter = array_filter($res, function($result) use ($id) {
@@ -116,7 +246,7 @@ class ORM {
 					case 'hasMany':
 						$link = $rel['link'];
 						
-						$orm = $relation_model::where(array('a.'.$link.' IN ('.implode(', ', $ids).')'));
+						$orm = $relation_model::where(array($link.' IN ('.implode(', ', $ids).')'));
 						if(is_callable($closure))
 							$closure($orm);
 						$res = $orm->get();
@@ -132,23 +262,26 @@ class ORM {
 						$currentmodel_idfield = $rel['link_a'];
 						$relationmodel_idfield = $rel['link_b'];
 
-						$orm = $relation_model::innerjoin(array(
-							'arpa_actualite_commentaire b' => array(
-								'a.id = b.actualite_id',
-							),
-						))->where(array(
-							'b.'.$currentmodel_idfield.' IN ('.implode(', ', $ids).')',#
-							'b.'.$relationmodel_idfield.' = a.id',
-						));
+						$reverse_relation = ORMHandler::reverseRelation($current_model, $relation_name);
+						$reverse_relation_name = $reverse_relation['name'];
+
+						$orm = $relation_model::join($reverse_relation_name)
+							->where(array(
+								$current_model::getTable().'.id IN ('.implode(', ', $ids).')',
+							));
 
 						if(is_callable($closure))
 							$closure($orm);
-						$res = $orm->get();
+						$res = $orm->getDAL()->addSelect($join_table.'.'.$currentmodel_idfield.' as __ormrelid')->groupBy(null)->get();
 						foreach($models as $model) {
 							$id = $model->id;
-							$model->$relation_name = array_filter($res, function($result) use ($id, $currentmodel_idfield) {
-								return ($id == $result->$currentmodel_idfield);
+							$filter = array_filter($res, function($result) use ($id) {
+								return $id == $result['__ormrelid'];
 							});
+							$mres = array();
+							foreach($filter as $m)
+								$mres[] = $this->toModel($m);
+							$model->$relation_name = $mres;
 						}
 						break;
 					default:
@@ -160,11 +293,12 @@ class ORM {
 		return $models;
 	}
 	
-	public function queryGet($sql, $args=array()) {
+	public function selectQuery($sql, $args=array()) {
 		$models = array();
 		$model = $this->model;
 		
-		$rows = $this->dal->query($sql, $args)->all();
+		$dal = new DAL;
+		$rows = $dal->query($sql, $args)->all();
 		foreach($rows as $row)
 			$models[] = ORMHandler::unserializeSet(new $model, $row);
 			
@@ -173,7 +307,8 @@ class ORM {
 	
 	public function paginate($page, $per_page=10, &$paginator=null) {
 		$page = $page ? $page:1;
-		$this->dal->paginate($page, $per_page);
+		$this->offset(($page-1)*$per_page);
+		$this->limit($per_page);
 		$paginator = new \Coxis\Core\Tools\Paginator($per_page, $this->count(), $page);
 		
 		return $this->get();
@@ -184,75 +319,58 @@ class ORM {
 		
 		return $this;
 	}
-	
-	public function setTable($table, $alias=null) {
-		$this->dal->setTable($table, $alias);
-		
-		return $this;
+
+	protected function replaceTable($sql) {
+		$model = $this->model;
+		$table = $this->getTable();
+		$i18nTable = $this->geti18nTable();
+		preg_match_all('/(?<![\.a-z0-9-_`\(\)])([a-z0-9-_]+)(?![\.a-z0-9-_`\(\)])/', $sql, $matches);
+		foreach($matches[0] as $property) {
+			if(!$model::hasProperty($property))
+				continue;
+			$table = $model::property($property)->i18n ? $i18nTable:$table;
+			$sql = preg_replace('/(?<![\.a-z0-9-_`\(\)])('.$property.')(?![\.a-z0-9-_`\(\)])/', $table.'.`$1`', $sql);
+		}
+		$sql = preg_replace('/([a-zA-Z0-9-_]+)\.([a-zA-Z0-9-_]+)/', '$1.`$2`', $sql);
+
+		return $sql;
 	}
-	
-	public function setTables($tables) {
-		$this->dal->setTables($tables);
-		
-		return $this;
-	}
-	
-	public function select($select) {
-		$this->dal->select($select);
-		
-		return $this;
-	}
-	
-	public function leftjoin($jointures) {
-		$this->dal->leftjoin($jointures);
-		
-		return $this;
-	}
-	
-	public function rightjoin($jointures) {
-		$this->dal->rightjoin($jointures);
-		
-		return $this;
-	}
-	
-	public function innerjoin($jointures) {
-		$this->dal->innerjoin($jointures);
-		
-		return $this;
+
+	protected function processConditions($conditions) {
+		foreach($conditions as $k=>$v) {
+			if(!is_array($v)) {
+				$newK = $this->replaceTable($k);
+				$conditions[$newK] = $this->replaceTable($v);
+				if($newK != $k)
+					unset($conditions[$k]);
+			}
+			else {
+				$conditions[$k] = $this->processConditions($conditions[$k]);
+			}
+		}
+
+		return $conditions;
 	}
 	
 	public function where($conditions) {
-		$this->dal->where($conditions);
+		$this->where[] = $this->processConditions($conditions);
 		
 		return $this;
 	}
 	
 	public function offset($offset) {
-		$this->dal->offset($offset);
-		
+		$this->offset = $offset;
 		return $this;
 	}
 	
 	public function limit($limit) {
-		$this->dal->limit($limit);
-		
+		$this->limit = $limit;
 		return $this;
 	}
 	
 	public function orderBy($orderBy) {
-		$this->dal->orderBy($orderBy);
-		
+		$this->orderBy = $orderBy;
 		return $this;
-	}
-	
-	public function groupBy($groupBy) {
-		$this->dal->groupBy($groupBy);
-		
-		return $this;
-	}
-	
-	public function insert($values) {
-		return $this->dal->insert($values);
 	}
 	
 	public function delete() {
@@ -264,31 +382,40 @@ class ORM {
 	}
 	
 	public function update($values) {
-		return $this->dal->update($values);
+		return $this->getDAL()->update($values);
+	}
+	
+	public function insert($values) {
+		return $this->getDAL()->insert($values);
 	}
 	
 	public function count($group_by=null) {
-		return $this->dal->count($group_by);
+		return $this->getDAL()->count($group_by);
 	}
 	
 	public function min($what, $group_by=null) {
-		return $this->dal->min($what, $group_by);
+		return $this->getDAL()->min($what, $group_by);
 	}
 	
 	public function max($what, $group_by=null) {
-		return $this->dal->max($what, $group_by);
+		return $this->getDAL()->max($what, $group_by);
 	}
 	
 	public function avg($what, $group_by=null) {
-		return $this->dal->avg($what, $group_by);
+		return $this->getDAL()->avg($what, $group_by);
 	}
 	
 	public function sum($what, $group_by=null) {
-		return $this->dal->sum($what, $group_by);
+		return $this->getDAL()->sum($what, $group_by);
 	}
 	
 	public function reset() {
-		$this->dal->reset();
+		$this->where = array();
+		$this->with = array();
+		$this->orderBy = null;
+		$this->limit = null;
+		$this->offset = null;
+		$this->join = array();
 		
 		return $this;
 	}

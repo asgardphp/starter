@@ -33,9 +33,7 @@ class ModelTest extends PHPUnit_Framework_TestCase {
 			'introduction'=>'introduction',
 			'contenu'=>'contenu',
 		));
-		try{
 		$actu->save();
-	}catch(\Exception $e) {d($e->errors);}
 	}
     
 	#hasMany

@@ -1,50 +1,43 @@
 <?php
 namespace Coxis\Core\DB;
 
-#todo select only some columns
 class DAL {
 	public $db = null;
-	public $tables = null;
-	
-	public $select = null;
+	public $table;
+	public $selects = array();
 	public $where = null;
 	public $offset = null;
 	public $limit = null;
 	public $orderBy = null;
 	public $groupBy = null;
-	public $leftjoin = array();
-	public $rightjoin = array();
-	public $innerjoin = array();
+	public $joins = array();
 
 	protected $rsc = null;
 		
-	function __construct($tables, $db=null) {
+	function __construct($table=null, $db=null) {
 		if($db === null)
 			$this->db = \DB::inst();
 		else
 			$this->db = $db;
-		$this->setTables($tables);
+		$this->table = $table;
 	}
 	
-	public function setTable($table, $alias='a') {
-		$this->tables = array($table=>$alias);
+	public function setTable($table) {
+		$this->table = $table;
 		
 		return $this;
 	}
-	
-	public function setTables($tables) {
-		if(!is_array($tables))
-			$tables = array($tables);
 
-		foreach($tables as $table=>$alias)
-			if(is_int($table)) {
-				$tables[$alias] = null;
-				unset($tables[$table]);
-			}
-			
-		$this->tables = $tables;
-		
-		return $this;
+	public function leftjoin($table) {
+		$this->joins[] = array('leftjoin', $table);
+	}
+
+	public function rightjoin($table) {
+		$this->joins[] = array('rightjoin', $table);
+	}
+
+	public function innerjoin($table) {
+		$this->joins[] = array('innerjoin', $table);
 	}
 
 	public function rsc() {
@@ -65,9 +58,7 @@ class DAL {
 		$this->limit = null;
 		$this->orderBy = null;
 		$this->groupBy = null;
-		$this->leftjoin = array();
-		$this->rightjoin = array();
-		$this->innerjoin = array();
+		$this->joins = array();
 		
 		return $this;
 	}
@@ -97,7 +88,13 @@ class DAL {
 
 	/* SETTERS */
 	public function select($select) {
-		$this->select = $select;
+		if(!is_array($select))
+			$select = array($select);
+		$this->selects = $select;
+		return $this;
+	}
+	public function addSelect($select) {
+		$this->selects[] = $select;
 		return $this;
 	}
 
@@ -132,21 +129,6 @@ class DAL {
 		
 		return $this;
 	}
-	
-	public function innerjoin($jointures) {
-		$this->innerjoin = array_merge($this->innerjoin, $jointures);
-		return $this;
-	}
-	
-	public function rightjoin($jointures) {
-		$this->rightjoin = array_merge($this->rightjoin, $jointures);
-		return $this;
-	}
-	
-	public function leftjoin($jointures) {
-		$this->leftjoin = array_merge($this->leftjoin, $jointures);
-		return $this;
-	}
 
 	/* CONDITIONS PROCESSING */
 	protected static function processConditions($params, $condition = 'and', $brackets=false, $table=null) {
@@ -168,7 +150,7 @@ class DAL {
 				if(is_int($key))
 					$string_conditions[] = $value;
 				else {
-					$string_conditions[] = static::replace($key, $table);
+					$string_conditions[] = static::replace($key);
 					$pdoparams[] = $value;
 				}
 			}
@@ -194,15 +176,13 @@ class DAL {
 		return array($result, Tools::flateArray($pdoparams));
 	}
 	
-	protected static function replace($condition, $table='') {
-		if(strpos($condition, '?') === false)
+	protected static function replace($condition) {
+		if(strpos($condition, '?') === false) {
 			if(preg_match('/^[a-zA-Z0-9_]+$/', $condition))
-				if($table)
-					$condition = $table.'.`'.$condition.'` = ?';
-				else
-					$condition = '`'.$condition.'` = ?';
+				$condition = '`'.$condition.'` = ?';
 			else
 				$condition = $condition.' = ?';
+		}
 		
 		return $condition;
 	}
@@ -225,13 +205,6 @@ class DAL {
 			return $conditions;
 	}
 	
-	public function getTable($ref) {
-		foreach($this->tables as $table=>$alias)
-			if($alias == $ref)
-				return $table;
-		return null;
-	}
-	
 	/* BUILDERS */
 	public function buildSelect() {
 		if($this->select)
@@ -248,15 +221,9 @@ class DAL {
 				$tables[] = '`'.$table.'`';
 		return implode(', ', $tables);
 	}
-	public function getDefaultTable() {
-		if(get(array_values($this->tables), 0))
-			return get(array_values($this->tables), 0);
-		else
-			return get(array_keys($this->tables), 0);
-	}
 	public function buildWhere($default=null) {
 		if(!$default)
-			$default = $this->getDefaultTable();
+			$default = $this->table;
 
 		$params = array();
 		$r = static::processConditions($this->where, 'and', false, $default);
@@ -269,7 +236,7 @@ class DAL {
 		if($this->groupBy)
 			return ' GROUP BY '.$this->groupBy;
 	}
-	public function buildOrderby($default) {
+	public function buildOrderby($default=null) {
 		if(!$this->orderBy)
 			return '';
 
@@ -278,64 +245,45 @@ class DAL {
 			$orders = array($this->orderBy);
 		else
 			$orders = $this->orderBy;
-		
-		foreach($orders as $k=>$v)
-			if(preg_match('/^[a-zA-Z0-9_ ]+$/', $v))
-				$orders[$k] = $default.'.'.$v;
 				
 		$orderBy .= implode(', ', $orders);
 		return $orderBy;
 	}
-	public function buildLeftjoin() {
+
+	public function buildJointures() {
 		$params = array();
-		$leftjoin = '';
-		foreach($this->leftjoin as $tableName=>$conditions) {
-			$table = $tableName;
-			if(preg_match('/^([a-zA-Z]+).Translation /', $tableName, $matches)) {
-				$ref_table = $this->getTable($matches[1]);
-				$table = preg_replace('/^([a-zA-Z]+)/', $ref_table, $table);
-				$table = str_replace('.Translation', '_translation', $table);
-				#todo move it into ORM
-			}
-			$r = static::processConditions($conditions);
-			$leftjoin .= ' LEFT JOIN '.$table.' ON '.$r[0];
-			$params = array_merge($params, $r[1]);
+		$jointures = '';
+		foreach($this->joins as $jointure) {
+			$type = $jointure[0];
+			$table = get(array_keys($jointure[1]), 0);
+			$conditions = get(array_values($jointure[1]), 0);
+			$res = $this->buildJointure($type, $table, $conditions);
+			$jointures .= $res[0];
+			$params = array_merge($params, $res[1]);
 		}
-		return array($leftjoin, $params);
+		return array($jointures, $params);
 	}
-	public function buildRightjoin() {
+
+	public function buildJointure($type, $table, $conditions) {
 		$params = array();
-		$rightjoin = '';
-		foreach($this->rightjoin as $tableName=>$conditions) {
-			$table = $tableName;
-			if(preg_match('/^([a-zA-Z]+).Translation /', $tableName, $matches)) {
-				$ref_table = $this->getTable($matches[1]);
-				$table = preg_replace('/^([a-zA-Z]+)/', $ref_table, $table);
-				$table = str_replace('.Translation', '_translation', $table);
-			}
-			$r = static::processConditions($conditions);
-			$rightjoin .= ' RIGHT JOIN '.$table.' ON '.$r[0];
-			$params = array_merge($params, $r[1]);
+		$jointure = '';
+		$r = static::processConditions($conditions);
+		switch($type) {
+			case 'leftjoin':
+				$jointure = ' LEFT JOIN ';
+				break;
+			case 'rightjoin':
+				$jointure = ' RIGHT JOIN ';
+				break;
+			case 'innerjoin':
+				$jointure = ' INNER JOIN ';
+				break;
 		}
-		return array($rightjoin, $params);
+		$jointure .= $table.' ON '.$r[0];
+		$params = array_merge($params, $r[1]);
+		return array($jointure, $params);
 	}
-	public function buildInnerjoin() {
-		$params = array();
-		$innerjoin = '';
-		foreach($this->innerjoin as $tableName=>$conditions) {
-			$table = $tableName;
-			if(preg_match('/^([a-zA-Z]+).Translation /', $tableName, $matches)) {
-				$ref_table = $this->getTable($matches[1]);
-				$table = preg_replace('/^([a-zA-Z]+)/', $ref_table, $table);
-				$table = str_replace('.Translation', '_translation', $table);
-				#todo move it into ORM
-			}
-			$r = static::processConditions($conditions);
-			$innerjoin .= ' INNER JOIN '.$table.' ON '.$r[0];
-			$params = array_merge($params, $r[1]);
-		}
-		return array($innerjoin, $params);
-	}
+
 	public function buildLimit() {
 		if(!$this->limit && !$this->offset)
 			return '';
@@ -355,124 +303,114 @@ class DAL {
 
 	public function buildSQL() {
 		$params = array();
-		
-		$tables = $this->buildTables();
-		
-		$default = $this->getDefaultTable();
-		
-		$select = $this->buildSelect();
-		
-		$orderBy = $this->buildorderby($default);
-				
-		$limit = $this->buildLimit();
-				
-		#todo put ` around table only, ie `like` l and not `like l`
-		list($rightjoin, $rjparams) = $this->buildRightjoin();
-		$params = array_merge($params, $rjparams);
-		
-		list($leftjoin, $ljparams) = $this->buildLeftjoin();
-		$params = array_merge($params, $ljparams);
-				
-		list($innerjoin, $ijparams) = $this->buildInnerjoin();
-		$params = array_merge($params, $ijparams);
-		
-		list($where, $whereparams) = $this->buildWhere($default);
-		$params = array_merge($params, $whereparams);
 
+		$table = $this->table;
+		if(!$this->selects)
+			$select = '*';
+		elseif(is_array($this->selects))
+			$select = implode(', ', $this->selects);
+		else
+			$select = $this->selects;
+		$orderBy = $this->buildOrderBy();
+		$limit = $this->buildLimit();
 		$groupby = $this->buildGroupby();
 
-		return array('SELECT '.$select.' FROM '.$tables.$rightjoin.$leftjoin.$innerjoin.$where.$groupby.$orderBy.$limit, $params);
+		list($jointures, $joinparams) = $this->buildJointures();
+		$params = array_merge($params, $joinparams);
+		
+		list($where, $whereparams) = $this->buildWhere();
+		$params = array_merge($params, $whereparams);
+
+
+		return array('SELECT '.$select.' FROM '.$table.$jointures.$where.$groupby.$orderBy.$limit, $params);
+	}
+
+	public function buildDeleteSQL() {
+		$params = array();
+
+		$table = $this->table;
+		$limit = $this->buildLimit();
+
+		list($jointures, $joinparams) = $this->buildJointures();
+		$params = array_merge($params, $joinparams);
+		
+		list($where, $whereparams) = $this->buildWhere();
+		$params = array_merge($params, $whereparams);
+
+		return array('DELETE `'.$table.'` FROM '.$table.$jointures.$where.$limit, $params);
+	}
+
+	public function buildInsertSQL($values) {
+		if(sizeof($values) == 0)
+			throw new Exception('Insert values should not be empty.');
+
+		$params = array();
+		$table = $this->table;
+
+		$columns = array();
+		foreach($values as $k=>$v)
+			$columns[] = $table.'.`'.$k.'`';
+		$str = ' ('.implode(', ', $columns).') VALUES ('.implode(', ', array_fill(0, sizeof($values), '?')).')';
+		$params = array_merge($params, array_values($values));
+		
+		return array('INSERT INTO '.$table.$str, $params);
+	}
+
+	public function buildUpdateSQL($values) {
+		if(sizeof($values) == 0)
+			throw new Exception('Update values should not be empty.');
+
+		$params = array();
+		$table = $this->table;
+		$limit = $this->buildLimit();
+
+		list($jointures, $joinparams) = $this->buildJointures();
+		$params = array_merge($params, $joinparams);
+
+		foreach($values as $k=>$v)
+			$set[] = $table.'.`'.$k.'`=?';
+		$str = ' SET '.implode(', ', $set);
+		$params = array_merge($params, array_values($values));
+		
+		list($where, $whereparams) = $this->buildWhere();
+		$params = array_merge($params, $whereparams);
+
+		return array('UPDATE '.$table.$jointures.$str.$where.$limit, $params);
 	}
 	
 	/* FUNCTIONS */
 	public function update($values) {
-		$params = array();
-		
-		if(sizeof($values) == 0)
-			throw new Exception('Update values should not be empty.');
-		
-		$table = '`'.get(array_keys($this->tables), 0).'`';
-
-		list($where, $whereparams) = $this->buildWhere($table);
-		$params = array_merge($params, $whereparams);
-			
-		$vals = array();
-		foreach($values as $k=>$v)
-			$set[] = '`'.$k.'`=?';
-		$set = ' SET '.implode(', ', $set);
-	
-		$sql = 'UPDATE '.$table.$set.$where;
-
-		$params = array_merge(array_values($values), $params);
-		
+		list($sql, $params) = $this->buildUpdateSQL($values);
 		return $this->db->query($sql, $params)->affected();
 	}
 	
 	public function insert($values) {
-		if(sizeof($values) == 0)
-			throw new Exception('Insert values should not be empty.');
-		
-		$table = '`'.get(array_keys($this->tables), 0).'`';
-			
-		$columns = array();
-		$vals = array();
-		foreach($values as $k=>$v)
-			$columns[] = '`'.$k.'`';
-		
-		$str = ' ('.implode(', ', $columns).') VALUES ('.implode(', ', array_fill(0, sizeof($values), '?')).')';
-	
-		$sql = 'INSERT INTO '.$table.$str;
-		
-		return $this->db->query($sql, array_values($values))->id();
+		list($sql, $params) = $this->buildInsertSQL($values);
+		return $this->db->query($sql, $params)->id();
 	}
 	
 	public function delete() {
-		$params = array();
-		
-		$table = get(array_keys($this->tables), 0);
-
-		list($where, $whereparams) = $this->buildWhere($table);
-		$params = array_merge($params, $whereparams);
-	
-		$sql = 'DELETE FROM '.$table.$where;
-		
+		list($sql, $params) = $this->buildDeleteSQL();
 		return $this->db->query($sql, $params)->affected();
 	}
 
 	protected function _function($fct, $what=null, $group_by=null) {
-		$params = array();
-				
-		#todo put ` around table only, ie `like` l and not `like l`
-		list($rightjoin, $rjparams) = $this->buildRightjoin();
-		$params = array_merge($params, $rjparams);
-		
-		list($leftjoin, $ljparams) = $this->buildLeftjoin();
-		$params = array_merge($params, $ljparams);
-				
-		list($innerjoin, $ijparams) = $this->buildInnerjoin();
-		$params = array_merge($params, $ijparams);
-
-		list($where, $whereparams) = $this->buildWhere();
-		$params = array_merge($params, $whereparams);
-	
-		$tables = $this->buildTables();
-	
 		if($what)
 			$what = '`'.$what.'`';
 		else
 			$what = '*';
 
 		if($group_by) {
-			$sql = 'SELECT `'.$group_by.'` as groupby, '.$fct.'('.$what.') as '.$fct.' FROM `'.$this->table.'`'.$rightjoin.$leftjoin.$innerjoin.$where.' GROUP BY '.$group_by;#todo $this->table
+			$this->select(array($this->table.'.`'.$group_by.'` as groupby', $fct.'('.$what.') as '.$fct))
+				->groupBy($this->table.'.`'.$group_by.'`');
 			$res = array();
-			foreach($this->db->query($sql, $params)->all() as $v)
+			foreach($this->get() as $v)
 				$res[$v['groupby']] = $v[$fct];
 			return $res;
 		}
 		else {
-			$sql = 'SELECT '.$fct.'('.$what.') as '.$fct.' FROM '.$tables.$rightjoin.$leftjoin.$innerjoin.$where;
-			$res = $this->db->query($sql, $params)->first();
-			return $res[$fct];
+			$this->select(array($fct.'('.$what.') as '.$fct));
+			return get($this->first(), $fct);
 		}
 	}
 	

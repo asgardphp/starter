@@ -44,7 +44,8 @@ class GeneralController extends \Coxis\Core\Controller {
 			
 		if(is_array(\Memory::get('layout')) && sizeof(\Memory::get('layout')) >= 2 && $response->getContent() !== null) {
 			$res = \Router::run(\Memory::get('layout', 0), \Memory::get('layout', 1), $response->getContent());
-			$res = View::render('app/standard/views/default/html.php', array('content'=>$res));
+			if(\Memory::get('htmlLayout') !== false)
+				$res = View::render('app/standard/views/default/html.php', array('content'=>$res));
 			$response->setContent($res);
 		}
 	}

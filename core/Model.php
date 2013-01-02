@@ -255,16 +255,12 @@ abstract class Model {
 		$vars = array();
 		
 		foreach($this->properties() as $name=>$property) {
-			if(!isset($this->data['properties'][$name]))
-				$vars[$name] = null;
-			else {
-				$v = $this->data['properties'][$name];
-				if(method_exists($property, 'toArray'))
-					$vars[$name] = $property->toArray($v);
-				elseif(method_exists($v, '__toString'))
-					$vars[$name] = $v->__toString();
-				else
-					$vars[$name] = $this->data['properties'][$name];
+			$vars[$name] = $this->$property;
+			if(is_object($vars[$name])) {
+				if(method_exists($vars[$name], 'toArray'))
+					$vars[$name] = $vars[$name]->toArray();
+				elseif(method_exists($vars[$name], '__toString'))
+					$vars[$name] = $vars[$name]->__toString();
 			}
 		}
 		

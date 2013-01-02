@@ -20,9 +20,14 @@ class DatetimeProperty extends BaseProperty {
 	}
 
 	public function unserialize($str) {
-		preg_match('/([0-9]+)-([0-9]+)-([0-9]+) ([0-9]+):([0-9]+):([0-9]+)/', $str, $r);
-		$t = mktime($r[4], $r[5], $r[6], $r[2], $r[3], $r[1]);
-		return new \Coxis\Core\Tools\Datetime($t);
+		try {
+			preg_match('/([0-9]+)-([0-9]+)-([0-9]+) ([0-9]+):([0-9]+):([0-9]+)/', $str, $r);
+			$t = mktime($r[4], $r[5], $r[6], $r[2], $r[3], $r[1]);
+			return new \Coxis\Core\Tools\Datetime($t);
+		}
+		catch(\Exception $e) {
+			return $this->_getDefault();
+		}
 	}
 
 	public function set($val) {
