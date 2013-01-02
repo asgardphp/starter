@@ -32,8 +32,6 @@ class Browser {
 		#new context
 		$rand = Tools::randstr(10);
 		Context::setDefault($rand);
-		\Coxis\Core\Context::get('autoloader')->preloadDir(_DIR_.'core');
-		// d(\Coxis\Core\Context::get('autoloader')->preloaded);
 
 		#build request
 		$get = array();

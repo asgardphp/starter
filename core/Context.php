@@ -1,8 +1,6 @@
 <?php
 namespace Coxis\Core;
 
-#todo check that class is contextable
-
 class Context {
 	public static $default = 'default';
 
@@ -14,31 +12,6 @@ class Context {
 	function __construct() {
 		$this->ioc = new IoC;
 
-		$facades = array(
-			'URL'				=>	'\Coxis\Core\URL',
-			'Router'			=>	'\Coxis\Core\Router',
-			'Config'			=>	'\Coxis\Core\Config',
-			'Hook'				=>	'\Coxis\Core\Hook',
-			'Response'			=>	'\Coxis\Core\Response',
-			'Memory'			=>	'\Coxis\Core\Memory',
-			'Flash'				=>	'\Coxis\Core\Tools\Flash',
-			'DB'				=>	'\Coxis\Core\DB\DB',
-			'CLIRouter'			=>	'\Coxis\Core\CLI\Router',
-			'Validation'		=>	'\Coxis\Core\Validation',
-			'ModelsManager'		=>	'\Coxis\Core\ModelsManager',
-
-			'Locale'			=>	'\Coxis\Core\Tools\Locale',
-
-			'HTML'				=>	'\Coxis\Core\Tools\HTML',
-			'Importer'			=>	'\Coxis\Core\Importer',
-
-			'Request'		=>	'\Coxis\Core\Request',
-		);
-
-		$this->ioc->register('autoloader', function() {
-			return new \Coxis\Core\Autoloader;
-		});
-
 		$this->ioc->register('db', function() {
 			return new \Coxis\Core\DB\DB(\Config::get('database'));
 		});
@@ -47,20 +20,18 @@ class Context {
 			return \Coxis\Core\Request::createFromGlobals();
 		});
 
-		foreach($facades as $facade=>$class) {
+		foreach(Coxis::$facades as $facade=>$class) {
 			if(!$this->ioc->registered(strtolower($facade))) {
 				$this->ioc->register(strtolower($facade), function() use($class) {
 					return new $class;
 				});
 			}
-			$this->autoloader->map[strtolower($facade)] = 'core/facades/'.$facade.'.php';
 		}
 	}
 
 	public static function newDefault() {
 		$rand = Tools::randstr(10);
 		Context::setDefault($rand);
-		static::get('autoloader')->preloadDir(_DIR_.'core');
 	}
 
 	public static function getDefault() {

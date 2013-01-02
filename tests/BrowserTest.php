@@ -2,7 +2,7 @@
 if(!defined('_ENV_'))
 	define('_ENV_', 'test');
 require_once(dirname(__FILE__).'/../coxis.php');
-\BundlesManager::loadBundles();
+\Coxis::load();
 
 require_once 'vendors/phpQuery/phpQuery/phpQuery.php';
 

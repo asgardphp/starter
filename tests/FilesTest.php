@@ -3,7 +3,7 @@ if(!defined('_ENV_'))
 	define('_ENV_', 'test');
 require_once(dirname(__FILE__).'/../coxis.php');
 // \Config::set('bundle_directories', array_merge(\Config::get('bundle_directories'), array('tests/app')));
-\BundlesManager::loadBundles();
+\Coxis::load();
 
 class FilesTest extends PHPUnit_Framework_TestCase {
 	public function setUp(){

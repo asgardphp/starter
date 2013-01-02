@@ -4,7 +4,7 @@ if(version_compare(PHP_VERSION, '5.3.0') < 0)
 
 /* ENV */
 ini_set('error_reporting', E_ALL);
-ini_set('display_errors', 1); #todo a verifier
+ini_set('display_errors', true);
 set_include_path(get_include_path() . PATH_SEPARATOR . dirname(__FILE__));
 define('_DIR_', dirname(__FILE__).'/');
 define('_WEB_DIR_', _DIR_.'web/');#todo: remove..
@@ -45,13 +45,16 @@ function is_function($f) {
 ob_start();
 
 /* CORE/LIBS */
+require_once 'core/Coxis.php';
 require_once 'core/IoC.php';
 require_once 'core/Context.php';
 require_once 'core/Importer.php';
 require_once 'core/Autoloader.php';
 
-spl_autoload_register(array(\Coxis\Core\Context::get('autoloader'), 'loadClass'));
-\Coxis\Core\Context::get('autoloader')->preloadDir(_DIR_.'core');
+spl_autoload_register(array('Coxis\Core\Autoloader', 'loadClass'));
+Autoloader::preloadDir(_DIR_.'core');
+foreach(Coxis::$facades as $facade=>$class)
+	Autoloader::map(strtolower($facade), 'core/facades/'.$facade.'.php');
 
 /* ERRORS/EXCEPTIONS */
 set_error_handler(function ($errno, $errstr, $errfile, $errline) {

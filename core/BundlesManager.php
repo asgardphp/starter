@@ -21,16 +21,16 @@ namespace Coxis\Core {
 		public static function loadBundle($bundle) {
 			\Locale::importLocales($bundle.'/locales');
 
-			\Coxis\Core\Context::get('autoloader')->preloadDir($bundle.'/models');
+			Autoloader::preloadDir($bundle.'/models');
 
 			if(file_exists($bundle.'/controllers/')) {
-				\Coxis\Core\Context::get('autoloader')->preloadDir($bundle.'/controllers');
+				Autoloader::preloadDir($bundle.'/controllers');
 				foreach(glob($bundle.'/controllers/*.php') as $filename)
 					\Coxis\Core\Importer::loadClassFile($filename);
 			}
 
 			if(file_exists($bundle.'/cli/')) {
-				\Coxis\Core\Context::get('autoloader')->preloadDir($bundle.'/cli');
+				Autoloader::preloadDir($bundle.'/cli');
 				foreach(glob($bundle.'/cli/*.php') as $filename)
 					\Coxis\Core\Importer::loadClassFile($filename);
 			}
@@ -64,11 +64,11 @@ namespace Coxis\Core {
 				$routes = $bm['routes'];
 				$hooks = $bm['hooks'];
 				\Locale::setLocales($bm['locales']);
-				Context::get('autoloader')->preloaded = $bm['preloaded'];
+				Autoloader::$preloaded = $bm['preloaded'];
 			}
 			else {
 				foreach($bundles as $bundle)
-					\Coxis\Core\Context::get('autoloader')->preloadDir($bundle.'/libs');
+					Autoloader::preloadDir($bundle.'/libs');
 				foreach($bundles as $bundle)
 					static::loadBundle($bundle);
 
@@ -108,7 +108,7 @@ namespace Coxis\Core {
 					\Coxis\Core\Cache::set('bundlesmanager', array(
 						'routes'	=>	$routes,
 						'hooks'	=>	$hooks,
-						'preloaded'	=>	Context::get('autoloader')->preloaded,
+						'preloaded'	=>	Autoloader::$preloaded,
 						'locales'	=>	\Locale::getLocales(),
 					));
 				}

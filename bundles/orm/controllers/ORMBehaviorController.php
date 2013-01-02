@@ -119,6 +119,7 @@ class ORMBehaviorController extends \Coxis\Core\Controller {
 		});
 
 		$modelDefinition->hookBefore('get', function($chain, $model, $name, $lang) {
+			#todo hasRelation
 			if(array_key_exists($name, $model::getDefinition()->relations())) {
 				$rel = $model->relation($name);
 				if($rel instanceof \Coxis\Core\Collection)

@@ -156,14 +156,14 @@ namespace Coxis\Core {
 			if(class_exists($class, false) || interface_exists($class, false))
 				return true;
 			#file map
-			elseif(isset(\Coxis\Core\Context::get('autoloader')->map[strtolower($class)])) {
-				$result = static::loadClassFile(\Coxis\Core\Context::get('autoloader')->map[strtolower($class)]);
+			elseif(isset(Autoloader::$map[strtolower($class)])) {
+				$result = static::loadClassFile(Autoloader::$map[strtolower($class)]);
 				class_alias($result, $class);
 				return true;
 			}
 			else {
 				#directory map
-				foreach(\Coxis\Core\Context::get('autoloader')->directories as $prefix=>$dir) {
+				foreach(Autoloader::$directories as $prefix=>$dir) {
 					if(preg_match('/^'.preg_quote($prefix).'/', $class)) {
 						$rest = preg_replace('/^'.preg_quote($prefix).'\\\?/', '', $class);
 						$path = $dir.DIRECTORY_SEPARATOR.static::class2path($rest);
@@ -197,7 +197,7 @@ namespace Coxis\Core {
 					
 					#remove, only for testing class loading
 					// d();
-					foreach(\Coxis\Core\Context::get('autoloader')->preloaded as $v)
+					foreach(Autoloader::$preloaded as $v)
 						if(strtolower(static::basename($class)) == $v[0])
 							$classes[] = $v;
 					if(sizeof($classes) == 1) {
