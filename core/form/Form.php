@@ -180,7 +180,7 @@ class Form extends AbstractGroup {
 			echo '</ul>';
 	}
 
-	public function isOk() {
+	public function isValid() {
 		return !$this->errors();
 	}
 }
