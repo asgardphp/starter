@@ -37,7 +37,7 @@ class ORMManager {
 						continue;
 					$relationFixtures = $raw[$class][$name][$relation];
 
-					$rel = ORMHandler::relationData($class, $relation);
+					$rel = $class::getDefinition()->relations[$relation];
 					$relationClass = $rel['model'];
 
 					if(is_array($relationFixtures))
@@ -141,8 +141,7 @@ class ORMManager {
 						$schema[$name] = $prop->orm = $neworm;
 				}
 
-				foreach($class::getDefinition()->relations as $relation=>$params) {
-					$rel = \Coxis\Core\ORM\ORMHandler::relationData($class::getDefinition(), $relation);
+				foreach($class::getDefinition()->relations as $name=>$rel) {
 					if($rel['type'] == 'HMABT') {
 						$table_name = $rel['join_table'];
 						if(!isset($newSchemas[$table_name])) {

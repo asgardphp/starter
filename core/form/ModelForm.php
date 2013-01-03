@@ -43,7 +43,7 @@ class ModelForm extends Form {
 
 	public function addRelation($name) {
 		$model = $this->model;
-		$relation = ORMHandler::relationData($model, $name);
+		$relation = $model::getDefinition()->relations[$name];
 
 		$ids = array();
 		foreach($relation['model']::all() as $v)

@@ -23,8 +23,8 @@ class ORM {
 		$current_model = $this->model;
 		if(!$current_model::getDefinition()->hasRelation($relationName))
 			throw new \Exception('Relation '.$relationName.' does not exist.');
-		$relation = ORMHandler::relationData($current_model, $relationName);
-		$reverse_relation = ORMHandler::reverseRelation($current_model, $relationName);
+		$relation = $current_model::getDefinition()->relations[$relationName];
+		$reverse_relation = $relation->reverse();
 		$reverse_relation_name = $reverse_relation['name'];
 		$relation_model = $relation['model'];
 
@@ -60,9 +60,10 @@ class ORM {
 		return $this->getTable().'_translation';
 	}
 
-	public function toModel($raw) {
-		$current_model = $this->model;
-		$new = new $current_model;
+	public function toModel($raw, $modelClass=null) {
+		if(!$modelClass)
+			$modelClass = $this->model;
+		$new = new $modelClass;
 		return ORMHandler::unserializeSet($new, $raw);
 	}
 
@@ -143,7 +144,7 @@ class ORM {
 			if(is_array($v)) {
 				$relationName = get(array_keys($v), 0);
 				$recJoins = get(array_values($v), 0);
-				$relation = ORMHandler::relationData($current_model, $relationName);
+				$relation = $current_model::getDefinition()->relations[$relationName];
 				$model = $relation['model'];
 
 				$this->jointure($dal, $relationName, $current_model, $table);
@@ -157,7 +158,7 @@ class ORM {
 	}
 
 	public function jointure($dal, $relationName, $current_model, $ref_table) {
-		$relation = ORMHandler::relationData($current_model, $relationName);
+		$relation = $current_model::getDefinition()->relations[$relationName];
 		$relation_model = $relation['model'];
 		switch($relation['type']) {
 			case 'hasOne':
@@ -222,7 +223,7 @@ class ORM {
 		
 		if(sizeof($models) && sizeof($this->with)) {
 			foreach($this->with as $relation_name=>$closure) {
-				$rel = ORMHandler::relationData($current_model, $relation_name);
+				$rel = $current_model::getDefinition()->relations[$relation_name];
 				$relation_type = $rel['type'];
 				$relation_model = $rel['model'];
 
@@ -262,7 +263,7 @@ class ORM {
 						$currentmodel_idfield = $rel['link_a'];
 						$relationmodel_idfield = $rel['link_b'];
 
-						$reverse_relation = ORMHandler::reverseRelation($current_model, $relation_name);
+						$reverse_relation = $rel->reverse();
 						$reverse_relation_name = $reverse_relation['name'];
 
 						$orm = $relation_model::join($reverse_relation_name)
@@ -280,7 +281,7 @@ class ORM {
 							});
 							$mres = array();
 							foreach($filter as $m)
-								$mres[] = $this->toModel($m);
+								$mres[] = $this->toModel($m, $relation_model);
 							$model->$relation_name = $mres;
 						}
 						break;

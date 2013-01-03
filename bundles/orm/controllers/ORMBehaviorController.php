@@ -82,6 +82,11 @@ class ORMBehaviorController extends \Coxis\Core\Controller {
 				$chain->found = true;
 				$res = $ormHandler->relation($model, $args[0]);#relation name
 			}
+			#Relation properties
+			elseif($name == 'getRelationProperty') {
+				$chain->found = true;
+				$res = $ormHandler->getRelationProperty($model, $args[0]);#relation name
+			}
 			elseif(array_key_exists($name, $model::$relations)) {
 				$chain->found = true;
 				$res = $model->relation($name);

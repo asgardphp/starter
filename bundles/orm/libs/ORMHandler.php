@@ -63,112 +63,12 @@ class ORMHandler {
 		else
 			return \Config::get('database', 'prefix').$modelName::getModelName();
 	}
-
-	public static function getRelationType($rel1, $rel2) {
-		if($rel1['has'] == 'one') {
-			if($rel2['has'] == 'one')
-				$rel1['type'] = 'hasOne';
-			elseif($rel2['has'] == 'many')
-				$rel1['type'] = 'belongsTo';
-		}
-		elseif($rel1['has'] == 'many') {
-			if($rel2['has'] == 'one')
-				$rel1['type'] = 'hasMany';
-			elseif($rel2['has'] == 'many')
-				$rel1['type'] = 'HMABT';
-		}
-
-		if(!isset($rel1['type']))
-			throw new \Exception('Problem with relation type');
-
-		return $rel1['type'];
-	}
-
-	#todo rename reverse=>opposite
-	public static function reverseRelation($model, $name) {
-		if(is_string($model) || !$model instanceof \Coxis\Core\ModelDefinition)
-			$model = $model::getDefinition();
-
-		$origModelName = strtolower($model->getClass());
-		$modelName = preg_replace('/^\\\/', '', $origModelName);
-
-		$relations = $model->relations;
-		$relation = $relations[$name];
-		$relation_model = $relation['model'];
-
-		$rev_relations = array();
-		if(isset($relation_model::$relations))
-			foreach($relation_model::$relations as $rev_rel_name=>$rev_rel) {
-				$relModelClass = preg_replace('/^\\\/', '', strtolower($rev_rel['model']));
-
-				if($relModelClass == $modelName) {
-					if(isset($relation['for']) && $relation['for']!=$rev_rel_name)
-						continue;
-					if(isset($rev_rel['for']) && $rev_rel['for']!=$name)
-						continue;
-					$rev_relations[] = array_merge(array('name'=>$rev_rel_name), $rev_rel);
-				}
-			}
-
-		if(count($rev_relations) == 0)
-			throw new \Exception('No reverse relation for '.$modelName.': '.$name);
-		elseif(count($rev_relations) > 1)
-			throw new \Exception('Multiple reverse relations for '.$modelName.': '.$name);
-		else
-			return $rev_relations[0];
-	}
 	
-	#todo put this parsing in loading, instead of each call to relationData
-	public static function relationData($model, $name) {
-		if(is_string($model) || !$model instanceof \Coxis\Core\ModelDefinition)
-			$model = $model::getDefinition();
-		$relations = $model->relations;
-		$res = $relations[$name];
+	public static function loadRelations($modelDefinition) {
+		$model_relations = $modelDefinition->relations();
 
-		$relation_model = $res['model'];
-
-		if($res['type'] == 'hasMany') {
-			$rev_rel = static::reverseRelation($model, $name);
-			$res['link'] = $rev_rel['name'].'_id';
-		}
-		elseif($res['type'] == 'HMABT') {
-			$modelClass = $model->getClass();
-			$res['link_a'] = $modelClass::getModelName().'_id';
-			$res['link_b'] = $relation_model::getModelName().'_id';
-			if(isset($res['sortable']) && $res['sortable'])
-				$res['sortable'] = $modelClass::getModelName().'_position';
-			else
-				$res['sortable'] = false;
-			if($modelClass::getModelName() < $relation_model::getModelName())
-				$res['join_table'] = \Config::get('database', 'prefix').$modelClass::getModelName().'_'.$relation_model::getModelName();
-			else
-				$res['join_table'] = \Config::get('database', 'prefix').$relation_model::getModelName().'_'.$modelClass::getModelName();
-		}
-		elseif($res['type'] == 'hasOne') {
-			$rev_rel = static::reverseRelation($model, $name);
-			$res['link'] = $name.'_id';
-		}
-		elseif($res['type'] == 'belongsTo')
-			$res['link'] = $name.'_id';
-
-		return $res;
-	}
-	
-	public static function loadRelations($model) {
-		$model_relations = $model->relations();
-		
-		if(is_array($model_relations)) {
-			foreach($model_relations as $relation => $params) {
-				$rev_rel = ORMHandler::reverseRelation($model, $relation);
-
-				$model->relations[$relation]['type'] = static::getRelationType($params, $rev_rel);
-
-				if($params['has'] == 'one') {
-					$rel = ORMHandler::relationData($model, $relation);
-					$model->addProperty($rel['link'], array('type' => 'integer', 'required' => (isset($params['required']) && $params['required']), 'editable'=>false));
-				}
-			}
-		}
+		foreach($modelDefinition->relations() as $name=>$params)
+			$modelDefinition->relations[$name] = new ModelRelation($modelDefinition, $name, $params);
 	}
 	
 	public static function getI18N($model, $lang) {
@@ -190,7 +90,7 @@ class ORMHandler {
 			return;
 		if($model::property($name)->i18n) {
 			if(!($res = static::getI18N($model, $lang)))
-				return null;
+				return;
 			unset($res['id']);
 			unset($res['locale']);
 
@@ -202,27 +102,27 @@ class ORMHandler {
 	}
 
 	public function relation($model, $name) {
-		$rel = static::relationData($model->getDefinition(), $name);
+		$rel = $model::getDefinition()->relation($name);
 		$relation_type = $rel['type'];
 		$relmodel = $rel['model'];
 		
 		switch($relation_type) {
 			case 'hasOne':
 				if($model->isNew())
-					return null;
+					return;
 				
 				$link = $rel['link'];
 				return $relmodel::where(array($link => $model->id))->first();
 			case 'belongsTo':
 				if($model->isNew())
-					return null;
-					
+					return;
+
 				$link = $rel['link'];
 				return $relmodel::where(array('id' => $model->$link))->first();
 			case 'hasMany':
 			case 'HMABT':
-				// if($model->isNew())
-				// 	return array();
+				if($model->isNew())
+					return;
 
 				$collection = new \Coxis\Bundles\ORM\Libs\CollectionORM($model, $name);
 				return $collection;
@@ -294,7 +194,7 @@ class ORMHandler {
 		foreach($model::getDefinition()->relations as $relation => $params) {
 			if(!isset($model->data[$relation]))
 				continue;
-			$rel = ORMHandler::relationData($model, $relation);
+			$rel = $model::getDefinition()->relations[$relation];
 			$type = $rel['type'];
 			if($type == 'belongsTo') {
 				$link = $rel['link'];
@@ -346,7 +246,7 @@ class ORMHandler {
 		foreach($model::getDefinition()->relations as $relation => $params) {
 			if(!isset($model->data[$relation]))
 				continue;
-			$rel = static::relationData($model, $relation);
+			$rel = $model::getDefinition()->relations[$relation];
 			$type = $rel['type'];
 
 			if($type == 'hasOne') {
