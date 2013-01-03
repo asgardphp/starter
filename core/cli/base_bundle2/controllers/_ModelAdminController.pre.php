@@ -3,7 +3,7 @@
 @Prefix('admin/<?php echo $bundle['model']['meta']['plural'] ?>')
 */
 class <?php echo ucfirst($bundle['model']['meta']['name']) ?>AdminController extends \Coxis\Bundles\Admin\Libs\Controller\ModelAdminController {
-	static $_model = '<?php echo ucfirst($bundle['model']['meta']['name']) ?>';
+	static $_model = '<?php echo $bundle['model']['meta']['name'] ?>';
 	static $_models = '<?php echo $bundle['model']['meta']['plural'] ?>';
 
 	function __construct() {
