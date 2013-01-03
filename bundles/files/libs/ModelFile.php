@@ -4,10 +4,8 @@ namespace Coxis\Bundles\Files\Libs;
 class ModelFile {
 	public $model;
 	public $property;
-	// public $name;
 	public $file;
 	public $saved = true;
-	// public $tmp_file;
 	
 	function __construct($model, $name, $file=array()) {
 		if(!$model::hasProperty($name))

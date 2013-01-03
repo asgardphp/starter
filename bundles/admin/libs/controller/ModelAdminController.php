@@ -112,15 +112,21 @@ class ModelAdminController extends AdminParentController {
 
 		$this->form = $this->formConfigure($this->$modelName);
 	
-		if($this->form->isValid())
+		if($this->form->isSent()) {
 			try {
 				$this->form->save();
 				\Flash::addSuccess($this->_messages['modified']);
 				if(\POST::has('send'))
 					return \Response::redirect('admin/'.static::$_index);
 			} catch(\Coxis\Core\Form\FormException $e) {
+				\Flash::addError($this->form->getGeneralErrors());
 				\Response::setCode(400);
 			}
+		}
+		elseif(!$this->form->uploadSuccess()) {
+			\Flash::addError(__('Data exceeds upload size limit. Maybe your file is too heavy.'));
+			\Response::setCode(400);
+		}
 		
 		$this->setRelativeView('form.php');
 	}
@@ -136,18 +142,24 @@ class ModelAdminController extends AdminParentController {
 	
 		$this->form = $this->formConfigure($this->$modelName);
 	
-		if($this->form->isValid())
+		#todo
+		if($this->form->isSent()) {
 			try {
 				$this->form->save();
-				\Hook::trigger('coxisadmin_'.static::$_model.'_new', array($this, $this->$modelName));
 				\Flash::addSuccess($this->_messages['created']);
 				if(\POST::has('send'))
 					return \Response::redirect('admin/'.static::$_index);
 				else
 					return \Response::redirect('admin/'.static::$_index.'/'.$this->$modelName->id.'/edit');
 			} catch(\Coxis\Core\Form\FormException $e) {
+				\Flash::addError($this->form->getGeneralErrors());
 				\Response::setCode(400);
 			}
+		}
+		elseif(!$this->form->uploadSuccess()) {
+			\Flash::addError(__('Data exceeds upload size limit. Maybe your file is too heavy.'));
+			\Response::setCode(400);
+		}
 		
 		$this->setRelativeView('form.php');
 	}
@@ -191,8 +203,10 @@ class ModelAdminController extends AdminParentController {
 		if(!$model->hasProperty($request['file']))
 			$this->forward404();
 			
-		if(\File::has('Filedata'))
-			$files = array($request['file'] => \File::get('Filedata'));
+		if(\File::has('Filedata')) {
+			$file = \File::get('Filedata');
+			$files = array($request['file'] => array('name'=>$file['name'], 'path'=>$file['tmp_name']));
+		}
 		else
 			return \Response::setCode(500)->setContent(__('An error occured.'));
 

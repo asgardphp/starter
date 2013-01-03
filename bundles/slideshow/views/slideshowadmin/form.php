@@ -6,8 +6,7 @@
 				</div>		<!-- .block_head ends -->
 				
 				<div class="block_content">
-					<?php Flash::showSuccess() ?>
-					<?php $form->showErrors() ?>
+					<?php \Coxis\Core\Flash::showAll() ?>
 					
 					<?php
 					$form->open();

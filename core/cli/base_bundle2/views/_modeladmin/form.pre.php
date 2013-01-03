@@ -10,8 +10,7 @@
 					<a href="<% echo !$<?php echo $bundle['model']['meta']['name'] ?>->isNew() ? $this->url_for('edit', array('id'=>$<?php echo $bundle['model']['meta']['name'] ?>->id)):$this->url_for('new') %>">
 					<% echo !$<?php echo $bundle['model']['meta']['name'] ?>->isNew() ? $<?php echo $bundle['model']['meta']['name'] ?>:__('Nouveau') %>
 					</a></p>
-					<% Flash::showSuccess() %>
-					<% $form->showErrors() %>
+					<% \Coxis\Core\Flash::showAll() %>
 					
 					<%
 					$form->open();

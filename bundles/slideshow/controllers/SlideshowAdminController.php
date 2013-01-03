@@ -20,13 +20,19 @@ class SlideshowAdminController extends \Coxis\Bundles\Admin\Libs\Controller\Admi
 			$this->slideshow = new Slideshow;
 		$this->form = $this->formConfigure($this->slideshow);
 
-		if($this->form->isValid())
+		if($this->form->isSent()) {
 			try {
 				$this->form->save();
 				Flash::addSuccess('The slideshow was saved successfully.');
 			} catch(\Coxis\Core\Form\FormException $e) {
+				\Flash::addError($this->form->getGeneralErrors());
 				\Response::setCode(400);
 			}
+		}
+		elseif(!$this->form->uploadSuccess()) {
+			\Flash::addError(__('Data exceeds upload size limit. Maybe your file is too heavy.'));
+			\Response::setCode(400);
+		}
 		$this->setRelativeView('form.php');
 	}
 	

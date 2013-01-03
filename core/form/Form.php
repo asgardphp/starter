@@ -65,6 +65,10 @@ class Form extends AbstractGroup {
 		return $res;
 	}
 
+	public function uploadSuccess() {
+		return \Server::get('CONTENT_LENGTH') <= (int)ini_get('post_max_size')*1024*1024;
+	}
+
 	public function setRenderCallback($name, $callback) {
 		$this->render_callbacks[$name] = $callback;
 	}
@@ -158,27 +162,38 @@ class Form extends AbstractGroup {
 		return $this;
 	}
 
-	public function showErrors() {
+	public function getGeneralErrors() {
 		if(!$this->errors)
 			return;
-		$error_found = false;
+		$gen_errors = array();
 		foreach($this->errors as $field_name=>$errors) {
-			if(!$this->has($field_name) || is_subclass_of($this->$field_name, 'Coxis\Core\Form\Fields\HiddenField')) {
-				if(!$error_found) {
-					echo '<ul>';
-					$error_found = true;
-				}
-				if(is_array($errors)) {
-					foreach(Tools::flateArray($errors) as $error)
-						echo '<li class="error">'.$error.'</li>';
-				}
-				else
-					echo '<li class="error">'.$errors.'</li>';
-			}
+			if(!$this->has($field_name) || is_subclass_of($this->$field_name, 'Coxis\Core\Form\Fields\HiddenField'))
+				$gen_errors[$field_name] = $errors;
 		}
-		if($error_found)
-			echo '</ul>';
+		return $gen_errors;
 	}
+
+	// public function showErrors() {
+	// 	if(!$this->errors)
+	// 		return;
+	// 	$error_found = false;
+	// 	foreach($this->errors as $field_name=>$errors) {
+	// 		if(!$this->has($field_name) || is_subclass_of($this->$field_name, 'Coxis\Core\Form\Fields\HiddenField')) {
+	// 			if(!$error_found) {
+	// 				echo '<ul>';
+	// 				$error_found = true;
+	// 			}
+	// 			if(is_array($errors)) {
+	// 				foreach(Tools::flateArray($errors) as $error)
+	// 					echo '<li class="error">'.$error.'</li>';
+	// 			}
+	// 			else
+	// 				echo '<li class="error">'.$errors.'</li>';
+	// 		}
+	// 	}
+	// 	if($error_found)
+	// 		echo '</ul>';
+	// }
 
 	public function isValid() {
 		return !$this->errors() && $this->isSent();

@@ -23,12 +23,15 @@ class FileProperty extends \Coxis\Core\Properties\BaseProperty {
 	}
 
 	public function getDefault($model=null) {
-		return new \Coxis\Bundles\Files\Libs\ModelFile($model, $this->name, null);
+		if($this->multiple)
+			return new \Coxis\Bundles\Files\Libs\ModelMultipleFile($model, $this->name, array());
+		else
+			return new \Coxis\Bundles\Files\Libs\ModelFile($model, $this->name, null);
 	}
 
 	public function serialize($obj) {
 		if($this->multiple)
-			return serialize($obj->name);
+			return serialize($obj->getNames());
 		else
 			return $obj->file;
 	}
@@ -44,21 +47,12 @@ class FileProperty extends \Coxis\Core\Properties\BaseProperty {
 	}
 
 	public function set($val, $model=null) {
-		if($val instanceof \Coxis\Bundles\Files\Libs\ModelFile || $val instanceof \Coxis\Bundles\Files\Libs\ModelMultipleFile)
+		if(is_object($val))
 			return $val;
 
 		if($this->multiple)
 			return new \Coxis\Bundles\Files\Libs\ModelMultipleFile($model, $this->name, $val);
 		else
 			return new \Coxis\Bundles\Files\Libs\ModelFile($model, $this->name, $val);
-
-		// if(is_array($val))
-		// 	return new \Coxis\Bundles\Files\Libs\ModelFile($model, $this->name, null, $val);
-		// #todo should use unserialize instead..
-		// elseif($this->multiple)
-		// 	return new \Coxis\Bundles\Files\Libs\ModelMultipleFile($model, $this->name, $val);
-		// 	// return new \Coxis\Bundles\Files\Libs\ModelFile($model, $this->name, unserialize($val));
-		// else
-		// 	return new \Coxis\Bundles\Files\Libs\ModelFile($model, $this->name, null, array('name'=>basename($val), 'tmp_name'=>$val));
 	}
 }

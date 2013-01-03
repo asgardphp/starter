@@ -100,17 +100,11 @@ class ModelForm extends Form {
 	}
 	
 	public function errors($field=null) {
+		if(!$this->isSent())
+			return array();
+
 		if(!$field)
 			$field = $this;
-			
-		$errors = array();
-
-		#check post_max_size
-		if(\Server::get('CONTENT_LENGTH') > (int)ini_get('post_max_size')*1024*1024)
-			$errors['_form'] = __('Data exceeds upload size limit. Maybe your file is too heavy.');
-
-		if(!$this->isSent())
-			return $this->errors = $errors;
 
 		if(is_subclass_of($field, 'Coxis\Core\Form\AbstractGroup')) {
 			if($field instanceof \Coxis\Core\Form\ModelForm)

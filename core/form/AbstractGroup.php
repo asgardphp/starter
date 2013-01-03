@@ -215,14 +215,10 @@ abstract class AbstractGroup extends Hookable implements \ArrayAccess, \Iterator
 	}
 	
 	public function errors() {
-		$errors = array();
-
-		#check post_max_size
-		if(SERVER::get('CONTENT_LENGTH') > (int)ini_get('post_max_size')*1024*1024)
-			$errors['_form'] = __('Data exceeds upload size limit. Maybe your file is too heavy.');
-
 		if(!$this->isSent())
-			return $this->errors = $errors;
+			return array();
+		
+		$errors = array();
 	
 		foreach($this->fields as $name=>$field)
 			if($field instanceof \Coxis\Core\Form\AbstractGroup) {
