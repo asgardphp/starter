@@ -6,6 +6,7 @@ class DefaultController extends \Coxis\Core\Controller {
 	@Route('')
 	*/
 	public function indexAction($request) {
+		Profiler::checkpoint('In default controller');
 	}
 
 	public function _404Action() {

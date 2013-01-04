@@ -57,7 +57,9 @@ namespace Coxis\Core {
 		}
 		
 		public static function loadBundles($directory = null) {
+			Profiler::checkpoint('loadBundles 1');
 			$bundles = static::getBundles($directory);
+			Profiler::checkpoint('loadBundles 2');
 
 			if(\Config::get('phpcache') && $bm=Cache::get('bundlesmanager')) {
 				\Router::setRoutes($bm['routes']);
@@ -120,10 +122,12 @@ namespace Coxis\Core {
 					));
 				}
 			}
+			Profiler::checkpoint('loadBundles 3');
 
 			foreach($bundles as $bundle)
 				if(file_exists($bundle.'/bundle.php'))
 					include($bundle.'/bundle.php');
+			Profiler::checkpoint('loadBundles 4');
 		}
 
 		public static function sortRoutes(&$routes) {

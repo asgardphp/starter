@@ -13,6 +13,7 @@ class ORM {
 	protected $tmp_dal = null;
 		
 	function __construct($model) {
+		Profiler::checkpoint('ORM construct');
 		$this->model = $model;
 
 		#todo move it into orm/model
@@ -207,6 +208,7 @@ class ORM {
 	}
 	
 	public function get() {
+		Profiler::checkpoint('ORM get');
 		$models = array();
 		$ids = array();
 		$current_model = $this->model;
@@ -316,6 +318,7 @@ class ORM {
 	}
 	
 	public function with($with, $closure=null) {
+		Profiler::checkpoint('ORM with');
 		$this->with[$with] = $closure;
 		
 		return $this;

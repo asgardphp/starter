@@ -69,16 +69,19 @@ set_exception_handler(function ($e) {
 	\Coxis\Core\Coxis::getExceptionResponse($e)->send();
 });
 register_shutdown_function(function () {
-	if(\Config::get('no_shutdown_error'))
-		exit();
-	chdir(dirname(__FILE__));//wtf?
-	#todo get the full backtrace for shutdown errors
-	if($e=error_get_last()) {
-		if($e['type'] > 1)
-			exit();
-		while(ob_get_level()){ ob_end_clean(); }
-		$response = \Coxis\Core\Error::report("($e[type]) $e[message]<br>
-			$e[file] ($e[line])".debug_backtrace(), array(array('file'=>$e['file'], 'line'=>$e['line'])));
-		\Response::send($response);
+	if(!\Config::get('no_shutdown_error')) {
+		chdir(dirname(__FILE__));//wtf?
+		#todo get the full backtrace for shutdown errors
+		if($e=error_get_last()) {
+			if($e['type'] > 1) {
+				while(ob_get_level()){ ob_end_clean(); }
+				$response = \Coxis\Core\Error::report("($e[type]) $e[message]<br>
+					$e[file] ($e[line])".debug_backtrace(), array(array('file'=>$e['file'], 'line'=>$e['line'])));
+				\Response::send($response, false);
+			}
+		}
 	}
+	if(\Config::get('profiler'))
+		Profiler::report();
 });
+Profiler::checkpoint('End of coxis.php');

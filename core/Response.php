@@ -75,13 +75,16 @@ class Response {
 			header($h);
 	}
 
-	public function send($result=null) {
+	public function send($result=null, $kill=true) {
 		if($result) {
 			\Hook::trigger('end');
 			\Coxis\Core\Response::sendHeaders($result->headers);
 			echo $result->content;
-			exit();
-			return;
+			Profiler::checkpoint('Sending the response');
+			if($kill)
+				exit();
+			else
+				return;
 		}
 
 		\Hook::trigger('output');

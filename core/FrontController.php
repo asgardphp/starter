@@ -3,7 +3,9 @@ namespace Coxis\Core;
 
 class FrontController extends Controller {
 	public function mainAction() {
+		Profiler::checkpoint('Before loading coxis');
 		\Coxis::load();
+		Profiler::checkpoint('After loading coxis');
 		$response = static::getResponse();
 		$response->send();
 	}
@@ -12,8 +14,9 @@ class FrontController extends Controller {
 		try {
 			try {
 				\Hook::trigger('start');
-
+				Profiler::checkpoint('Before dispatching');
 				$output = \Router::dispatch();
+				Profiler::checkpoint('After dispatching');
 				if($output instanceof \Coxis\Core\Response)
 					$response = $output;
 				else 

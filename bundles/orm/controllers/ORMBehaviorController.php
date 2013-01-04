@@ -14,6 +14,7 @@ class ORMBehaviorController extends \Coxis\Core\Controller {
 	@Hook('behaviors_load_orm')
 	**/
 	public function behaviors_load_ormAction($modelDefinition) {
+		Profiler::checkpoint('Loading ORM : start');
 		$modelName = $modelDefinition->getClass();
 
 		#todo rename hook as there is now variable to hook
@@ -133,5 +134,6 @@ class ORMBehaviorController extends \Coxis\Core\Controller {
 					return $rel;
 			}
 		});
+		Profiler::checkpoint('Loading ORM : end');
 	}
 }
