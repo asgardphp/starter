@@ -33,4 +33,8 @@ class Hookable {
 		$args = array(array('instances', spl_object_hash($this), $hookName), $cb);
 		return call_user_func_array(array('Hook', 'hookBefore'), $args);
 	}
+
+	public function getHooks() {
+		return \Hook::getHooks(array('instances', spl_object_hash($this)));
+	}
 }

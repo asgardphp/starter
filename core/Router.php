@@ -5,11 +5,16 @@ class Router {
 	public $request;
 	protected $routes = array();
 
+	public function setRoutes($routes) {
+		$this->routes = $routes;
+	}
+
 	public function addRoute($route) {
 		$this->routes[] = $route;
 	}
 
 	public function dispatch($src=null) {
+		$this->parseRoutes();
 		if(method_exists($this->request['controller'].'Controller', $this->request['action'].'Action')) {
 			$controllerName = ucfirst(strtolower($this->request['controller']));
 			// $controllerClassName = $controllerName.'Controller';

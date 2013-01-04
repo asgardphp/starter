@@ -24,9 +24,9 @@ class Error {
 		\Coxis\Core\Tools\Log::add('errors/log.html', $result);
 		
 		if(\Config::get('error_display') || \Config::get('error_display') === null)
-			return \Response::setContent($result);
+			return \Response::setHeader('Content-Type', 'text/html')->setContent($result);
 		else
-			return \Response::setContent('<h1>Error</h1>Oops, something went wrong. Please report it to the administrator.');
+			return \Response::setHeader('Content-Type', 'text/html')->setContent('<h1>Error</h1>Oops, something went wrong. Please report it to the administrator.');
 	}
 	
 	public static function print_backtrace($msg='', $backtrace=null) {

@@ -60,9 +60,8 @@ namespace Coxis\Core {
 			$bundles = static::getBundles($directory);
 
 			if(\Config::get('phpcache') && $bm=Cache::get('bundlesmanager')) {
-				#todo only cache locales and preloaded from bundles (might be stuff cached from before bundlesManager)
-				$routes = $bm['routes'];
-				$hooks = $bm['hooks'];
+				\Router::setRoutes($bm['routes']);
+				\Coxis\Core\Controller::setHooks($bm['hooks']);
 				\Locale::setLocales($bm['locales']);
 				Autoloader::$preloaded = $bm['preloaded'];
 			}
@@ -103,21 +102,24 @@ namespace Coxis\Core {
 				}
 
 				static::sortRoutes($routes);
-					
+				\Router::setRoutes($routes);
+
+				foreach($routes as $route)
+					\Router::addRoute($route);
+				
+				foreach($hooks as $name=>$subhooks)
+					foreach($subhooks as $hook)
+						\Coxis\Core\Controller::hookOn($name, $hook);
+
 				if(\Config::get('phpcache')) {
-					\Coxis\Core\Cache::set('bundlesmanager', array(
-						'routes'	=>	$routes,
-						'hooks'	=>	$hooks,
-						'preloaded'	=>	Autoloader::$preloaded,
-						'locales'	=>	\Locale::getLocales(),
+					Cache::set('bundlesmanager', array(
+						'routes' => $routes,
+						'hooks' => $hooks,
+						'locales' => \Locale::getLocales(),
+						'preloaded' => Autoloader::$preloaded,
 					));
 				}
 			}
-			foreach($routes as $route)
-				\Router::addRoute($route);
-			foreach($hooks as $name=>$hooks)
-				foreach($hooks as $hook)
-					\Coxis\Core\Controller::hookOn($name, $hook);
 
 			foreach($bundles as $bundle)
 				if(file_exists($bundle.'/bundle.php'))
@@ -161,21 +163,9 @@ namespace Coxis\Core {
 		}
 
 		public static function loadModelFixtures($bundle_path) {
-			if(file_exists($bundle_path.'/data')) {
-				foreach(glob($bundle_path.'/data/*.models.yml') as $file) {
+			if(file_exists($bundle_path.'/data'))
+				foreach(glob($bundle_path.'/data/*.models.yml') as $file)
 					ORMManager::loadModelFixtures($file);
-				}
-			}
-
-			// $yaml = new sfYamlParser();
-			// if(file_exists($bundle_path.'/data')) {
-			// 	foreach(glob($bundle_path.'/data/*') as $file) {
-			// 		$raw = $yaml->parse(file_get_contents($file));
-			// 		foreach($raw as $class=>$all)
-			// 			foreach($all as $one) 
-			// 				$class::create($one);
-			// 	}
-			// }
 		}
 
 		public static function loadModelFixturesAll() {

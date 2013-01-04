@@ -22,8 +22,7 @@ class Cache {
 		}
 		elseif(\Config::get('cache', 'method') == 'file') {
 			try {
-				include 'cache/'.$file.'.php';
-				return $cache;
+				return include 'cache/'.$file.'.php';
 			} catch(\ErrorException $e) {
 				return false;
 			}
@@ -36,11 +35,13 @@ class Cache {
 		}
 		elseif(\Config::get('cache', 'method') == 'file') {
 			try {
-				if(var_export($var, true) == '')
-					$res = "null";
+				if(is_object($var))
+					$res = 'unserialize(\''.serialize($var).'\')';
+				elseif(var_export($var, true) == '')
+					$res = 'null';
 				else
 					$res = var_export($var, true);
-				$res = '<?php'."\n".'$cache = '.$res.';';
+				$res = '<?php'."\n".'return '.$res.';';
 				$output = 'cache/'.$file.'.php';
 				FileManager::mkdir(dirname($output));
 				file_put_contents($output, $res);

@@ -63,6 +63,8 @@ class Browser {
 		\URL::setURL($url);
 		\URL::setServer('localhost');
 		\URL::setRoot('');
+		
+		Coxis::load();
 
 		$res = FrontController::getResponse();
 

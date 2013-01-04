@@ -3,6 +3,7 @@ namespace Coxis\Core;
 
 class FrontController extends Controller {
 	public function mainAction() {
+		\Coxis::load();
 		$response = static::getResponse();
 		$response->send();
 	}
@@ -10,13 +11,10 @@ class FrontController extends Controller {
 	public static function getResponse() {
 		try {
 			try {
-				\BundlesManager::loadBundles();
-				\Router::parseRoutes();
-
 				\Hook::trigger('start');
 
 				$output = \Router::dispatch();
-				if($output instanceof \Coxis\Core\Response) 
+				if($output instanceof \Coxis\Core\Response)
 					$response = $output;
 				else 
 					$response = \Response::setContent($output);
@@ -27,14 +25,12 @@ class FrontController extends Controller {
 					$response = \Response::setCode(500);
 			} catch(\Exception $e) {
 				$response = \Hook::trigger('exception_'.get_class($e), array($e));
-				
 				if($response === null)
 					$response = Coxis\Core\Coxis::getExceptionResponse($e);
 			}
 			\Hook::trigger('filter_response', array($response));
 			return $response;
 		} catch(\Exception $e) {
-			// while(ob_get_level()){ ob_end_clean(); } #todo
 			return Coxis\Core\Coxis::getExceptionResponse($e);
 		}
 	}

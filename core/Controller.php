@@ -28,6 +28,12 @@ class Controller {
 			HTML::code('<link rel="canonical" href="'.$canonical.'">');
 	}
 
+	public static function setHooks($hooks) {
+		foreach($hooks as $name=>$hooks)
+			foreach($hooks as $hook)
+				static::hookOn($name, $hook);
+	}
+
 	public static function hookOn($hookName, $cAction) {
 		$cAction = array_values($cAction);
 		$controller = $cAction[0];

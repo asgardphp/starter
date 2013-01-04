@@ -25,7 +25,8 @@ class FrontController extends CLIController {
 		/* CONFIG */
 		\Config::loadConfigDir('config');
 			
-		\BundlesManager::loadBundles();
+		// \BundlesManager::loadBundles();
+		\Coxis::load(true);
 		
 		#todo remove
 		while(ob_get_level()){ ob_end_clean(); }

@@ -42,14 +42,15 @@ class ModelDefinition extends Hookable {
 		}
 		foreach($properties as $k=>$params)
 			$this->addProperty($k, $params);
+	}
 
+	public function loadBehaviors() {
+		$modelClass = $this->modelClass;
 		\Hook::trigger('behaviors_pre_load', $this);
 
-		foreach($this->behaviors as $behavior => $params) {
-			if($params) {
+		foreach($this->behaviors as $behavior => $params)
+			if($params)
 				\Hook::trigger('behaviors_load_'.$behavior, $this);
-			}
-		}
 
 		$modelClass::configure($this);
 	}
@@ -70,7 +71,7 @@ class ModelDefinition extends Hookable {
 
 	public function addProperty($property, $params) {
 		if(is_string($params))
-				$params = array('type'=>$params);
+			$params = array('type'=>$params);
 		foreach($params as $k=>$v)
 			if(is_int($k)) {
 				unset($params[$k]);
@@ -148,8 +149,18 @@ class ModelsManager {
 	protected $models = array();
 
 	public function get($modelClass) {
-		if(!isset($this->models[$modelClass]))
-			$this->models[$modelClass] = new ModelDefinition($modelClass);
+		if(!isset($this->models[$modelClass])) {
+			#is caching very useful here?
+			if(\Config::get('phpcache') && $md=Cache::get('modelsmanager/'.$modelClass.'/definition'))
+				$this->models[$modelClass] = $md;
+			else {
+				$this->models[$modelClass] = new ModelDefinition($modelClass);
+				if(\Config::get('phpcache'))
+					Cache::set('modelsmanager/'.$modelClass.'/definition', $this->models[$modelClass]);
+			}
+			$this->models[$modelClass]->loadBehaviors();
+		}
+		
 		return $this->models[$modelClass];
 	}
 }
