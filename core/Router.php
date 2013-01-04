@@ -124,44 +124,79 @@ class Router {
 	}
 
 	public function parseRoutes() {
-		$url = \URL::get();
-		
 		$this->request = array(
 			'method'=> \Request::method(),
 			'controller'=>'',
 			'action'=>'',
 			'format'=>'html',
 		);
-		
-		/* PARSE ALL ROUTES */
-		foreach($this->routes as $params) {
-			$route = $params['route'];
-			$requirements = $params['requirements'];
-			$method = $params['method'];
 
-			/* IF THE ROUTE MATCHES */
-			if(($results = static::match($route, $requirements, $method)) !== false) {
-				$results = array_merge(array('format'=>'html'), $results, array('body'=>\Request::body()));
-				$results = array_merge(\GET::all(), $params, $results);
-				
-				if(!isset($results['action']))
-					switch(\SERVER::get('REQUEST_METHOD')) {
-						case 'POST': $results['action'] = 'create'; break;
-						case 'GET': $results['action'] = 'show'; break;
-						case 'DELETE': $results['action'] = 'destroy'; break;
-						case 'PUT': $results['action'] = 'update'; break;
-					}
+		$request_key = md5(serialize(array(\Request::method(), \URL::get())));
+
+		$routes = $this->routes;
+		$this->request = Cache::get('Router/requests/'.$request_key, function() use($routes) {
+			/* PARSE ALL ROUTES */
+			foreach($routes as $params) {
+				$route = $params['route'];
+				$requirements = $params['requirements'];
+				$method = $params['method'];
+
+				/* IF THE ROUTE MATCHES */
+				if(($results = \Coxis\Core\Router::match($route, $requirements, $method)) !== false) {
+					$results = array_merge(array('format'=>'html'), $results, array('body'=>\Request::body()));
+					$results = array_merge(\GET::all(), $params, $results);
 					
-				$this->request = $results;
-				
-				break;
+					if(!isset($results['action']))
+						switch(\SERVER::get('REQUEST_METHOD')) {
+							case 'POST': $results['action'] = 'create'; break;
+							case 'GET': $results['action'] = 'show'; break;
+							case 'DELETE': $results['action'] = 'destroy'; break;
+							case 'PUT': $results['action'] = 'update'; break;
+						}
+						
+					$request = $results;
+					
+					break;
+				}
 			}
-		}
 		
-		preg_match('/\.([a-zA-Z0-9]{1,5})$/', $url, $matches);
+			preg_match('/\.([a-zA-Z0-9]{1,5})$/', \URL::get(), $matches);
+			
+			if(isset($matches[1]))
+				$request['format'] = $matches[1];
+
+			return $request;
+		});
 		
-		if(isset($matches[1]))
-			$this->request['format'] = $matches[1];
+		// /* PARSE ALL ROUTES */
+		// foreach($this->routes as $params) {
+		// 	$route = $params['route'];
+		// 	$requirements = $params['requirements'];
+		// 	$method = $params['method'];
+
+		// 	/* IF THE ROUTE MATCHES */
+		// 	if(($results = static::match($route, $requirements, $method)) !== false) {
+		// 		$results = array_merge(array('format'=>'html'), $results, array('body'=>\Request::body()));
+		// 		$results = array_merge(\GET::all(), $params, $results);
+				
+		// 		if(!isset($results['action']))
+		// 			switch(\SERVER::get('REQUEST_METHOD')) {
+		// 				case 'POST': $results['action'] = 'create'; break;
+		// 				case 'GET': $results['action'] = 'show'; break;
+		// 				case 'DELETE': $results['action'] = 'destroy'; break;
+		// 				case 'PUT': $results['action'] = 'update'; break;
+		// 			}
+					
+		// 		$this->request = $results;
+				
+		// 		break;
+		// 	}
+		// }
+		
+		// preg_match('/\.([a-zA-Z0-9]{1,5})$/', $url, $matches);
+		
+		// if(isset($matches[1]))
+		// 	$this->request['format'] = $matches[1];
 			
 		return $this->request;
 	}

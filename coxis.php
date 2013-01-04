@@ -56,6 +56,8 @@ Autoloader::preloadDir(_DIR_.'core');
 foreach(Coxis::$facades as $facade=>$class)
 	Autoloader::map(strtolower($facade), 'core/facades/'.$facade.'.php');
 
+Timer::start();
+
 /* ERRORS/EXCEPTIONS */
 set_error_handler(function ($errno, $errstr, $errfile, $errline) {
 	if(defined('_ENV_') && Config::get('errno')!=null && $errno <= Config::get('errno'))

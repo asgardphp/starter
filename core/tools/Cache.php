@@ -12,21 +12,27 @@ class Cache {
 	}
 
 	public static function get($file, $default=null) {
-		if(\Config::get('cache', 'method') == 'apc') {
-			$success = null;
-			$res = apc_fetch(\Config::get('key').'-'.$file, $success);
-			if($success)
-				return $res;
-			else
-				return $default;
-		}
-		elseif(\Config::get('cache', 'method') == 'file') {
-			try {
-				return include 'cache/'.$file.'.php';
-			} catch(\ErrorException $e) {
-				return false;
+		if(\Config::get('phpcache')) {
+			if(\Config::get('cache', 'method') == 'apc') {
+				$success = null;
+				$res = apc_fetch(\Config::get('key').'-'.$file, $success);
+				if($success)
+					return $res;
+			}
+			elseif(\Config::get('cache', 'method') == 'file') {
+				try {
+					return include 'cache/'.$file.'.php';
+				} catch(\ErrorException $e) {}
 			}
 		}
+
+		if(is_function($default)) {
+			$r = $default();
+			static::set($file, $r);
+			return $r;
+		}
+		else
+			return $default;
 	}
 	
 	public static function set($file, $var) {
