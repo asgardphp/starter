@@ -93,8 +93,8 @@ class Controller {
 	public function setRelativeView($view) {
 		$reflection = new \ReflectionObject($this);
 		$dir = dirname($reflection->getFileName());
-		$this->setView($dir.'/../views/'.strtolower(preg_replace('/Controller$/i', '', Importer::basename(get_class($this)))).'/'.$view);
-		return file_exists($dir.'/../views/'.strtolower(preg_replace('/Controller$/i', '', Importer::basename(get_class($this)))).'/'.$view);
+		$this->setView($dir.'/../views/'.strtolower(preg_replace('/Controller$/i', '', \Coxis\Core\NamespaceUtils::basename(get_class($this)))).'/'.$view);
+		return file_exists($dir.'/../views/'.strtolower(preg_replace('/Controller$/i', '', \Coxis\Core\NamespaceUtils::basename(get_class($this)))).'/'.$view);
 	}
 	
 	public function setView($view) {

@@ -294,7 +294,7 @@ abstract class Model {
 	
 	/* Definition */
 	public static function getModelName() {
-		return \Coxis\Core\Tools\Tools::classBasename(strtolower(get_called_class()));
+		return \Coxis\Core\NamespaceUtils::basename(strtolower(get_called_class()));
 	}
 
 	public static function hasProperty($name) {

@@ -23,7 +23,7 @@ namespace Coxis\Core {
 				$import = trim($import);
 				
 				$class = $what;
-				$alias = static::basename($class);
+				$alias = \Coxis\Core\NamespaceUtils::basename($class);
 				$vals = explode(' as ', $import);
 				if(isset($vals[1])) {
 					$class = trim($vals[0]);
@@ -57,7 +57,7 @@ namespace Coxis\Core {
 					#import as ..
 					if($alias !== false) {
 						if(!$alias)
-							$alias = ($intoNamespace ? $intoNamespace.'\\':'').static::basename($class);
+							$alias = ($intoNamespace ? $intoNamespace.'\\':'').\Coxis\Core\NamespaceUtils::basename($class);
 							
 						if($toload != $alias)
 							try {
@@ -77,7 +77,7 @@ namespace Coxis\Core {
 				#import as ..
 				if($alias !== false) {
 					if(!$alias)
-						$alias = ($intoNamespace ? $intoNamespace.'\\':'').static::basename($class);
+						$alias = ($intoNamespace ? $intoNamespace.'\\':'').\Coxis\Core\NamespaceUtils::basename($class);
 					if($class != $alias) {
 						try {
 							class_alias($class, $alias);
@@ -90,29 +90,20 @@ namespace Coxis\Core {
 				return true;
 			}
 			else {
-				$dir = static::dirname($class);
+				$dir = \Coxis\Core\NamespaceUtils::dirname($class);
 
 				if($dir != '.') {
-					$base = static::basename($class);
-					if(static::dirname($dir) == '.')
+					$base = \Coxis\Core\NamespaceUtils::basename($class);
+					if(\Coxis\Core\NamespaceUtils::dirname($dir) == '.')
 						$next = $base;
 					else
-						$next = str_replace(DIRECTORY_SEPARATOR, '\\', static::dirname($dir)).'\\'.$base;
+						$next = str_replace(DIRECTORY_SEPARATOR, '\\', \Coxis\Core\NamespaceUtils::dirname($dir)).'\\'.$base;
 
 					return static::_import($next, array('into'=>$intoNamespace, 'as'=>$alias));
 				}
 			
 				return false;
 			}
-		}
-		
-		#todo replace with namespaceutils
-		public static function dirname($v) {
-			return dirname(str_replace('\\', DIRECTORY_SEPARATOR, $v));
-		}
-		
-		public static function basename($v) {
-			return basename(str_replace('\\', DIRECTORY_SEPARATOR, $v));
 		}
 		
 		public static function class2path($class) {
@@ -122,8 +113,8 @@ namespace Coxis\Core {
 				$namespace = preg_replace('/[a-zA-Z0-9]+_/', '', $namespace);
 			$namespace = str_replace('\\', DIRECTORY_SEPARATOR , $namespace);
 			
-			$className = basename($namespace);
-			$namespace = strtolower(dirname($namespace));
+			$className = \Coxis\Core\NamespaceUtils::basename($namespace);
+			$namespace = strtolower(\Coxis\Core\NamespaceUtils::dirname($namespace));
 
 			if($namespace != '.')
 				$path = $namespace.DIRECTORY_SEPARATOR;
@@ -185,12 +176,12 @@ namespace Coxis\Core {
 				// d($class);#only to test importer
 
 				#lookup for global classes
-				if(static::dirname($class) == '.') {
+				if(\Coxis\Core\NamespaceUtils::dirname($class) == '.') {
 					$classes = array();
 					
 					#check if there is any corresponding class already loaded
 					foreach(array_merge(get_declared_classes(), get_declared_interfaces()) as $v)
-						if(strtolower(static::basename($class)) == strtolower(static::basename($v))) {
+						if(strtolower(\Coxis\Core\NamespaceUtils::basename($class)) == strtolower(\Coxis\Core\NamespaceUtils::basename($v))) {
 							class_alias($v, $class);
 							return true;
 						}
@@ -198,7 +189,7 @@ namespace Coxis\Core {
 					#remove, only for testing class loading
 					// d();
 					foreach(Autoloader::$preloaded as $v)
-						if(strtolower(static::basename($class)) == $v[0])
+						if(strtolower(\Coxis\Core\NamespaceUtils::basename($class)) == $v[0])
 							$classes[] = $v;
 					if(sizeof($classes) == 1) {
 						$before = array_merge(get_declared_classes(), get_declared_interfaces());
@@ -207,13 +198,13 @@ namespace Coxis\Core {
 						
 						$diff = array_diff($after, $before);
 
-						if(class_exists(static::basename($class), false) || interface_exists(static::basename($class), false)) {
+						if(class_exists(\Coxis\Core\NamespaceUtils::basename($class), false) || interface_exists(\Coxis\Core\NamespaceUtils::basename($class), false)) {
 							return true;
-							#return static::basename($class);
+							#return \Coxis\Core\NamespaceUtils::basename($class);
 						}
 						else {
 							#maybe the loaded class uses another namespace?
-							$res = array_values(preg_grep('/'.static::basename($class).'$/i', $diff));
+							$res = array_values(preg_grep('/'.\Coxis\Core\NamespaceUtils::basename($class).'$/i', $diff));
 							try {
 								$loadedClass = $res[sizeof($res)-1];
 								class_alias($loadedClass, $class);

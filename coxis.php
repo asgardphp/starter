@@ -48,6 +48,7 @@ ob_start();
 require_once 'core/Coxis.php';
 require_once 'core/IoC.php';
 require_once 'core/Context.php';
+require_once 'core/tools/NamespaceUtils.php';
 require_once 'core/Importer.php';
 require_once 'core/Autoloader.php';
 
