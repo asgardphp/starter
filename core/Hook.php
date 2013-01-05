@@ -60,12 +60,14 @@ class Hook {
 		return true;
 	}
 
-	protected function set($path, $cb) {
+	protected function set($path, $cb, $priority=0) {
 		$arr =& $this->registry;
 		$key = array_pop($path);
 		foreach($path as $next)
 			$arr =& $arr[$next];
-		$arr[$key][] = $cb;
+		while(isset($arr[$key][$priority]))
+			$priority += 1;
+		$arr[$key][$priority] = $cb;
 	}
 	
 	public function get($path=array()) {
@@ -91,15 +93,15 @@ class Hook {
 		return call_user_func_array(array(get_called_class(), 'hookOn'), func_get_args());
 	}
 
-	public function hookOn($hookName, $cb) {
+	public function hookOn($hookName, $cb, $priority=0) {
 		$this->createhook($hookName, $cb, 'on');
 	}
 
-	public function hookBefore($hookName, $cb) {
+	public function hookBefore($hookName, $cb, $priority=0) {
 		$this->createhook($hookName, $cb, 'before');
 	}
 
-	public function hookAfter($hookName, $cb) {
+	public function hookAfter($hookName, $cb, $priority=0) {
 		$this->createhook($hookName, $cb, 'after');
 	}
 

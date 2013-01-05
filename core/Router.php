@@ -13,48 +13,44 @@ class Router {
 		$this->routes[] = $route;
 	}
 
-	public function dispatch($src=null) {
+	public function dispatch() {
 		$this->parseRoutes();
 		if(method_exists($this->request['controller'].'Controller', $this->request['action'].'Action')) {
 			$controllerName = ucfirst(strtolower($this->request['controller']));
-			// $controllerClassName = $controllerName.'Controller';
-			// $controller = new $controllerClassName();
 			$actionName = $this->request['action'];
 			$params = array($this->request);
 			
-			\Hook::trigger('beforeDispatchAction');
-			return static::run($controllerName, $actionName, $params, $src);
+			return static::run($controllerName, $actionName, $params);
 		}
 		else
 			throw new NotFoundException('Page not found');
 	}
 	
-	protected static function runAction($controller, $actionName, $params=array(), $src=null, $showView=true) {
-		$actionName = strtolower($actionName);
-		
-		if($src != null)
-			foreach($src as $k=>$v)
-				$controller->$k = $v;
-		
-		$result = $controller->run($actionName, $params, $showView);
-
-		if($src != null)
-			foreach($controller as $k=>$v)
-				$src->$k = $v;
-		
-		return $result;
-	}
-	
-	public static function run($controllerName, $actionName, $params=array(), $src=null, $showView=true) {
+	public static function run($controllerName, $actionName, $params=array(), $showView=true) {
 		$controllerName = ucfirst($controllerName);
 		$controllerClassName = $controllerName.'Controller';
 		$controller = new $controllerClassName();
+		$actionName = $actionName.'Action';
+
+		$controller->action = $actionName;
+
+		\Hook::trigger('controller_configure', array($controller));
 
 		if(method_exists($controller, 'configure'))
-			if($response = static::runAction($controller, 'configure', array(), $src, false))
-				throw new ControllerException('', $response);
+			if($response = $controller->run('configure', array(), false))
+				return $response;
 
-		return static::runAction($controller, $actionName, $params, $src, $showView);
+		if($r = $controller->trigger('before', array($controller)))
+			return $r;
+
+		$result = $controller->run($actionName, $params, $showView);
+
+		$controller->trigger('after', array($controller, &$result));
+
+		if(is_string($result))
+			\Response::setContent($result);
+
+		return \Response::inst();
 	}
 
 	//todo ADD root /
@@ -167,36 +163,6 @@ class Router {
 
 			return $request;
 		});
-		
-		// /* PARSE ALL ROUTES */
-		// foreach($this->routes as $params) {
-		// 	$route = $params['route'];
-		// 	$requirements = $params['requirements'];
-		// 	$method = $params['method'];
-
-		// 	/* IF THE ROUTE MATCHES */
-		// 	if(($results = static::match($route, $requirements, $method)) !== false) {
-		// 		$results = array_merge(array('format'=>'html'), $results, array('body'=>\Request::body()));
-		// 		$results = array_merge(\GET::all(), $params, $results);
-				
-		// 		if(!isset($results['action']))
-		// 			switch(\SERVER::get('REQUEST_METHOD')) {
-		// 				case 'POST': $results['action'] = 'create'; break;
-		// 				case 'GET': $results['action'] = 'show'; break;
-		// 				case 'DELETE': $results['action'] = 'destroy'; break;
-		// 				case 'PUT': $results['action'] = 'update'; break;
-		// 			}
-					
-		// 		$this->request = $results;
-				
-		// 		break;
-		// 	}
-		// }
-		
-		// preg_match('/\.([a-zA-Z0-9]{1,5})$/', $url, $matches);
-		
-		// if(isset($matches[1]))
-		// 	$this->request['format'] = $matches[1];
 			
 		return $this->request;
 	}

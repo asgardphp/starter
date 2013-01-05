@@ -15,12 +15,8 @@ class FrontController extends Controller {
 			try {
 				\Hook::trigger('start');
 				Profiler::checkpoint('Before dispatching');
-				$output = \Router::dispatch();
+				$response = \Router::dispatch();
 				Profiler::checkpoint('After dispatching');
-				if($output instanceof \Coxis\Core\Response)
-					$response = $output;
-				else 
-					$response = \Response::setContent($output);
 			} catch(\Coxis\Core\ControllerException $e) {
 				if($e->response)
 					$response = $e->response;
@@ -31,7 +27,6 @@ class FrontController extends Controller {
 				if($response === null)
 					$response = Coxis\Core\Coxis::getExceptionResponse($e);
 			}
-			\Hook::trigger('filter_response', array($response));
 			return $response;
 		} catch(\Exception $e) {
 			return Coxis\Core\Coxis::getExceptionResponse($e);

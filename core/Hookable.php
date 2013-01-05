@@ -19,17 +19,17 @@ class Hookable {
 		return call_user_func_array(array($this, 'hookOn'), func_get_args());
 	}
 
-	public function hookOn($hookName, $cb) {
+	public function hookOn($hookName, $cb, $priority=0) {
 		$args = array(array('instances', spl_object_hash($this), $hookName), $cb);
 		return call_user_func_array(array('Hook', 'hookOn'), $args);
 	}
 
-	public function hookBefore($hookName, $cb) {
+	public function hookBefore($hookName, $cb, $priority=0) {
 		$args = array(array('instances', spl_object_hash($this), $hookName), $cb);
 		return call_user_func_array(array('Hook', 'hookBefore'), $args);
 	}
 
-	public function hookAfter($hookName, $cb) {
+	public function hookAfter($hookName, $cb, $priority=0) {
 		$args = array(array('instances', spl_object_hash($this), $hookName), $cb);
 		return call_user_func_array(array('Hook', 'hookBefore'), $args);
 	}

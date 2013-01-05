@@ -3,12 +3,13 @@ namespace Coxis\Bundles\General\Controllers;
 
 class GeneralController extends \Coxis\Core\Controller {
 	/**
-	@Hook('start')
-	@Priority(-10)
+	@Hook('controller_configure')
 	*/
-	public function startAction() {
-		HTML::setTitle('LiliChantilly');
-		\Memory::set('layout', array('\Coxis\App\Standard\Controllers\Default', 'layout'));
+	public function pagelayoutAction($controller) {
+		HTML::setTitle('Coxis');
+		\Memory::set('layout', array('\Coxis\App\Standard\Controllers\DefaultController', 'layout'));
+
+		$controller->addFilter(new \Coxis\Core\Filters\PageLayout);
 	}
 
 	/**
@@ -17,41 +18,14 @@ class GeneralController extends \Coxis\Core\Controller {
 	public function hook404ExceptionAction($exception) {
 		$request = \Router::getRequest();
 		$response = \Response::inst();
-		$response->setCode(404);
-		if($request['format']=='html') {
+		if($request['format']=='html')
 			$output = \Coxis\Core\Router::run('default', '_404');
-			$response->setContent($output);
-		}
-		return $response;
-	}
-	
-	/**
-	@Hook('filter_response')
-	*/
-	public function preSendingAction($response) {
-		if($response->getCode() == 500)
-			return;
-
-		if(function_exists('getallheaders'))
-			if(\get(\getallheaders(), 'X-Requested-With') == 'XMLHttpRequest')
-				return;
-
-		try {
-			if(\Response::getHeader('Content-Type') && \Response::getHeader('Content-Type')!='text/html')
-				return;
-		} catch(\Exception $e) {}
-			
-		if(is_array(\Memory::get('layout')) && sizeof(\Memory::get('layout')) >= 2 && $response->getContent() !== null) {
-			$res = \Router::run(\Memory::get('layout', 0), \Memory::get('layout', 1), $response->getContent());
-			if(\Memory::get('htmlLayout') !== false)
-				$res = View::render('app/standard/views/default/html.php', array('content'=>$res));
-			$response->setContent($res);
-		}
+		return $response->setCode(404);
 	}
 
 	/**
 	@Hook('output')
-	@Priority(10000)
+	@Priority(1000)
 	*/
 	public function gzipAction() {
 		if(!isset($_SERVER['HTTP_ACCEPT_ENCODING']) || !strstr($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip'))

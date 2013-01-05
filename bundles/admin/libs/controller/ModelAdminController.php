@@ -108,7 +108,7 @@ class ModelAdminController extends AdminParentController {
 		$modelName = strtolower(basename($_model));#todo namespace utils
 		
 		if(!($this->$modelName = $_model::load($request['id'])))
-			$this->forward404();
+			throw new NotFoundException;
 
 		$this->form = $this->formConfigure($this->$modelName);
 	

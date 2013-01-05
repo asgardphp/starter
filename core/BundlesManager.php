@@ -63,7 +63,7 @@ namespace Coxis\Core {
 
 			if(\Config::get('phpcache') && $bm=Cache::get('bundlesmanager')) {
 				\Router::setRoutes($bm['routes']);
-				\Coxis\Core\Controller::setHooks($bm['hooks']);
+				\Coxis\Core\Controller::addHooks($bm['hooks']);
 				\Locale::setLocales($bm['locales']);
 				Autoloader::$preloaded = $bm['preloaded'];
 			}
@@ -111,7 +111,7 @@ namespace Coxis\Core {
 				
 				foreach($hooks as $name=>$subhooks)
 					foreach($subhooks as $hook)
-						\Coxis\Core\Controller::hookOn($name, $hook);
+						\Coxis\Core\Controller::addControllerHook($name, $hook);
 
 				if(\Config::get('phpcache')) {
 					Cache::set('bundlesmanager', array(
@@ -233,7 +233,7 @@ namespace Coxis\Core {
 
 						$controller = static::formatControllerName($classname);
 						$action = static::formatActionName($method);
-						$hooks[$hook][] = array($controller, $action);
+						$hooks[$hook][] = array($classname, $method);
 					}
 				}
 			}

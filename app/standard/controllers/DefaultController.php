@@ -2,6 +2,11 @@
 namespace Coxis\App\Standard\Controllers;
 
 class DefaultController extends \Coxis\Core\Controller {
+	public function configure() {
+		if($this->action == 'index')
+			$this->addFilter(new \Coxis\Core\Filters\PageCaching());
+	}
+
 	/**
 	@Route('')
 	*/
@@ -12,7 +17,7 @@ class DefaultController extends \Coxis\Core\Controller {
 	public function _404Action() {
 	}
 	
-	public function layoutAction($content) {
+	public function layout($content) {
 		$this->content = $content;
 	}
 }

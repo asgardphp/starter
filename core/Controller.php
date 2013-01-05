@@ -1,7 +1,16 @@
 <?php
 namespace Coxis\Core;
 
-class Controller {
+class Controller extends Hookable {
+	public $action;
+
+	public function addFilter($filter) {
+		if(method_exists($filter, 'before')) 
+			$this->hook('before', array($filter, 'before'), $filter->getBeforePriority());
+		if(method_exists($filter, 'after'))
+			$this->hook('after', array($filter, 'after'), $filter->getAfterPriority());
+	}
+
 	public function forward404($msg = 'Not found') {
 		throw new NotFoundException($msg);
 	}
@@ -28,43 +37,47 @@ class Controller {
 			HTML::code('<link rel="canonical" href="'.$canonical.'">');
 	}
 
-	public static function setHooks($hooks) {
+	public static function addHooks($hooks) {
 		foreach($hooks as $name=>$hooks)
 			foreach($hooks as $hook)
-				static::hookOn($name, $hook);
+				static::addControllerHook($name, $hook);
 	}
 
-	public static function hookOn($hookName, $cAction) {
-		$cAction = array_values($cAction);
-		$controller = $cAction[0];
-		$action = $cAction[1];
+	public static function addControllerHook($hookName, $hook) {
 		\Hook::hookOn($hookName, function($chain, $arg1=null, $arg2=null, $arg3=null, $arg4=null,
-			$arg5=null, $arg6=null, $arg7=null, $arg8=null, $arg9=null, $arg10=null) use($controller, $action) {
+			$arg5=null, $arg6=null, $arg7=null, $arg8=null, $arg9=null, $arg10=null) use($hook) {
 			$args = array(&$arg1, &$arg2, &$arg3, &$arg4, &$arg5, &$arg6, &$arg7, &$arg8, &$arg9, &$arg10);
-			return Router::run($controller, $action, $args);
+			return Controller::runHook($hook, $args);
 		});
+	}
+
+	public static function runHook($hook, $args=array()) {
+		if(!is_array($args))
+			$args = array($args);
+		$controller = $hook[0];
+		$method = $hook[1];
+		$controller = new $controller;
+		return $controller->run($method, $args);
 	}
 
 	public function run($action, $params=array(), $showView=true) {
 		$this->view = null;
-		if(($actionName=$action) != 'configure')
-			$actionName = $action.'Action';
 	
 		if(!is_array($params))
 			$params = array($params);
 
 		ob_start();
-		$result = call_user_func_array(array($this, $actionName), $params);
+		$result = call_user_func_array(array($this, $action), $params);
 		$controllerBuffer =  ob_get_clean();
 
 		if($result!==null) {
 			if($result instanceof \Coxis\Core\Model) {
 				\Response::setHeader('Content-Type', 'application/json');
-				return \Response::setContent($result->toJSON());
+				return $result->toJSON();
 			}
 			elseif(is_array($result)) {
 				\Response::setHeader('Content-Type', 'application/json');
-				return \Response::setContent(Model::arrayToJSON($result));
+				return Model::arrayToJSON($result);
 			}
 			else
 				return $result;
@@ -74,6 +87,7 @@ class Controller {
 		elseif(!$showView) #todo still necessary?
 			return null;
 		elseif($this->view !== false) {
+			$action = preg_replace('/Action$/', '', $action);
 			if($this->view === null)
 				if(!$this->setRelativeView($action.'.php'))
 					return null;
