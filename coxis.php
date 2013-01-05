@@ -74,12 +74,13 @@ register_shutdown_function(function () {
 		#todo get the full backtrace for shutdown errors
 		if($e=error_get_last()) {
 			#todo see how not to catch form upload size error
-			// if($e['type'] > 1) {
+			d($e);
+			if($e['type'] == 1) {
 				while(ob_get_level()){ ob_end_clean(); }
 				$response = \Coxis\Core\Error::report("($e[type]) $e[message]<br>
 					$e[file] ($e[line])".debug_backtrace(), array(array('file'=>$e['file'], 'line'=>$e['line'])));
 				\Response::send($response, false);
-			// }
+			}
 		}
 	}
 	if(\Config::get('profiler'))

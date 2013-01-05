@@ -6,7 +6,7 @@ class Cache {
 		if(\Config::get('cache', 'method') == 'apc') {
 			apc_clear_cache(\Config::get('key').'-'.'user');
 		}
-		elseif(Config::get('cache', 'method') == 'file') {
+		elseif(\Config::get('cache', 'method') == 'file') {
 			FileManager::unlink('cache');
 		}
 	}
@@ -34,19 +34,29 @@ class Cache {
 		else
 			return $default;
 	}
+
+	public static function sizeofvar($var) {
+		$start_memory = memory_get_usage();
+		$tmp = unserialize(serialize($var));
+		return memory_get_usage() - $start_memory;
+	}
 	
 	public static function set($file, $var) {
+		if(!\Config::get('phpcache'))
+			return;
 		if(\Config::get('cache', 'method') == 'apc') {
 			apc_store(\Config::get('key').'-'.$file, $var);
 		}
 		elseif(\Config::get('cache', 'method') == 'file') {
+			if(static::sizeofvar($var) > 5*1024*1024)
+				return;
 			try {
 				if(is_object($var))
 					$res = 'unserialize(\''.serialize($var).'\')';
-				elseif(var_export($var, true) == '')
+				elseif(($ve = var_export($var, true)) == '')
 					$res = 'null';
 				else
-					$res = var_export($var, true);
+					$res = $ve;
 				$res = '<?php'."\n".'return '.$res.';';
 				$output = 'cache/'.$file.'.php';
 				FileManager::mkdir(dirname($output));

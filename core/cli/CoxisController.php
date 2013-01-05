@@ -8,6 +8,10 @@ class CoxisController extends CLIController {
 		echo 'Version: alpha';
 	}
 
+	public function ccAction($request) {
+		Cache::clear();
+	}
+
 	public function getAction($request) {
 		$browser = new Browser;
 		echo $browser->get($request[0]);

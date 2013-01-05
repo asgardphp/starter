@@ -43,9 +43,36 @@ class FileManager {
 		return (isset($file['tmp_name']) && !empty($file['tmp_name']));
 	}
 	
+	public static function rmdir($directory, $empty=FALSE) {
+		if(substr($directory,-1) == '/')
+			$directory = substr($directory,0,-1);
+		if(!file_exists($directory) || !is_dir($directory))
+			return FALSE;
+		elseif(is_readable($directory)) {
+			$handle = opendir($directory);
+			while (FALSE !== ($item = readdir($handle))) {
+				if($item != '.' && $item != '..') {
+					$path = $directory.'/'.$item;
+					if(is_dir($path))
+						static::rmdir($path);
+					else
+						unlink($path);
+				}
+			}
+			closedir($handle);
+			if($empty == FALSE)
+				if(!rmdir($directory))
+					return FALSE;
+		}
+		return TRUE;
+	}
+
 	public static function unlink($file) {
 		if(file_exists(_DIR_.$file)) {
-			unlink($file);
+			if(is_dir(_DIR_.$file))
+				static::rmdir($file);
+			else
+				unlink($file);
 			return true;
 		}
 		else

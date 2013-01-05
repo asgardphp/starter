@@ -40,12 +40,10 @@ class Router {
 			if($response = $controller->run('configure', array(), false))
 				return $response;
 
-		if($r = $controller->trigger('before', array($controller)))
-			return $r;
-
-		$result = $controller->run($actionName, $params, $showView);
-
-		$controller->trigger('after', array($controller, &$result));
+		if(!$result = $controller->trigger('before', array($controller))) {
+			$result = $controller->run($actionName, $params, $showView);
+			$controller->trigger('after', array($controller, &$result));
+		}
 
 		if(is_string($result))
 			\Response::setContent($result);

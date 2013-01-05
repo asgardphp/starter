@@ -95,11 +95,15 @@ class Router {
 			'description'	=>	'Load a specific data file',
 			'route'	=>	array('Coxis\Core\Cli\DB', 'load'),	#load specific data file
 		),
-		
 		'version'	=>	array(
 			'usage'	=>	'version',
 			'description'	=>	'Give coxis version',
 			'route'	=>	array('Coxis\Core\Cli\Coxis', 'version'),
+		),
+		'cc'	=>	array(
+			'usage'	=>	'cc',
+			'description'	=>	'Clear cache',
+			'route'	=>	array('Coxis\Core\Cli\Coxis', 'cc'),
 		),
 	);
 
