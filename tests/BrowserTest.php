@@ -4,7 +4,7 @@ if(!defined('_ENV_'))
 require_once(dirname(__FILE__).'/../coxis.php');
 \Coxis::load();
 
-require_once 'vendors/phpQuery/phpQuery/phpQuery.php';
+require_once 'vendor/phpQuery/phpQuery/phpQuery.php';
 
 if(!function_exists('_pq')) {
 	function _pq($html, $selector) {

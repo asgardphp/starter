@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Tests\App\Article\Models;
+namespace Tests\App\Article\Models;
 
 // class Author extends \Coxis\Core\ORM\ModelORM {
 class Author extends \Coxis\Core\Model {
@@ -12,7 +12,7 @@ class Author extends \Coxis\Core\Model {
 	
 	public static $relations = array(
 		'articles'	=>	array(
-			'model'	=>	'\Coxis\Tests\App\Article\Models\Article',
+			'model'	=>	'\Tests\App\Article\Models\Article',
 			'has'		=>	'many',
 		),
 	);

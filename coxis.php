@@ -45,17 +45,17 @@ function is_function($f) {
 ob_start();
 
 /* CORE/LIBS */
-require_once 'core/Coxis.php';
-require_once 'core/IoC.php';
-require_once 'core/Context.php';
-require_once 'core/tools/NamespaceUtils.php';
-require_once 'core/Importer.php';
-require_once 'core/Autoloader.php';
+require_once 'coxis/core/Coxis.php';
+require_once 'coxis/core/IoC.php';
+require_once 'coxis/core/Context.php';
+require_once 'coxis/core/tools/NamespaceUtils.php';
+require_once 'coxis/core/Importer.php';
+require_once 'coxis/core/Autoloader.php';
 
 spl_autoload_register(array('Coxis\Core\Autoloader', 'loadClass'));
-Autoloader::preloadDir(_DIR_.'core');
+Autoloader::preloadDir(_DIR_.'coxis/core');
 foreach(Coxis::$facades as $facade=>$class)
-	Autoloader::map(strtolower($facade), 'core/facades/'.$facade.'.php');
+	Autoloader::map(strtolower($facade), 'coxis/core/facades/'.$facade.'.php');
 
 Timer::start();
 
@@ -73,8 +73,6 @@ register_shutdown_function(function () {
 		chdir(dirname(__FILE__));//wtf?
 		#todo get the full backtrace for shutdown errors
 		if($e=error_get_last()) {
-			#todo see how not to catch form upload size error
-			d($e);
 			if($e['type'] == 1) {
 				while(ob_get_level()){ ob_end_clean(); }
 				$response = \Coxis\Core\Error::report("($e[type]) $e[message]<br>

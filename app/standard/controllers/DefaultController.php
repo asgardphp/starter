@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\App\Standard\Controllers;
+namespace App\Standard\Controllers;
 
 class DefaultController extends \Coxis\Core\Controller {
 	public function configure() {

@@ -1,4 +1,4 @@
-\Coxis\Tests\App\Actualite\Models\Actualite:
+\Tests\App\Actualite\Models\Actualite:
   1:
     titre: Physics
     introduction: Physics is a science
@@ -10,7 +10,7 @@
     introduction: Math is a science
     contenu: We will study math
     test: blabla
-\Coxis\Tests\App\Actualite\Models\Commentaire:
+\Tests\App\Actualite\Models\Commentaire:
   1:
     titre: Hello!
     actualite: 1

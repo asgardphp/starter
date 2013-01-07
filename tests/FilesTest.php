@@ -16,7 +16,7 @@ class FilesTest extends PHPUnit_Framework_TestCase {
 		try {
 			unlink('web\upload\actualite\test.jpg');
 		} catch(\Exception $e) {}
-		$actualite = new \Coxis\Tests\App\Actualite\Models\Actualite(2);
+		$actualite = new \Tests\App\Actualite\Models\Actualite(2);
 		// d();
 		// d(actualite::$properties);
 		// d($actualite);

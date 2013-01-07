@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Tests\App\Actualite\Controllers;
+namespace Tests\App\Actualite\Controllers;
 /**
 @Prefix('actualites')
 */
