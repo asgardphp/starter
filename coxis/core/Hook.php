@@ -24,7 +24,7 @@ class Hook {
 			throw new \Exception("triggerChain() can only accept up to 14 arguments");
 
 		if(is_string($name))
-			$name = explode('_', $name);
+			$name = explode('/', $name);
 
 		$chain->calls = array_merge(
 			$this->get(array_merge($name, array('before'))),
@@ -83,7 +83,7 @@ class Hook {
 
 	protected function createhook($name, $cb, $type='on') {
 		if(is_string($name))
-			$name = explode('_', $name);
+			$name = explode('/', $name);
 		$name[] = $type;
 
 		$this->set($name, $cb);
