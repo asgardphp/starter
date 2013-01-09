@@ -98,8 +98,6 @@ class ORM {
 	}
 	
 	public function all() {
-		$this->joins = array();
-		$this->where = array();
 		return static::get();
 	}
 
