@@ -70,19 +70,9 @@ class Controller extends Hookable {
 		$result = call_user_func_array(array($this, $action), $params);
 		$controllerBuffer =  ob_get_clean();
 
-		if($result!==null) {
-			if($result instanceof \Coxis\Core\Model) {
-				\Response::setHeader('Content-Type', 'application/json');
-				return $result->toJSON();
-			}
-			elseif(is_array($result)) {
-				\Response::setHeader('Content-Type', 'application/json');
-				return Model::arrayToJSON($result);
-			}
-			else
-				return $result;
-		}
-		elseif($controllerBuffer)
+		if($result !== null)
+			return $result;
+		if($controllerBuffer)
 			return $controllerBuffer;
 		elseif(!$showView) #todo still necessary?
 			return null;

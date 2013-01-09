@@ -10,6 +10,7 @@ class GeneralController extends \Coxis\Core\Controller {
 		\Memory::set('layout', array('\Coxis\App\Standard\Controllers\DefaultController', 'layout'));
 
 		$controller->addFilter(new \Coxis\Core\Filters\PageLayout);
+		$controller->addFilter(new \Coxis\Core\Filters\JSONModels);
 	}
 
 	/**
