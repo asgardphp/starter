@@ -7,7 +7,7 @@ class Cache {
 			apc_clear_cache(\Config::get('key').'-'.'user');
 		}
 		elseif(\Config::get('cache', 'method') == 'file') {
-			FileManager::unlink('cache');
+			FileManager::unlink('storage/cache');
 		}
 	}
 
