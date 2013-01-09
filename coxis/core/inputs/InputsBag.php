@@ -13,7 +13,12 @@ abstract class InputsBag {
 		return static::has($name) ? $req->{$datatype}[$name]:$default;
 	}
 
-	public static function set($name, $value) {
+	public static function set($name, $value=null) {
+		if(is_array($name)) {
+			foreach($name as $k=>$v)
+				static::set($k, $v);
+			return;
+		}
 		$req = static::getRequest();
 		$datatype = strtolower(NamespaceUtils::basename(get_called_class()));
 

@@ -2,9 +2,11 @@
 namespace Coxis\Core;
 
 class Controller extends Hookable {
-	public $action;
+	public $request;
+	public $response;
 
 	public function addFilter($filter) {
+		$filter->setController($this);
 		if(method_exists($filter, 'before')) 
 			$this->hook('before', array($filter, 'before'), $filter->getBeforePriority());
 		if(method_exists($filter, 'after'))
@@ -51,16 +53,55 @@ class Controller extends Hookable {
 		});
 	}
 
+	#todo put this in controller
+	public static function run($controllerShortname, $actionShortname, $request=null, $response=null) {
+		if($request === null)
+			$request = new Request;
+		if($response === null)
+			$response = new Response;
+
+		$controllerClassName = $controllerShortname.'Controller';
+		$actionName = $actionShortname.'Action';
+		$controller = new $controllerClassName();
+
+		$request->route = array('controller'=>$controllerShortname, 'action'=>$actionShortname);
+		$controller->request = $request;
+		$controller->response = $response;
+
+		#todo move stuff in construct after having moved hooks out from controllers
+		\Hook::trigger('controller_configure', array($controller));
+
+		if(method_exists($controller, 'configure'))
+			if($res = $controller->doRun('configure', array($request), false))
+				return $res;
+
+		if(!$result = $controller->trigger('before', array($controller))) {
+			$result = $controller->doRun($actionName, array($request));
+			$controller->trigger('after', array($controller, &$result));
+		}
+
+		if($result !== null) {
+			if(is_string($result))
+				return $controller->response->setContent($result);
+			elseif($result instanceof \Coxis\Core\Response)
+				return $result;
+			else
+				throw new \Exception('Controller response is invalid.');
+		}
+		else
+			return $controller->response;
+	}
+
 	public static function runHook($hook, $args=array()) {
 		if(!is_array($args))
 			$args = array($args);
 		$controller = $hook[0];
 		$method = $hook[1];
 		$controller = new $controller;
-		return $controller->run($method, $args);
+		return $controller->doRun($method, $args);
 	}
 
-	public function run($action, $params=array(), $showView=true) {
+	public function doRun($action, $params=array()) {
 		$this->view = null;
 	
 		if(!is_array($params))
@@ -74,8 +115,6 @@ class Controller extends Hookable {
 			return $result;
 		if($controllerBuffer)
 			return $controllerBuffer;
-		elseif(!$showView) #todo still necessary?
-			return null;
 		elseif($this->view !== false) {
 			$action = preg_replace('/Action$/', '', $action);
 			if($this->view === null)

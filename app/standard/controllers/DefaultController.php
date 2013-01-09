@@ -2,9 +2,9 @@
 namespace App\Standard\Controllers;
 
 class DefaultController extends \Coxis\Core\Controller {
-	public function configure() {
-		if($this->action == 'indexAction')
-			$this->addFilter(new \Coxis\Core\Filters\PageCaching());
+	public function configure($request) {
+		if($request->route['action'] == 'index')
+			$this->addFilter(new \Coxis\Core\Filters\PageCaching);
 	}
 
 	/**

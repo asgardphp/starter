@@ -2,7 +2,7 @@
 namespace Coxis\Core\Inputs;
 
 abstract class Session extends InputsBag {
-	public static function set($name, $value) {
+	public static function set($name, $value=null) {
 		if(isset($_SESSION))
 			$_SESSION[$name] = $value;
 		return parent::set($name, $value);

@@ -1,7 +1,7 @@
 <?php
 namespace Coxis\Core;
 
-class Request {
+class Request implements \ArrayAccess {
 	public $get = array();
 	public $post = array();
 	public $file = array();
@@ -11,6 +11,34 @@ class Request {
 	public $session = array();
 	public $argv = array();
 	public $data = '';
+
+	public $params = array(
+		'format'	=>	'html',
+	);
+
+	public function getParam($name) {
+		return $this->params[$name];
+	}
+	public function setParam($name, $value) {
+		$this->params[$name] = $value;
+		return $this;
+	}
+
+	public function offsetSet($offset, $value) {
+		if (is_null($offset))
+			$this->get[] = $value;
+		else
+			$this->get[$offset] = $value;
+	}
+	public function offsetExists($offset) {
+		return isset($this->get[$offset]);
+	}
+	public function offsetUnset($offset) {
+		unset($this->get[$offset]);
+	}
+	public function offsetGet($offset) {
+		return isset($this->get[$offset]) ? $this->get[$offset] : null;
+	}
 
 	public static function createFromGlobals() {
 		global $argv;
@@ -30,6 +58,9 @@ class Request {
 		try {
 			$request->json = json_decode($request->body);
 		} catch(\ErrorException $e) {}
+
+		if(isset($matches[1]))
+			\Request::setParam('format', $matches[1]);
 
 		return $request;
 	}

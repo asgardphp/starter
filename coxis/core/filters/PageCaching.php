@@ -5,7 +5,7 @@ class PageCaching extends Filter {
 		return 1000;
 	}
 
-	public function before($chain, $controller) {
+	public function before($chain) {
 		$key = $this->key = $this->calculateKey();
 		if($r = \Cache::get($key))
 			return $r;
@@ -16,8 +16,7 @@ class PageCaching extends Filter {
 	}
 
 	protected function calculateKey() {
-		$request = \Router::getRequest();
-		$key = $request['controller'].$request['action'];
+		$key = $this->controller->request['controller'].$this->controller->request['action'];
 		#todo varyBy...
 
 		return md5($key);

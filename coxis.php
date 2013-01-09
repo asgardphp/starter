@@ -3,6 +3,7 @@ if(version_compare(PHP_VERSION, '5.3.0') < 0)
 	die('You need PHP ≥ 5.3');
 
 /* ENV */
+define('_START_', time()+microtime(true));
 ini_set('error_reporting', E_ALL);
 ini_set('display_errors', true);
 set_include_path(get_include_path() . PATH_SEPARATOR . dirname(__FILE__));

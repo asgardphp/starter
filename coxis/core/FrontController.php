@@ -6,8 +6,7 @@ class FrontController extends Controller {
 		Profiler::checkpoint('Before loading coxis');
 		\Coxis::load();
 		Profiler::checkpoint('After loading coxis');
-		$response = static::getResponse();
-		$response->send();
+		return static::getResponse();
 	}
 
 	public static function getResponse() {
@@ -15,6 +14,11 @@ class FrontController extends Controller {
 			try {
 				\Hook::trigger('start');
 				Profiler::checkpoint('Before dispatching');
+
+				preg_match('/\.([a-zA-Z0-9]{1,5})$/', \URL::get(), $matches);#todo move it into request constructor?
+				if(isset($matches[1]))
+					\Request::setParam('format', $matches[1]);
+
 				$response = \Router::dispatch();
 				Profiler::checkpoint('After dispatching');
 			} catch(\Coxis\Core\ControllerException $e) {

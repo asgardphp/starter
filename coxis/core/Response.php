@@ -19,12 +19,6 @@ class Response {
 		
 		500 => 'Internal Server Error',
 	);
-	
-	public function init() {
-		$this->content = null;
-		$this->headers = array();
-		$this->code = null;
-	}
 
 	public function setCode($code) { 
 		$this->code = $code;

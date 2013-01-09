@@ -1,10 +1,16 @@
 <?php
 namespace Coxis\Core\Filters;
 class Filter {
+	protected $controller;
 	protected $params;
 
-	function __construct($params=array()) {
+	function __construct($params=array(), $controller=null) {
+		$this->controller = $controller;
 		$this->params = $params;
+	}
+
+	public function setController($controller) {
+		$this->controller = $controller;
 	}
 
 	public function getBeforePriority() {

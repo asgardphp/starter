@@ -20,7 +20,7 @@ class GeneralController extends \Coxis\Core\Controller {
 		$request = \Router::getRequest();
 		$response = \Response::inst();
 		if($request['format']=='html')
-			$output = \Coxis\Core\Router::run('default', '_404');
+			$output = \Coxis\Core\Router::run('default', '_404', \Request::inst());
 		return $response->setCode(404);
 	}
 

@@ -2,7 +2,6 @@
 namespace Coxis\Core;
 
 class Router {
-	public $request;
 	protected $routes = array();
 
 	public function setRoutes($routes) {
@@ -14,41 +13,11 @@ class Router {
 	}
 
 	public function dispatch() {
-		$this->parseRoutes();
-		if(method_exists($this->request['controller'].'Controller', $this->request['action'].'Action')) {
-			$controllerName = ucfirst(strtolower($this->request['controller']));
-			$actionName = $this->request['action'];
-			$params = array($this->request);
-			
-			return static::run($controllerName, $actionName, $params);
-		}
+		$route = $this->parseRoutes();
+		if(method_exists($route['controller'].'Controller', $route['action'].'Action'))
+			return Controller::run($route['controller'], $route['action'], \Request::inst(), \Response::inst());
 		else
 			throw new NotFoundException('Page not found');
-	}
-	
-	public static function run($controllerName, $actionName, $params=array(), $showView=true) {
-		$controllerName = ucfirst($controllerName);
-		$controllerClassName = $controllerName.'Controller';
-		$controller = new $controllerClassName();
-		$actionName = $actionName.'Action';
-
-		$controller->action = $actionName;
-
-		\Hook::trigger('controller_configure', array($controller));
-
-		if(method_exists($controller, 'configure'))
-			if($response = $controller->run('configure', array(), false))
-				return $response;
-
-		if(!$result = $controller->trigger('before', array($controller))) {
-			$result = $controller->run($actionName, $params, $showView);
-			$controller->trigger('after', array($controller, &$result));
-		}
-
-		if(is_string($result))
-			\Response::setContent($result);
-
-		return \Response::inst();
 	}
 
 	//todo ADD root /
@@ -118,17 +87,11 @@ class Router {
 	}
 
 	public function parseRoutes() {
-		$this->request = array(
-			'method'=> \Request::method(),
-			'controller'=>'',
-			'action'=>'',
-			'format'=>'html',
-		);
-
 		$request_key = md5(serialize(array(\Request::method(), \URL::get())));
+		#todo complete key
 
 		$routes = $this->routes;
-		$this->request = Cache::get('Router/requests/'.$request_key, function() use($routes) {
+		$results = Cache::get('Router/requests/'.$request_key, function() use($routes) {
 			$request = null;
 			/* PARSE ALL ROUTES */
 			foreach($routes as $params) {
@@ -137,35 +100,17 @@ class Router {
 				$method = $params['method'];
 
 				/* IF THE ROUTE MATCHES */
-				if(($results = \Coxis\Core\Router::match($route, $requirements, $method)) !== false) {
-					$results = array_merge(array('format'=>'html'), $results, array('body'=>\Request::body()));
-					$results = array_merge(\GET::all(), $params, $results);
-					
-					if(!isset($results['action']))
-						switch(\SERVER::get('REQUEST_METHOD')) {
-							case 'POST': $results['action'] = 'create'; break;
-							case 'GET': $results['action'] = 'show'; break;
-							case 'DELETE': $results['action'] = 'destroy'; break;
-							case 'PUT': $results['action'] = 'update'; break;
-						}
-						
-					$request = $results;
-					
-					break;
-				}
+				if(($results = \Coxis\Core\Router::match($route, $requirements, $method)) !== false)
+					return array('values' => $results, 'route' => $params);
 			}
-		
-			preg_match('/\.([a-zA-Z0-9]{1,5})$/', \URL::get(), $matches);
-			
-			if(isset($matches[1]))
-				$request['format'] = $matches[1];
-
-			return $request;
 		});
-		if(!$this->request)
+
+		if(!$results)
 			throw new \Exception('Route not found!');
-			
-		return $this->request;
+
+		\GET::set($results['values']);
+
+		return $results['route'];
 	}
 	
 	public static function buildRoute($route, $params=array()) {
@@ -192,22 +137,8 @@ class Router {
 	}
 
 	public function getRequest() {
-		return $this->request;
-	}
-	
-	public function getController() {
-		return strtolower($this->request['controller']);
-	}
-	
-	public function getAction() {
-		return strtolower($this->request['action']);
-	}
-
-	public function getParam($param) {
-		if(isset($this->request[$param]))
-			return strtolower($this->request[$param]);
-		else
-			return null;
+		d();
+		return \Request::inst();
 	}
 	
 	public function getRouteFor($what) {
