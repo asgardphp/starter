@@ -38,7 +38,7 @@ class HooksContainer extends Viewable {
 	public static function addHooks($hooks) {
 		foreach($hooks as $name=>$hooks)
 			foreach($hooks as $hook)
-				static::addControllerHook($name, $hook);
+				static::addHook($name, $hook);
 	}
 
 	public static function addHook($hookName, $hook) {

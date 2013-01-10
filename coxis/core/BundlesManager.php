@@ -79,9 +79,9 @@ namespace Coxis\Core {
 			$bundles = static::getBundles($directory);
 			Profiler::checkpoint('loadBundles 2');
 
-			if(\Config::get('phpcache') && $bm=Cache::get('bundlesmanager')) {
+			if($bm=Cache::get('bundlesmanager')) {
 				\Router::setRoutes($bm['routes']);
-				\Coxis\Core\Controller::addHooks($bm['hooks']);
+				\Coxis\Core\HooksContainer::addHooks($bm['hooks']);
 				\Locale::setLocales($bm['locales']);
 				Autoloader::$preloaded = $bm['preloaded'];
 			}
@@ -94,7 +94,6 @@ namespace Coxis\Core {
 				$routes = static::getRoutes();
 				$hooks = static::getHooks();
 
-				static::sortRoutes($routes);
 				\Router::setRoutes($routes);
 
 				foreach($routes as $route)
@@ -104,14 +103,12 @@ namespace Coxis\Core {
 					foreach($subhooks as $hook)
 						\Coxis\Core\HooksContainer::addHook($name, $hook);
 
-				if(\Config::get('phpcache')) {
-					Cache::set('bundlesmanager', array(
-						'routes' => $routes,
-						'hooks' => $hooks,
-						'locales' => \Locale::getLocales(),
-						'preloaded' => Autoloader::$preloaded,
-					));
-				}
+				Cache::set('bundlesmanager', array(
+					'routes' => $routes,
+					'hooks' => $hooks,
+					'locales' => \Locale::getLocales(),
+					'preloaded' => Autoloader::$preloaded,
+				));
 			}
 			Profiler::checkpoint('loadBundles 3');
 
@@ -119,34 +116,6 @@ namespace Coxis\Core {
 				if(file_exists($bundle.'/bundle.php'))
 					include($bundle.'/bundle.php');
 			Profiler::checkpoint('loadBundles 4');
-		}
-
-		public static function sortRoutes(&$routes) {
-			usort($routes, function($route1, $route2) {
-				$route1 = $route1['route'];
-				$route2 = $route2['route'];
-				
-				while(true) {
-					if(!$route1)
-						return 1;
-					if(!$route2)
-						return -1;
-					$c1 = substr($route1, 0, 1);
-					$c2 = substr($route2, 0, 1);
-					if($c1 == ':' && $c2 != ':')
-						return 1;
-					elseif($c1 != ':' && $c2 == ':')
-						return -1;
-					elseif($c1 != ':' && $c2 != ':') {
-						$route1 = substr($route1, 1);
-						$route2 = substr($route2, 1);
-					}
-					elseif($c1 == ':' && $c2 == ':') {
-						$route1 = preg_replace('/^:[a-zA-Z0-9_]+/', '', $route1);
-						$route2 = preg_replace('/^:[a-zA-Z0-9_]+/', '', $route2);
-					}
-				}
-			});
 		}
 
 		public static function loadModelFixtures($bundle_path) {

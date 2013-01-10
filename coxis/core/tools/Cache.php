@@ -21,7 +21,7 @@ class Cache {
 			}
 			elseif(\Config::get('cache', 'method') == 'file') {
 				try {
-					return include 'cache/'.$file.'.php';
+					return include 'storage/cache/'.$file.'.php';
 				} catch(\ErrorException $e) {}
 			}
 		}
