@@ -30,9 +30,9 @@ class CollectionORM extends ORM implements \Coxis\Core\Collection {
 				$relation_model = $this->relation['model'];
 				$link = $this->relation['link'];
 				$dal = new DAL($relation_model::getTable());
-				$dal->where(array($link => $this->parent->id))->update(array($link => 0));
+				$dal->where(array($link => $this->parent->id))->getDAL()->update(array($link => 0));
 				if($ids)
-					$dal->reset()->where(array('id IN ('.implode(', ', $ids).')'))->update(array($link => $this->parent->id));
+					$dal->reset()->where(array('id IN ('.implode(', ', $ids).')'))->getDAL()->update(array($link => $this->parent->id));
 				break;
 			case 'HMABT':
 				$dal = new DAL($this->relation['join_table']);
@@ -65,7 +65,7 @@ class CollectionORM extends ORM implements \Coxis\Core\Collection {
 				$relation_model = $this->relation['model'];
 				$dal = new DAL($relation_model::getTable());
 				foreach($ids as $id)
-					$dal->reset()->where(array('id' => $id))->update(array($this->relation['link'] => $this->parent->id));
+					$dal->reset()->where(array('id' => $id))->getDAL()->update(array($this->relation['link'] => $this->parent->id));
 				break;
 			case 'HMABT':
 				$dal = new DAL($this->relation['join_table']);
@@ -92,7 +92,8 @@ class CollectionORM extends ORM implements \Coxis\Core\Collection {
 			case 'hasMany':
 				$params[$this->relation['link']] = $this->parent->id;
 				break;
-			case 'HMABT':#todo
+			case 'HMABT':
+				d('todo');#todo
 				break;
 		}
 		$new->save($params);
@@ -111,7 +112,7 @@ class CollectionORM extends ORM implements \Coxis\Core\Collection {
 				$relation_model = $this->relation['model'];
 				$dal = new DAL($relation_model::getTable());
 				foreach($ids as $id)
-					$dal->reset()->where(array('id' => $id))->update(array($this->relation['link'] => 0));
+					$dal->reset()->where(array('id' => $id))->getDAL()->update(array($this->relation['link'] => 0));
 				break;
 			case 'HMABT':
 				$dal = new DAL($this->relation['join_table']);

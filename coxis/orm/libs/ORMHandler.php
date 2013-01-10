@@ -220,11 +220,11 @@ class ORMHandler {
 		$orm = $this->getORM();
 		//new
 		if(!isset($model->id) || !$model->id)
-			$model->id = $orm->insert($values);
+			$model->id = $orm->getDAL()->insert($values);
 		//existing
 		elseif(sizeof($vars) > 0) {
-			if(!$orm->reset()->where(array('id'=>$model->id))->update($values))
-				$model->id = $orm->insert($values);
+			if(!$orm->reset()->where(array('id'=>$model->id))->getDAL()->update($values))
+				$model->id = $orm->getDAL()->insert($values);
 		}		
 		
 		//Persist i18n
@@ -252,8 +252,8 @@ class ORMHandler {
 			if($type == 'hasOne') {
 				$relation_model = $rel['model'];
 				$link = $rel['link'];
-				$relation_model::where(array($link => $model->id))->update(array($link => 0));
-				$relation_model::where(array('id' => $model->data[$relation]))->update(array($link => $model->id));
+				$relation_model::where(array($link => $model->id))->getDAL()->update(array($link => 0));
+				$relation_model::where(array('id' => $model->data[$relation]))->getDAL()->update(array($link => $model->id));
 			}
 			elseif($type == 'hasMany' || $type == 'HMABT')
 				$model->$relation()->sync($model->data[$relation]);

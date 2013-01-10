@@ -384,11 +384,9 @@ class ORM {
 	}
 	
 	public function update($values) {
-		return $this->getDAL()->update($values);
-	}
-	
-	public function insert($values) {
-		return $this->getDAL()->insert($values);
+		while($model = $this->next())
+			$model->save($values);
+		return $this;
 	}
 	
 	public function count($group_by=null) {
