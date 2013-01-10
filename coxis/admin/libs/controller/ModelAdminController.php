@@ -1,7 +1,7 @@
 <?php
 namespace Coxis\Admin\Libs\Controller;
 
-class ModelAdminController extends AdminParentController {
+abstract class ModelAdminController extends AdminParentController {
 	static $_model = null;#todo model variable name or model name ?
 	static $_models = null;
 	static $_index = null;
@@ -272,18 +272,17 @@ class ModelAdminController extends AdminParentController {
 	*/
 	public function hooksAction($request) {
 		$modelName = static::$_model;
-		import($modelName, __NAMESPACE__);
+		import($modelName);
 		
 		$controller = static::getControllerName();
 
 		#todo sort hooks routes
 		foreach(static::$_hooks as $hook) {
 			if($results = \Router::matchWith($hook['route'], $request['route'])) {
-				$request = array_merge($request, $results);
-				$request['_controller'] = $controller;
-				$request['controller'] = $hook['controller'];
-				$request['action'] = $hook['action'];
-				return \Router::run($hook['controller'], $hook['action'], array($request), $this);
+				$newRequest = new \Coxis\Core\Request;
+				$newRequest->parentController = $controller;
+				$newRequest->get = array_merge($request->get, $results);
+				return Controller::run($hook['controller'], $hook['action'], $newRequest);
 			}
 		}
 		throw new \Exception(__('Controller hook does not exist!'));

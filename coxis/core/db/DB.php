@@ -63,12 +63,11 @@ class Query {
 		$this->db = $db;
 		try {
 			if($args) {
-				$rsc = $db->prepare($sql);
-				$rsc->execute($args);
+				$this->rsc = $db->prepare($sql);
+				$this->rsc->execute($args);
 			}
 			else
-				$rsc = $db->query($sql);
-			$this->rsc = $rsc;
+				$this->rsc = $db->query($sql);
 		} catch(\PDOException $e) {
 			throw new DBException($e->getMessage().'<br/>'."\n".'SQL: '.$sql);
 		}

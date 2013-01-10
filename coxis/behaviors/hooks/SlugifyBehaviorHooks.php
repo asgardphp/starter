@@ -1,7 +1,7 @@
 <?php
-namespace Coxis\Behaviors\Controllers;
+namespace Coxis\Behaviors\Hooks;
 
-class SlugifyBehaviorController extends \Coxis\Core\Controller {
+class SlugifyBehaviorHooks extends \Coxis\Core\HooksContainer {
 	/**
 	@Hook('behaviors_load_slugify')
 	**/

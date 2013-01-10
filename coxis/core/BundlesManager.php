@@ -34,6 +34,12 @@ namespace Coxis\Core {
 
 				Autoloader::preloadDir($bundle.'/models');
 
+				if(file_exists($bundle.'/hooks/')) {
+					Autoloader::preloadDir($bundle.'/hooks');
+					foreach(glob($bundle.'/hooks/*.php') as $filename)
+						\Coxis\Core\Importer::loadClassFile($filename);
+				}
+
 				if(file_exists($bundle.'/controllers/')) {
 					Autoloader::preloadDir($bundle.'/controllers');
 					foreach(glob($bundle.'/controllers/*.php') as $filename)
@@ -85,35 +91,8 @@ namespace Coxis\Core {
 				foreach($bundles as $bundle)
 					static::loadBundle($bundle);
 
-				list($routes, $hooks) = static::getRoutesAndHooks();
-
-				#Parse cli controllers
-				$controllers = get_declared_classes();
-				$controllers = array_filter($controllers, function($controller) {
-					return is_subclass_of($controller, 'Coxis\Core\CLI\CLIController');
-				});
-				foreach($controllers as $classname) {
-					$r = new \ReflectionClass($classname);
-					if(!preg_match('/cli$/', dirname($r->getFileName())))
-						continue;
-
-					$reflection = new \ReflectionAnnotatedClass($classname);
-					
-					foreach(get_class_methods($classname) as $method) {
-						if(!preg_match('/Action$/i', $method))
-							continue;
-						$method_reflection = new \ReflectionAnnotatedMethod($classname, $method);
-					
-						if($v = $method_reflection->getAnnotation('Shortcut')) {
-							$usage = $description = '';
-							if($u = $method_reflection->getAnnotation('Usage'))
-								$usage = $u->value;
-							if($d = $method_reflection->getAnnotation('Description'))
-								$description = $d->value;
-							\CLIRouter::addRoute($v->value, array(static::formatControllerName($classname), static::formatActionName($method)), $usage, $description);
-						}
-					}
-				}
+				$routes = static::getRoutes();
+				$hooks = static::getHooks();
 
 				static::sortRoutes($routes);
 				\Router::setRoutes($routes);
@@ -123,7 +102,7 @@ namespace Coxis\Core {
 				
 				foreach($hooks as $name=>$subhooks)
 					foreach($subhooks as $hook)
-						\Coxis\Core\Controller::addControllerHook($name, $hook);
+						\Coxis\Core\HooksContainer::addHook($name, $hook);
 
 				if(\Config::get('phpcache')) {
 					Cache::set('bundlesmanager', array(
@@ -170,14 +149,6 @@ namespace Coxis\Core {
 			});
 		}
 
-		protected static function formatControllerName($controller) {
-			return preg_replace('/Controller$/i', '', $controller);
-		}
-
-		protected static function formatActionName($action) {
-			return preg_replace('/Action$/i', '', $action);
-		}
-
 		public static function loadModelFixtures($bundle_path) {
 			if(file_exists($bundle_path.'/data'))
 				foreach(glob($bundle_path.'/data/*.models.yml') as $file)
@@ -189,68 +160,46 @@ namespace Coxis\Core {
 				static::loadModelFixtures($bundle);
 		}
 
-		public static function getRoutesAndHooks($directory = false) {
+		public static function getRoutes($directory = false) {
 			$routes = array();
-			$hooks = array();
 
-			#Parse controllers routes/hooks
 			$controllers = get_declared_classes();
 			$controllers = array_filter($controllers, function($controller) {
 				return is_subclass_of($controller, 'Coxis\Core\Controller');
 			});
 			foreach($controllers as $classname) {
 				$r = new \ReflectionClass($classname);
-				if(!preg_match('/controllers$/', dirname($r->getFileName())))
+				if(!$r->isInstantiable())
 					continue;
 				if($directory)
 					if(strpos($r->getFileName(), realpath($directory)) !== 0)
 						continue;
-				$reflection = new \ReflectionAnnotatedClass($classname);
-				
-				if($reflection->getAnnotation('Prefix'))
-					$prefix = \Router::formatRoute($reflection->getAnnotation('Prefix')->value);
-				else
-					$prefix = '';
-				
-				$methods = get_class_methods($classname);
-				foreach($methods as $method) {
-					if(!preg_match('/Action$/i', $method))
-						continue;
-					$method_reflection = new \ReflectionAnnotatedMethod($classname, $method);
-				
-					if($method_reflection->getAllAnnotations('Route')) {
-						foreach($method_reflection->getAllAnnotations('Route') as $annotation) {
-							$route = \Router::formatRoute($prefix.'/'.$annotation->value);
 
-							$routes[] = array(
-								'route'	=>	$route,
-								'controller'		=>	static::formatControllerName($classname), 
-								'action'			=>	static::formatActionName($method),
-								'requirements'	=>	$method_reflection->getAnnotation('Route')->requirements,
-								'method'	=>	$method_reflection->getAnnotation('Route')->method,
-								'name'	=>	isset($method_reflection->getAnnotation('Route')->name) ? $method_reflection->getAnnotation('Route')->name:null
-							);
-						}
-					}
-					if($method_reflection->getAnnotation('Hook')) {
-						$hook = $method_reflection->getAnnotation('Hook')->value;
-						#todo priority
-						// if($method_reflection->getAnnotation('Priority'))
-						// 	$priority = $method_reflection->getAnnotation('Priority')->value;
-						// else
-						// 	$priority = 0;
-						// $priority *= 1000;
-						// while(isset(BundlesManager::$hooks_table[$hook][$priority]))
-						// 	$priority += 1;
-
-						$controller = static::formatControllerName($classname);
-						$action = static::formatActionName($method);
-						$hooks[$hook][] = array($classname, $method);
-					}
-				}
+				$routes = array_merge($routes, $classname::fetchRoutes());
 			}
 
-			return array($routes, $hooks);
+			return $routes;
+		}
+
+		public static function getHooks($directory = false) {
+			$hooks = array();
+
+			$controllers = get_declared_classes();
+			$controllers = array_filter($controllers, function($controller) {
+				return is_subclass_of($controller, 'Coxis\Core\HooksContainer');
+			});
+			foreach($controllers as $classname) {
+				$r = new \ReflectionClass($classname);
+				if(!$r->isInstantiable())
+					continue;
+				if($directory)
+					if(strpos($r->getFileName(), realpath($directory)) !== 0)
+						continue;
+
+				$hooks = array_merge_recursive($hooks, $classname::fetchHooks());
+			}
+
+			return $hooks;
 		}
 
 		public static function getRoutesFromDirectory($directory) {

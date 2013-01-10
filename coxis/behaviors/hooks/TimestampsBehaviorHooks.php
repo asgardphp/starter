@@ -1,7 +1,7 @@
 <?php
-namespace Coxis\Behaviors\Controllers;
+namespace Coxis\Behaviors\Hooks;
 
-class TimestampsBehaviorController extends \Coxis\Core\Controller {
+class TimestampsBehaviorHooks extends \Coxis\Core\HooksContainer {
 	/**
 	@Hook('behaviors_pre_load')
 	**/

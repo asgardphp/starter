@@ -1,7 +1,7 @@
 <?php
-namespace Coxis\General\Controllers;
+namespace Coxis\General\Hooks;
 
-class GeneralController extends \Coxis\Core\Controller {
+class GeneralHooks extends \Coxis\Core\HooksContainer {
 	/**
 	@Hook('controller_configure')
 	*/

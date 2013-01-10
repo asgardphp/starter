@@ -4,6 +4,14 @@ namespace Coxis\Core;
 class Router {
 	protected $routes = array();
 
+	public static function formatControllerName($controller) {
+		return preg_replace('/Controller$/i', '', $controller);
+	}
+
+	public static function formatActionName($action) {
+		return preg_replace('/Action$/i', '', $action);
+	}
+
 	public function setRoutes($routes) {
 		$this->routes = $routes;
 	}

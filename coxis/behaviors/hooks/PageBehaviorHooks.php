@@ -1,7 +1,7 @@
 <?php
-namespace Coxis\Behaviors\Controllers;
+namespace Coxis\Behaviors\Hooks;
 
-class PageBehaviorController extends \Coxis\Core\Controller {
+class PageBehaviorHooks extends \Coxis\Core\HooksContainer {
 	/**
 	@Hook('behaviors_pre_load')
 	**/
