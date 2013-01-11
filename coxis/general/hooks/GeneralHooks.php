@@ -17,11 +17,9 @@ class GeneralHooks extends \Coxis\Core\HooksContainer {
 	@Hook('exception_Coxis\Core\Exceptions\NotFoundException')
 	*/
 	public function hook404ExceptionAction($exception) {
-		$request = \Router::getRequest();
-		$response = \Response::inst();
+		$request = \Request::inst();
 		if($request['format']=='html')
-			$output = \Coxis\Core\Router::run('default', '_404', \Request::inst());
-		return $response->setCode(404);
+			return \Coxis\Core\Controller::run('default', '_404', \Request::inst())->setCode(404);
 	}
 
 	/**

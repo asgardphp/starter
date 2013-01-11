@@ -114,7 +114,7 @@ class Router {
 		});
 
 		if(!$results)
-			throw new \Exception('Route not found!');
+			throw new \Coxis\Core\Exceptions\NotFoundException;
 
 		$request->setParam($results['params']);
 

@@ -11,7 +11,7 @@ class Controller extends Viewable {
 		$reflection = new \ReflectionAnnotatedClass($class);
 		
 		if($reflection->getAnnotation('Prefix'))
-			$prefix = \Router::formatRoute($reflection->getAnnotation('Prefix')->value);
+			$prefix = \Coxis\Core\Router::formatRoute($reflection->getAnnotation('Prefix')->value);
 		else
 			$prefix = '';
 		
@@ -23,12 +23,12 @@ class Controller extends Viewable {
 		
 			if($method_reflection->getAllAnnotations('Route')) {
 				foreach($method_reflection->getAllAnnotations('Route') as $annotation) {
-					$route = \Router::formatRoute($prefix.'/'.$annotation->value);
+					$route = \Coxis\Core\Router::formatRoute($prefix.'/'.$annotation->value);
 
 					$routes[] = array(
 						'route'	=>	$route,
-						'controller'		=>	Router::formatControllerName($class), 
-						'action'			=>	Router::formatActionName($method),
+						'controller'		=>	\Coxis\Core\Router::formatControllerName($class), 
+						'action'			=>	\Coxis\Core\Router::formatActionName($method),
 						'requirements'	=>	$method_reflection->getAnnotation('Route')->requirements,
 						'method'	=>	$method_reflection->getAnnotation('Route')->method,
 						'name'	=>	isset($method_reflection->getAnnotation('Route')->name) ? $method_reflection->getAnnotation('Route')->name:null
@@ -55,20 +55,6 @@ class Controller extends Viewable {
 	public static function getControllerName() {
 		#todo what for?
 		return preg_replace('/Controller$/', '', get_called_class());
-	}
-	
-	public function canonical($canonical, $relative=true, $redirect=true) {
-		if($relative)
-			$uri = \URL::get();
-		else
-			$uri = \URL::current();
-		
-		if($redirect && $canonical != $uri)
-			throw new ControllerException('Page not found', \Response::setCode(301)->redirect($canonical, $relative));
-		if($relative)
-			HTML::code('<link rel="canonical" href="'.\URL::to($canonical).'">');
-		else
-			HTML::code('<link rel="canonical" href="'.$canonical.'">');
 	}
 
 	public static function run($controllerShortname, $actionShortname, $request=null, $response=null) {

@@ -13,6 +13,8 @@ class Request implements \ArrayAccess {
 	public $data = '';
 	public $url;
 
+	public $isInitial = false;
+
 	public $params = array(
 		'format'	=>	'html',
 	);
