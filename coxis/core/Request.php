@@ -110,11 +110,6 @@ class Request implements \ArrayAccess {
 		return isset($this->params[$offset]) ? $this->params[$offset] : null;
 	}
 
-	public function buildServer() {
-		$this->server = $_SERVER;
-		return $this;
-	}
-
 	#todo should i really have it in Request ?!?!
 	public function start() {
 		if(!headers_sent()) {

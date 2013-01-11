@@ -41,7 +41,6 @@ class Browser {
 			$url = preg_replace('/(\?.*)$/', '', $url);
 		}
 		$request = new Request;
-		$request->buildServer();
 		$request->setMethod($method);
 		$request->get->setAll($get);
 		$request->post->setAll($post);
@@ -64,8 +63,8 @@ class Browser {
 		$res = FrontController::getResponse();
 
 		$this->last = $res;
-		$this->cookies = $request->cookie;
-		$this->session = $request->session;
+		$this->cookies = $request->cookie->all();
+		$this->session = $request->session->all();
 
 		return $res;
 	}
