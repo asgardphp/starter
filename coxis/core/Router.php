@@ -20,6 +20,7 @@ class Router {
 		$this->routes[] = $route;
 	}
 
+	#todo pass request to dispatch
 	public function dispatch() {
 		$route = $this->parseRoutes();
 		if(method_exists($route['controller'].'Controller', $route['action'].'Action'))
@@ -101,7 +102,6 @@ class Router {
 		$routes = $this->routes;
 		$results = Cache::get('Router/requests/'.$request_key, function() use($routes) {
 			\Coxis\Core\Router::sortRoutes($routes);
-			$request = null;
 			/* PARSE ALL ROUTES */
 			foreach($routes as $params) {
 				$route = $params['route'];
@@ -110,14 +110,14 @@ class Router {
 
 				/* IF THE ROUTE MATCHES */
 				if(($results = \Coxis\Core\Router::match($route, $requirements, $method)) !== false)
-					return array('values' => $results, 'route' => $params);
+					return array('params' => $results, 'route' => $params);
 			}
 		});
 
 		if(!$results)
 			throw new \Exception('Route not found!');
 
-		\GET::set($results['values']);
+		\Request::setParam($results['params']);
 
 		return $results['route'];
 	}

@@ -2,25 +2,19 @@
 namespace Coxis\Core;
 
 class URL {
-	public $url = null;
-	public $root = null;
-	public $server = null;
+	public $request;
+	public $server;
+	public $root;
+	public $url;
+
+	function __construct($request, $server=null, $root=null, $url=null) {
+		$this->request = $request;
+		$this->server = $server;
+		$this->root = $root;
+		$this->url = $url;
+	}
 
 	public function get() {
-		if(!$this->url) {
-			if(\SERVER::has('PATH_INFO'))
-				$this->url = \SERVER::get('PATH_INFO');
-			elseif(\SERVER::has('ORIG_PATH_INFO'))
-				$this->url = \SERVER::get('ORIG_PATH_INFO');
-			elseif(\SERVER::has('REDIRECT_URL'))
-				$this->url = \SERVER::get('REDIRECT_URL');
-			else
-				$this->url = '';
-			$this->url = preg_replace('/^\//', '', $this->url);
-		}
-
-		\Hook::trigger('path_filter', $this->url);
-		
 		return $this->url;
 	}
 	
@@ -41,14 +35,14 @@ class URL {
 	}
 	
 	public function full() {
-		if(sizeof(\GET::all())) {
-			$r = $this->current().'?';
-			foreach(\GET::all() as $k=>$v)
-				$r .= $k.'&'.$v;
-			return $r;
-		}
-		else
-			return $this->current();
+	if($this->request->get->size()) {
+		$r = $this->current().'?';
+		foreach($this->request->get->all() as $k=>$v)
+			$r .= $k.'&'.$v;
+		return $r;
+	}
+	else
+		return $this->current();
 	}
 	
 	public function base() {
@@ -63,16 +57,10 @@ class URL {
 	}
 	
 	public function root() {
-		if($this->root !== null)
-			$result = $this->root;
-		elseif(\Server::has('ORIG_SCRIPT_NAME'))
-			$result = dirname(\SERVER::get('ORIG_SCRIPT_NAME'));
-		else
-			$result = dirname(\SERVER::get('SCRIPT_NAME'));
+		$result = $this->root;
 		
 		$result = str_replace('\\', '/', $result);
 		$result = trim($result, '/');
-		//~ $result = '/'.$result.'/';
 		$result = str_replace('//', '/', $result);
 		
 		return $result;
@@ -81,8 +69,6 @@ class URL {
 	public function server() {
 		if($this->server !== null)
 			return 'http://'.$this->server;
-		elseif(\SERVER::has('SERVER_NAME'))
-			return 'http://'.trim(\SERVER::get('SERVER_NAME'), '/');
 		else
 			return '';
 	}

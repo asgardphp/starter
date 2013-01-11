@@ -10,21 +10,18 @@ class Context {
 	protected $ioc = null;
 
 	function __construct() {
+		$context = $this;
 		$this->ioc = new IoC;
-
-		$this->ioc->register('db', function() {
-			return new \Coxis\Core\DB\DB(\Config::get('database'));
-		});
-
-		$this->ioc->register('request', function() {
-			return \Coxis\Core\Request::createFromGlobals();
-		});
 
 		foreach(Coxis::$facades as $facade=>$class) {
 			if(!$this->ioc->registered(strtolower($facade))) {
-				$this->ioc->register(strtolower($facade), function() use($class) {
-					return new $class;
-				});
+				if(is_function($class))
+					$this->ioc->register(strtolower($facade), $class);
+				else {
+					$this->ioc->register(strtolower($facade), function() use($class) {
+						return new $class;
+					});
+				}
 			}
 		}
 	}

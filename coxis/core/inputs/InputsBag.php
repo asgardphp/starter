@@ -1,68 +1,66 @@
 <?php
 namespace Coxis\Core\Inputs;
 
-abstract class InputsBag {
-	protected static function getRequest() {
-		return \Request::inst();
+abstract class InputsBag implements \ArrayAccess {
+	protected $inputs;
+
+	function __construct($inputs=array()) {
+		$this->inputs = $inputs;
 	}
 
-	public static function get($name, $default=null) {
-		$req = static::getRequest();
-		$datatype = strtolower(NamespaceUtils::basename(get_called_class()));
-
-		return static::has($name) ? $req->{$datatype}[$name]:$default;
+	public function offsetSet($offset, $value) {
+		if (is_null($offset))
+			$this->inputs[] = $value;
+		else
+			$this->inputs[$offset] = $value;
+	}
+	public function offsetExists($offset) {
+		return isset($this->inputs[$offset]);
+	}
+	public function offsetUnset($offset) {
+		unset($this->inputs[$offset]);
+	}
+	public function offsetGet($offset) {
+		return isset($this->inputs[$offset]) ? $this->inputs[$offset] : null;
 	}
 
-	public static function set($name, $value=null) {
+	public function get($name, $default=null) {
+		return $this->has($name) ? $this->inputs[$name]:$default;
+	}
+
+	public function set($name, $value=null) {
 		if(is_array($name)) {
 			foreach($name as $k=>$v)
 				static::set($k, $v);
-			return;
 		}
-		$req = static::getRequest();
-		$datatype = strtolower(NamespaceUtils::basename(get_called_class()));
-
-		if(is_array($name))
-			$req->$datatype = array_merge($req->$datatype, $name);
 		else
-			$req->{$datatype}[$name] = $value;
+			$this->inputs[$name] = $value;
+		return $this;
 	}
 
-	public static function has($name) {
-		$req = static::getRequest();
-		$datatype = strtolower(NamespaceUtils::basename(get_called_class()));
-		
-		return isset($req->{$datatype}[$name]);
+	public function has($name) {
+		return isset($this->inputs[$name]);
 	}
 
-	public static function remove($name) {
-		$req = static::getRequest();
-		$datatype = strtolower(NamespaceUtils::basename(get_called_class()));
-		
-		unset($req->{$datatype}[$name]);
+	public function remove($name) {
+		unset($this->inputs[$name]);
+		return $this;
 	}
 
-	public static function all() {
-		$req = static::getRequest();
-		$datatype = strtolower(NamespaceUtils::basename(get_called_class()));
-		return $req->$datatype;
+	public function all() {
+		return $this->inputs;
 	}
 
-	public static function clear() {
-		$req = static::getRequest();
-		$datatype = strtolower(NamespaceUtils::basename(get_called_class()));
-		
-		$req->$datatype = array();
+	public function clear() {
+		$this->inputs = array();
+		return $this;
 	}
 
-	public static function setAll($all) {
+	public function setAll($all) {
 		return $this->clear()->set($all);
 	}
 
-	public static function size() {
-		$req = static::getRequest();
-		$datatype = strtolower(NamespaceUtils::basename(get_called_class()));
-		
-		return sizeof($req->$datatype);
+	public function size() {
+		return sizeof($this->inputs);
 	}
 }

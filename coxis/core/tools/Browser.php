@@ -43,26 +43,21 @@ class Browser {
 		$request = new Request;
 		$request->buildServer();
 		$request->setMethod($method);
-		$request->get = $get;
-		$request->post = $post;
-		$request->file = $file;
-		$request->cookie = $this->cookies;
-		$request->session = $this->session;
-		if(sizeof($post)) {
-			// $request->body = urlencode($post);
-			$request->body = '';
-			#todo
-		}
+		$request->get->setAll($get);
+		$request->post->setAll($post);
+		$request->file->setAll($file);
+		$request->cookie->setAll($this->cookies);
+		$request->session->setAll($this->session);
+		if(sizeof($post))
+			$request->body = http_build_query($post);
 		else
 			$request->body = $body;
 
 		Context::instance()->request = $request;
-		// if(\POST::has('send'))
 
-		#todo redo this with request
-		\URL::setURL($url);
-		\URL::setServer('localhost');
-		\URL::setRoot('');
+		$request->url->setURL($url);
+		$request->url->setServer('localhost');
+		$request->url->setRoot('');
 		
 		Coxis::load();
 

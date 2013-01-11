@@ -2,26 +2,7 @@
 namespace Coxis\Core;
 
 class Coxis {
-	public static $facades = array(
-		'URL'				=>	'\Coxis\Core\URL',
-		'Router'			=>	'\Coxis\Core\Router',
-		'Config'			=>	'\Coxis\Core\Config',
-		'Hook'				=>	'\Coxis\Core\Hook',
-		'Response'			=>	'\Coxis\Core\Response',
-		'Memory'			=>	'\Coxis\Core\Memory',
-		'Flash'				=>	'\Coxis\Core\Tools\Flash',
-		'DB'				=>	'\Coxis\Core\DB\DB',
-		'CLIRouter'			=>	'\Coxis\Core\CLI\Router',
-		'Validation'		=>	'\Coxis\Core\Validation',
-		'ModelsManager'		=>	'\Coxis\Core\ModelsManager',
-
-		'Locale'			=>	'\Coxis\Core\Tools\Locale',
-
-		'HTML'				=>	'\Coxis\Core\Tools\HTML',
-		'Importer'			=>	'\Coxis\Core\Importer',
-
-		'Request'		=>	'\Coxis\Core\Request',
-	);
+	public static $facades = array(); #see end of file
 
 	public static function getExceptionResponse($e) {
 		if($e instanceof \ErrorException) {
@@ -47,3 +28,52 @@ class Coxis {
 		BundlesManager::loadBundles();
 	}
 }
+
+Coxis::$facades = array(
+	'Router'			=>	'\Coxis\Core\Router',
+	'Config'			=>	'\Coxis\Core\Config',
+	'Hook'				=>	'\Coxis\Core\Hook',
+	'Response'			=>	'\Coxis\Core\Response',
+	'Memory'			=>	'\Coxis\Core\Memory',
+	'Flash'				=>	'\Coxis\Core\Tools\Flash',
+	'DB'				=>	function() {
+		return new \Coxis\Core\DB\DB(\Config::get('database'));
+	},
+	'CLIRouter'			=>	'\Coxis\Core\CLI\Router',
+	'Validation'		=>	'\Coxis\Core\Validation',
+	'ModelsManager'		=>	'\Coxis\Core\ModelsManager',
+
+	'Locale'			=>	'\Coxis\Core\Tools\Locale',
+
+	'HTML'				=>	'\Coxis\Core\Tools\HTML',
+	'Importer'			=>	'\Coxis\Core\Importer',
+
+	'Request'		=>	function() {
+		return \Coxis\Core\Request::createFromGlobals();
+	},
+
+	'URL'				=>	function() {
+		return \Request::inst()->url;
+	},
+	'Session'			=>	function() {
+		return \Request::inst()->session;
+	},
+	'Get'			=>	function() {
+		return \Request::inst()->get;
+	},
+	'Post'			=>	function() {
+		return \Request::inst()->post;
+	},
+	'File'			=>	function() {
+		return \Request::inst()->file;
+	},
+	'Cookie'			=>	function() {
+		return \Request::inst()->cookie;
+	},
+	'Server'			=>	function() {
+		return \Request::inst()->server;
+	},
+	'argv'			=>	function() {
+		return \Request::inst()->argv;
+	},
+);

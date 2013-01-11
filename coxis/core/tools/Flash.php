@@ -5,19 +5,15 @@ class Flash {
 	protected $messages = array('success' => array(), 'error' => array());
 
 	function __construct() {
-		if(\Coxis\Core\Inputs\Session::has('messages'))
-			$this->messages = \Coxis\Core\Inputs\Session::get('messages');
+		if(\Coxis\Core\Facades\Session::has('messages'))
+			$this->messages = \Coxis\Core\Facades\Session::get('messages');
 	}
 
 	protected function persist() {
-		\Coxis\Core\Inputs\Session::set('messages', $this->messages);
+		\Coxis\Core\Facades\Session::set('messages', $this->messages);
 	}
 
 	public function addSuccess($message) {
-		// if(is_array($message))
-		// 	foreach($message as $one_message)
-		// 		$this->messages['success'][] = $one_message;
-		// else
 		if(is_array($message))
 			$this->messages['success'] = array_merge($this->messages['success'], $message);
 		else
@@ -28,10 +24,6 @@ class Flash {
 	}
 	
 	public function addError($message) {
-		// if(is_array($message))
-		// 	foreach($message as $one_message)
-		// 		$this->messages['error'][] = $one_message;
-		// else
 		if(is_array($message))
 			$this->messages['error'] = array_merge($this->messages['error'], $message);
 		else
@@ -42,7 +34,6 @@ class Flash {
 	}
 	
 	public function showAll($cat=null) {
-		// d($this->messages);
 		$this->showSuccess($cat);
 		$this->showError($cat);
 	}
@@ -62,13 +53,10 @@ class Flash {
 	}
 	
 	public function showError($cat=null) {
-		// d($this->messages, $cat);
 		if($cat)
 			$messages = isset($this->messages['error'][$cat]) ? Tools::flateArray($this->messages['error'][$cat]):array();
-		// d($messages);
 		else
 			$messages = Tools::flateArray($this->messages['error']);
-		// d($messages);
 		foreach($messages as $msg)
 			echo '<div class="message errormsg"><p>'.$msg.'</p></div>'."\n";
 		if($cat)

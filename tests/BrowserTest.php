@@ -22,6 +22,9 @@ class BrowserTest extends PHPUnit_Framework_TestCase {
 	public function tearDown(){}
 
 	public function test0() {
+	}
+
+	public function test1() {
 		$browser = new Browser;
 		$this->assertEquals(_pq($browser->get('')->content, 'h1')->html(), 'Coxis');
 

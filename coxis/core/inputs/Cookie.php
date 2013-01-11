@@ -1,22 +1,27 @@
 <?php
 namespace Coxis\Core\Inputs;
 
-abstract class COOKIE extends InputsBag {
-	// function __construct() {
-	// 	$this->inputs = $_COOKIE;
-	// }
-	
-	public static function set($what, $value, $time=null, $path='/') {
-		if($time===null)
-			$time = time()+3600*24*365;
-		setcookie($what, $value, $time, $path);
-		parent::set($what, $value);
-		// return $this;
+class COOKIE extends InputsBag {
+	public function set($what, $value=null) {#, $time=null, $path='/'
+		if(is_array($what)) {
+			foreach($what as $k=>$v)
+				call_user_func_array(array($this, 'set'), array($k, $v));
+			return $this;
+		}
+		else {
+			$args = func_get_args();
+			$time = isset($args[2]) ? $args[2]:null;
+			$path = isset($args[3]) ? $args[3]:'/';
+			if($time===null)
+				$time = time()+3600*24*365;
+			setcookie($what, $value, $time, $path);
+			return parent::set($what, $value);
+		}
+
 	}
 	
-	public static function remove($what, $path='/') {
+	public function remove($what, $path='/') {
 		setcookie($what, false, -10000, $path);
-		parent::remove($what);
-		// return $this;
+		return parent::remove($what);
 	}
 }

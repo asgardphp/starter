@@ -1,14 +1,21 @@
 <?php
 namespace Coxis\Core\Inputs;
 
-abstract class Session extends InputsBag {
-	public static function set($name, $value=null) {
-		if(isset($_SESSION))
-			$_SESSION[$name] = $value;
-		return parent::set($name, $value);
+class Session extends InputsBag {
+	public function set($name, $value=null) {
+		if(is_array($name)) {
+			foreach($name as $k=>$v)
+				$this->set($k, $v);
+			return $this;
+		}
+		else {
+			if(isset($_SESSION))
+				$_SESSION[$name] = $value;
+			return parent::set($name, $value);
+		}
 	}
 	  
-	public static function remove($name) {
+	public function remove($name) {
 		if(isset($_SESSION))
 			unset($_SESSION[$name]);
 		return parent::remove($name);
