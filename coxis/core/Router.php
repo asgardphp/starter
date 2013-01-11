@@ -20,11 +20,10 @@ class Router {
 		$this->routes[] = $route;
 	}
 
-	#todo pass request to dispatch
-	public function dispatch() {
-		$route = $this->parseRoutes();
+	public function dispatch($request, $response=null) {
+		$route = $this->parseRoutes($request);
 		if(method_exists($route['controller'].'Controller', $route['action'].'Action'))
-			return Controller::run($route['controller'], $route['action'], \Request::inst(), \Response::inst());
+			return Controller::run($route['controller'], $route['action'], $request, $response);
 		else
 			throw new NotFoundException('Page not found');
 	}
@@ -34,9 +33,8 @@ class Router {
 		return '/'.trim($route, '/');
 	}
 	
-	public static function matchWith($route, $with, $requirements=array(), $method=null) {
-		$server_method = \Request::method();
-		if($method)
+	public static function matchWith($route, $with, $requirements=array(), $request=null, $method=null) {
+		if($method) {
 			if(is_array($method)) {
 				$good = false;
 				foreach($method as $v)
@@ -45,8 +43,9 @@ class Router {
 				if(!$good)
 					return false;
 			}
-			elseif(strtolower($method) != $server_method)
+			elseif($request && strtolower($method) != $request->method())
 				return false;
+		}
 				
 		$regex = static::getRegexFromRoute($route, $requirements);
 		$matches = array();
@@ -65,9 +64,9 @@ class Router {
 		}
 	}
 	
-	public static function match($route, $requirements=array(), $method=null) {
-		$with = static::formatRoute(\URL::get());
-		return static::matchWith($route, $with, $requirements, $method);
+	public static function match($request, $route, $requirements=array(), $method=null) {
+		$with = static::formatRoute($request->url->get());
+		return static::matchWith($route, $with, $requirements, $request, $method);
 	}
 	
 	public static function getRegexFromRoute($route, $requirements) {
@@ -95,12 +94,12 @@ class Router {
 		return $regex;
 	}
 
-	public function parseRoutes() {
-		$request_key = md5(serialize(array(\Request::method(), \URL::get())));
+	public function parseRoutes($request) {
+		$request_key = md5(serialize(array($request->method(), $request->url->get())));
 		#todo complete key
 
 		$routes = $this->routes;
-		$results = Cache::get('Router/requests/'.$request_key, function() use($routes) {
+		$results = Cache::get('Router/requests/'.$request_key, function() use($routes, $request) {
 			\Coxis\Core\Router::sortRoutes($routes);
 			/* PARSE ALL ROUTES */
 			foreach($routes as $params) {
@@ -109,7 +108,7 @@ class Router {
 				$method = $params['method'];
 
 				/* IF THE ROUTE MATCHES */
-				if(($results = \Coxis\Core\Router::match($route, $requirements, $method)) !== false)
+				if(($results = \Coxis\Core\Router::match($request, $route, $requirements, $method)) !== false)
 					return array('params' => $results, 'route' => $params);
 			}
 		});
@@ -117,7 +116,7 @@ class Router {
 		if(!$results)
 			throw new \Exception('Route not found!');
 
-		\Request::setParam($results['params']);
+		$request->setParam($results['params']);
 
 		return $results['route'];
 	}
@@ -171,11 +170,6 @@ class Router {
 			throw new \Exception('Missing parameter for route: '.$route);
 			
 		return trim($route, '/');
-	}
-
-	public function getRequest() {
-		d();
-		return \Request::inst();
 	}
 	
 	public function getRouteFor($what) {

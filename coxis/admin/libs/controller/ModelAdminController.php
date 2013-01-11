@@ -281,7 +281,7 @@ abstract class ModelAdminController extends AdminParentController {
 			if($results = \Router::matchWith($hook['route'], $request['route'])) {
 				$newRequest = new \Coxis\Core\Request;
 				$newRequest->parentController = $controller;
-				$newRequest->get = array_merge($request->get, $results);
+				$newRequest->params = array_merge($request->params, $results);
 				return Controller::run($hook['controller'], $hook['action'], $newRequest);
 			}
 		}

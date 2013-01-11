@@ -14,12 +14,7 @@ class FrontController extends Controller {
 			try {
 				\Hook::trigger('start');
 				Profiler::checkpoint('Before dispatching');
-
-				preg_match('/\.([a-zA-Z0-9]{1,5})$/', \URL::get(), $matches);#todo move it into request constructor?
-				if(isset($matches[1]))
-					\Request::setParam('format', $matches[1]);
-
-				$response = \Router::dispatch();
+				$response = \Router::dispatch(\Request::inst(), \Response::inst());
 				Profiler::checkpoint('After dispatching');
 			} catch(\Coxis\Core\ControllerException $e) {
 				if($e->response)
