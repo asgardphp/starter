@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Core;
+namespace Coxis\Hook;
 
 class Hook {
 	// protected $registry = array();
@@ -15,7 +15,7 @@ class Hook {
 
 	#cannot use references with get_func_args
 	public function trigger($name, $args=array(), $cb=null, $print=false) {
-		return $this->triggerChain(new \Coxis\Core\HookChain, $name, $args, $cb, $print);
+		return $this->triggerChain(new \Coxis\Hook\HookChain, $name, $args, $cb, $print);
 	}
 
 	#cannot use references with get_func_args

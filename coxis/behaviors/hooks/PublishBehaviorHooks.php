@@ -1,7 +1,7 @@
 <?php
 namespace Coxis\Behaviors\Hooks;
 
-class PublishBehaviorHooks extends \Coxis\Core\HooksContainer {
+class PublishBehaviorHooks extends \Coxis\Hook\HooksContainer {
 	/**
 	@Hook('behaviors_load_publish')
 	**/

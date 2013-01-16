@@ -1,7 +1,7 @@
 <?php
 namespace Coxis\ORM\Hooks;
 
-class ORMBehaviorHooks extends \Coxis\Core\HooksContainer {
+class ORMBehaviorHooks extends \Coxis\Hook\HooksContainer {
 	/**
 	@Hook('behaviors_pre_load')
 	**/

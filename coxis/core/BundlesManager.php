@@ -81,7 +81,7 @@ namespace Coxis\Core {
 
 			if($bm=\Coxis\Utils\Cache::get('bundlesmanager')) {
 				\Router::setRoutes($bm['routes']);
-				\Coxis\Core\HooksContainer::addHooks($bm['hooks']);
+				\Coxis\Hook\HooksContainer::addHooks($bm['hooks']);
 				\Locale::setLocales($bm['locales']);
 				Autoloader::$preloaded = $bm['preloaded'];
 			}
@@ -101,7 +101,7 @@ namespace Coxis\Core {
 				
 				foreach($hooks as $name=>$subhooks)
 					foreach($subhooks as $hook)
-						\Coxis\Core\HooksContainer::addHook($name, $hook);
+						\Coxis\Hook\HooksContainer::addHook($name, $hook);
 
 				\Coxis\Utils\Cache::set('bundlesmanager', array(
 					'routes' => $routes,
@@ -155,7 +155,7 @@ namespace Coxis\Core {
 
 			$controllers = get_declared_classes();
 			$controllers = array_filter($controllers, function($controller) {
-				return is_subclass_of($controller, 'Coxis\Core\HooksContainer');
+				return is_subclass_of($controller, 'Coxis\Hook\HooksContainer');
 			});
 			foreach($controllers as $classname) {
 				$r = new \ReflectionClass($classname);

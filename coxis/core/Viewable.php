@@ -1,7 +1,7 @@
 <?php
 namespace Coxis\Core;
 
-class Viewable extends Hookable {
+class Viewable extends \Coxis\Hook\Hookable {
 	protected $_view;
 
 	public static function widget($class, $action, $args=array()) {

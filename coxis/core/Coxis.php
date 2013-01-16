@@ -32,7 +32,7 @@ class Coxis {
 Coxis::$facades = array(
 	'Router'			=>	'\Coxis\Core\Router',
 	'Config'			=>	'\Coxis\Core\Config',
-	'Hook'				=>	'\Coxis\Core\Hook',
+	'Hook'				=>	'\Coxis\Hook\Hook',
 	'Response'			=>	'\Coxis\Core\Response',
 	'Memory'			=>	'\Coxis\Core\Memory',
 	'Flash'				=>	'\Coxis\Utils\Flash',

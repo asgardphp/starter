@@ -1,7 +1,7 @@
 <?php
 namespace Coxis\Behaviors\Hooks;
 
-class MetasBehaviorHooks extends \Coxis\Core\HooksContainer {
+class MetasBehaviorHooks extends \Coxis\Hook\HooksContainer {
 	/**
 	@Hook('behaviors_load_metas')
 	**/

@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Core;
+namespace Coxis\Hook;
 
 class Hookable {
 	/* INSTANCE */

@@ -1,7 +1,7 @@
 <?php
 namespace Coxis\Behaviors\Hooks;
 
-class SortableBehaviorHooks extends \Coxis\Core\HooksContainer {
+class SortableBehaviorHooks extends \Coxis\Hook\HooksContainer {
 	/**
 	@Hook('behaviors_load_sortable')
 	**/
@@ -30,7 +30,7 @@ class SortableBehaviorHooks extends \Coxis\Core\HooksContainer {
 				'controller'	=>	'SortableBehavior',
 				'action'			=>	'demote'
 			));
-			\Coxis\Core\HooksContainer::addHook('coxis_'.$modelName.'_actions', array('\Coxis\Behaviors\Controllers\SortableBehaviorHooks', 'sortable'));
+			\Coxis\Hook\HooksContainer::addHook('coxis_'.$modelName.'_actions', array('\Coxis\Behaviors\Controllers\SortableBehaviorHooks', 'sortable'));
 		} catch(\Exception $e) {}#if the admincontroller does not exist for this model
 	}
 	
