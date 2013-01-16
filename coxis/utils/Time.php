@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Core\Tools;
+namespace Coxis\Utils;
 
 class Time {
 	public $timestamp = 0;

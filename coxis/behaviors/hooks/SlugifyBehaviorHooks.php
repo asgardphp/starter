@@ -14,11 +14,11 @@ class SlugifyBehaviorHooks extends \Coxis\Core\HooksContainer {
 	**/
 	public function behaviors_presave_slugifyAction($model) {
 		if($model->isNew())
-			$model->slug = \Coxis\Core\Tools\Tools::slugify($model);
+			$model->slug = \Coxis\Utils\Tools::slugify($model);
 		else {
 			$inc = 1;
 			do {
-				$model->slug = \Coxis\Core\Tools\Tools::slugify($model).($inc < 2 ? '':'-'.$inc);
+				$model->slug = \Coxis\Utils\Tools::slugify($model).($inc < 2 ? '':'-'.$inc);
 				$inc++;
 			}
 			while($model::where(array(

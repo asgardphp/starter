@@ -79,10 +79,10 @@ class ModelFile {
 		if($this->type() == 'image') {
 			if(!($format = $this->format()))
 				$format = IMAGETYPE_JPEG;
-			$filename = \Coxis\Core\Tools\ImageManager::load($file['path'])->save($to, $format);
+			$filename = \Coxis\Utils\ImageManager::load($file['path'])->save($to, $format);
 		}
 		else
-			$filename = \Coxis\Core\Tools\FileManager::move($file['path'], $to);
+			$filename = \Coxis\Utils\FileManager::move($file['path'], $to);
 		
 		$this->file = $filename;
 
@@ -91,7 +91,7 @@ class ModelFile {
 	
 	public function delete() {
 		if($path = $this->get()) {
-			\Coxis\Core\Tools\FileManager::unlink(_WEB_DIR_.$path);
+			\Coxis\Utils\FileManager::unlink(_WEB_DIR_.$path);
 			\Coxis\Imagecache\Libs\ImageCache::clearFile($path);
 		}
 		$this->file = null;

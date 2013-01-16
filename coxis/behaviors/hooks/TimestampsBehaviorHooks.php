@@ -23,7 +23,7 @@ class TimestampsBehaviorHooks extends \Coxis\Core\HooksContainer {
 	**/
 	public function behaviors_presave_timestampsAction($model) {
 		if(!$model->created_at)
-			$model->created_at = new \Coxis\Core\Tools\Datetime(time());
-		$model->updated_at = new \Coxis\Core\Tools\Datetime(time());
+			$model->created_at = new \Coxis\Utils\Datetime(time());
+		$model->updated_at = new \Coxis\Utils\Datetime(time());
 	}
 }

@@ -21,7 +21,7 @@ class Error {
 		$result = ob_get_contents();
 		ob_end_clean();
 		
-		\Coxis\Core\Tools\Log::add('errors/log.html', $result);
+		\Coxis\Utils\Log::add('errors/log.html', $result);
 		
 		if(\Config::get('error_display') || \Config::get('error_display') === null)
 			return \Response::setHeader('Content-Type', 'text/html')->setContent($result);

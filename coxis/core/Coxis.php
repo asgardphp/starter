@@ -35,7 +35,7 @@ Coxis::$facades = array(
 	'Hook'				=>	'\Coxis\Core\Hook',
 	'Response'			=>	'\Coxis\Core\Response',
 	'Memory'			=>	'\Coxis\Core\Memory',
-	'Flash'				=>	'\Coxis\Core\Tools\Flash',
+	'Flash'				=>	'\Coxis\Utils\Flash',
 	'DB'				=>	function() {
 		return new \Coxis\Core\DB\DB(\Config::get('database'));
 	},
@@ -43,9 +43,9 @@ Coxis::$facades = array(
 	'Validation'		=>	'\Coxis\Core\Validation',
 	'ModelsManager'		=>	'\Coxis\Core\ModelsManager',
 
-	'Locale'			=>	'\Coxis\Core\Tools\Locale',
+	'Locale'			=>	'\Coxis\Utils\Locale',
 
-	'HTML'				=>	'\Coxis\Core\Tools\HTML',
+	'HTML'				=>	'\Coxis\Utils\HTML',
 	'Importer'			=>	'\Coxis\Core\Importer',
 
 	'Request'		=>	function() {

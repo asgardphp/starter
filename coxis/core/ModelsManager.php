@@ -35,9 +35,9 @@ class ModelDefinition extends Hookable {
 		foreach($clone as $k=>$v) {
 			if(is_int($k)) {
 				$properties = 
-					\Coxis\Core\Tools\Tools::array_before($properties, $k) +
+					\Coxis\Utils\Tools::array_before($properties, $k) +
 					array($v => array()) +
-					\Coxis\Core\Tools\Tools::array_after($properties, $k);
+					\Coxis\Utils\Tools::array_after($properties, $k);
 			}
 		}
 		foreach($properties as $k=>$params)

@@ -274,7 +274,7 @@ class '.$filename.'_'.$i.' {
 		'.implode("\n\n\t\t", $down)."
 	}
 }";
-		\Coxis\Core\Tools\FileManager::mkdir('migrations');
+		\Coxis\Utils\FileManager::mkdir('migrations');
 		file_put_contents('migrations/'.$i.'_'.$filename.'.php', $migration);
 
 		if($verbose)

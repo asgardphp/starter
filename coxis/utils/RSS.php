@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Core\Tools;
+namespace Coxis\Utils;
 
 /***************************************************************************
  *                         RSS 2.0 generation class

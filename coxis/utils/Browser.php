@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Core\Tools;
+namespace Coxis\Utils;
 
 class Browser {
 	public $session = array();
@@ -40,7 +40,7 @@ class Browser {
 			parse_str($infos['query'], $get);
 			$url = preg_replace('/(\?.*)$/', '', $url);
 		}
-		$request = new Request;
+		$request = new \Coxis\Core\Request;
 		$request->setMethod($method);
 		$request->get->setAll($get);
 		$request->post->setAll($post);
@@ -60,7 +60,7 @@ class Browser {
 		
 		Coxis::load();
 
-		$res = FrontController::getResponse();
+		$res = \Coxis\Core\FrontController::getResponse();
 
 		$this->last = $res;
 		$this->cookies = $request->cookie->all();

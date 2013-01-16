@@ -88,7 +88,7 @@ abstract class Model {
 		if(!$force) {
 			#validate params and files
 			if($errors = $this->errors()) {
-				$msg = implode("\n", \Coxis\Core\Tools\Tools::flateArray($errors));
+				$msg = implode("\n", \Coxis\Utils\Tools::flateArray($errors));
 				$e = new ModelException($msg);
 				$e->errors = $errors;
 				throw $e;

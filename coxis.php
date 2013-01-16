@@ -27,7 +27,7 @@ function d() {
 function get() {
 	$args = func_get_args();
 	$result = array_shift($args);
-	$args = \Coxis\Core\Tools\Tools::flateArray($args);
+	$args = \Coxis\Utils\Tools::flateArray($args);
 	foreach($args as $key)
 		if(!isset($result[$key]))
 			return null;
@@ -49,7 +49,7 @@ ob_start();
 require_once 'coxis/core/Coxis.php';
 require_once 'coxis/core/IoC.php';
 require_once 'coxis/core/Context.php';
-require_once 'coxis/core/tools/NamespaceUtils.php';
+require_once 'coxis/utils/NamespaceUtils.php';
 require_once 'coxis/core/Importer.php';
 require_once 'coxis/core/Autoloader.php';
 
@@ -58,7 +58,7 @@ Autoloader::preloadDir(_DIR_.'coxis/core');
 foreach(Coxis::$facades as $facade=>$class)
 	Autoloader::map(strtolower($facade), 'coxis/core/facades/'.$facade.'.php');
 
-Timer::start();
+\Coxis\Utils\Timer::start();
 
 /* ERRORS/EXCEPTIONS */
 set_error_handler(function ($errno, $errstr, $errfile, $errline) {
@@ -85,4 +85,4 @@ register_shutdown_function(function () {
 	if(\Config::get('profiler'))
 		Profiler::report();
 });
-Profiler::checkpoint('End of coxis.php');
+\Coxis\Utils\Profiler::checkpoint('End of coxis.php');

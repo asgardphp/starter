@@ -310,7 +310,7 @@ class ORM {
 		$page = $page ? $page:1;
 		$this->offset(($page-1)*$per_page);
 		$this->limit($per_page);
-		$paginator = new \Coxis\Core\Tools\Paginator($per_page, $this->count(), $page);
+		$paginator = new \Coxis\Utils\Paginator($per_page, $this->count(), $page);
 		
 		return $this->get();
 	}

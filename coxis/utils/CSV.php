@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Core\Tools;
+namespace Coxis\Utils;
 
 /*$csv = new CSV($header);
 $csv->header($header);

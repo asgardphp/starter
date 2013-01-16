@@ -55,7 +55,7 @@ namespace Coxis\Core {
 		}
 		
 		public static function getBundles($directory = null) {
-			if(\Config::get('phpcache') && $bundles=Cache::get('bundlesmanager/bundles'))
+			if(\Config::get('phpCache') && $bundles=\Coxis\Utils\Cache::get('bundlesmanager/bundles'))
 				return $bundles;
 			else {
 				$bundles = array();
@@ -68,8 +68,8 @@ namespace Coxis\Core {
 				foreach($directories as $dir)
 					foreach(glob(_DIR_.$dir.'/*') as $bundlepath)
 						$bundles[] = $bundlepath;
-				if(\Config::get('phpcache'))
-					Cache::set('bundlesmanager/bundles', $bundles);
+				if(\Config::get('phpCache'))
+					\Coxis\Utils\Cache::set('bundlesmanager/bundles', $bundles);
 				return $bundles;
 			}
 		}
@@ -79,7 +79,7 @@ namespace Coxis\Core {
 			$bundles = static::getBundles($directory);
 			Profiler::checkpoint('loadBundles 2');
 
-			if($bm=Cache::get('bundlesmanager')) {
+			if($bm=\Coxis\Utils\Cache::get('bundlesmanager')) {
 				\Router::setRoutes($bm['routes']);
 				\Coxis\Core\HooksContainer::addHooks($bm['hooks']);
 				\Locale::setLocales($bm['locales']);
@@ -103,7 +103,7 @@ namespace Coxis\Core {
 					foreach($subhooks as $hook)
 						\Coxis\Core\HooksContainer::addHook($name, $hook);
 
-				Cache::set('bundlesmanager', array(
+				\Coxis\Utils\Cache::set('bundlesmanager', array(
 					'routes' => $routes,
 					'hooks' => $hooks,
 					'locales' => \Locale::getLocales(),

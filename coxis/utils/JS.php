@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Core\Tools;
+namespace Coxis\Utils;
 
 class JS {
 	public static function placeholder($selector, $placeholder) {

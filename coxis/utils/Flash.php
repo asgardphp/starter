@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Core\Tools;
+namespace Coxis\Utils;
 
 class Flash {
 	protected $messages = array('success' => array(), 'error' => array());
