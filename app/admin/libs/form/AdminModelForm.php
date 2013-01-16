@@ -1,7 +1,7 @@
 <?php
 namespace App\Admin\Libs\Form;
 
-class AdminModelForm extends \Coxis\Core\Form\ModelForm {
+class AdminModelForm extends \Coxis\Form\ModelForm {
 	public $controller = null;
 
 	function __construct($model, $controller, $params=array()) {
@@ -38,9 +38,9 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 		});
 
 		$this->hook('render', function($hookchain, $form, $field, $widget, $options) {
-			if($field instanceof \Coxis\Core\Form\Fields\HiddenField)
+			if($field instanceof \Coxis\Form\Fields\HiddenField)
 				return $widget;
-			if($field instanceof \Coxis\Core\Form\Fields\MultipleFileField)
+			if($field instanceof \Coxis\Form\Fields\MultipleFileField)
 				return $widget->render();
 			$label = $field->label();
 			if(isset($options['label']))
@@ -67,7 +67,7 @@ class AdminModelForm extends \Coxis\Core\Form\ModelForm {
 			return;
 		$error_found = false;
 		foreach($this->errors as $field_name=>$errors) {
-			if(!$this->has($field_name) || is_subclass_of($this->$field_name, 'Coxis\Core\Form\Fields\HiddenField')) {
+			if(!$this->has($field_name) || is_subclass_of($this->$field_name, 'Coxis\Form\Fields\HiddenField')) {
 				if(!$error_found) {
 					echo '<div class="message errormsg">';
 					$error_found = true;

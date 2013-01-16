@@ -1,7 +1,7 @@
 <?php
 namespace App\Admin\Libs\Form\Widgets;
 
-class MultipleFileWidget extends \Coxis\Core\Form\Widgets\HTMLWidget {
+class MultipleFileWidget extends \Coxis\Form\Widgets\HTMLWidget {
 	public function render($options=array()) {
 		$options = $this->options+$options;
 		

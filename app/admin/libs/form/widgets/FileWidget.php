@@ -1,7 +1,7 @@
 <?php
 namespace App\Admin\Libs\Form\Widgets;
 
-class FileWidget extends \Coxis\Core\Form\Widgets\HTMLWidget {
+class FileWidget extends \Coxis\Form\Widgets\HTMLWidget {
 	public function render($options=array()) {
 		$options = $this->options+$options;
 		

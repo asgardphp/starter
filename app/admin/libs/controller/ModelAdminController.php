@@ -51,8 +51,8 @@ abstract class ModelAdminController extends AdminParentController {
 		$_model = static::$_model;
 		$_models = static::$_models;
 		
-		$this->searchForm = new \Coxis\Core\Form\Form(array('method'=>'get'));
-		$this->searchForm->search = new \Coxis\Core\Form\Fields\TextField;
+		$this->searchForm = new \Coxis\Form\Form(array('method'=>'get'));
+		$this->searchForm->search = new \Coxis\Form\Fields\TextField;
 	
 		//submitted
 		$i = 0;
@@ -118,7 +118,7 @@ abstract class ModelAdminController extends AdminParentController {
 				\Flash::addSuccess($this->_messages['modified']);
 				if(\POST::has('send'))
 					return \Response::redirect('admin/'.static::$_index);
-			} catch(\Coxis\Core\Form\FormException $e) {
+			} catch(\Coxis\Form\FormException $e) {
 				\Flash::addError($this->form->getGeneralErrors());
 				\Response::setCode(400);
 			}
@@ -151,7 +151,7 @@ abstract class ModelAdminController extends AdminParentController {
 					return \Response::redirect('admin/'.static::$_index);
 				else
 					return \Response::redirect('admin/'.static::$_index.'/'.$this->$modelName->id.'/edit');
-			} catch(\Coxis\Core\Form\FormException $e) {
+			} catch(\Coxis\Form\FormException $e) {
 				\Flash::addError($this->form->getGeneralErrors());
 				\Response::setCode(400);
 			}
