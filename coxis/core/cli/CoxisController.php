@@ -354,7 +354,7 @@ class CoxisController extends CLIController {
 		else
 			$res = 'tests/AutoTest.php';
 
-		copy('sample.php', $res);
+		copy('sample.php.txt', $res);
 
 		$routes = \Router::getRoutes();
 		$routes = \BundlesManager::getRoutesFromDirectory($directory);
