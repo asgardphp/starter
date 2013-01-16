@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Core\Cli;
+namespace Coxis\Cli;
 
 class DBController extends CLIController {
 	public function dumpAction($request) {

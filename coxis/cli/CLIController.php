@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Core\Cli;
+namespace Coxis\Cli;
 
 abstract class CLIController {
 	public function run($action, $params=array(), $showView=false) {

@@ -70,6 +70,8 @@ set_exception_handler(function ($e) {
 	\Coxis\Core\Coxis::getExceptionResponse($e)->send();
 });
 register_shutdown_function(function () {
+	if(!defined('_ENV_'))
+		define('_ENV_', 'dev');
 	if(!\Config::get('no_shutdown_error')) {
 		chdir(dirname(__FILE__));//wtf?
 		#todo get the full backtrace for shutdown errors

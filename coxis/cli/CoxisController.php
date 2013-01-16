@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Core\Cli;
+namespace Coxis\Cli;
 
 #todo replace with a distributed architecture
 

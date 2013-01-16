@@ -39,7 +39,7 @@ Coxis::$facades = array(
 	'DB'				=>	function() {
 		return new \Coxis\Core\DB\DB(\Config::get('database'));
 	},
-	'CLIRouter'			=>	'\Coxis\Core\CLI\Router',
+	'CLIRouter'			=>	'\Coxis\CLI\Router',
 	'Validation'		=>	'\Coxis\Core\Validation',
 	'ModelsManager'		=>	'\Coxis\Core\ModelsManager',
 

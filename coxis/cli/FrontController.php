@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Core\Cli;
+namespace Coxis\Cli;
 
 class FrontController extends CLIController {
 	public function mainAction($request) {
