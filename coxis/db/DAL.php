@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Core\DB;
+namespace Coxis\DB;
 
 class DAL {
 	public $db = null;

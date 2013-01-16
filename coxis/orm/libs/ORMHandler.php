@@ -72,7 +72,7 @@ class ORMHandler {
 	}
 	
 	public static function getI18N($model, $lang) {
-		$dal = new \Coxis\Core\DB\DAL(static::getTranslationTable($model));
+		$dal = new \Coxis\DB\DAL(static::getTranslationTable($model));
 		return $dal->where(array('id' => $model->id))->where(array('locale'=>$lang))->first();
 	}
 	
@@ -229,7 +229,7 @@ class ORMHandler {
 		
 		//Persist i18n
 		foreach($i18n as $lang=>$values) {
-			$dal = new \Coxis\Core\DB\DAL(static::getTranslationTable($model));
+			$dal = new \Coxis\DB\DAL(static::getTranslationTable($model));
 			if(!$dal->where(array('id'=>$model->id, 'locale'=>$lang))->update($values))
 				$dal->insert(
 					array_merge(

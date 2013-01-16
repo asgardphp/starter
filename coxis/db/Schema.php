@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Core\DB;
+namespace Coxis\DB;
 
 class BuildCol {
 	protected $name;
@@ -183,7 +183,7 @@ class Table {
 	public function primary($keys) {
 		try {
 			\DB::query('ALTER TABLE  `'.$this->name.'` DROP PRIMARY KEY');
-		} catch(\Coxis\Core\DB\DBException $e) {}
+		} catch(\Coxis\DB\DBException $e) {}
 	
 		if(!is_array($keys))
 			$keys = array($keys);
@@ -366,7 +366,7 @@ class Column {
 		$sql = 'alter table `'.$this->table.'` drop index `'.$this->name.'`';
 		try {
 		\DB::query($sql);
-		} catch(\Coxis\Core\DB\DBException $e) {}
+		} catch(\Coxis\DB\DBException $e) {}
 		
 		return $this;
 	}

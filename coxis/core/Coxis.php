@@ -37,7 +37,7 @@ Coxis::$facades = array(
 	'Memory'			=>	'\Coxis\Core\Memory',
 	'Flash'				=>	'\Coxis\Utils\Flash',
 	'DB'				=>	function() {
-		return new \Coxis\Core\DB\DB(\Config::get('database'));
+		return new \Coxis\DB\DB(\Config::get('database'));
 	},
 	'CLIRouter'			=>	'\Coxis\CLI\Router',
 	'Validation'		=>	'\Coxis\Core\Validation',
