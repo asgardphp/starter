@@ -126,7 +126,7 @@ abstract class Model {
 		
 		$messages = static::getDefinition()->messages();
 		
-		$validator = new Validator($constrains, $messages);
+		$validator = new \Coxis\Validation\Validator($constrains, $messages);
 		$validator->model = $this;
 
 		return $validator;

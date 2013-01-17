@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Core;
+namespace Coxis\Validation;
 
 class Validation {
 	protected $rules = array();

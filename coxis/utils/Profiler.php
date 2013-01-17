@@ -1,4 +1,6 @@
 <?php
+namespace Coxis\Utils;
+
 class Profiler {
 	static $checkpoints = array();
 

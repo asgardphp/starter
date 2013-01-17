@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Core;
+namespace Coxis\Validation;
 
 class Validator {
 	public $constrains = array();

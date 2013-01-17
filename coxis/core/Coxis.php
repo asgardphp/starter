@@ -40,7 +40,7 @@ Coxis::$facades = array(
 		return new \Coxis\DB\DB(\Config::get('database'));
 	},
 	'CLIRouter'			=>	'\Coxis\CLI\Router',
-	'Validation'		=>	'\Coxis\Core\Validation',
+	'Validation'		=>	'\Coxis\Validation\Validation',
 	'ModelsManager'		=>	'\Coxis\Core\ModelsManager',
 
 	'Locale'			=>	'\Coxis\Utils\Locale',
