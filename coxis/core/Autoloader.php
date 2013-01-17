@@ -47,9 +47,7 @@ class Autoloader {
 		if(class_exists($class))
 			return;
 		
-		$dir = str_replace('\\', DIRECTORY_SEPARATOR, $class);
-		$dir = \Coxis\Core\NamespaceUtils::dirname($dir);
-		$dir = str_replace(DIRECTORY_SEPARATOR, '\\', $dir);
+		$dir = str_replace('\\', DIRECTORY_SEPARATOR, \Coxis\Core\NamespaceUtils::dirname($class));
 
 		Context::get('importer')->_import($class, array('into'=>$dir));
 	}
