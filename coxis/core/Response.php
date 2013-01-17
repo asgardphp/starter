@@ -69,18 +69,7 @@ class Response {
 			header($h);
 	}
 
-	public function send($result=null, $kill=true) {
-		if($result) {
-			\Hook::trigger('end');
-			\Coxis\Core\Response::sendHeaders($result->headers);
-			echo $result->content;
-			Profiler::checkpoint('Sending the response');
-			if($kill)
-				exit();
-			else
-				return;
-		}
-
+	public function send($kill=true) {
 		\Hook::trigger('output');
 		
 		$headers = array();
@@ -91,7 +80,16 @@ class Response {
 		foreach($this->headers as $k=>$v)
 			$headers[] = $k.': '.$v;
 
-		static::send(new Result($headers, $this->content));
+		$this->doSend($headers, $this->content, $kill);
+	}
+
+	protected function doSend($headers, $content, $kill) {
+		\Hook::trigger('end');
+		\Coxis\Core\Response::sendHeaders($headers);
+		echo $content;
+		Profiler::checkpoint('Sending the response');
+		if($kill)
+			exit();
 	}
 
 	public function back() {
