@@ -2,8 +2,6 @@
 namespace Coxis\Core;
 
 class Autoloader {
-	public static $cache = array();
-
 	public static $map = array(
 		// 'Something'	=>	'there/somewhere.php',
 	);
