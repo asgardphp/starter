@@ -14,7 +14,7 @@ namespace {
 namespace Coxis\Core {
 	class Importer {
 		public $from = '';
-		public $preimported = array();
+		// public $preimported = array();
 
 		public $basedir = 'vendor/';
 
@@ -54,13 +54,9 @@ namespace Coxis\Core {
 			if(!$alias && $alias !== false) 
 				$alias = ($intoNamespace ? $intoNamespace.'\\':'').\Coxis\Core\NamespaceUtils::basename($class);
 
-
 			#look for the class
-			if($res = $this->loadClass($class, $alias)) {
-				if($res !== true) {
-					die($res);
-				}
-				if($alias)
+			if($res=$this->loadClass($class)) {
+				if($alias !== false)
 					return static::createAlias($class, $alias);
 				return true;
 			}
@@ -82,31 +78,28 @@ namespace Coxis\Core {
 			}
 		}
 
-		public function loadClass($class, $alias) {
-			#file map
+		public function loadClass($class) {
 			#already loaded
 			if(class_exists($class, false) || interface_exists($class, false))
 				// return static::createAlias($class, $alias);
 				return true;
+			#file map
 			elseif(isset(Autoloader::$map[strtolower($class)]))
-				// return static::loadClassFile(Autoloader::$map[strtolower($class)], $class);
-				return Autoloader::$map[strtolower($class)];
+				return static::loadClassFile(Autoloader::$map[strtolower($class)], $class);
 			else {
 				#directory map
 				foreach(Autoloader::$directories as $prefix=>$dir) {
 					if(preg_match('/^'.preg_quote($prefix).'/', $class)) {
 						$rest = preg_replace('/^'.preg_quote($prefix).'\\\?/', '', $class);
 						$path = $dir.DIRECTORY_SEPARATOR.static::class2path($rest);
-						d($path);
+						
 						if(file_exists(_DIR_.$path))
-							// return static::loadClassFile($path, $class);
-							return $path;
+							return static::loadClassFile($path, $class);
 					}
 				}
 
 				if(file_exists(_DIR_.$this->basedir.($path = static::class2path($class))))
-					// return static::loadClassFile($this->basedir.$path, $class);
-					return $this->basedir.$path;
+					return static::loadClassFile($this->basedir.$path, $class);
 				
 				// d($class);#only to test importer
 
@@ -117,8 +110,7 @@ namespace Coxis\Core {
 					#check if there is any corresponding class already loaded
 					foreach(array_merge(get_declared_classes(), get_declared_interfaces()) as $v)
 						if(strtolower(\Coxis\Core\NamespaceUtils::basename($class)) == strtolower(\Coxis\Core\NamespaceUtils::basename($v)))
-							// return static::createAlias($v, $alias);
-							return $v;
+							return static::createAlias($v, $class);
 					
 					#remove, only for testing class loading
 					// d();
@@ -126,8 +118,7 @@ namespace Coxis\Core {
 						if(strtolower(\Coxis\Core\NamespaceUtils::basename($class)) == $v[0])
 							$classes[] = $v;
 					if(sizeof($classes) == 1)
-						// return static::loadClassFile($classes[0][1], $class);
-						return $classes[0][1];
+						return static::loadClassFile($classes[0][1], $class);
 					#if multiple classes, don't load
 					elseif(sizeof($classes) > 1) {
 						$classfiles = array();
@@ -161,7 +152,10 @@ namespace Coxis\Core {
 			}
 			if($alias) {
 				$result = get(array_values($diff), sizeof($diff)-1);
-				return static::createAlias($result, $alias);
+				if(static::createAlias($result, $alias))
+					return $file;
+				return false;
+				// return static::createAlias($result, $alias);
 			}
 		}
 		
