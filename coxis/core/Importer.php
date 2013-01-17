@@ -13,7 +13,7 @@ namespace Coxis\Core {
 		public $from = '';
 		public $preimported = array();
 
-		public static $basedir = 'vendor/';
+		public $basedir = 'vendor/';
 
 		public function __construct($from='') {
 			$this->from = $from;
@@ -52,6 +52,7 @@ namespace Coxis\Core {
 			if($intoNamespace == '.')
 				$intoNamespace = '';
 
+			#preimported
 			if(isset($this->preimported[$class])) {
 				if(static::_import($this->preimported[$class], array('as'=>false))) {
 					$toload = $this->preimported[$class];
@@ -60,7 +61,6 @@ namespace Coxis\Core {
 					if($alias !== false) {
 						if(!$alias)
 							$alias = ($intoNamespace ? $intoNamespace.'\\':'').\Coxis\Core\NamespaceUtils::basename($class);
-							
 						if($toload != $alias)
 							try {
 								class_alias($toload, $alias);
@@ -73,7 +73,8 @@ namespace Coxis\Core {
 				}
 			}	
 			
-			if($res = static::loadClass($class)) {
+			#look for the class
+			if($res = $this->loadClass($class)) {
 				if($res !== true)
 					$class = $res;
 				#import as ..
@@ -91,6 +92,7 @@ namespace Coxis\Core {
 					
 				return true;
 			}
+			#go to upper level
 			else {
 				$dir = \Coxis\Core\NamespaceUtils::dirname($class);
 
@@ -141,7 +143,7 @@ namespace Coxis\Core {
 			return get(array_values($diff), sizeof($diff)-1);
 		}
 
-		public static function loadClass($class) {
+		public function loadClass($class) {
 			#already loaded
 			if(class_exists($class, false) || interface_exists($class, false))
 				return true;
@@ -168,8 +170,8 @@ namespace Coxis\Core {
 					}
 				}
 
-				if(file_exists(_DIR_.static::$basedir.($path = static::class2path($class)))) {
-					$result = static::loadClassFile(static::$basedir.$path);
+				if(file_exists(_DIR_.$this->basedir.($path = static::class2path($class)))) {
+					$result = static::loadClassFile($this->basedir.$path);
 						return static::createAlias($result, $class);
 				}
 				
