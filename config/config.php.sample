@@ -21,4 +21,7 @@ $config = array(
 		'phpcache'	=>	false,
 		// 'phpcache'	=>	true,
 	),
+	'prod'	=>	array(
+		'error_display' => false,
+	),
 );

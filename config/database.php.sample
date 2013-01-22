@@ -8,7 +8,6 @@ $config = array(
 			'database'	=>	'',
 			'prefix'		=>	'',
 		),
-		'error_display' => true,
 	),
 	'test' => array(
 		'database' => array(
@@ -18,7 +17,6 @@ $config = array(
 			'database'	=>	'coxis3_test',
 			'prefix'		=>	'',
 		),
-		'error_display' => true,
 	),
 	'prod' => array(
 		'database' => array(
@@ -28,6 +26,5 @@ $config = array(
 			'database'	=>	'',
 			'prefix'		=>	'',
 		),
-		'error_display' => false,
 	),
 );
