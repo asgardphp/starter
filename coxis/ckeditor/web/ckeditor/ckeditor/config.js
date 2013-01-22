@@ -9,12 +9,12 @@ CKEDITOR.editorConfig = function( config )
 	// config.language = 'fr';
 	// config.uiColor = '#AADC6E';
 	
-	config.filebrowserBrowseUrl = 'bundles/ckeditor/kcfinder/browse.php?type=files';
-	config.filebrowserImageBrowseUrl = 'bundles/ckeditor/kcfinder/browse.php?type=images';
-	config.filebrowserFlashBrowseUrl = 'bundles/ckeditor/kcfinder/browse.php?type=flash';
-	config.filebrowserUploadUrl = 'bundles/ckeditor/kcfinder/upload.php?type=files';
-	config.filebrowserImageUploadUrl = 'bundles/ckeditor/kcfinder/upload.php?type=images';
-	config.filebrowserFlashUploadUrl = 'bundles/ckeditor/kcfinder/upload.php?type=flash';
+	config.filebrowserBrowseUrl = 'ckeditor/kcfinder/browse.php?type=files';
+	config.filebrowserImageBrowseUrl = 'ckeditor/kcfinder/browse.php?type=images';
+	config.filebrowserFlashBrowseUrl = 'ckeditor/kcfinder/browse.php?type=flash';
+	config.filebrowserUploadUrl = 'ckeditor/kcfinder/upload.php?type=files';
+	config.filebrowserImageUploadUrl = 'ckeditor/kcfinder/upload.php?type=images';
+	config.filebrowserFlashUploadUrl = 'ckeditor/kcfinder/upload.php?type=flash';
 
 	CKEDITOR.config.toolbar_Full = [
 		{ name: 'document', items : [ 'Source','-','Save','NewPage'
@@ -32,7 +32,7 @@ CKEDITOR.editorConfig = function( config )
 			//,'BidiLtr','BidiRtl' 
 			] },
 		{ name: 'links', items : [ 'Link','Unlink','Anchor' ] },
-		{ name: 'insert', items : [ 'Image','Flash','Table','HorizontalRule'
+		{ name: 'insert', items : [ 'Image','Flash', 'Youtube','Table','HorizontalRule'
 			//,'Smiley'
 			,'SpecialChar'
 			//,'PageBreak'
