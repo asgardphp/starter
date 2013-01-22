@@ -13,10 +13,12 @@ class WysiwygWidget extends \Coxis\Form\Widgets\HTMLWidget {
 		if(isset($options['attrs']))
 			$attrs = $options['attrs'];
 		$id = isset($options['id']) ? $options['id']:null;
+		if(!isset($options['config']))
+			$options['config'] = \URL::to('ckeditor/ckeditor/config.js');
 		
-		HTML::include_js('bundles/ckeditor/ckeditor/ckeditor.js');
-		HTML::include_js('bundles/ckeditor/ckeditor/_samples/sample.js');
-		HTML::include_css('bundles/ckeditor/ckeditor/_samples/sample.css');
+		HTML::include_js('ckeditor/ckeditor/ckeditor.js');
+		HTML::include_js('ckeditor/ckeditor/_samples/sample.js');
+		HTML::include_css('ckeditor/ckeditor/_samples/sample.css');
 		return HTMLHelper::tag('textarea', array(
 			'name'	=>	$this->name,
 			'id'	=>	$id,
@@ -25,14 +27,14 @@ class WysiwygWidget extends \Coxis\Form\Widgets\HTMLWidget {
 		"<script>
 		//<![CDATA[
 			$(function(){
-				var CKEDITOR_BASEPATH = '".\URL::to('bundles/ckeditor/ckeditor/')."';
-				CKEDITOR.basePath = '".\URL::to('bundles/ckeditor/ckeditor/')."';
+				var CKEDITOR_BASEPATH = '".\URL::to('ckeditor/ckeditor/')."';
+				CKEDITOR.basePath = '".\URL::to('ckeditor/ckeditor/')."';
 				var editor = CKEDITOR.instances['".$id."'];
 				if (editor)
 					editor.destroy(true);
 				CKEDITOR.replace('".$id."'
 											, {
-								customConfig : '".\URL::to('bundles/page/ckeditor_config.js')."'
+								customConfig : '".$options['config']."'
 							}
 									);
 			});

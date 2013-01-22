@@ -30,7 +30,8 @@ class CoxisController extends CLIController {
 		// d($bundle);
 
 		if(file_exists(_DIR_.$bundle_path.'/web') && is_dir($bundle_path.'/web'))
-			static::copyDir($bundle_path.'/web', 'web/bundles/'.$bundle);
+			// static::copyDir($bundle_path.'/web', 'web/bundles/'.$bundle);
+			static::copyDir($bundle_path.'/web', 'web');
 	}
 
 	public function consoleAction($request) {
