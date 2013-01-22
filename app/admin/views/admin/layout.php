@@ -26,7 +26,7 @@
 				<div class="hdrr"></div>
 				<h1><a href=".."><?php echo \App\Value\Models\Value::val('name') ?></a></h1>
 				
-				
+				<!-- <img src="<?php echo URL::to('') ?>" style="height:80px; float:left; margin-left:-50px; margin-top:-10px;"> -->
 				<ul id="nav">
 					<li><a href="#"><?php echo __('Dashboard') ?></a></li>
 					<?php
