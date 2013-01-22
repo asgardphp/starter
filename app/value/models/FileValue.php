@@ -1,7 +1,7 @@
 <?php
-namespace Coxis\Value\Models;
+namespace App\Value\Models;
 
-class FileValue extends \Coxis\Value\SingleValue {
+class FileValue extends \App\Value\SingleValue {
 	public static $properties = array(
 		'key',
 		'value'    => array(
