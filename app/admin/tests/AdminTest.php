@@ -1,7 +1,7 @@
 <?php
 if(!defined('_ENV_'))
 	define('_ENV_', 'test');
-require_once(dirname(__FILE__).'/../../../coxis.php');
+require_once(dirname(__FILE__).'/../../../coxis/core/core.php');
 // \Config::set('bundle_directories', array_merge(\Config::get('bundle_directories'), array('tests/app')));
 \BundlesManager::loadBundles();
 

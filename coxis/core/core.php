@@ -6,8 +6,8 @@ if(version_compare(PHP_VERSION, '5.3.0') < 0)
 define('_START_', time()+microtime());
 ini_set('error_reporting', E_ALL);
 ini_set('display_errors', true);
-set_include_path(get_include_path() . PATH_SEPARATOR . dirname(__FILE__));
-define('_DIR_', dirname(__FILE__).'/');
+define('_DIR_', dirname(__FILE__) . '/../../');
+set_include_path(get_include_path() . PATH_SEPARATOR . _DIR_);
 define('_WEB_DIR_', _DIR_.'web/');#todo: remove..
 
 /* UTILS */
@@ -72,7 +72,7 @@ set_exception_handler(function ($e) {
 register_shutdown_function(function () {
 	\Coxis\Core\Coxis::setDefaultEnvironment();
 	if(!\Config::get('no_shutdown_error')) {
-		chdir(dirname(__FILE__));//wtf?
+		chdir(_DIR_);//wtf?
 		#todo get the full backtrace for shutdown errors
 		if($e=error_get_last()) {
 			if($e['type'] == 1) {

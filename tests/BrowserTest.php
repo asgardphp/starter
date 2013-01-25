@@ -1,7 +1,7 @@
 	<?php
 if(!defined('_ENV_'))
 	define('_ENV_', 'test');
-require_once(dirname(__FILE__).'/../coxis.php');
+require_once(dirname(__FILE__).'/../coxis/core/core.php');
 \Coxis::load();
 
 require_once 'vendor/phpQuery/phpQuery/phpQuery.php';

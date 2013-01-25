@@ -6,7 +6,7 @@ if(!defined('_ENV_'))
 		define('_ENV_', 'prod');
 
 /* INIT */
-require('coxis.php');
+require('coxis/core/core.php');
 
 /* RUN AND SEND */
 \Coxis\Core\Controller::run('Coxis\Core\Front', 'main')->send();
