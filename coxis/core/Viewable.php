@@ -4,8 +4,8 @@ namespace Coxis\Core;
 class Viewable extends \Coxis\Hook\Hookable {
 	protected $_view;
 
-	public static function widget($class, $action, $args=array()) {
-		$viewable = new $class;
+	public static function widget($action, $args=array()) {
+		$viewable = new static;
 		echo $viewable->doRun($action, $args);
 	}
 
