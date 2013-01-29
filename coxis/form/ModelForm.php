@@ -79,6 +79,7 @@ class ModelForm extends Form {
 					continue;
 			if(isset($params['except']) && in_array($name, $params['except']))
 					continue;
+			// if($properties->form['hidden'] === false && !(isset($params['with']) && in_array($name, $params['with'])))
 			if($properties->editable === false)
 				continue;
 

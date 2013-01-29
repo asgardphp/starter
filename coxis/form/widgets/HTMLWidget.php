@@ -9,7 +9,7 @@ abstract class HTMLWidget {
 	protected $options;
 	// protected $attrs = array(); #todo necessary?
 
-	function __construct($name, $value, $options=array()) {
+	function __construct($name, $value=null, $options=array()) {
 		$this->name = $name;
 		$this->value = $value;
 

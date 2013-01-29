@@ -8,17 +8,31 @@
 				<div class="block_content">
 					<?php \App\Core\Flash::showAll() ?>
 					
+					<script>
+					function add() {
+						var newslide = $('<?php echo $form->images->renderjQuery("'+$('.slide').length+'") ?>');
+						$('#slides').append(newslide);
+						newslide.find("input[type=file]").filestyle({ 
+						    image: "../admin/img/upload.gif",
+						    imageheight : 30,
+						    imagewidth : 80,
+						    width : 250
+						});
+					}
+					</script>
 					<?php
 					$form->open();
-					echo
-						$form->image1->def(array('label'=>'Image Slideshow 1', 'note'=>'Image real size: '.Config::get('slideshow', 'width').'/'.Config::get('slideshow', 'height').'px')).
-						$form->description1->textarea(array('label'=>'Description')).
-						$form->image2->def(array('label'=>'Image Slideshow 2', 'note'=>'Image real size: '.Config::get('slideshow', 'width').'/'.Config::get('slideshow', 'height').'px')).
-						$form->description2->textarea(array('label'=>'Description')).
-						$form->image3->def(array('label'=>'Image Slideshow 3', 'note'=>'Image real size: '.Config::get('slideshow', 'width').'/'.Config::get('slideshow', 'height').'px')).
-						$form->description3->textarea(array('label'=>'Description')).
-						$form->image4->def(array('label'=>'Image Slideshow 4', 'note'=>'Image real size: '.Config::get('slideshow', 'width').'/'.Config::get('slideshow', 'height').'px')).
-						$form->description4->textarea(array('label'=>'Description'));
+					?>
+					<div id="slides">
+						<?php
+						foreach($form->images as $k=>$img)
+							echo $form->images->def($img);
+						?>
+					</div>
+					<p>
+						<input type="button" name="send" value="Add" id="" class="submit long" onclick="add()">
+					</p>
+					<?php
 					$form->close();
 					?>
 				</div>		<!-- .block_content ends -->

@@ -13,4 +13,4 @@ Config::set('slideshow', 'height', 768);
 
 \App\Admin\Libs\AdminMenu::$menu[0]['childs'][] = array('label' => 'Slideshow', 'link' => 'slideshow');
 
-\App\Admin\Libs\AdminMenu::$home[] = array('img'=>\URL::to('bundles/slideshow/icon.svg'), 'link'=>'slideshow', 'title' => __('Slideshow'), 'description' => 'Images du slideshow');
+\App\Admin\Libs\AdminMenu::$home[] = array('img'=>\URL::to('slideshow/icon.svg'), 'link'=>'slideshow', 'title' => __('Slideshow'), 'description' => 'Images du slideshow');

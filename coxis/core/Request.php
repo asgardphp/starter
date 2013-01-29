@@ -79,7 +79,7 @@ class Request implements \ArrayAccess {
 	public function process() {
 		preg_match('/\.([a-zA-Z0-9]{1,5})$/', $this->url->get(), $matches);
 		if(isset($matches[1]))
-			$request->setParam('format', $matches[1]);
+			$this->setParam('format', $matches[1]);
 		return $this;
 	}
 

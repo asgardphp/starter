@@ -33,7 +33,12 @@ class Form extends AbstractGroup {
 			$this->setFields($param3);
 		}
 
-		$this->add('_csrf_token', 'csrf');
+		$this->add('_csrf_token', '\Coxis\Form\Fields\CSRF');
+	}
+	
+	public function setDad($dad) {
+		$this->dad = $dad;
+		$this->remove('_csrf_token');
 	}
 
 	public function render($render_callback, $field, $options=array()) {
@@ -46,7 +51,7 @@ class Form extends AbstractGroup {
 			$cb = $this->render_callbacks[$render_callback];
 		else {
 			$cb = function($field, $options=array()) use($render_callback) {
-				return HTMLWidget::$render_callback($field->getName(), $field->getValue(), $options);
+				return \Coxis\Form\Widgets\HTMLWidget::$render_callback($field->getName(), $field->getValue(), $options);
 			};
 		}
 
@@ -98,6 +103,27 @@ class Form extends AbstractGroup {
 		
 		return $name;
 	}
+
+	protected function parseFiles($raw) {
+		if(isset($raw['name']) && isset($raw['type']) && isset($raw['tmp_name']) && isset($raw['error']) && isset($raw['size'])) {
+			$name = $this->convertTo('name', $raw['name']);
+			$type = $this->convertTo('type', $raw['type']);
+			$tmp_name = $this->convertTo('tmp_name', $raw['tmp_name']);
+			$error = $this->convertTo('error', $raw['error']);
+			$size = $this->convertTo('size', $raw['size']);
+			
+			$files = $this->merge_all($name, $type, $tmp_name, $error, $size);
+			return $files;
+		}
+		else {
+			foreach($raw as $k=>$v) {
+				// d($k, $this->parseFiles($v));
+				$raw[$k] = $this->parseFiles($v);
+				return $raw;
+			}
+		}
+
+	}
 	
 	public function fetch() {
 		$raw = array();
@@ -111,17 +137,9 @@ class Form extends AbstractGroup {
 		}
 		else
 			$raw = \File::all();
-			
-		if(isset($raw['name'])) {
-			$name = $this->convertTo('name', $raw['name']);
-			$type = $this->convertTo('type', $raw['type']);
-			$tmp_name = $this->convertTo('tmp_name', $raw['tmp_name']);
-			$error = $this->convertTo('error', $raw['error']);
-			$size = $this->convertTo('size', $raw['size']);
-			
-			$files = $this->merge_all($name, $type, $tmp_name, $error, $size);
-		}
-	
+
+		$files = $this->parseFiles($raw);
+
 		$this->data = array();
 		if($this->groupName) {
 				$this->setData(
@@ -130,7 +148,7 @@ class Form extends AbstractGroup {
 				);
 		}
 		else
-			$this->setData(\POST::all(), \File::all());
+			$this->setData(\POST::all(), $files);
 						
 		return $this;
 	}

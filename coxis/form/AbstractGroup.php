@@ -1,13 +1,14 @@
 <?php
 namespace Coxis\Form;
 
-abstract class AbstractGroup extends Hookable implements \ArrayAccess, \Iterator {
+abstract class AbstractGroup extends \Coxis\Hook\Hookable implements \ArrayAccess, \Iterator {
 	protected $groupName = null;
 	protected $dad;
 	public $data = array();
 	public $files = array();
 	protected $fields = array();
 	public $errors = array();
+	public $hasfile;
 
 	public function render($render_callback, $field, $options=array()) {
 		return $this->dad->render($render_callback, $field, $options);
@@ -85,17 +86,21 @@ abstract class AbstractGroup extends Hookable implements \ArrayAccess, \Iterator
 					$field->setValue($this->data[$name]);
 				elseif(isset($this->files[$name]))
 					$field->setValue($this->files[$name]);
-				else
+				else {
 					if($this->isSent()) {
 						if(isset($field->params['multiple']) && $field->params['multiple'])
 							$field->setValue(array());
 						else
 							$field->setValue('');
 					}
+				}
 					
 				return $field;
 			}
-			elseif(is_object($fields) && (is_subclass_of($fields, 'Coxis\Form\Form') || is_a($fields, 'Coxis\Form\Form'))) {
+			elseif($fields instanceof \Coxis\Form\AbstractGroup) {
+			// 	d();
+			// }
+			// elseif(is_object($fields) && (is_subclass_of($fields, 'Coxis\Form\Form') || is_a($fields, 'Coxis\Form\Form'))) {
 				$form = $fields;
 				$form->setName($name);
 				$form->setDad($this);
@@ -109,8 +114,12 @@ abstract class AbstractGroup extends Hookable implements \ArrayAccess, \Iterator
 				return $form;
 			}
 	}
+
+	public function size() {
+		return sizeof($this->fields);
+	}
 	
-	public function addFields($fields, $name=null) {
+	public function addFields($fields) {
 		foreach($fields as $name=>$sub_fields)
 			$this->fields[$name] = $this->parseFields($sub_fields, $name);
 			
@@ -121,16 +130,19 @@ abstract class AbstractGroup extends Hookable implements \ArrayAccess, \Iterator
 	}
 	
 	public function addField($field, $name=null) {
-		if(in_array($name, array('groupName', 'dad', 'data', 'fields', 'params')))
-			throw new \Exception('Can\'t use keyword '.$name.' for form field');
-		$this->fields[$name] = $this->parseFields($field, $name);
+		// d($name, in_array($name, array('groupName', 'dad', 'data', 'fields', 'params'), true));
+		if(in_array($name, array('groupName', 'dad', 'data', 'fields', 'params'), true))
+			throw new \Exception('Can\'t use keyword "'.$name.'"" for form field');
+		if($name !== null)
+			$this->fields[$name] = $this->parseFields($field, $name);
+		else
+			$this->fields[] = $this->parseFields($field, sizeof($this->fields));
 		
 		return $this;
 	}
 	
 	public function setDad($dad) {
 		$this->dad = $dad;
-		$this->remove('_csrf_token');
 	}
 	
 	public function setFields($fields) {
@@ -170,6 +182,8 @@ abstract class AbstractGroup extends Hookable implements \ArrayAccess, \Iterator
 	}
 	
 	public function hasFile() {
+		if($this->hasfile === true)
+			return true;
 		foreach($this->fields as $name=>$field) {
 			if(is_subclass_of($field, 'Coxis\Form\AbstractGroup')) {
 				if($field->hasFile())
@@ -227,13 +241,14 @@ abstract class AbstractGroup extends Hookable implements \ArrayAccess, \Iterator
 					unset($errors[$name]);
 			}
 
-		$this->errors = array_merge($errors, $this->my_errors());
+		// $this->errors = array_merge($errors, $this->my_errors());
+		$this->errors = $errors + $this->my_errors();
 
 		$this->setErrors($this->errors);
 
 		#file in memory
 		// $this->trigger('afterErrors', array($this));
-		
+
 		return $this->errors;
 	}
 	
@@ -290,7 +305,6 @@ abstract class AbstractGroup extends Hookable implements \ArrayAccess, \Iterator
 	
 	public function remove($name) {
 		unset($this->fields[$name]);
-		unset($this->params[$name]);
 	}
 	
 	public function __unset($name) {

@@ -36,6 +36,16 @@ function get() {
 	
 	return $result;
 }
+function coxis_array_merge(&$a,$b){
+    foreach($b as $child=>$value) {
+        if(isset($a[$child])) {
+            if(is_array($a[$child]) && is_array($value))
+                coxis_array_merge($a[$child],$value);
+        }
+        else
+            $a[$child]=$value;
+    }
+}
 function __($key, $params=array()) {
 	return \Locale::translate($key, $params);
 }

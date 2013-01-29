@@ -91,6 +91,7 @@ namespace Coxis\Core {
 				foreach($bundles as $bundle)
 					static::loadBundle($bundle);
 
+				$cliroutes = static::getCLIRoutes();
 				$routes = static::getRoutes();
 				$hooks = static::getHooks();
 
@@ -127,6 +128,40 @@ namespace Coxis\Core {
 		public static function loadModelFixturesAll() {
 			foreach(static::getBundles() as $bundle)
 				static::loadModelFixtures($bundle);
+		}
+
+		#todo better
+		public static function getCLIRoutes($directory = false) {
+			$routes = array();
+
+			$controllers = get_declared_classes();
+			$controllers = array_filter($controllers, function($controller) {
+				return is_subclass_of($controller, 'Coxis\Core\CLI\CLIController');
+			});
+			foreach($controllers as $classname) {
+				$r = new \ReflectionClass($classname);
+				if(!$r->isInstantiable())
+					continue;
+
+				$reflection = new \ReflectionAnnotatedClass($classname);
+
+				foreach(get_class_methods($classname) as $method) {
+					if(!preg_match('/Action$/i', $method))
+						continue;
+					$method_reflection = new \ReflectionAnnotatedMethod($classname, $method);
+
+					if($v = $method_reflection->getAnnotation('Shortcut')) {
+						$usage = $description = '';
+						if($u = $method_reflection->getAnnotation('Usage'))
+							$usage = $u->value;
+						if($d = $method_reflection->getAnnotation('Description'))
+							$description = $d->value;
+						\CLIRouter::addRoute($v->value, array(\Coxis\Core\Router::formatControllerName($classname), \Coxis\Core\Router::formatActionName($method)), $usage, $description);
+					}
+				}
+			}
+
+			return $routes;
 		}
 
 		public static function getRoutes($directory = false) {

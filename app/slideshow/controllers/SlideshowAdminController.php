@@ -3,28 +3,51 @@
 @Prefix('admin/slideshow')
 */
 class SlideshowAdminController extends \App\Admin\Libs\Controller\AdminParentController {
-	static $_model = 'Slideshow';
-	
-	public function formConfigure($model) {
-		$form = new \App\Admin\Libs\Form\AdminModelForm($model, $this);
-		
+	public function formConfigure() {
+		$controller = $this;
+		$form = new \App\Admin\Libs\Form\AdminSimpleForm($this);
+		$form->images = new DynamicGroup(function($data) use($controller) {
+			if($data !== null)
+				if($data === '' || (is_array($data) && !array_filter(Tools::flateArray($data))))
+					return;
+			return new AdminModelForm(new Slide, $controller);
+		});
+		foreach(Slide::orderBy('id ASC')->get() as $k=>$a){
+			$form->images[$k] = new \App\Admin\Libs\Form\AdminModelForm($a, $this);
+		}
+		$form->hasfile = true;
+
+		$controller = $this;
+		$form->images->setDefaultRender(function($field) use($form, $controller) {
+			return 	'<div class="slide">'.$form->h4('Image'.($field->getModel()->isOld() ? ' <a href="'.$controller->url_for('delete', array('id'=>$field->getModel()->id)).'" style="font-size:10px">Delete</a>':'')).
+			$field->image->def().
+			$field->description->textarea().
+			'</div>';
+		});
+
 		return $form;
+	}
+
+	/**
+	@Route(':id/delete')
+	*/
+	public function deleteAction($request) {
+		if(Slide::destroyOne($request['id']))
+			\Flash::addSuccess('Slide deleted with success.');
+		return \Response::back();
 	}
 
 	/**
 	@Route('')
 	*/
 	public function indexAction($request) {
-		$this->slideshow = Slideshow::first();
-		if(!$this->slideshow)
-			$this->slideshow = new Slideshow;
-		$this->form = $this->formConfigure($this->slideshow);
+		$this->form = $this->formConfigure();
 
 		if($this->form->isSent()) {
 			try {
 				$this->form->save();
 				Flash::addSuccess('The slideshow was saved successfully.');
-			} catch(\App\Form\FormException $e) {
+			} catch(\Coxis\Form\FormException $e) {
 				\Flash::addError($this->form->getGeneralErrors());
 				\Response::setCode(400);
 			}
@@ -34,20 +57,5 @@ class SlideshowAdminController extends \App\Admin\Libs\Controller\AdminParentCon
 			\Response::setCode(400);
 		}
 		$this->setRelativeView('form.php');
-	}
-	
-	/**
-	@Route(':id/deletefile/:file')
-	*/
-	public function deleteSingleFileAction($request) {
-		$_model = 'Slideshow';
-		
-		if(!($this->$_model = $_model::load($request['id'])))
-			$this->forward404();
-			
-		$file = $request['file'];
-		$this->$_model->$file->delete();
-		\Flash::addSuccess(__('File deleted with success.'));
-		return \Response::back();
 	}
 }

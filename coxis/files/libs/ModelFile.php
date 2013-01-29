@@ -85,6 +85,7 @@ class ModelFile {
 			$filename = \Coxis\Utils\FileManager::move($file['path'], $to);
 		
 		$this->file = $filename;
+		$this->saved = true;
 
 		return $this;
 	}

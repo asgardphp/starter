@@ -84,16 +84,13 @@ class AdminSimpleForm extends Form {
 	}
 
 	public function h3($title) {
-		AdminForm::h3($title);
-		
-		return $this;
+		return '<h3>'.$title.'</h3>';
 	}
 
 	public function h4($title) {
-		AdminForm::h3($title);
-		
-		return $this;
+		return '<h3>'.$title.'</h3>';
 	}
+
 
 	public function close($submits=null) {
 		echo '<hr/>';
