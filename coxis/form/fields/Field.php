@@ -29,6 +29,10 @@ abstract class Field {
 		return ucfirst($this->name);
 	}
 
+	public function labelTag() {
+		return '<label id="'.$this->getID().'">'.$this->label().'</label>';
+	}
+
 	public function def($options=array()) {
 		if(!$this->default_render)
 			throw new \Exception('No default render function for this field');

@@ -20,7 +20,7 @@ class Validator {
 						list($rule, $params) = explode(':', $v);
 					} catch(\ErrorException $e) {
 						$rule = $v;
-						$params = array();
+						$params = true;
 					}
 					$constrains[$attribute] = array();
 					$constrains[$attribute][$rule] = $params;

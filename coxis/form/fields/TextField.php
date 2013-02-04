@@ -1,3 +1,5 @@
 <?php
-class textField extends \Coxis\Form\Fields\Field {
+namespace Coxis\Form\Fields;
+
+class TextField extends \Coxis\Form\Fields\Field {
 }

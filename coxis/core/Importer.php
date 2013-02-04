@@ -178,7 +178,7 @@ namespace Coxis\Core {
 			if(strtolower(\Coxis\Core\NamespaceUtils::basename($class)) != strtolower(\Coxis\Core\NamespaceUtils::basename($loadedClass)))
 				return false;
 			try {
-				if($loadedClass != $class)
+				if($loadedClass !== $class)
 					class_alias($loadedClass, $class);
 				return true;
 			} catch(\ErrorException $e) {

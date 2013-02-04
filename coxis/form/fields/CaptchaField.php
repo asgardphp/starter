@@ -11,7 +11,7 @@ class CaptchaField extends \Coxis\Form\Fields\Field {
 	}
 
 	public function error() {
-		if($this->value != \Coxis\Core\Inputs\Session::get('captcha'))
+		if($this->value != \Session::get('captcha'))
 			return __('Captcha is invalid.');
 	}
 }
