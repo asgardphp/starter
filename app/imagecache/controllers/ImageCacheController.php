@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Imagecache\Controllers;
+namespace App\Imagecache\Controllers;
 
 /**
 @Prefix('imagecache')
