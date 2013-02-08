@@ -2,6 +2,11 @@
 namespace Coxis\Cli;
 
 class Router {
+	public function setRoutes($routes) {
+		foreach($routes as $route)
+			$this->addRoute($route['shortcut'], array($route['controller'], $route['action']), $route['usage'], $route['description']);
+	}
+
 	public function addRoute($route, $action, $usage='', $description='') {
 		$this->routes[$route]['route'] = $action;
 		$this->routes[$route]['usage'] = $usage;

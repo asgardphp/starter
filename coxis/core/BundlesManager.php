@@ -80,6 +80,7 @@ namespace Coxis\Core {
 			Profiler::checkpoint('loadBundles 2');
 
 			if($bm=\Coxis\Utils\Cache::get('bundlesmanager')) {
+				\CLIRouter::setRoutes($bm['cliroutes']);
 				\Router::setRoutes($bm['routes']);
 				\Coxis\Hook\HooksContainer::addHooks($bm['hooks']);
 				\Locale::setLocales($bm['locales']);
@@ -95,10 +96,8 @@ namespace Coxis\Core {
 				$routes = static::getRoutes();
 				$hooks = static::getHooks();
 
+				\CLIRouter::setRoutes($cliroutes);
 				\Router::setRoutes($routes);
-
-				foreach($routes as $route)
-					\Router::addRoute($route);
 				
 				foreach($hooks as $name=>$subhooks)
 					foreach($subhooks as $hook)
@@ -106,6 +105,7 @@ namespace Coxis\Core {
 
 				\Coxis\Utils\Cache::set('bundlesmanager', array(
 					'routes' => $routes,
+					'cliroutes' => $cliroutes,
 					'hooks' => $hooks,
 					'locales' => \Locale::getLocales(),
 					'preloaded' => Autoloader::$preloaded,
@@ -156,7 +156,13 @@ namespace Coxis\Core {
 							$usage = $u->value;
 						if($d = $method_reflection->getAnnotation('Description'))
 							$description = $d->value;
-						\CLIRouter::addRoute($v->value, array(\Coxis\Core\Router::formatControllerName($classname), \Coxis\Core\Router::formatActionName($method)), $usage, $description);
+						$routes[] = array(
+							'shortcut'	=>	$v->value,
+							'controller'	=>	\Coxis\Core\Router::formatControllerName($classname),
+							'action'	=>	\Coxis\Core\Router::formatActionName($method),
+							'usage'		=>	$usage,
+							'description'		=>	$description,
+						);
 					}
 				}
 			}

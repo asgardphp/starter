@@ -4,7 +4,7 @@ namespace Coxis\Utils;
 class Cache {
 	public static function clear() {
 		if(\Coxis\Core\Facades\Config::get('cache', 'method') == 'apc') {
-			apc_clear_cache(\Coxis\Core\Facades\Config::get('key').'-'.'user');
+			\apc_clear_cache(\Coxis\Core\Facades\Config::get('key').'-'.'user');
 		}
 		elseif(\Coxis\Core\Facades\Config::get('cache', 'method') == 'file') {
 			FileManager::unlink('storage/cache');
@@ -15,7 +15,7 @@ class Cache {
 		if(\Coxis\Core\Facades\Config::get('phpcache')) {
 			if(\Coxis\Core\Facades\Config::get('cache', 'method') == 'apc') {
 				$success = null;
-				$res = apc_fetch(\Coxis\Core\Facades\Config::get('key').'-'.$file, $success);
+				$res = \apc_fetch(\Coxis\Core\Facades\Config::get('key').'-'.$file, $success);
 				if($success)
 					return $res;
 			}
