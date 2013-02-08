@@ -14,7 +14,7 @@ class BaseProperty {
 
 	public function __get($name) {
 		$path = explode('_', $name);
-		return get($this->params, $path);
+		return \Coxis\Utils\Tools::get($this->params, $path);
 	}
 
 	public function __toString() {

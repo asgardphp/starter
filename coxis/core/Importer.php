@@ -151,7 +151,7 @@ namespace Coxis\Core {
 				}
 			}
 			if($alias) {
-				$result = get(array_values($diff), sizeof($diff)-1);
+				$result = \Coxis\Utils\Tools::get(array_values($diff), sizeof($diff)-1);
 				if(static::createAlias($result, $alias))
 					return $file;
 				return false;

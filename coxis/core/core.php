@@ -24,18 +24,6 @@ function d() {
 	\Coxis\Core\Error::print_backtrace('', debug_backtrace());
 	exit();
 }
-function get() {
-	$args = func_get_args();
-	$result = array_shift($args);
-	$args = \Coxis\Utils\Tools::flateArray($args);
-	foreach($args as $key)
-		if(!isset($result[$key]))
-			return null;
-		else
-			$result = $result[$key];
-	
-	return $result;
-}
 function coxis_array_merge(&$a,$b){
     foreach($b as $child=>$value) {
         if(isset($a[$child])) {
@@ -56,6 +44,7 @@ function is_function($f) {
 ob_start();
 
 /* CORE/LIBS */
+require_once 'coxis/utils/Tools.php';
 require_once 'coxis/core/Coxis.php';
 require_once 'coxis/core/IoC.php';
 require_once 'coxis/core/Context.php';

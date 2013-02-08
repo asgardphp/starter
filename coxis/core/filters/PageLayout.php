@@ -6,8 +6,8 @@ class PageLayout extends Filter {
 			return;
 
 		if(function_exists('getallheaders'))
-			if(\get(\getallheaders(), 'X-Requested-With') == 'XMLHttpRequest'
-				|| \get(\getallheaders(), 'x-requested-with') == 'XMLHttpRequest')
+			if(\Coxis\Utils\Tools::get(\getallheaders(), 'X-Requested-With') == 'XMLHttpRequest'
+				|| \Coxis\Utils\Tools::get(\getallheaders(), 'x-requested-with') == 'XMLHttpRequest')
 				return;
 
 		try {

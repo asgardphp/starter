@@ -255,8 +255,8 @@ class DAL {
 		$jointures = '';
 		foreach($this->joins as $jointure) {
 			$type = $jointure[0];
-			$table = get(array_keys($jointure[1]), 0);
-			$conditions = get(array_values($jointure[1]), 0);
+			$table = \Coxis\Utils\Tools::get(array_keys($jointure[1]), 0);
+			$conditions = \Coxis\Utils\Tools::get(array_values($jointure[1]), 0);
 			$res = $this->buildJointure($type, $table, $conditions);
 			$jointures .= $res[0];
 			$params = array_merge($params, $res[1]);
@@ -410,7 +410,7 @@ class DAL {
 		}
 		else {
 			$this->select(array($fct.'('.$what.') as '.$fct));
-			return get($this->first(), $fct);
+			return \Coxis\Utils\Tools::get($this->first(), $fct);
 		}
 	}
 	

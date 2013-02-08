@@ -2,6 +2,19 @@
 namespace Coxis\Utils;
 
 class Tools {
+	public static function get() {
+		$args = func_get_args();
+		$result = array_shift($args);
+		$args = \Coxis\Utils\Tools::flateArray($args);
+		foreach($args as $key)
+			if(!isset($result[$key]))
+				return null;
+			else
+				$result = $result[$key];
+		
+		return $result;
+	}
+
 	public static function hash($pwd) {
 		return sha1(Config::get('salt').$pwd);
 	}
