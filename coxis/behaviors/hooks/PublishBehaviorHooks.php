@@ -7,5 +7,13 @@ class PublishBehaviorHooks extends \Coxis\Hook\HooksContainer {
 	**/
 	public function behaviors_load_publishAction($modelDefinition) {
 		$modelDefinition->addProperty('published', array('type'=>'boolean', 'default'=>true));
+
+		$modelName = $modelDefinition->getClass();
+		$modelDefinition->hookOn('callStatic', function($chain, $name, $args) use ($modelName) {
+			if($name == 'published') {
+				$chain->found = true;
+				return $modelName::orm()->where(array('published'=>1));
+			}
+		});
 	}
 }
