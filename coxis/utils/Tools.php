@@ -2,6 +2,61 @@
 namespace Coxis\Utils;
 
 class Tools {
+	public static function hash($pwd) {
+		return sha1(Config::get('salt').$pwd);
+	}
+
+	public static function array_set(&$arr, $keys, $value) {
+		if(!$keys)
+			return;
+		if(!is_array($keys))
+			$keys = array($keys);
+		$lastkey = array_pop($keys);
+		foreach($keys as $parent) {
+			$arr =& $arr[$parent];
+		}
+		$arr[$lastkey] = $value;
+	}
+	
+	public static function array_get($arr, $keys, $default=null) {
+		if(!$keys)
+			return;
+		if(!is_array($keys))
+			$keys = array($keys);
+		foreach($keys as $key) {
+			if(!isset($arr[$key]))
+				return $default;
+			else
+				$arr = $arr[$key];
+		}
+		return $arr;
+	}
+	
+	public static function array_isset($arr, $keys) {
+		if(!$keys)
+			return;
+		if(!is_array($keys))
+			$keys = array($keys);
+		foreach($keys as $key) {
+			if(!isset($arr[$key]))
+				return false;
+			else
+				$arr = $arr[$key];
+		}
+		return true;
+	}
+	
+	public static function array_unset(&$arr, $keys) {
+		if(!$keys)
+			return;
+		if(!is_array($keys))
+			$keys = array($keys);
+		$lastkey = array_pop($keys);
+		foreach($keys as $parent)
+			$arr =& $arr[$parent];
+		unset($arr[$lastkey]);
+	}
+
 	static $months = array(
 		'January'	=>	'Janvier',
 		'February'	=>	'Février',

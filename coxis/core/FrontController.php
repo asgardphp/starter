@@ -12,6 +12,8 @@ class FrontController extends Controller {
 	public static function getResponse() {
 		try {
 			try {
+				if(file_exists(_DIR_.'app/start.php'))
+					include _DIR_.'app/start.php';
 				\Hook::trigger('start');
 				Profiler::checkpoint('Before dispatching');
 				\Request::inst()->isInitial = true;
@@ -27,9 +29,11 @@ class FrontController extends Controller {
 				if($response === null)
 					$response = Coxis\Core\Coxis::getExceptionResponse($e);
 			}
-			return $response;
 		} catch(\Exception $e) {
-			return Coxis\Core\Coxis::getExceptionResponse($e);
+			$response = Coxis\Core\Coxis::getExceptionResponse($e);
 		}
+		if(file_exists(_DIR_.'app/end.php'))
+			include _DIR_.'app/end.php';
+		return $response;
 	}
 }

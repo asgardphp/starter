@@ -117,7 +117,6 @@ class Form extends AbstractGroup {
 		}
 		else {
 			foreach($raw as $k=>$v) {
-				// d($k, $this->parseFiles($v));
 				$raw[$k] = $this->parseFiles($v);
 				return $raw;
 			}

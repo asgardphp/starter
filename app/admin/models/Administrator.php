@@ -11,7 +11,7 @@ class Administrator extends \Coxis\Core\Model {
 				'hidden'	=>	true,
 			),
 			'length'    =>    100,
-			'setHook'  =>    array('administrator', 'hash'),
+			'setHook'  =>    array('tools', 'hash'),
 		),
 	);
 
@@ -22,10 +22,6 @@ class Administrator extends \Coxis\Core\Model {
 
 	public static $behaviors = array();
 	public static $relations = array();
-	
-	public static function hash($pwd) {
-		return sha1(Config::get('salt').$pwd);
-	}
 		
 	public static $meta = array(
 	);

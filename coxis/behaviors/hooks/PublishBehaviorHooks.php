@@ -7,10 +7,5 @@ class PublishBehaviorHooks extends \Coxis\Hook\HooksContainer {
 	**/
 	public function behaviors_load_publishAction($modelDefinition) {
 		$modelDefinition->addProperty('published', array('type'=>'boolean', 'default'=>true));
-		if(!\URL::startsWith('admin')) {
-			$modelDefinition->hook('getorm', function($chain, $orm) {
-				$orm->where(array('published'=>1));
-			});
-		}
 	}
 }
