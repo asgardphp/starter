@@ -29,11 +29,9 @@
 						
 							<% \Coxis\Core\Flash::showAll() %>
 						
-							<%
-							if(!$<?php echo $bundle['model']['meta']['plural'] ?>):
-								echo '<tr><td>'.__('No result').'</td></tr>';
-							else:
-							%>
+							<% if(sizeof($<?php echo $bundle['model']['meta']['plural'] ?>) == 0): %>
+							<div style="text-align:center; font-weight:bold"><% echo __('No element') %></div>
+							<% else: %>
 							<form action="" method="post">
 								<table cellpadding="0" cellspacing="0" width="100%" class="sortable">
 								
@@ -69,16 +67,11 @@
 									<input type="submit" class="submit tiny" value="Appliquer" />
 								</div>		
 								
-								<%
-								if(isset($paginator))
-								if($paginator->getPages()>1) {
-								%>
+								<% if(isset($paginator) && $paginator->getPages()>1): %>
 								<div class="pagination right">
 									<% $paginator->show() %>
 								</div>
-								<%
-								}
-								%>
+								<% endif %>
 								
 							</form>
 							<% endif %>
