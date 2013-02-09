@@ -185,16 +185,16 @@ $(function () {
 	
 	// IE6 PNG fix
 	$(document).pngFix();
-		
+	
 	// DELETE CONFIRM
 	$('table a.delete').click(function(){
-		return confirm('Etes vous sûr ?');
+		return confirm(window.i18n['admin']['are_you_sure']);
 	});
 	$('form').submit(function(){
 		var action = $(this).find('select[name="action"]');
 		if(action.length>0)
 			if(action.val() == 'delete')
-				return confirm('Etes vous sûr ?');
+				return confirm(window.i18n['admin']['are_you_sure']);
 	});
 	
 	
