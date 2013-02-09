@@ -101,7 +101,7 @@ abstract class Field {
 
 	public function getError() {
 		if(is_array($this->error))
-			return get(array_values($this->error), 0);
+			return \Coxis\Utils\Tools::get(array_values($this->error), 0);
 		else
 			return $this->error;
 

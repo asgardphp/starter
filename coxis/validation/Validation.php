@@ -11,7 +11,7 @@ class Validation {
 			if($value !== $as_value) {
 				$msg = $validator->getMessage('same', $attribute, __('The field ":attribute" must be same as ":as".'));
 				return Validation::format($msg, array(
-					'attribute'	=>	str_replace('_', ' ', $attribute),
+					'attribute'	=>	__(str_replace('_', ' ', $attribute)),
 					'as'	=>	$as,
 				));
 			}
@@ -22,7 +22,7 @@ class Validation {
 			if($modelName::where(array($attribute => $value, 'id!=?'=>$params[1]['id']))->count() > 0) {
 				$msg = $validator->getMessage('unique', $attribute, __('":value" is already used.'));
 				return Validation::format($msg, array(
-					'attribute'	=>	str_replace('_', ' ', $attribute),
+					'attribute'	=>	__(str_replace('_', ' ', $attribute)),
 					'value'	=>	$value,
 				));
 			}
@@ -32,7 +32,7 @@ class Validation {
 			if($value !== $params[0]) {
 				$msg = $validator->getMessage('equal', $attribute, __('The field ":attribute" is not correct.'));
 				return Validation::format($msg, array(
-					'attribute'	=>	str_replace('_', ' ', $attribute),
+					'attribute'	=>	__(str_replace('_', ' ', $attribute)),
 				));
 			}
 		});
@@ -41,7 +41,7 @@ class Validation {
 			if(strlen($value) > $params[0]) {
 				$msg = $validator->getMessage('length', $attribute, __('The field ":attribute" must be less than :length characters.'));
 				return Validation::format($msg, array(
-					'attribute'	=>	str_replace('_', ' ', $attribute),
+					'attribute'	=>	__(str_replace('_', ' ', $attribute)),
 					'length'	=>	$params[0],
 				));
 			}
@@ -51,7 +51,7 @@ class Validation {
 			if(strlen($value) != $params[0]) {
 				$msg = $validator->getMessage('exact_length', $attribute, __('The field ":attribute" must be :length characters.'));
 				return Validation::format($msg, array(
-					'attribute'	=>	str_replace('_', ' ', $attribute),
+					'attribute'	=>	__(str_replace('_', ' ', $attribute)),
 					'length'	=>	$params[0],
 				));
 			}
@@ -61,7 +61,7 @@ class Validation {
 			if(!preg_match('/^[0-9]*$/', $value)) {
 				$msg = $validator->getMessage('integer', $attribute, __('The field ":attribute" must be an integer.'));
 				return Validation::format($msg, array(
-					'attribute'	=>	str_replace('_', ' ', $attribute),
+					'attribute'	=>	__(str_replace('_', ' ', $attribute)),
 				));
 			}
 		});
@@ -73,7 +73,7 @@ class Validation {
 			if($value === null || $value === '') {
 				$msg = $validator->getMessage('required', $attribute, __('The field ":attribute" is required.'));
 				return Validation::format($msg, array(
-					'attribute'	=>	str_replace('_', ' ', $attribute),
+					'attribute'	=>	__(str_replace('_', ' ', $attribute)),
 				));
 			}
 		});
@@ -84,7 +84,7 @@ class Validation {
 			if(!filter_var($value, FILTER_VALIDATE_EMAIL)) {
 				$msg = $validator->getMessage('email', $attribute, __('The field ":attribute" must be a valid e-mail address.'));
 				return Validation::format($msg, array(
-					'attribute'	=>	str_replace('_', ' ', $attribute),
+					'attribute'	=>	__(str_replace('_', ' ', $attribute)),
 				));
 			}
 		});
@@ -95,7 +95,7 @@ class Validation {
 			if(!preg_match('/[0-9]{2}\/[0-9]{2}\/[0-9]{4}/', $value)) {
 				$msg = $validator->getMessage('email', $attribute, __('The field ":attribute" must be a date (dd/mm/yyyy).'));
 				return Validation::format($msg, array(
-					'attribute'	=>	str_replace('_', ' ', $attribute),
+					'attribute'	=>	__(str_replace('_', ' ', $attribute)),
 				));
 			}
 		});
