@@ -11,6 +11,7 @@ class DefaultController extends \Coxis\Core\Controller {
 	@Route('')
 	*/
 	public function indexAction($request) {
+		d();
 		// SEO::canonical($this, 'as');
 		Profiler::checkpoint('In default controller');
 	}

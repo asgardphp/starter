@@ -141,7 +141,7 @@ namespace Coxis\Core {
 			$after = array_merge(get_declared_classes(), get_declared_interfaces());
 			
 			$diff = array_diff($after, $before);
-			foreach($diff as $class) {	
+			foreach($diff as $class) {
 				if(method_exists($class, '_autoload')) {
 					try {
 						call_user_func(array($class, '_autoload'));
