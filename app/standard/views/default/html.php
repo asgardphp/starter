@@ -10,6 +10,7 @@
 	<?php \HTML::minify_css() ?>
 	<?php \HTML::show_code_js() ?>
 	<?php \HTML::show_code_css() ?>
+	<?php \HTML::show_code() ?>
 </head>
 <body>
 	<?php echo $content ?>

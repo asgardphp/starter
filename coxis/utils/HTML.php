@@ -12,6 +12,16 @@ class HTML {
 	protected $description = '';
 	protected $keywords = '';
 	
+	public function codeStart() {
+		ob_start();
+	}
+	
+	public function codeEnd() {
+		$r = ob_get_contents();
+		ob_end_clean();
+		$this->code($r);
+	}
+
 	public function getTitle() {
 		return $this->title;
 	}
