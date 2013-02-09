@@ -325,10 +325,15 @@ class DAL {
 		return array('SELECT '.$select.' FROM '.$table.$jointures.$where.$groupby.$orderBy.$limit, $params);
 	}
 
-	public function buildDeleteSQL() {
+	public function buildDeleteSQL($tables=null) {
 		$params = array();
 
 		$table = $this->table;
+		if(!$tables)
+			$tables = array($table);
+		foreach($tables as $k=>$deltable)
+			$tables[$k] = '`'.$deltable.'`';
+
 		$limit = $this->buildLimit();
 
 		list($jointures, $joinparams) = $this->buildJointures();
@@ -337,7 +342,7 @@ class DAL {
 		list($where, $whereparams) = $this->buildWhere();
 		$params = array_merge($params, $whereparams);
 
-		return array('DELETE `'.$table.'` FROM '.$table.$jointures.$where.$limit, $params);
+		return array('DELETE '.implode(', ', $tables).' FROM '.$table.$jointures.$where.$limit, $params);
 	}
 
 	public function buildInsertSQL($values) {
@@ -389,8 +394,8 @@ class DAL {
 		return $this->db->query($sql, $params)->id();
 	}
 	
-	public function delete() {
-		list($sql, $params) = $this->buildDeleteSQL();
+	public function delete($tables=null) {
+		list($sql, $params) = $this->buildDeleteSQL($tables);
 		return $this->db->query($sql, $params)->affected();
 	}
 

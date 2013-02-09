@@ -162,9 +162,10 @@ class ORMHandler {
 				$orms[] = $orm;
 			}
 
-		$r = static::myORM($model)->getDAL()->delete();
 		if($model::isI18N())
-			static::myORM($model)->getDAL()->setTable($model->geti18nTable())->delete();
+			$r = static::myORM($model)->getDAL()->delete(array($model->getTable(), $model->geti18nTable()));
+		else
+			$r = static::myORM($model)->getDAL()->delete();
 
 		foreach($orms as $orm)
 			$orm->delete();
