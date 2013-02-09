@@ -142,7 +142,7 @@ class Error {
 						echo '<div style="display:none">';
 						echo '<code>';
 						foreach($code as $k=>$line)
-							if($pos == $k)
+							if($pos == $k+1)
 								echo '<span style="float:left; display:inline-block; width:50px; color:#000">'.($start++).'</span>'.'<div class="current_line" style="display:inline-block; background-color:#ccc;">'.$line.'</div><br>';
 							else
 								echo '<span style="float:left; display:inline-block; width:50px; color:#000">'.($start++).'</span>'.$line.'<br>';
