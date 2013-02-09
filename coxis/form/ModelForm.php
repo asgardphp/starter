@@ -79,7 +79,7 @@ class ModelForm extends Form {
 					continue;
 			if(isset($params['except']) && in_array($name, $params['except']))
 					continue;
-			if($properties->form_editable === false)
+			if($properties->editable === false || $properties->form_editable === false)
 				continue;
 
 			if($this->i18n && $properties->i18n) {
@@ -161,7 +161,7 @@ class ModelForm extends Form {
 	public function _save($group=null) {
 		if(!$group)
 			$group = $this;
-			
+
 		if(is_a($group, 'Coxis\Form\ModelForm') || is_subclass_of($group, 'Coxis\Form\ModelForm'))
 			$group->model->save();
 
