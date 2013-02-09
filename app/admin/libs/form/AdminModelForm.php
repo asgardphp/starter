@@ -93,7 +93,6 @@ class AdminModelForm extends \Coxis\Form\ModelForm {
 	}
 
 	public function close($submits=null) {
-		d();
 		echo '<hr/>';
 		if($submits === null)
 			echo '<p>
