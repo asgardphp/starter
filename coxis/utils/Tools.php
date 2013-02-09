@@ -2,6 +2,14 @@
 namespace Coxis\Utils;
 
 class Tools {
+	public static function var_dump_to_string($var){
+		ob_start();
+		var_dump($var);
+		$str = ob_get_contents();
+		ob_end_clean();
+		return $str;
+	}
+
 	public static function get() {
 		$args = func_get_args();
 		$result = array_shift($args);

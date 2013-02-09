@@ -69,6 +69,21 @@ class Error {
 						$(e.currentTarget).find('span').text('-');
 					}
 				});
+
+				$('li pre').each(function() {
+					var e = $(this);
+					var isShort = true;
+					var longText = e.text();
+					var shortText = longText.split("\n")[0] + "...";
+					e.text(shortText);
+					e.click(function() {
+						if(isShort)
+							e.text(longText);
+						else
+							e.text(shortText);
+						isShort = !isShort;
+					});
+				});
 			});
 			</script>
 			<?php
@@ -85,23 +100,24 @@ class Error {
 					echo 'At: '.$next['class'].$next['type'].$next['function']."()<br/>\n";
 				else
 					echo 'At: '.$next['function']."()<br/>\n";
-				echo '<div><span class="spanargs"><span>+</span>Args:</span>'."<br/>\n";
-				echo '<div style="display:none">';
-				foreach($next['args'] as $arg) {
-					echo '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-';
-					if(is_array($arg)) {
-						var_dump($arg);
+
+				if(sizeof($next['args']) > 0) {
+					echo '<div><span class="spanargs"><span>+</span>Args:</span>'."<br/>\n";
+					echo '<div style="display:none"><ul>';
+					foreach($next['args'] as $arg) {
+						echo '<li>';
+						if(is_array($arg))
+							$str = \Coxis\Utils\Tools::var_dump_to_string($arg);
+						elseif(is_string($arg))
+							$str = $arg;
+						else
+							$str = \Coxis\Utils\Tools::var_dump_to_string($arg);
+						echo '<pre>'.$str.'</pre>';
+						echo "</li>\n";
 					}
-					elseif(is_string($arg))
-						echo $arg;
-					else
-						var_dump($arg);
-					echo "<br/>\n";
+					echo '</ul></div>';
+					echo '</div>';
 				}
-				echo '</div>';
-				echo '</div>';
-				echo '<div><span class="spanargs"><span>+</span>Code:</span>'."<br/>\n";
-				echo '<div style="display:none">';
 				
 				if(isset($trace['line'])) {
 					$start = $trace['line']-3;
@@ -116,21 +132,26 @@ class Error {
 					ob_start();
 					highlight_string(file_get_contents($trace['file']));
 					$code = ob_get_contents();
+
 					ob_end_clean();
 					$code = explode('<br />', $code);
 					$code = array_slice($code, $start, 7);
 					
-					echo '<code>';
-					foreach($code as $k=>$line)
-						if($pos == $k)
-							echo '<span style="float:left; display:inline-block; width:50px; color:#000">'.($start++).'</span>'.'<div class="current_line" style="display:inline-block; background-color:#ccc;">'.$line.'</div><br>';
-						else
-							echo '<span style="float:left; display:inline-block; width:50px; color:#000">'.($start++).'</span>'.$line.'<br>';
-					echo '</code>';
+					if($code) {
+						echo '<div><span class="spanargs"><span>+</span>Code:</span>'."<br/>\n";
+						echo '<div style="display:none">';
+						echo '<code>';
+						foreach($code as $k=>$line)
+							if($pos == $k)
+								echo '<span style="float:left; display:inline-block; width:50px; color:#000">'.($start++).'</span>'.'<div class="current_line" style="display:inline-block; background-color:#ccc;">'.$line.'</div><br>';
+							else
+								echo '<span style="float:left; display:inline-block; width:50px; color:#000">'.($start++).'</span>'.$line.'<br>';
+						echo '</code>';
+						echo '</div>';
+						echo '</div>';
+					}
 				}
 				
-				echo '</div>';
-				echo '</div>';
 				echo "<br/>\n";
 				echo '<hr/>';
 				echo "<br/>\n";
