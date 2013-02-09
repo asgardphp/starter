@@ -117,7 +117,7 @@ abstract class ModelAdminController extends AdminParentController {
 				$this->form->save();
 				\Flash::addSuccess($this->_messages['modified']);
 				if(\POST::has('send'))
-					return Server::has('HTTP_REFERER') && Server::get('HTTP_REFERER') !== \URL::full() ? \Response::back():\Response::redirect('admin/'.static::$_index);
+					return Server::has('HTTP_REFERER') && Server::get('HTTP_REFERER') !== \URL::full() ? \Response::back():\Response::redirect($this->url_for('index'));
 			} catch(\Coxis\Form\FormException $e) {
 				\Flash::addError($this->form->getGeneralErrors());
 				\Response::setCode(400);
@@ -148,7 +148,7 @@ abstract class ModelAdminController extends AdminParentController {
 				$this->form->save();
 				\Flash::addSuccess($this->_messages['created']);
 				if(\POST::has('send'))
-					return Server::has('HTTP_REFERER') && Server::get('HTTP_REFERER') !== \URL::full() ? \Response::back():\Response::redirect('admin/'.static::$_index);
+					return Server::has('HTTP_REFERER') && Server::get('HTTP_REFERER') !== \URL::full() ? \Response::back():\Response::redirect($this->url_for('index'));
 				else
 					return \Response::redirect('admin/'.static::$_index.'/'.$this->$modelName->id.'/edit');
 			} catch(\Coxis\Form\FormException $e) {
