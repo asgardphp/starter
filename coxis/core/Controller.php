@@ -40,6 +40,10 @@ class Controller extends Viewable {
 		return $routes;
 	}
 
+	public function notfound($msg=null) {
+		throw new \Coxis\Core\Exception\NotFoundException($msg);
+	}
+
 	public function addFilter($filter) {
 		$filter->setController($this);
 		if(method_exists($filter, 'before')) 

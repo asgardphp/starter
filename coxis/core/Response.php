@@ -97,7 +97,7 @@ class Response {
 	}
 	
 	public function redirect($url='', $relative=true) {
-		if($relative)
+		if($relative && !preg_match('/http:\/\//', $url))
 			$this->headers['Location'] = \URL::to($url);
 		else
 			$this->headers['Location'] = $url;
