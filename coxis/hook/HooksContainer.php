@@ -29,10 +29,14 @@ class HooksContainer extends Viewable {
 	public static function run($hook, $args=array()) {
 		if(!is_array($args))
 			$args = array($args);
-		$hookscontainer = $hook[0];
-		$method = $hook[1];
-		$hookscontainer = new $hookscontainer;
-		return $hookscontainer->doRun($method, $args);
+		if(is_array($hook)) {
+			$hookscontainer = $hook[0];
+			$method = $hook[1];
+			$hookscontainer = new $hookscontainer;
+			return $hookscontainer->doRun($method, $args);
+		}
+		else
+			return call_user_func_array($hook, $args);
 	}
 
 	public static function addHooks($hooks) {

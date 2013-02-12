@@ -201,10 +201,10 @@ class CoxisController extends CLIController {
 				'_ModelAdminTest.php' =>	ucfirst($bundle['model']['meta']['name']).'Admintest.php',
 			);
 			
-			static::copyDir('core/cli/base_bundle/', 'app/'.strtolower($bundle['name']).'/');
+			static::copyDir('coxis/cli/base_bundle/', 'app/'.strtolower($bundle['name']).'/');
 			static::processDir('app/'.$bundle['name'], $bundle, $bundle_filenames);
 		
-			\Coxis\Core\Context::get('autoloader')->preloadDir('app/'.$bundle['name'].'/models');
+			Autoloader::preloadDir('app/'.$bundle['name'].'/models');
 		}
 		
 		foreach($bundles as $bundle) {		
@@ -226,7 +226,7 @@ class CoxisController extends CLIController {
 				);
 			}
 			
-			static::copyDir('core/cli/base_bundle2/', 'app/'.strtolower($bundle['name']).'/');
+			static::copyDir('coxis/cli/base_bundle2/', 'app/'.strtolower($bundle['name']).'/');
 			static::processDir('app/'.$bundle['name'], $bundle, $bundle_filenames);
 		}
 			

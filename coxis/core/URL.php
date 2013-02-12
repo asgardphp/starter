@@ -80,11 +80,12 @@ class URL {
 			$action = strtolower($what[1]);
 			foreach(\Router::getRoutes() as $route_params) {
 				$route = $route_params['route'];
-				if(strtolower($route_params['controller']) == $controller && strtolower($route_params['action']) == $action)
+				if(strtolower($route_params['controller']) == $controller && strtolower($route_params['action']) == $action) {
 					if($relative)
 						return \Router::buildRoute($route, $params);
 					else
 						return $this->to(\Router::buildRoute($route, $params));
+				}
 			}
 		}
 		#route

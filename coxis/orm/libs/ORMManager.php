@@ -72,7 +72,7 @@ class ORMManager {
 		$oldSchemas = array();
 		$tables = DB::query('SHOW TABLES')->all();
 		foreach($tables as $k=>$v) {
-			$table = get(array_values($v), 0);
+			$table = \Coxis\Utils\Tools::get(array_values($v), 0);
 			$oldSchemas[$table] = static::tableSchema($table);
 		}
 

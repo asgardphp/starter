@@ -1,7 +1,22 @@
 <?php
 namespace Coxis\Utils;
 
-/*$csv = new CSV($header);
+/*
+$header = array('id', 'titre', 'description');
+$data = array(
+	array(
+		1,
+		'hello',
+		'blabla'
+	),
+	array(
+		'id' => 2,
+		'titlre' => 'hello',
+		'description' => 'blabla'
+	),
+);
+
+$csv = new CSV($header);
 $csv->header($header);
 $csv->add($data);
 $csv->get();
@@ -11,7 +26,10 @@ $csv->separator(';');
 $csv = new CSV($model::propertyNames());
 foreach($models as $model)
 	$csv->add($model->toArray());
-$csv->get();
+$result = $csv->get();
+return \Response::setHeader('Content-Type', 'text/csv')
+       ->setHeader('content-disposition', 'attachment; filename="participants.csv"')
+       ->setContent($result);
 */
 
 class CSV {

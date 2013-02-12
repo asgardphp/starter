@@ -51,7 +51,7 @@
 												<td><% echo $<?php echo $bundle['model']['meta']['name'] ?>->created_at %></td>
 												<td><a href="<% echo $this->url_for('edit', array('id'=>$<?php echo $bundle['model']['meta']['name'] ?>->id)) %>"><% echo $<?php echo $bundle['model']['meta']['name'] ?> %></a></td>
 												<td class="actions">
-													<% \Hook::trigger('coxis_<?php echo ucfirst($bundle['model']['meta']['name']) ?>_actions', $<?php echo $bundle['model']['meta']['name'] ?>) %>
+													<% \Hook::trigger('coxis_<?php echo $bundle['model']['meta']['name'] ?>_actions', $<?php echo $bundle['model']['meta']['name'] ?>) %>
 													<a class="delete" href="<% echo $this->url_for('delete', array('id'=>$<?php echo $bundle['model']['meta']['name'] ?>->id)) %>">Supprimer</a>
 												</td>
 											</tr>
@@ -62,7 +62,9 @@
 								<div class="tableactions">
 									<select name="action">
 										<option>Actions</option>
-										<option value="delete">Supprimer</option>
+										<% foreach($globalactions as $action): %>
+										<option value="<% echo $action['value'] %>"><% echo $action['text'] %></option>
+										<% endforeach %>
 									</select>
 									<input type="submit" class="submit tiny" value="Appliquer" />
 								</div>		

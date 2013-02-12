@@ -19,9 +19,10 @@ abstract class ModelAdminController extends AdminParentController {
 		#trigger the model behaviors coxisadmin hook
 		$model = static::$_model;
 		$model_behaviors = $model::getDefinition()->behaviors();
-		foreach($model_behaviors as $behavior => $params)
+		foreach($model_behaviors as $behavior => $params) {
 			if($params)
 				\Hook::trigger('behaviors_coxisadmin_'.$behavior, static::getControllerName());
+		}
 
 		if(static::$_models == null)
 			static::$_models = basename(strtolower(static::$_model.'s'));
@@ -55,12 +56,28 @@ abstract class ModelAdminController extends AdminParentController {
 		$this->searchForm->search = new \Coxis\Form\Fields\TextField;
 	
 		//submitted
-		$i = 0;
-		if(POST::size()>1 && POST::get('action')=='delete') {
-			foreach(POST::get('id') as $id)
-				$i += $_model::destroyOne($id);
-		
-			Flash::addSuccess(sprintf($this->_messages['many_deleted'], $i));
+		$controller = $this;
+		$this->globalactions = array();
+		\Hook::trigger('coxis_'.static::$_model.'_globalactions', array(&$this->globalactions), function($chain, &$actions) use($_model, $controller) {
+			$actions[] = array(
+				'text'	=>	__('Delete'),
+				'value'	=>	'delete',
+				'callback'	=>	function() use($_model, $controller) {
+					$i = 0;
+					if(POST::size()>1) {
+						foreach(POST::get('id') as $id)
+							$i += $_model::destroyOne($id);
+					
+						Flash::addSuccess(sprintf($controller->_messages['many_deleted'], $i));
+					}
+				}
+			);
+		});
+		foreach($this->globalactions as $action) {
+			if(POST::get('action') == $action['value']) {
+				$cb = $action['callback'];
+				$cb();
+			}
 		}
 		
 		$conditions = array();
