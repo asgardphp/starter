@@ -9,15 +9,16 @@ class Email {
 	protected $html = '';
 	protected $files = array();
  
-	function __construct($to, $from, $subject, $text='') {
+	function __construct($to, $from, $subject, $text='', $html='') {
  		$this->to = $to;
  		$this->from = $from;
 		$this->subject = $subject;
  		$this->text = $text;
+ 		$this->html = $html;
  	}
  
-	public static function create($to, $from, $subject, $text='') {
-		$mail = new static($to, $from, $subject, $text);
+	public static function create($to, $from, $subject, $text='', $html='') {
+		$mail = new static($to, $from, $subject, $text, $html);
  		return $mail;
  	}
 
@@ -45,20 +46,20 @@ class Email {
 		// Headers
 		$headers = 'From: '.$this->from.''."\r\n";
 		$headers .= 'Mime-Version: 1.0'."\r\n";
-		$headers .= 'Content-Type: multipart/mixed;boundary='.$boundary."\r\n";
+		$headers .= 'Content-Type: multipart/alternative;boundary='.$boundary."\r\n";
 		$headers .= "This is a MIME encoded message.\r\n\r\n"; 
 
 		#text
 		if($this->text) {
 			$headers .= '--'.$boundary."\r\n";
-			$headers .= 'Content-type: text/plain; charset=utf-8'."\r\n\r\n";
+			$headers .= 'Content-Type: text/plain; charset=utf-8'."\r\n\r\n";
 			$headers .= $this->text."\r\n\r\n";
 		}
 
 		#html
 		if($this->html) {
 			$headers .= '--'.$boundary."\r\n";
-			$headers .= 'Content-type: text/html; charset=utf-8'."\r\n\r\n";
+			$headers .= 'Content-Type: text/html; charset=utf-8'."\r\n\r\n";
 			$headers .= $this->html."\r\n\r\n";
 		}
 
