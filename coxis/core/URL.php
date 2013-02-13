@@ -73,7 +73,7 @@ class URL {
 			return '';
 	}
 
-	public function url_for($what, $params=array(), $relative=true) {
+	public function url_for($what, $params=array(), $relative=false) {
 		#controller/action
 		if(is_array($what)) {
 			$controller = strtolower($what[0]);
