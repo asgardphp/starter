@@ -6,7 +6,7 @@ class Viewable extends \Coxis\Hook\Hookable {
 
 	public static function widget($action, $args=array()) {
 		$viewable = new static;
-		echo $viewable->doRun($action, $args);
+		return $viewable->doRun($action, $args);
 	}
 
 	public static function staticDoRun($class, $method, $params=array()) {

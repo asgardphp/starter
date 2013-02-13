@@ -15,12 +15,9 @@ class <?php echo ucfirst($bundle['model']['meta']['name']) ?>Controller extends 
 	*/
 	public function showAction($request) {
 		if(!($this-><?php echo $bundle['model']['meta']['name'] ?> = <?php echo ucfirst($bundle['model']['meta']['name']) ?>::load($request['id'])))
-			$this->forward404();
+			$this->notfound();
 			
-		//~ $this->canonical(url_for(array('page', 'show'), array('id' => $this->page->id, 'slug' => $this->page->slug)));
-		
-		//~ HTML::setTitle($this->page->meta_title!='' ? $this->page->meta_title:$this->page->title);
-		//~ HTML::setKeywords($this->page->meta_keywords);
-		//~ HTML::setDescription($this->page->meta_description);
+		// $this-><?php echo $bundle['model']['meta']['name'] ?>->showMetas();
+		// SEO::canonical($this, $this-><?php echo $bundle['model']['meta']['name'] ?>->url());
 	}
 }
