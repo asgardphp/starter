@@ -1,17 +1,5 @@
 Actualite:
     - id: 1
-      title:
-        fr: test5
-        en: test5
-      author: test5
-      article: test5
-      position: 0
-      category: Life
-      date: 2006-12-12
+      title: test5
+      content: test5
       published: 1
-      commentaires: [test]
-
-commentaire:
-    test:
-      id: 1
-      title: test

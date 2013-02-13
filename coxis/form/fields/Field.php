@@ -22,7 +22,7 @@ abstract class Field {
 	}
 
 	public function __call($name, $args) {
-		return $this->render($name, $args[0]);
+		return $this->render($name, isset($args[0]) ? $args[0]:array());
 	}
 
 	public function label() {
