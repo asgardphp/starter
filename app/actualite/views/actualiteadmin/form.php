@@ -18,7 +18,10 @@
 					$form->title->def(array('note'=>'Le titre de l\'article')).
 					$form->published->def().
 					$form->content->wysiwyg().
-					$form->image->def();
+					$form->image->def().
+					$form->meta_title->def().
+					$form->meta_description->def().
+					$form->meta_keywords->def();
 					$form->close();
 					?>
 					

@@ -16,6 +16,7 @@ class Actualite extends \Coxis\Core\Model {
 	
 	public static $behaviors = array(
 		'publish',
+		'metas'
 	);
 	
 	public function __toString() {

@@ -26,7 +26,7 @@ abstract class Field {
 	}
 
 	public function label() {
-		return ucfirst($this->name);
+		return ucfirst(str_replace('_', ' ', $this->name));
 	}
 
 	public function labelTag() {

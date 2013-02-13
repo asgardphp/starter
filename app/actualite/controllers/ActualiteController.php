@@ -17,6 +17,7 @@ class ActualiteController extends Controller {
 		if(!($this->actualite = Actualite::loadPublished($request['id'])))
 			$this->notfound();
 
+		$this->actualite->showMetas();
 		SEO::canonical($this, $this->actualite->url());
 	}
 }
