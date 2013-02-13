@@ -1,0 +1,46 @@
+#########################################################################
+#
+#	Pathfile 
+#
+#	Liste des fichiers parametres utilises par le module de paiement
+#
+#########################################################################
+#
+#
+#-------------------------------------------------------------------------
+# Activation (YES) / Désactivation (NO) du mode DEBUG
+#-------------------------------------------------------------------------
+#
+DEBUG!NO!
+#
+# ------------------------------------------------------------------------
+# Chemin vers le répertoire des logos depuis le web alias  
+# Exemple pour le répertoire www.merchant.com/webaffaires/payment/logo/
+# indiquer:
+# ------------------------------------------------------------------------
+#
+D_LOGO!/webaffaires/payment/logo/!
+#
+# --------------------------------------------------------------------------
+#  Fichiers paramètres liés a l'api webaffaires paiement	
+# --------------------------------------------------------------------------
+#
+# fichier des paramètres webaffaires
+#
+F_DEFAULT!/home/webaffaires/payment/param/parmcom.webaffaires!
+#
+# fichier paramètre commercant
+#
+F_PARAM!/home/webaffaires/payment/param/parmcom!
+#
+# certificat du commercant
+#
+F_CERTIFICATE!/home/webaffaires/payment/param/certif!
+#
+# type du certificat
+#
+F_CTYPE!php!
+#
+# --------------------------------------------------------------------------
+# 	end of file
+# --------------------------------------------------------------------------
