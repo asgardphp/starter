@@ -10,7 +10,7 @@ CKEDITOR.editorConfig = function( config )
 	// config.uiColor = '#AADC6E';
 	config.language = 'en';
 	
-	// config.extraPlugins = 'vimeo';
+	config.extraPlugins = 'vimeo,youtube';
 
 	config.removePlugins = 'elementspath';
 
@@ -39,6 +39,6 @@ CKEDITOR.editorConfig = function( config )
 			{ name: 'colors', items : [ 'TextColor','BGColor' ] },
 			// ,
 			// { name: 'tools', items : [ 'Maximize', 'ShowBlocks'] }
-			{ name: 'tools', items : [ 'Maximize'] }
+			{ name: 'tools', items : [ 'Maximize'] }, { name: 'videos', items : [ 'vimeo', 'Youtube'] }
 	];
 };

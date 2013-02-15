@@ -4,9 +4,13 @@
 	onShow:function(){this.getContentElement('general','content').getInputElement().setValue('')},
 	onOk:function(){
 		       		val = this.getContentElement('general','content').getInputElement().getValue();
-       				val = val.replace("watch\?v\=", "v\/");
+		       		if(val.match(/youtube\.com\/watch\?v=([\w-]{11})/) != null) {
+       					val = val.match(/youtube\.com\/watch\?v=([\w-]{11})/)[1];
+       				}
+       				else {
+       					val = val.match(/youtu\.be\/([\w-]{11})/)[1];
+       				}
 					var text='<iframe title="YouTube video player" class="youtube-player" type="text/html" width="480" height="390" src="http://www.youtube.com/embed/'
-					//+this.getContentElement('general','content').getInputElement().getValue()
 					+ val
 					+'?rel=0" frameborder="0"></iframe>';
 	this.getParentEditor().insertHtml(text)},
