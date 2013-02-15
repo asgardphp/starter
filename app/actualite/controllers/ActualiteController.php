@@ -11,7 +11,7 @@ class ActualiteController extends Controller {
 	}
 
 	/**
-	@Route(':id')
+	@Route(':id/:slug')
 	*/
 	public function showAction($request) {
 		if(!($this->actualite = Actualite::loadPublished($request['id'])))

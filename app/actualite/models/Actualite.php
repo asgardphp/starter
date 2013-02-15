@@ -16,7 +16,8 @@ class Actualite extends \Coxis\Core\Model {
 	
 	public static $behaviors = array(
 		'publish',
-		'metas'
+		'metas',
+		'slugify'
 	);
 	
 	public function __toString() {
@@ -24,6 +25,6 @@ class Actualite extends \Coxis\Core\Model {
 	}
 
 	public function url() {
-		return \URL::url_for(array('Actualite', 'show'), array('id'=>$this->id));
+		return \URL::url_for(array('Actualite', 'show'), array('id'=>$this->id, 'slug'=>$this->slug));
 	}
 }
