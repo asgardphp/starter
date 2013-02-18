@@ -46,6 +46,8 @@ class AdminModelForm extends \Coxis\Form\ModelForm {
 			if(isset($options['label']))
 				$label = $options['label'];
 
+			$label = __($label);
+
 			if($form->getModel()->hasProperty($field->name) && $form->getModel()->property($field->name)->required
 				|| \Coxis\Utils\Tools::get($form->getModel()->getDefinition()->relations, array($field->name, 'required')))
 				$label .= '*';

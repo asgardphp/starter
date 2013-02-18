@@ -19,7 +19,7 @@ class SlideshowAdminController extends \App\Admin\Libs\Controller\AdminParentCon
 
 		$controller = $this;
 		$form->images->setDefaultRender(function($field) use($form, $controller) {
-			return 	'<div class="slide">'.$form->h4('Image'.($field->getModel()->isOld() ? ' <a href="'.$controller->url_for('delete', array('id'=>$field->getModel()->id)).'" style="font-size:10px">Delete</a>':'')).
+			return 	'<div class="slide">'.$form->h4('Image'.($field->getModel()->isOld() ? ' <a href="'.$controller->url_for('delete', array('id'=>$field->getModel()->id)).'" style="font-size:10px">'.__('Supprimer').'</a>':'')).
 			$field->image->def().
 			$field->description->textarea().
 			'</div>';
@@ -33,7 +33,7 @@ class SlideshowAdminController extends \App\Admin\Libs\Controller\AdminParentCon
 	*/
 	public function deleteAction($request) {
 		if(Slide::destroyOne($request['id']))
-			\Flash::addSuccess('Slide deleted with success.');
+			\Flash::addSuccess('Slide supprimé avec succès.');
 		return \Response::back();
 	}
 
@@ -46,7 +46,7 @@ class SlideshowAdminController extends \App\Admin\Libs\Controller\AdminParentCon
 		if($this->form->isSent()) {
 			try {
 				$this->form->save();
-				Flash::addSuccess('The slideshow was saved successfully.');
+				Flash::addSuccess(__('Le slideshow a été sauvegardé avec succès.'));
 			} catch(\Coxis\Form\FormException $e) {
 				\Flash::addError($this->form->getGeneralErrors());
 				\Response::setCode(400);

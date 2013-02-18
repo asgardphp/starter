@@ -36,7 +36,7 @@ class DatetimeProperty extends BaseProperty {
 		$b = preg_match('/([0-9]+)\/([0-9]+)\/([0-9]+) ([0-9]+):([0-9]+):([0-9]+)/', $val, $r);
 		if(!$b)
 			return null;
-		$t = mktime($r[4], $r[5], $r[6], $r[2], $r[3], $r[1]);
+		$t = mktime($r[4], $r[5], $r[6], $r[2], $r[1], $r[3]);
 		return new \Coxis\Utils\Datetime($t);
 	}
 

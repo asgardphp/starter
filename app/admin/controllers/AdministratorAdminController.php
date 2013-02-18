@@ -10,11 +10,11 @@ class AdministratorAdminController extends \App\Admin\Libs\Controller\ModelAdmin
 	
 	function __construct() {
 		$this->_messages = array(
-			'modified'			=>	__('Administrator updated with success.'),
-			'created'				=>	__('Administrator created with success.'),
-			'many_deleted'	=>	__('%s administrators deleted.'),
-			'deleted'				=>	__('Administrator deleted with success.'),
-			'unexisting'			=>	__('This administrator does not exist.'),
+			'modified'			=>	__('Administrateur modifié avec succès.'),
+			'created'				=>	__('Administrateur créé avec succès.'),
+			'many_deleted'	=>	__('%s administrateurs supprimés.'),
+			'deleted'				=>	__('Administrateur supprimé avec succès.'),
+			'unexisting'			=>	__('Cet administrateur n\'existe pas.'),
 		);
 		parent::__construct();
 	}

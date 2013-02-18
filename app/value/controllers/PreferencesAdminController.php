@@ -7,7 +7,7 @@ namespace App\Value\Controllers;
 class PreferencesAdminController extends \Coxis\Admin\Libs\Controller\AdminParentController {
 	function __construct() {
 		$this->_messages = array(
-			'modified'			=>	__('Preferences updated with success.'),
+			'modified'			=>	__('Preferences modifiées avec succès.'),
 		);
 	}
 	

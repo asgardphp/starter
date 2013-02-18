@@ -15,7 +15,7 @@
 					<?php
 					$form->open();
 					echo
-					$form->title->def(array('note'=>'Le titre de l\'article')).
+					$form->title->def(array('note'=>__('Le titre de l\'article'))).
 					$form->published->def().
 					$form->content->wysiwyg().
 					$form->image->def().

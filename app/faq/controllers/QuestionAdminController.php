@@ -8,11 +8,11 @@ class QuestionAdminController extends \Coxis\Admin\Libs\Controller\ModelAdminCon
 
 	function __construct() {
 		$this->_messages = array(
-			'modified'			=>	__('Question modified with success.'),
-			'created'			=>	__('Question created with success.'),
-			'many_deleted'			=>	__('Questions modified with success.'),
-			'deleted'			=>	__('Question deleted with success.'),
-			'unexisting'			=>	__('This question does not exist.'),
+			'modified'			=>	__('Question modifiée avec succès.'),
+			'created'			=>	__('Question créée avec succès.'),
+			'many_deleted'			=>	__('Questions modifiées avec succès.'),
+			'deleted'			=>	__('Question supprimée avec succès.'),
+			'unexisting'			=>	__('Cette question n\'existe pas.'),
 		);
 		parent::__construct();
 	}

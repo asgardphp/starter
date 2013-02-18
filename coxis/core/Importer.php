@@ -160,16 +160,16 @@ namespace Coxis\Core {
 		}
 		
 		public static function class2path($class) {
-			$namespace = str_replace('\\', DIRECTORY_SEPARATOR , $class);
-			
-			$className = \Coxis\Core\NamespaceUtils::basename($namespace);
-			$namespace = strtolower(\Coxis\Core\NamespaceUtils::dirname($namespace));
+			$className = \Coxis\Core\NamespaceUtils::basename($class);
+			$namespace = strtolower(\Coxis\Core\NamespaceUtils::dirname($class));
+
+			$namespace = str_replace('\\', DIRECTORY_SEPARATOR , $namespace );
 
 			if($namespace != '.')
 				$path = $namespace.DIRECTORY_SEPARATOR;
 			else
 				$path = '';
-			$path .= str_replace('_', DIRECTORY_SEPARATOR , $className);	
+			$path .= str_replace('_', DIRECTORY_SEPARATOR , $className);				
 
 			return $path.'.php';
 		}

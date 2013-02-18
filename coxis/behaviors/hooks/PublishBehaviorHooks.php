@@ -37,12 +37,12 @@ class PublishBehaviorHooks extends \Coxis\Hook\HooksContainer {
 				'action'			=>	'publish'
 			));
 			\Coxis\Hook\HooksContainer::addHook('coxis_'.$modelName.'_actions', function($model) use($modelName) {
-				return '<a href="'.\URL::url_for('coxis_'.$modelName.'_publish', array('id' => $model->id), false).'">'.($model->published ? __('Unpublish'):__('Publish')).'</a> | ';
+				return '<a href="'.\URL::url_for('coxis_'.$modelName.'_publish', array('id' => $model->id), false).'">'.($model->published ? __('Dépublier'):__('Publier')).'</a> | ';
 			});
 			\Coxis\Hook\HooksContainer::addHook('coxis_'.$modelName.'_globalactions', function(&$actions) use($modelName) {
 				#publish
 				$actions[] = array(
-					'text'	=>	__('Publish'),
+					'text'	=>	__('Publier'),
 					'value'	=>	'publish',
 					'callback'	=>	function() use($modelName) {
 						if(POST::size()>1) {
@@ -51,13 +51,13 @@ class PublishBehaviorHooks extends \Coxis\Hook\HooksContainer {
 								$model->save(array('published'=>1));
 							}
 						
-							Flash::addSuccess(sprintf(__('%s element(s) published with success!'), sizeof(POST::get('id'))));
+							Flash::addSuccess(sprintf(__('%s element(s) publiés avec succès !'), sizeof(POST::get('id'))));
 						}
 					}
 				);
 				#unpublish
 				$actions[] = array(
-					'text'	=>	__('Unpublish'),
+					'text'	=>	__('Dépublier'),
 					'value'	=>	'unpublish',
 					'callback'	=>	function() use($modelName) {
 						if(POST::size()>1) {
@@ -66,7 +66,7 @@ class PublishBehaviorHooks extends \Coxis\Hook\HooksContainer {
 								$model->save(array('published'=>0));
 							}
 						
-							Flash::addSuccess(sprintf(__('%s element(s) unpublished with success!'), sizeof(POST::get('id'))));
+							Flash::addSuccess(sprintf(__('%s element(s) dépubliés avec succès !'), sizeof(POST::get('id'))));
 						}
 					}
 				);
