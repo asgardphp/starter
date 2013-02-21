@@ -43,7 +43,8 @@ class ORM {
 
 	public function joinToModel($relation, $model) {
 		$this->join($relation);
-		$this->where(array($model::getTable().'.id' => $model->id));
+		// $this->where(array($model::getTable().'.id' => $model->id));
+		$this->where(array($relation.'.id' => $model->id));
 		return $this;
 	}
 
@@ -156,6 +157,7 @@ class ORM {
 		}
 	}
 
+	// todo replace alias $relationName by something else, in case of relations with the same name
 	public function jointure($dal, $relationName, $current_model, $ref_table) {
 		$relation = $current_model::getDefinition()->relations[$relationName];
 		$relation_model = $relation['model'];
@@ -165,8 +167,8 @@ class ORM {
 				$link = $relation['link'];
 				$table = $relation_model::getTable();
 				$dal->rightjoin(array(
-					$table => $this->processConditions(array(
-						$ref_table.'.'.$link.' = '.$table.'.id'
+					$table.' '.$relationName => $this->processConditions(array(
+						$ref_table.'.'.$link.' = '.$relationName.'.id'
 					))
 				));
 				break;
@@ -174,8 +176,8 @@ class ORM {
 				$link = $relation['link'];
 				$table = $relation_model::getTable();
 				$dal->rightjoin(array(
-					$table => $this->processConditions(array(
-						$ref_table.'.id'.' = '.$table.'.'.$link
+					$table.' '.$relationName => $this->processConditions(array(
+						$ref_table.'.id'.' = '.$relationName.'.'.$link
 					))
 				));
 				break;
@@ -186,8 +188,8 @@ class ORM {
 					))
 				));
 				$dal->rightjoin(array(
-					$relation_model::getTable() => $this->processConditions(array(
-						$relation['join_table'].'.'.$relation['link_b'].' = '.$relation_model::getTable().'.id',
+					$relation_model::getTable().' '.$relationName => $this->processConditions(array(
+						$relation['join_table'].'.'.$relation['link_b'].' = '.$relationName.'.id',
 					))
 				));
 				break;
@@ -197,9 +199,9 @@ class ORM {
 			$table = $relation_model::getTable();
 			$translation_table = $table.'_translation';
 			$dal->leftjoin(array(
-				$translation_table => $this->processConditions(array(
-					$table.'.id = '.$translation_table.'.id',
-					$translation_table.'.locale' => \Config::get('locale')
+				$translation_table.' '.$relationName.'_translation' => $this->processConditions(array(
+					$table.'.id = '.$relationName.'_translation.id',
+					$relationName.'_translation.locale' => \Config::get('locale')
 				))
 			));
 		}

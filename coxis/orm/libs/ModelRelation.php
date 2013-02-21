@@ -58,6 +58,7 @@ class ModelRelation implements \ArrayAccess {
 		$modelName = preg_replace('/^\\\/', '', $origModelName);
 
 		$relation_model = $this->params['model'];
+		$name = $this->name;
 
 		$rev_relations = array();
 		if(isset($relation_model::$relations))
@@ -65,6 +66,8 @@ class ModelRelation implements \ArrayAccess {
 				$relModelClass = preg_replace('/^\\\/', '', strtolower($rev_rel['model']));
 
 				if($relModelClass == $modelName) {
+					if($rev_rel_name == $name)
+						continue;
 					if(isset($relation['for']) && $relation['for']!=$rev_rel_name)
 						continue;
 					if(isset($rev_rel['for']) && $rev_rel['for']!=$name)

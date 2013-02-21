@@ -781,7 +781,7 @@ a:hover {
 
 .block form .note.error { color: #e3302c; }
 			
-.block form input.submit {
+input.submit {
 	width: 85px;
 	height: 30px;
 	line-height: 30px;
@@ -821,8 +821,8 @@ a:hover {
 .block form input.submit.mid { width: 115px; background: url(../img/btnm.gif) top center no-repeat; }
 .block form input.submit.mid:hover { background: url(../img/btnm_.gif) top center no-repeat; }
 
-.block form input.submit.long { width: 165px; background: url(../img/btnb.gif) top center no-repeat; }
-.block form input.submit.long:hover { background: url(../img/btnb_.gif) top center no-repeat; }
+input.submit.long { width: 165px; background: url(../img/btnb.gif) top center no-repeat; }
+input.submit.long:hover { background: url(../img/btnb_.gif) top center no-repeat; }
 
 
 /* Small blocks */

@@ -58,7 +58,7 @@ class Validation {
 		});
 		
 		$this->register('integer', function($attribute, $value, $params, $validator) {
-			if(!preg_match('/^[0-9]*$/', $value)) {
+			if(!preg_match('/^-?[0-9]*$/', $value)) {
 				$msg = $validator->getMessage('integer', $attribute, __('The field ":attribute" must be an integer.'));
 				return Validation::format($msg, array(
 					'attribute'	=>	__(str_replace('_', ' ', $attribute)),

@@ -14,6 +14,7 @@ class ORMHandler {
 			'editable'=>false, 
 			'required'=>false,
 			'position'	=>	1,
+			'defaut'	=>	0,
 			'orm'	=>	array(
 				'type'	=>	'int(11)',
 				'auto_increment'	=>	true,
