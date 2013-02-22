@@ -17,12 +17,9 @@ class ORMBehaviorHooks extends \Coxis\Hook\HooksContainer {
 		Profiler::checkpoint('Loading ORM : start');
 		$modelName = $modelDefinition->getClass();
 
-		#todo rename hook as there is now variable to hook
-		$modelDefinition->hookOn('callStatic', function($chain, $name, $args) use($modelName) {
-			if($name == 'getTable') {
-				$chain->found = true;
-				return \Coxis\ORM\Libs\ORMHandler::getTable($modelName);
-			}
+		#Article::getTable()
+		$modelDefinition->addStaticMethod('getTable', function() use($modelName) {
+			return \Coxis\ORM\Libs\ORMHandler::getTable($modelName);
 		});
 
 		$ormHandler = new \Coxis\ORM\Libs\ORMHandler($modelDefinition);
@@ -34,25 +31,21 @@ class ORMBehaviorHooks extends \Coxis\Hook\HooksContainer {
 			}
 		});
 
+		#Article::orm()
+		$modelDefinition->addStaticMethod('orm', function() use($ormHandler) {
+			return $ormHandler->getORM();
+		});
+		#Article::load(2)
+		$modelDefinition->addStaticMethod('load', function($id) use($ormHandler) {
+			return $ormHandler->load($id);
+		});
+		#Article::destroyOne()
+		$modelDefinition->addStaticMethod('load', function($id) use($ormHandler) {
+			return $ormHandler->destroyOne($id);
+		});
 		$modelDefinition->hookOn('callStatic', function($chain, $name, $args) use($ormHandler) {
 			$res = null;
-			#Article::load(2)
-			if($name == 'load') {
-				$chain->found = true;
-				return $ormHandler->load($args[0]);#id
-			}
-			#Article::destroyOne(2)
-			elseif($name == 'destroyOne') {
-				$chain->found = true;
-				return $ormHandler->destroyOne($args[0]);#id
-			}
-			#Article::orm()
-			elseif($name == 'orm') {
-				$chain->found = true;
-				return $ormHandler->getORM();
-			}
-			#Article::loadByName()
-			elseif(strpos($name, 'loadBy') === 0) {
+			if(strpos($name, 'loadBy') === 0) {
 				$chain->found = true;
 				preg_match('/^loadBy(.*)/', $name, $matches);
 				$property = $matches[1];
@@ -66,29 +59,25 @@ class ORMBehaviorHooks extends \Coxis\Hook\HooksContainer {
 			}
 		});
 
+		#$article->isNew()
+		$modelDefinition->addMethod('isNew', function($model) use($ormHandler) {
+			return $ormHandler->isNew($model);
+		});
+		#$article->isOld()
+		$modelDefinition->addMethod('isOld', function($model) use($ormHandler) {
+			return $ormHandler->isOld($model);
+		});
+		#Relations
+		$modelDefinition->addMethod('relation', function($model, $relation) use($ormHandler) {
+			return $ormHandler->relation($model, $relation);
+		});
+		#Relation properties
+		$modelDefinition->addMethod('getRelationProperty', function($model, $relation) use($ormHandler) {
+			return $ormHandler->getRelationProperty($model, $relation);
+		});
 		$modelDefinition->hookOn('call', function($chain, $model, $name, $args) use($ormHandler) {
 			$res = null;
-			#$article->isNew()
-			if($name == 'isNew') {
-				$chain->found = true;
-				$res = $ormHandler->isNew($model);
-			}
-			#$article->isOld()
-			elseif($name == 'isOld') {
-				$chain->found = true;
-				$res = $ormHandler->isOld($model);
-			}
-			#Relations
-			elseif($name == 'relation') {
-				$chain->found = true;
-				$res = $ormHandler->relation($model, $args[0]);#relation name
-			}
-			#Relation properties
-			elseif($name == 'getRelationProperty') {
-				$chain->found = true;
-				$res = $ormHandler->getRelationProperty($model, $args[0]);#relation name
-			}
-			elseif(array_key_exists($name, $model::$relations)) {
+			if(array_key_exists($name, $model::$relations)) {
 				$chain->found = true;
 				$res = $model->relation($name);
 			}

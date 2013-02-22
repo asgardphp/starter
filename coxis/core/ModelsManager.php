@@ -143,6 +143,25 @@ class ModelDefinition extends Hookable {
 	public static function getModelName() {
 		return ${$this->getClass()}::getModelName();
 	}
+
+	public function addMethod($method_name, $cb) {
+		$this->hookOn('call', function($chain, $model, $name, $args) use($method_name, $cb) {
+			if($name == $method_name) {
+				$chain->found = true;
+				$chain->stop();
+				return call_user_func_array($cb, array_merge(array($model), $args));
+			}
+		});
+	}
+
+	public function addStaticMethod($method_name, $cb) {
+		$this->hookOn('callStatic', function($chain, $name, $args) use($method_name, $cb) {
+			if($name == $method_name) {
+				$chain->found = true;
+				return call_user_func_array($cb, $args);
+			}
+		});
+	}
 }
 
 class ModelsManager {

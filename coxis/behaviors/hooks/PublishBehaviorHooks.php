@@ -10,15 +10,13 @@ class PublishBehaviorHooks extends \Coxis\Hook\HooksContainer {
 
 		$modelDefinition->addProperty('published', array('type'=>'boolean', 'default'=>true));
 
-		$modelDefinition->hookOn('callStatic', function($chain, $name, $args) use ($modelName) {
-			if($name == 'published') {
-				$chain->found = true;
-				return $modelName::orm()->where(array('published'=>1));
-			}
-			elseif($name == 'loadPublished') {
-				$chain->found = true;
-				return $modelName::published()->where(array('id'=>$args[0]['id']))->first();
-			}
+		#Article::load(2)
+		$modelDefinition->addStaticMethod('published', function() use($modelName) {
+			return $modelName::orm()->where(array('published'=>1));
+		});
+		#Article::load(2)
+		$modelDefinition->addStaticMethod('loadPublished', function($id) use($modelName) {
+			return $modelName::published()->where(array('id'=>$id))->first();
 		});
 	}
 	
