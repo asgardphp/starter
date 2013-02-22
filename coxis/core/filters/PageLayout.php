@@ -18,7 +18,7 @@ class PageLayout extends Filter {
 		if(is_array(\Memory::get('layout')) && sizeof(\Memory::get('layout')) >= 2 && $result !== null) {
 			$result = Viewable::staticDoRun(\Memory::get('layout', 0), \Memory::get('layout', 1), $result);
 			if(\Memory::get('htmlLayout') !== false)
-				$result = View::render('app/standard/views/default/html.php', array('content'=>$result));
+				$result = View::render('app/general/views/default/html.php', array('content'=>$result));
 		}
 	}
 }
