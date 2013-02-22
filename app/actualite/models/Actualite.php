@@ -2,7 +2,7 @@
 class Actualite extends \Coxis\Core\Model {
 	public static $properties = array(
 		'title',
-		'content',
+		'content'	=>	'longtext',
 		'image'	=>	array(
 			'type'	=>	'file',
 			'filetype'	=>	'image',

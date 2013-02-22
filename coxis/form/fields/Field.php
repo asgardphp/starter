@@ -19,10 +19,16 @@ abstract class Field {
 			$this->value = $options['default'];
 		if(isset($options['form']))
 			$this->form = $options['form'];
+		if(isset($options['default_render']))
+			$this->form = $options['default_render'];
 	}
 
 	public function __call($name, $args) {
 		return $this->render($name, isset($args[0]) ? $args[0]:array());
+	}
+
+	public function setDefaultRender($default_render) {
+		$this->default_render = $default_render;
 	}
 
 	public function label() {
@@ -30,7 +36,7 @@ abstract class Field {
 	}
 
 	public function labelTag() {
-		return '<label id="'.$this->getID().'">'.$this->label().'</label>';
+		return '<label for="'.$this->getID().'">'.$this->label().'</label>';
 	}
 
 	public function def($options=array()) {

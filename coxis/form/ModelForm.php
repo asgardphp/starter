@@ -38,7 +38,12 @@ class ModelForm extends Form {
 
 		$field_class = $field_type.'Field';
 
-		return new $field_class($field_params);
+		$field = new $field_class($field_params);
+
+		if($properties->type == 'longtext')
+			$field->setDefaultRender('wysiwyg');
+
+		return $field;
 	}
 
 	public function addRelation($name) {

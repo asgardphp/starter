@@ -6,6 +6,6 @@ class TextProperty extends BaseProperty {
 		if($this->length)
 			return 'varchar('.$this->length.')';
 		else
-			return 'text';
+			return 'varchar(255)';
 	}
 }

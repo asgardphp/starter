@@ -17,7 +17,7 @@
 					echo
 					$form->title->def().
 					$form->published->def().
-					$form->content->wysiwyg().
+					$form->content->def().
 					$form->image->def().
 					$form->meta_title->def().
 					$form->meta_description->def().
