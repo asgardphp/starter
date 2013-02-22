@@ -9,7 +9,8 @@ class Page extends \Coxis\Core\Model {
 
 	public static $relations = array(	
 		'menuitem' => array(
-			'has'	=>	'many',
+			'as'	=>	'menuitemable',
+			'type'	=>	'hasOne',
 			'model'	=>	'menuitem',
 		),
 	);

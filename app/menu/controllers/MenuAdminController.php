@@ -32,18 +32,31 @@ class MenuAdminController extends \Coxis\Admin\Libs\Controller\ModelAdminControl
 		$pages = array('Index'=>array(
 			'type'	=>	'custom',
 			'custom_id'	=>	'pages',
-		)); 
+		));
 		foreach(Page::all() as $page) {
 			$pages[$page->__toString()] = array(
 				'type'	=>	'item',
 				'model'	=>	'page',
-				'item'	=>	$page->id
+				'item_id'	=>	$page->id,
+				'item_type'	=>	'page',
+			);
+		}
+		$actualites = array();
+		foreach(Actualite::all() as $actualite) {
+			$actualites[$actualite->__toString()] = array(
+				'type'	=>	'item',
+				'model'	=>	'page',
+				'item_id'	=>	$actualite->id,
+				'item_type'	=>	'actualite',
 			);
 		}
 
 		$this->adminMenu = array(
 			'Pages'	=>	array(
 				'childs' => $pages,
+			),
+			'Actualités'	=>	array(
+				'childs' => $actualites,
 			),
 		);
 
@@ -52,7 +65,8 @@ class MenuAdminController extends \Coxis\Admin\Libs\Controller\ModelAdminControl
 			<option
 				value="<?php echo $menuitem['type'] ?>"
 				<?php echo isset($menuitem['custom_id']) ? 'data-custom_id="'.$menuitem['custom_id'].'"':'' ?>
-				<?php echo isset($menuitem['item']) ? 'data-item="'.$menuitem['item'].'"':'' ?>
+				<?php echo isset($menuitem['item_id']) ? 'data-item_id="'.$menuitem['item_id'].'"':'' ?>
+				<?php echo isset($menuitem['item_type']) ? 'data-item_type="'.$menuitem['item_type'].'"':'' ?>
 				<?php if(
 					$item->type == $menuitem['type']
 					&& (isset($menuitem['custom_id']) && $item->custom_id == $menuitem['custom_id'] || isset($menuitem['item']) && $item->item_id == $menuitem['item'])
@@ -71,7 +85,8 @@ class MenuAdminController extends \Coxis\Admin\Libs\Controller\ModelAdminControl
 				<div class="item">
 					<form data-id="<?php echo $item->id ?>">
 					<input type="hidden" name="custom_id" value="<?php echo $item->custom_id ?>">
-					<input type="hidden" name="item" value="<?php echo $item->item ?>">
+					<input type="hidden" name="item_id" value="<?php echo $item->item_id ?>">
+					<input type="hidden" name="item_type" value="<?php echo $item->item_type ?>">
 					<input type="text" name="title" value="<?php echo $item->title ?>" placeholder="Title">
 					<select name="type">
 						<option value="fixed" <?php echo $item->type=='fixed' ? 'selected="selected"':'' ?>>Fixed url</option>

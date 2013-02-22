@@ -64,11 +64,14 @@
 							var e = $(this).find(':selected');
 							var type = e.val();
 							var custom_id = e.attr('data-custom_id');
-							var item = e.attr('data-item');
+							var item_id = e.attr('data-item_id');
+							var item_type = e.attr('data-item_type');
 							if(custom_id)
 								e.closest('form').find('*[name="custom_id"]').val(custom_id);
-							if(item)
-								e.closest('form').find('*[name="item"]').val(item);
+							if(item_id)
+								e.closest('form').find('*[name="item_id"]').val(item_id);
+							if(item_type)
+								e.closest('form').find('*[name="item_type"]').val(item_type);
 
 							if(type == 'fixed')
 								$(this).closest('form').find('*[name="fixed_url"]').css('display', 'inline-block');
@@ -137,21 +140,13 @@
 						padding-top:15px;
 						margin-left:15px;
 						padding-bottom:5px;
-						/*padding-bottom:20px;*/
 					}
 					#items ul.empty {
 						padding-top:0;
 						height:10px;
-
-						/*margin-top:0px;*/
-						/*height:20px;*/
-						/*border:1px dashed grey;*/
 					}
 					#items li {
-						/*background: url(<?php echo \URL::to('menu/drag.gif') ?>) 0 5px no-repeat;*/
 						background: none !important;
-						/*padding-left:20px;*/
-						/*padding-bottom:5px;*/
 					}
 					#items .item {
 						-webkit-border-radius: 3px;
@@ -172,7 +167,6 @@
 						vertical-align: bottom;
 					}
 					.ui-state-highlight {
-						/*background: none !important;*/
 						height:30px;
 						border:1px dashed grey;
 						margin-left:15px;

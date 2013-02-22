@@ -37,8 +37,9 @@ class Menuitem extends \Coxis\Core\Model {
 			'model'	=>	'MenuItem',
 		),
 		'item' => array(
-			'has'	=>	'one',
-			'model'	=>	'Page',
+			'type'	=>	'hasOne',
+			'polymorphic'	=>	true,
+			'model'	=>	'menuitemable',
 		),
 	);
 	
