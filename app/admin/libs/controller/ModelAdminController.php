@@ -126,6 +126,7 @@ abstract class ModelAdminController extends AdminParentController {
 		
 		if(!($this->$modelName = $_model::load($request['id'])))
 			throw new NotFoundException;
+		$this->original = clone $this->$modelName;
 
 		$this->form = $this->formConfigure($this->$modelName);
 	
