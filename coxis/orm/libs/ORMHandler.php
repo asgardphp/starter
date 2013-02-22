@@ -113,12 +113,22 @@ class ORMHandler {
 					return;
 				
 				$link = $rel['link'];
-				return $relmodel::where(array($link => $model->id))->first();
+				if($rel['polymorphic']) {
+					$relmodel = $model->{$rel['link_type']};
+					if(!$relmodel)
+						return;
+				}
+				return $relmodel::where(array('id' => $model->{$link}))->first();
 			case 'belongsTo':
 				if($model->isNew())
 					return;
 
 				$link = $rel['link'];
+				if($rel['polymorphic']) {
+					$relmodel = $model->{$rel['link_type']};
+					if(!$relmodel)
+						return;
+				}
 				return $relmodel::where(array('id' => $model->$link))->first();
 			case 'hasMany':
 			case 'HMABT':
