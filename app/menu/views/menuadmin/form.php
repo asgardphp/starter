@@ -30,36 +30,11 @@
 					<hr>
 					<?php endif ?>
 					<h3>Items</h3>
-					<script src="js/query-ui-1.8.16.custom.js"></script>
+					<!-- // <script src="js/query-ui-1.8.16.custom.js"></script> -->
+					<script src="../menu/jquery.nestable.js"></script>
 					<script>
 					window.menu_id = <?php echo $menu->id ?>;
 					$(function() {
-						$("#items ul").sortable({
-			                connectWith: "#items ul",
-			                placeholder: "ui-state-highlight",
-			                handle: ".item",
-			                change: function(e, ui) {
-			                	$('ul').removeClass('empty');
-			                	$('ul:empty').addClass('empty');
-			                },
-			                update: function(e, ui) {
-			                	var id = ui.item.find('form').attr('data-id');
-
-			                	var after_id = ui.item.prev().find('form').attr('data-id');
-			                	if(typeof after_id == "undefined")
-			                		after_id = 0;
-
-			                	var parent = ui.item.parent().parent();
-			                	if(parent.attr('id') == 'items')
-			                		var parent_id = 0;
-			                	else
-			                		var parent_id = parent.find('form').first().attr('data-id');
-			                	$.post('menus/'+id+'/save', {'parent': parent_id, 'after': after_id});
-
-			                	
-			                }
-						});
-
 						$('.item select[name="type"]').live('change', function(event) {
 							var e = $(this).find(':selected');
 							var type = e.val();
@@ -80,7 +55,29 @@
 						});
 						$('.item select[name="type"]').change();
 
-						$('.item input, .item select').live('change', function() {
+						$('#items').nestable({
+							'update': function(item) {
+								var e = item;
+								var id = e.find('form').attr('data-id');
+
+								var after_id = e.prev().find('form').attr('data-id');
+								if(typeof after_id == "undefined")
+									after_id = 0;
+
+								var parent = e.parent().parent();
+								if(parent.attr('id') == 'items')
+									var parent_id = 0;
+								else
+									var parent_id = parent.find('form').first().attr('data-id');
+								$.post('menus/'+id+'/save', {'parent': parent_id, 'after': after_id});
+							}
+						});
+
+						$('.item form *').mousedown(function(event) {
+							event.stopPropagation();
+						});
+
+						$('.item input, .item select').live('change', function(event) {
 							var e = $(this).parent();
 							e.find('input[name="save"]').css('color', 'red');
 						});
@@ -129,62 +126,72 @@
 					});
 					</script>
 					<style>
-					#items ul, #items div {
+					.dd-dragel { position: absolute; pointer-events: none; z-index: 9999; }
+					.dd-dragel > .dd-item .dd-handle { margin-top: 0; }
+					ol.dd-list {
+						list-style-type: none;
+					}
+					#items button {
+						display:none;
+					}
+					#items {
+						position:relative;
+					}
+					.block .block_content ol.dd-list, .dd-list li, .dd-list div {
 						padding:0;
 						margin:0;
 					}
-					#items div {
+					.dd-list div {
 						display:inline-block;
 					}
-					#items ul {
-						padding-top:15px;
-						margin-left:15px;
-						padding-bottom:5px;
+					.dd-placeholder {
+						display: block;
+						width:100%;
+						position: relative;
+						height: 20px;
+						margin-bottom:10px !important;
+						border:1px dashed grey;
 					}
-					#items ul.empty {
-						padding-top:0;
-						height:10px;
+					.block .block_content ol.dd-list {
+						position:relative;
+						margin-left:30px;
 					}
-					#items li {
+					.block .block_content ol.dd-list li {
 						background: none !important;
 					}
-					#items .item {
+					ol.dd-list .item {
 						-webkit-border-radius: 3px;
 						cursor:move;
 						background-color:#eee;
 						border:1px solid #bbb;
 						padding:5px;
 						display:block;
+						margin-bottom:10px;
 					}
-					#items label {
+					ol.dd-list label {
 						cursor:move;
 						display:inline-block;
 					}
-					#items input, #items select {
+					ol.dd-list input, ol.dd-list select {
 						padding:3px;
 						-webkit-border-radius: 3px;
 						margin-right:20px;
 						vertical-align: bottom;
 					}
-					.ui-state-highlight {
-						height:30px;
-						border:1px dashed grey;
-						margin-left:15px;
-					}
 
-					#items input[name="save"], #items input[name="delete"] {
+					ol.dd-list input[name="save"], ol.dd-list input[name="delete"] {
 						float:right;
 					}
 					</style>
 					
-					<div id="items">
-						<ul>
+					<div id="items" class="dd">
+						<ol class="dd-list">
 							<?php foreach($menu->items()->where(array('parent_id'=>0))->get() as $item):
 							showItem($item, $adminMenu);
 							endforeach;
 							?>
 							
-						</ul>
+						</ol>
 					</div>
 
 					<input type="button" id="add" value="Add"  class="submit long">

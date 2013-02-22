@@ -81,8 +81,8 @@ class MenuAdminController extends \Coxis\Admin\Libs\Controller\ModelAdminControl
 
 		function showItem($item, $adminMenu) {
 			?>
-			<li>
-				<div class="item">
+			<li class="dd-item">
+				<div class="item dd-handle">
 					<form data-id="<?php echo $item->id ?>">
 					<input type="hidden" name="custom_id" value="<?php echo $item->custom_id ?>">
 					<input type="hidden" name="item_id" value="<?php echo $item->item_id ?>">
@@ -117,13 +117,11 @@ class MenuAdminController extends \Coxis\Admin\Libs\Controller\ModelAdminControl
 				</div>
 				<?php
 				$childs = $item->childs;
-				if(count($childs) == 0)
-					echo '<ul class="empty"></ul>';
-				else {
-					echo '<ul>';
+				if(count($childs)) {
+					echo '<ol class="dd-list">';
 					foreach($childs as $child)
 						showItem($child, $adminMenu);
-					echo '</ul>';
+					echo '</ol>';
 				}
 				?>
 			</li>
