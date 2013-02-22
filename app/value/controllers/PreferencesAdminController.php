@@ -7,7 +7,7 @@ namespace App\Value\Controllers;
 class PreferencesAdminController extends \Coxis\Admin\Libs\Controller\AdminParentController {
 	function __construct() {
 		$this->_messages = array(
-			'modified'			=>	__('Preferences modifiées avec succès.'),
+			'modified'			=>	__('Preferences modified with success.'),
 		);
 	}
 	
@@ -25,7 +25,7 @@ class PreferencesAdminController extends \Coxis\Admin\Libs\Controller\AdminParen
 		}
 		
 		$form->values['name']['value']->params['rules']['required'] = true;
-		$form->values['name']['value']->params['messages']['required'] = 'Le champ "nom" est requis.';
+		$form->values['name']['value']->params['messages']['required'] = __('The field "name" is required.');
 		
 		return $form;
 	}

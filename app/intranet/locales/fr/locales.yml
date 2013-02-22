@@ -1,0 +1,23 @@
+User modified with success.: Utilisateur modifié avec succès.
+User created with success.: Utilisateur créé avec succès.
+User modified with success.: Utilisateurs modifiés avec succès.
+User deleted with success.: Utilisateur supprimé avec succès.
+Users: Utilisateurs
+Manage your users: Gérer vos utilisateurs
+
+Congrats, you are now registered. Please check your emails to confirm your registration.: Félicitations, vous êtes maintenant enregistré. Veuillez vérifier vos emails pour confirmer votre inscription.
+Félicitations, votre inscription est maintenant confirmée.: Félicitations, votre inscription est maintenant confirmée.
+Wrong username or password.: Mauvais utilisateur ou mot de passe.
+This email address does not belong to any user.: Cette email n'appartient à personne.
+A new password was sent to your email address.: Un nouveau mot de passe a été envoyé à votre adresse email
+You have been successfully disconnected!: Vous avez bien été déconnecté.
+Your profile was saved with success!: Votre profil a été sauvegardé avec succès.
+New password: Nouveau mot de passe
+'Your new password: :password': 'Votre nouveau mot de passe: :password'
+'Click here to get a new password: ': 'Cliquez-ici pour obtenir un nouveau mot de passe : '
+intranet__register_welcome: >
+  Bienvenue !
+  Votre nom d'utilisateur est : :username
+  Votre mot de passe est : :password
+  Veuillez cliquer ou copier/coller le lien suivant pour confirmer votre inscription : :link
+Register: S'enregister

@@ -1,0 +1,5 @@
+intranet__register_welcome: >
+  Welcome!
+  Your username is: :username
+  Your password is: :password
+  Please click or copy/paste this link to confirm your registration: :link

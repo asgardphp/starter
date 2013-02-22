@@ -61,11 +61,11 @@ class NewsletterAdminController extends \App\Admin\Libs\Controller\ModelAdminCon
 				
 				if(\POST::has('tous')) {
 					$this->envoi($subject);
-					Flash::addSuccess('Mailing sent to all subscribers.');
+					Flash::addSuccess(__('Mailing sent to all subscribers.'));
 				}
 				elseif(\POST::has('test')) {
 					$this->test($subject);
-					Flash::addSuccess('Mailing sent to the given email address.');
+					Flash::addSuccess(__('Mailing sent to the given email address.'));
 				}
 				else
 					Flash::addSuccess($this->_messages['created']);
@@ -100,11 +100,11 @@ class NewsletterAdminController extends \App\Admin\Libs\Controller\ModelAdminCon
 				$subject = $this->form->title->getValue();
 				if(\POST::has('tous')) {
 					$this->envoi($subject);
-					Flash::addSuccess('Mailing sent to all subscribers.');
+					Flash::addSuccess(__('Mailing sent to all subscribers.'));
 				}
 				elseif(\POST::has('test')) {
 					$this->test($subject);
-					Flash::addSuccess('Mailing sent to the given email address.');
+					Flash::addSuccess(__('Mailing sent to the given email address.'));
 				}
 				else
 					Flash::addSuccess($this->_messages['modified']);

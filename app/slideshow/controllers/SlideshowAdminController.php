@@ -33,7 +33,7 @@ class SlideshowAdminController extends \App\Admin\Libs\Controller\AdminParentCon
 	*/
 	public function deleteAction($request) {
 		if(Slide::destroyOne($request['id']))
-			\Flash::addSuccess('Slide supprimé avec succès.');
+			\Flash::addSuccess(__('Slide deleted with success.'));
 		return \Response::back();
 	}
 
@@ -46,7 +46,7 @@ class SlideshowAdminController extends \App\Admin\Libs\Controller\AdminParentCon
 		if($this->form->isSent()) {
 			try {
 				$this->form->save();
-				Flash::addSuccess(__('Le slideshow a été sauvegardé avec succès.'));
+				Flash::addSuccess(__('The slideshow was saved with success.'));
 			} catch(\Coxis\Form\FormException $e) {
 				\Flash::addError($this->form->getGeneralErrors());
 				\Response::setCode(400);

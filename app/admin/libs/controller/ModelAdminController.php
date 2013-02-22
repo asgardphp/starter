@@ -13,7 +13,6 @@ abstract class ModelAdminController extends AdminParentController {
 			'created'				=>	__('Element created with success.'),
 			'many_deleted'	=>	__('%s elements deleted.'),
 			'deleted'				=>	__('Element deleted with success.'),
-			'unexisting'			=>	__('This element does not item.'),
 		);
 
 		#trigger the model behaviors coxisadmin hook
@@ -303,6 +302,6 @@ abstract class ModelAdminController extends AdminParentController {
 				return Controller::run($hook['controller'], $hook['action'], $newRequest);
 			}
 		}
-		throw new \Exception(__('Controller hook does not exist!'));
+		throw new \Exception('Controller hook does not exist!');
 	}
 }

@@ -32,6 +32,6 @@ class SubscriberController extends Controller {
 		if(!$membre)
 			$this->notfound();
 		$subscriber->destroy();
-		return '<p>'.__('Vous n\'êtes plus inscris à la newsletter.').'</p>';
+		return '<p>'.__('You have been unsubscribed.').'</p>';
 	}
 }

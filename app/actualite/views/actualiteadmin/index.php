@@ -4,7 +4,7 @@
 					<div class="bheadr"></div>
 					<h2><a href="<?php echo $this->url_for('index') ?>"><?php echo ucfirst($this::$_models) ?></a></h2>
 					<ul>
-						<li><a href="<?php echo $this->url_for('new') ?>">Ajouter</a></li>
+						<li><a href="<?php echo $this->url_for('new') ?>"><?php echo __('Add') ?></a></li>
 					</ul>
 					<?php
 					$searchForm->open();
@@ -38,8 +38,8 @@
 									<thead>
 										<tr>
 											<th width="10"><input type="checkbox" class="check_all" /></th>
-											<th>Créé le</th>
-											<th>Titre</th>
+											<th><?php echo __('Created at') ?></th>
+											<th><?php echo __('Title') ?></th>
 											<td>&nbsp;</td>
 										</tr>
 									</thead>
@@ -53,7 +53,7 @@
 												<td><a href="<?php echo $this->url_for('edit', array('id'=>$actualite->id)) ?>"><?php echo $actualite ?></a></td>
 												<td class="actions">
 													<?php \Hook::trigger('coxis_actualite_actions', $actualite, null, true) ?>
-													<a class="delete" href="<?php echo $this->url_for('delete', array('id'=>$actualite->id)) ?>">Supprimer</a>
+													<a class="delete" href="<?php echo $this->url_for('delete', array('id'=>$actualite->id)) ?>"><?php echo __('Delete') ?></a>
 												</td>
 											</tr>
 										<?php } ?>
@@ -67,7 +67,7 @@
 										<option value="<?php echo $action['value'] ?>"><?php echo $action['text'] ?></option>
 										<?php endforeach ?>
 									</select>
-									<input type="submit" class="submit tiny" value="Appliquer" />
+									<input type="submit" class="submit tiny" value="<?php echo __('Apply') ?>" />
 								</div>		
 								
 								<?php if(isset($paginator) && $paginator->getPages()>1): ?>

@@ -1,9 +1,8 @@
 <?php
 class Menu extends \Coxis\Core\Model {
 	public static $properties = array(
-					'name'	=>	array(
-							),
-			);
+		'name',
+	);
 	
 	public static $relations = array(	
 		'items' => array(

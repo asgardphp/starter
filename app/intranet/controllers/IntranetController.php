@@ -12,13 +12,14 @@ class IntranetController extends \Coxis\Core\Controller {
 			try {
 				$this->form->save();
 
-				$txt = 'Bienvenue !'."\n".
-				'Votre idendifiant est : '.$user->username."\n".
-				'Et votre mot de passe : '.$this->form->password->getValue()."\n".
-				'Veuillez cliquer ou copier le lien suivant pour confirmer votre inscription : '.\URL::to('confirm/'.$user->getUID());
+				$txt = __('intranet__register_welcome', array(
+					'username'	=>	$user->username,
+					'password'	=>	$this->form->password->getValue(),
+					'link'	=>	\URL::to('confirm/'.$user->getUID()),
+				));
 				Email::create($user->email, \Value::val('email'), 'Confirmation', $txt)->send();
 
-				return '<p style="text-align:center">Félicitations, vous êtes maintenant enregistré. Veuillez vérifier vos emails pour confirmer votre inscription.</p>';
+				return '<p style="text-align:center">Congrats, you are now registered. Please check your emails to confirm your registration.</p>';
 			} catch(\Coxis\Form\FormException $e) {
 				\Flash::addError($e->errors);
 			}
@@ -34,7 +35,7 @@ class IntranetController extends \Coxis\Core\Controller {
 
 		$user->save(array('confirmed'=>true));
 		Auth::connect($user->id);
-		return '<p style="text-align:center">Félicitations, votre inscription est maintenant confirmée.</p>';
+		return '<p style="text-align:center">'.__('Congrats, your registration is now confirmed.').'</p>';
 	}
 
 	public function loginForm() {
@@ -53,7 +54,7 @@ class IntranetController extends \Coxis\Core\Controller {
 	*/
 	public function loginAction($request) {
 		if(Auth::isConnected())
-			return \Response::redirect('intranet');
+			return \Response::redirect($this->url_for('index'));
 		$this->loginForm();
 		if($this->form->isSent()) {
 			$user = Auth::attempt($this->form->username->getValue(), $this->form->password->getValue());
@@ -63,7 +64,7 @@ class IntranetController extends \Coxis\Core\Controller {
 				return \Response::redirect($this->url_for('index'));
 			}
 			else
-				\Flash::addError('Wrong username or password.');
+				\Flash::addError(__('Wrong username or password.'));
 		}
 	}
 
@@ -83,7 +84,7 @@ class IntranetController extends \Coxis\Core\Controller {
 
 		if($this->form->isSent() && $this->form->isValid()) {
 			$user = User::loadByEmail($this->form->email->getValue());
-			Email::create($user->email, Value::val('email'), 'Password forgotten', 'Click here for a new password: '.\URL::to($this->url_for('confirm_forgotten', array('uid'=>$user->getUID()))))->send();
+			Email::create($user->email, Value::val('email'), 'Password forgotten', __('Click here to get a new password: ', \URL::to($this->url_for('confirm_forgotten', array('uid'=>$user->getUID())))))->send();
 		}
 	}
 
@@ -95,8 +96,8 @@ class IntranetController extends \Coxis\Core\Controller {
 			$this->notfound();
 		$rand = Tools::randStr(10);
 		$user->save(array('password'=>$rand));
-		Email::create($user->email, Value::val('email'), 'New password', 'Your new password: '.$rand)->send();
-		return 'A new password was sent to your email address.';
+		Email::create($user->email, Value::val('email'), __('New password'), __('Your new password: :password', array('password'=>$rand)))->send();
+		return __('A new password was sent to your email address.');
 	}
 
 	/**
@@ -104,7 +105,7 @@ class IntranetController extends \Coxis\Core\Controller {
 	*/
 	public function logoutAction($request) {
 		Auth::disconnect();
-		return 'You have been successfully disconnected!';
+		return __('You have been successfully disconnected!');
 	}
 
 	/**
@@ -123,7 +124,7 @@ class IntranetController extends \Coxis\Core\Controller {
 		if($this->form->isSent()) {
 			try {
 				$this->form->save();
-				\Flash::addSuccess('Your profile was saved with success!');
+				\Flash::addSuccess(__('Your profile was saved with success!'));
 			} catch(\Coxis\Form\FormException $e) {
 				\Flash::addError($e->errors);
 			}

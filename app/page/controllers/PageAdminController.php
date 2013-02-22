@@ -8,11 +8,11 @@ class PageAdminController extends \Coxis\Admin\Libs\Controller\ModelAdminControl
 
 	function __construct() {
 		$this->_messages = array(
-					'modified'			=>	__('Page modifiée avec succès.'),
-					'created'			=>	__('Page créée avec succès.'),
-					'many_deleted'			=>	__('Pages modifiées avec succès.'),
-					'deleted'			=>	__('Page supprimée avec succès.'),
-					'unexisting'			=>	__('Cette page n\'existe pas.'),
+					'modified'			=>	__('Page modified with success.'),
+					'created'			=>	__('Page created with success.'),
+					'many_deleted'			=>	__('Pages modified with success.'),
+					'deleted'			=>	__('Page deleted with success.'),
+					'unexisting'			=>	__('This page does not exist.'),
 				);
 		parent::__construct();
 	}

@@ -87,10 +87,10 @@ class MenuAdminController extends \Coxis\Admin\Libs\Controller\ModelAdminControl
 					<input type="hidden" name="custom_id" value="<?php echo $item->custom_id ?>">
 					<input type="hidden" name="item_id" value="<?php echo $item->item_id ?>">
 					<input type="hidden" name="item_type" value="<?php echo $item->item_type ?>">
-					<input type="text" name="title" value="<?php echo $item->title ?>" placeholder="Title">
+					<input type="text" name="title" value="<?php echo $item->title ?>" placeholder="<?php echo __('Title') ?>">
 					<select name="type">
-						<option value="fixed" <?php echo $item->type=='fixed' ? 'selected="selected"':'' ?>>Fixed url</option>
-						<option value="none" <?php echo $item->type=='none' ? 'selected="selected"':'' ?>>None</option>
+						<option value="fixed" <?php echo $item->type=='fixed' ? 'selected="selected"':'' ?>><?php echo __('Fixed url') ?></option>
+						<option value="none" <?php echo $item->type=='none' ? 'selected="selected"':'' ?>><?php echo __('None') ?></option>
 						<?php
 						foreach($adminMenu as $name=>$menuitem) {
 							if(isset($menuitem['childs'])) {
@@ -109,10 +109,10 @@ class MenuAdminController extends \Coxis\Admin\Libs\Controller\ModelAdminControl
 						}
 						?>
 					</select>
-					<input type="text" name="fixed_url" value="<?php echo $item->fixed_url ?>" placeholder="Fixed url">
+					<input type="text" name="fixed_url" value="<?php echo $item->fixed_url ?>" placeholder="<?php echo __('Fixed url') ?>">
 
-					<input type="button" name="delete" value="Delete">
-					<input type="button" name="save" value="Save">
+					<input type="button" name="delete" value="<?php echo __('Delete') ?>">
+					<input type="button" name="save" value="<?php echo __('Save') ?>">
 					</form>
 				</div>
 				<?php

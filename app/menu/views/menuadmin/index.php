@@ -5,7 +5,7 @@
 					<h2><a href="<?php echo $this->url_for('index') ?>"><?php echo ucfirst(static::$_models) ?></a></h2>
 					<?php if(_ENV_ == 'dev'): ?>
 					<ul>
-						<li><a href="<?php echo $this->url_for('new') ?>">Ajouter</a></li>
+						<li><a href="<?php echo $this->url_for('new') ?>"><?php echo __('Add') ?></a></li>
 					</ul>
 					<?php endif ?>
 					<?php
@@ -40,8 +40,8 @@
 									<thead>
 										<tr>
 											<th width="10"><input type="checkbox" class="check_all" /></th>
-											<th>Créé le</th>
-											<th>Nom</th>
+											<th><?php echo __('Created at') ?></th>
+											<th><?php echo __('Name') ?></th>
 											<td>&nbsp;</td>
 										</tr>
 									</thead>
@@ -55,7 +55,7 @@
 												<td class="actions">
 													<?php if(_ENV_ == 'dev'): ?>
 													<?php \Hook::trigger('coxis_menu_actions', $menu) ?>
-													<a class="delete" href="<?php echo $this->url_for('delete', array('id'=>$menu->id)) ?>">Supprimer</a>
+													<a class="delete" href="<?php echo $this->url_for('delete', array('id'=>$menu->id)) ?>"><?php echo __('Delete') ?></a>
 													<?php endif ?>
 												</td>
 											</tr>
@@ -71,7 +71,7 @@
 										<option value="<?php echo $action['value'] ?>"><?php echo $action['text'] ?></option>
 										<?php endforeach ?>
 									</select>
-									<input type="submit" class="submit tiny" value="Appliquer" />
+									<input type="submit" class="submit tiny" value="<?php echo __('Apply') ?>" />
 								</div>	
 								<?php endif ?>	
 								

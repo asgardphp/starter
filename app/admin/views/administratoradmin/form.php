@@ -4,14 +4,14 @@
 					<div class="bheadl"></div>
 					<div class="bheadr"></div>
 					
-					<h2><?php echo !$administrator->isNew() ? $administrator:'Nouveau' ?></h2>
+					<h2><?php echo !$administrator->isNew() ? $administrator:__('New') ?></h2>
 				</div>		<!-- .block_head ends -->
 				
 				<div class="block_content">
 				
 					<p class="breadcrumb"><a href="administrators"><?php echo __('Administrators') ?></a> &raquo; 
 					<a href="<?php echo !$administrator->isNew() ? 'administrators/'.$administrator->id.'/edit':'administrators/new' ?>">
-					<?php echo !$administrator->isNew() ? $administrator:'Nouveau' ?>
+					<?php echo !$administrator->isNew() ? $administrator:__('New') ?>
 					</a></p>
 				
 					<?php Flash::showSuccess() ?>

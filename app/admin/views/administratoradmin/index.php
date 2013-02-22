@@ -60,7 +60,7 @@
 								<option value="delete"><?php echo __('Delete') ?></option>
 							</select>
 							
-							<input type="submit" class="submit tiny" value="Appliquer" />
+							<input type="submit" class="submit tiny" value="<?php echo __('Apply') ?>" />
 						</div>		<!-- .tableactions ends -->
 						
 						<?php

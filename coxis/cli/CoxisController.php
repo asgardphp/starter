@@ -161,8 +161,8 @@ class CoxisController extends CLIController {
 				$bundle['coxis_admin']['messages']['many_deleted'] = ucfirst($bundle['model']['meta']['label_plural']).' modified with success.';
 			if(!isset($bundle['coxis_admin']['messages']['deleted']))
 				$bundle['coxis_admin']['messages']['deleted'] = ucfirst($bundle['model']['meta']['label']).' deleted with success.';
-			if(!isset($bundle['coxis_admin']['messages']['unexisting']))
-				$bundle['coxis_admin']['messages']['unexisting'] = 'This '.$bundle['model']['meta']['label'].' does not exist.';
+			// if(!isset($bundle['coxis_admin']['messages']['unexisting']))
+			// 	$bundle['coxis_admin']['messages']['unexisting'] = 'This '.$bundle['model']['meta']['label'].' does not exist.';
 				
 			if(!isset($bundle['model']['properties']))
 				$bundle['model']['properties'] = array();

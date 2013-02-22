@@ -8,11 +8,11 @@ class IntranetAdminController extends \App\Admin\Libs\Controller\ModelAdminContr
 
 	function __construct() {
 		$this->_messages = array(
-			'modified'			=>	__('Utilisateur modifiée avec succès.'),
-			'created'			=>	__('Utilisateur créée avec succès.'),
-			'many_deleted'			=>	__('Utilisateurs modifiéee avec succès.'),
-			'deleted'			=>	__('Utilisateur supprimée avec succès.'),
-			'unexisting'			=>	__('Cet utilisateur n\'existe pas.'),
+			'modified'			=>	__('User modified with success.'),
+			'created'			=>	__('User created with success.'),
+			'many_deleted'			=>	__('Users modified with success.'),
+			'deleted'			=>	__('User deleted with success.'),
+			'unexisting'			=>	__('This user does not exist.'),
 		);
 		parent::__construct();
 	}
