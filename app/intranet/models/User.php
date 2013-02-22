@@ -25,6 +25,10 @@ class User extends \Coxis\Core\Model {
 		),
 	);
 
+	public function __toString() {
+		return (string)$this->username;
+	}
+
 	public function getUID() {
 		return sha1(\Value::val('salt').$this->id);
 	}
