@@ -70,13 +70,13 @@ class CoxisController extends CLIController {
 
 		echo 'Installing '.$bundle.'..'."\n";
 
-		$bundle_path = 'bundles\\'.$bundle.'\\';
+		$bundle_path = 'app\\'.$bundle.'\\';
 
 		if(!(file_exists(_DIR_.$bundle_path) && is_dir($bundle_path))) {
 			#copy bundle files
 			#todo replace with distributed solution
 			if(file_exists('C:\Users\leyou\Documents\projects\coxisgenerator\bundles\\'.$bundle))
-				static::copyDir('C:\Users\leyou\Documents\projects\coxisgenerator\bundles\\'.$bundle, 'bundles\\'.$bundle);
+				static::copyDir('C:\Users\leyou\Documents\projects\coxisgenerator\bundles\\'.$bundle, 'app\\'.$bundle);
 			else
 				die('Bundle '.$bundle.' does not exist.');
 		}
