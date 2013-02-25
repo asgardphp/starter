@@ -30,7 +30,7 @@
 							<?php \Coxis\Core\Flash::showAll() ?>
 						
 							<?php if(sizeof($actualites) == 0): ?>
-							<div style="text-align:center; font-weight:bold"><?php echo __('Aucun élément') ?></div>
+							<div style="text-align:center; font-weight:bold"><?php echo __('No element') ?></div>
 							<?php else: ?>
 							<form action="" method="post">
 								<table cellpadding="0" cellspacing="0" width="100%" class="sortable">
