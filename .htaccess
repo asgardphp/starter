@@ -16,16 +16,12 @@ Options +FollowSymLinks +ExecCGI
 
 <IfModule mod_rewrite.c>
   RewriteEngine On
+  #RewriteBase /
 
-  #RewriteCond %{HTTP_HOST} !^www\.
-  #RewriteRule ^(.*)$ http://www.google.fr/%{REQUEST_FILENAME} [R=301,L]
+  #RewriteRule ^(.*)$ http://www.google.fr/%{DOCUMENT_ROOT}coxis3/web/$1 [R=301,L]
 
-  #OPTIONAL - PERFORMANCE
-  RewriteCond %{DOCUMENT_ROOT}coxis3/web/$1 -f
+  RewriteCond web/$1 -F
   RewriteRule ^(.*)$ web/$1 [QSA,L]
-  #RewriteCond $1 !=""
-  #RewriteCond %{DOCUMENT_ROOT}coxis3/web/$1 -d
-  #RewriteRule ^(.*)$ web/$1 [QSA,L]
   
   RewriteCond $1 !web/
   RewriteCond %{REQUEST_FILENAME} !index.php
