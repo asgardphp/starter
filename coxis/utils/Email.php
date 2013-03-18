@@ -69,7 +69,7 @@ class Email {
 				if(is_int($filename))
 					$filename = basename($path);
 
-				$msg .= '--'.$boundary."\r\n";
+				$headers .= '--'.$boundary."\r\n";
 				$fp = fopen($path,"rb");
 				$data = fread($fp,filesize($path));
 				fclose($fp);

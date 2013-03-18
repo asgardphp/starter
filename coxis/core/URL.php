@@ -38,7 +38,7 @@ class URL {
 	if($this->request->get->size()) {
 		$r = $this->current().'?';
 		foreach($this->request->get->all() as $k=>$v)
-			$r .= $k.'&'.$v;
+			$r .= $k.'='.$v.'&';
 		return $r;
 	}
 	else

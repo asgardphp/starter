@@ -14,23 +14,29 @@
 					
 					<%
 					$form->open();
-					<?php
+<?php
 						$model = $bundle['model']['meta']['name'];
 						foreach($bundle['coxis_admin']['form']['display'] as $field):
 							if($model::hasProperty($field) && $model::property($field)->editable === false) continue;
 							$params = array();
-							if(isset($bundle['coxis_admin']['form']['fields'][$field])):
-								$params = $bundle['coxis_admin']['form']['fields'][$field];
+							if(!$bundle['coxis_admin']['form']['fields'] || isset($bundle['coxis_admin']['form']['fields'][$field])):
+								if(isset($bundle['coxis_admin']['form']['fields'][$field]))
+									$params = $bundle['coxis_admin']['form']['fields'][$field];
+								else
+									$params = array();
 							?>
 					echo $form-><?php echo $field ?>->def(<?php 
 								if($params):
-									 ?>array(
-									<?php foreach($params as $k=>$v): ?>
-										'<?php echo $k ?>'	=>	<?php echo outputPHP($v) ?>,
-									<?php endforeach ?>
-									)<?php endif ?>);<?php 
+									 ?>array(<?php
+									 foreach($params as $k=>$v): ?>
+										'<?php echo $k ?>'	=>	<?php echo outputPHP($v) ?>, <?php 
+									endforeach
+									?>)<?php endif ?>);<?php 
 							endif;
-						endforeach 
+						?>
+
+<?php
+						endforeach
 					?>
 
 					$form->close();

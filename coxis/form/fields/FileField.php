@@ -2,7 +2,7 @@
 namespace Coxis\Form\Fields;
 
 class FileField extends Field {
-	protected $default_render = 'file';
+	protected $default_render = '\Coxis\Form\Widgets\File';
 
 	public function getValue() {
 		$v = $this->value;

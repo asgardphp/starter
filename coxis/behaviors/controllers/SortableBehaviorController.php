@@ -6,10 +6,15 @@ class SortableBehaviorController extends \Coxis\Core\Controller {
 		$controller = $request->parentController.'Controller';
 		$modelName = $controller::getModel();
 		$model = $modelName::load($request['id']);
+
 		static::reset($modelName);
 		
 		try {
-			$over_model = $modelName::where(array('position < ?'=>$model->position))->orderBy('position DESC')->first();
+			$separate_by = $model->getDefinition()->meta('separate_by');
+			if($separate_by)
+				$over_model = $modelName::where(array('position < ?'=>$model->position, $separate_by=>$model->$separate_by))->orderBy('position DESC')->first();
+			else
+				$over_model = $modelName::where(array('position < ?'=>$model->position))->orderBy('position DESC')->first();
 			
 			$old = $model->position;
 			$model->position = $over_model->position;
@@ -19,7 +24,7 @@ class SortableBehaviorController extends \Coxis\Core\Controller {
 			\Flash::addSuccess(__('Ordre modifié avec succès.'));
 		} catch(\Exception $e) {}
 		
-		return \Response::redirect(\URL::url_for(array($request->parentController, 'index')));
+		return \Response::back();
 	}
 	
 	public function demoteAction($request) {
@@ -29,7 +34,11 @@ class SortableBehaviorController extends \Coxis\Core\Controller {
 		static::reset($modelName);
 		
 		try {
-			$below_model = $modelName::where(array('position > ?'=>$model->position))->orderBy('position ASC')->first();
+			$separate_by = $model->getDefinition()->meta('separate_by');
+			if($separate_by)
+				$below_model = $modelName::where(array('position > ?'=>$model->position, $separate_by=>$model->$separate_by))->orderBy('position ASC')->first();
+			else
+				$below_model = $modelName::where(array('position > ?'=>$model->position))->orderBy('position ASC')->first();
 			
 			$old = $model->position;
 			$model->position = $below_model->position;
@@ -39,7 +48,7 @@ class SortableBehaviorController extends \Coxis\Core\Controller {
 			\Flash::addSuccess(__('Ordre modifié avec succès.'));
 		} catch(\Exception $e) {}
 		
-		return \Response::redirect(\URL::url_for(array($request->parentController, 'index')));
+		return \Response::back();
 	}
 	
 	public static function reset($modelName) {

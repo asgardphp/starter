@@ -6,7 +6,7 @@ class SlugifyBehaviorHooks extends \Coxis\Hook\HooksContainer {
 	@Hook('behaviors_load_slugify')
 	**/
 	public function behaviors_load_slugifyAction($modelDefinition) {
-		$modelDefinition->addProperty('slug', array('type' => 'text', 'required' => false));
+		$modelDefinition->addProperty('slug', array('type' => 'text', 'required' => false, 'editable'=>false));
 	}
 	
 	/**

@@ -25,12 +25,11 @@ class CoxisController extends CLIController {
 	public static function publishBundle($bundle_path) {
 		$bundle = basename($bundle_path);
 		echo 'Publishing assets of bundle '.$bundle.'..'."\n";
-		#todo find path to bundle
-		// $bundle_path = 'bundles\\'.$bundle.'\\';
-		// d($bundle);
 
-		if(file_exists(_DIR_.$bundle_path.'/web') && is_dir($bundle_path.'/web'))
-			// static::copyDir($bundle_path.'/web', 'web/bundles/'.$bundle);
+		if(!file_exists($bundle_path))
+			$bundle_path = _DIR_.$bundle_path;
+
+		if(file_exists($bundle_path.'/web') && is_dir($bundle_path.'/web'))
 			static::copyDir($bundle_path.'/web', 'web');
 	}
 
@@ -158,7 +157,7 @@ class CoxisController extends CLIController {
 			if(!isset($bundle['coxis_admin']['messages']['created']))
 				$bundle['coxis_admin']['messages']['created'] = ucfirst($bundle['model']['meta']['label']).' created with success.';
 			if(!isset($bundle['coxis_admin']['messages']['many_deleted']))
-				$bundle['coxis_admin']['messages']['many_deleted'] = ucfirst($bundle['model']['meta']['label_plural']).' modified with success.';
+				$bundle['coxis_admin']['messages']['many_deleted'] = ucfirst($bundle['model']['meta']['label_plural']).' deleted with success.';
 			if(!isset($bundle['coxis_admin']['messages']['deleted']))
 				$bundle['coxis_admin']['messages']['deleted'] = ucfirst($bundle['model']['meta']['label']).' deleted with success.';
 			// if(!isset($bundle['coxis_admin']['messages']['unexisting']))
@@ -184,9 +183,9 @@ class CoxisController extends CLIController {
 				if(!$v)
 					$bundle['model']['properties'][$k] = array();
 				
-			foreach($bundle['model']['properties'] as $property => $params)
-				if(!isset($bundle['coxis_admin']['form']['fields'][$property]))
-					$bundle['coxis_admin']['form']['fields'][$property] = array();
+			// foreach($bundle['model']['properties'] as $property => $params)
+			// 	if(!isset($bundle['coxis_admin']['form']['fields'][$property]))
+			// 		$bundle['coxis_admin']['form']['fields'][$property] = array();
 			
 			$bundles[$bundle_name] = $bundle;
 		}
@@ -279,12 +278,12 @@ class CoxisController extends CLIController {
 			if($filename == '.' || $filename == '..')
 				continue;
 			if(is_file($dir.'/'.$filename)) {
-				if(strpos($filename, '.pre')!==false)
+				if(strpos($filename, '.pre.php')!==false)
 					static::processFile($dir.'/'.$filename, $bundle, $bundle_filenames);
 			}
 			else 
 				static::processDir($dir.'/'.$filename, $bundle, $bundle_filenames);
-			$filename2 = str_replace('.pre', '', $filename);
+			$filename2 = str_replace('.pre.php', '', $filename);
 			if(isset($bundle_filenames[$filename2])) 
 				static::myrename($dir.'/'.$filename, $dir.'/'.$bundle_filenames[$filename2]);
 			elseif($filename != $filename2)

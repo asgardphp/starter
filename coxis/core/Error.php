@@ -74,7 +74,9 @@ class Error {
 					var e = $(this);
 					var isShort = true;
 					var longText = e.text();
-					var shortText = longText.split("\n")[0] + "...";
+					var shortText = longText.split("\n")[0];
+					if(shortText.length < longText.length)
+						shortText += '...';
 					e.text(shortText);
 					e.click(function() {
 						if(isShort)

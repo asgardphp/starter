@@ -13,7 +13,7 @@ class ORMHandler {
 			'type' => 'text', 
 			'editable'=>false, 
 			'required'=>false,
-			'position'	=>	1,
+			'position'	=>	0,
 			'defaut'	=>	0,
 			'orm'	=>	array(
 				'type'	=>	'int(11)',
@@ -208,7 +208,7 @@ class ORMHandler {
 				continue;
 			$rel = $model::getDefinition()->relations[$relation];
 			$type = $rel['type'];
-			if($type == 'belongsTo') {
+			if($type == 'belongsTo' || $type == 'hasOne') {
 				$link = $rel['link'];
 				if(is_object($model->data[$relation]))
 					$vars[$link] = $model->data[$relation]->id;
@@ -259,11 +259,12 @@ class ORMHandler {
 			if(!isset($model->data[$relation]))
 				continue;
 			$rel = $model::getDefinition()->relations[$relation];
+			$reverse_rel = $rel->reverse();
 			$type = $rel['type'];
 
 			if($type == 'hasOne') {
 				$relation_model = $rel['model'];
-				$link = $rel['link'];
+				$link = $reverse_rel['link'];
 				$relation_model::where(array($link => $model->id))->getDAL()->update(array($link => 0));
 				$relation_model::where(array('id' => $model->data[$relation]))->getDAL()->update(array($link => $model->id));
 			}

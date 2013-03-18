@@ -8,29 +8,40 @@ class SortableBehaviorHooks extends \Coxis\Hook\HooksContainer {
 	public function behaviors_load_sortableAction($modelDefinition) {
 		$modelDefinition->meta['order_by'] = 'position ASC';
 		$modelDefinition->addProperty('position', array('type' => 'integer', 'default'=>0, 'required' => false, 'editable' => false));
-		
-		$modelDefinition->hookOn('call', function($chain, $model, $name, $args){
-			#$article->moveAfter()
-			if($name == 'moveAfter') {
-				$chain->found = true;
-				$after_id = $args[0];
 
-				if($after_id == 0) {
-					$min = $model::min('position');
-					$model->save(array('position' => $min-1));
-				}
-				else {
-					$i = 0;
-					foreach($model::all() as $one) {
-						if($one->id == $model->id)
-							continue;
+		#$article->moveAfter()
+		$modelDefinition->addMethod('moveAfter', function($model, $after_id) {
+			if($after_id == 0) {
+				$min = $model::min('position');
+				$model->save(array('position' => $min-1));
+			}
+			else {
+				$i = 0;
+				foreach($model::all() as $one) {
+					if($one->id == $model->id)
+						continue;
 
-						$one->save(array('position' => $i++));
-						if($one->id == $after_id)
-							$model->save(array('position' => $i++));
-					}
+					$one->save(array('position' => $i++));
+					if($one->id == $after_id)
+						$model->save(array('position' => $i++));
 				}
 			}
+		});
+
+		#$article->previous()
+		$modelDefinition->addMethod('previous', function($model) {
+			$res = $model::where(array('position < ?' => $this->position))->orderBy('position DESC')->first();
+			if($res)
+				return $res;
+			return false;
+		});
+
+		#$article->next()
+		$modelDefinition->addMethod('next', function($model) {
+			$res = $model::where(array('position > ?' => $this->position))->orderBy('position ASC')->first();
+			if($res)
+				return $res;
+			return false;
 		});
 	}
 	

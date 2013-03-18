@@ -67,7 +67,7 @@ namespace Coxis\Core {
 					$directories = $directory;
 				foreach($directories as $dir)
 					foreach(glob(_DIR_.$dir.'/*') as $bundlepath)
-						$bundles[] = $bundlepath;
+						$bundles[] = realpath($bundlepath);
 				if(\Config::get('phpCache'))
 					\Coxis\Utils\Cache::set('bundlesmanager/bundles', $bundles);
 				return $bundles;

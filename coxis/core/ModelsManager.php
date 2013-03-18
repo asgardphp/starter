@@ -72,11 +72,12 @@ class ModelDefinition extends Hookable {
 	public function addProperty($property, $params) {
 		if(is_string($params))
 			$params = array('type'=>$params);
-		foreach($params as $k=>$v)
+		foreach($params as $k=>$v) {
 			if(is_int($k)) {
 				unset($params[$k]);
 				$params[$v] = true;
 			}
+		}
 		if(!isset($params['required']))
 			$params['required'] = true;
 		#todo multiple values - not atomic.. ?
@@ -92,6 +93,8 @@ class ModelDefinition extends Hookable {
 		});
 
 		$this->properties[$property] = new $propertyClass($this->modelClass, $property, $params);
+		if(!isset($this->properties[$property]->params['position']))
+			$this->properties[$property]->params['position'] = count($this->properties);
 		uasort($this->properties, function($a, $b) {
 			if($a->position===null)
 				return 1;
@@ -111,6 +114,16 @@ class ModelDefinition extends Hookable {
 
 	public function properties() {
 		return $this->properties;
+	}
+
+	public function metas() {
+		return $this->meta;
+	}
+
+	public function meta($name) {
+		if(isset($this->meta[$name]))
+			return $this->meta[$name];
+		return null;
 	}
 
 	public function messages() {
@@ -140,8 +153,9 @@ class ModelDefinition extends Hookable {
 		return false;
 	}
 	
-	public static function getModelName() {
-		return ${$this->getClass()}::getModelName();
+	public function getModelName() {
+		$class = $this->getClass();
+		return $class::getModelName();
 	}
 
 	public function addMethod($method_name, $cb) {

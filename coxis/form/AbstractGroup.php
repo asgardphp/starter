@@ -272,7 +272,9 @@ abstract class AbstractGroup extends \Coxis\Hook\Hookable implements \ArrayAcces
 		$validator->setConstrains($constrains);
 		$validator->setMessages($messages);
 
-		return $validator->errors($this->data);
+		$data = $this->data + $this->files;
+
+		return $validator->errors($data);
 	}
 
 	public function addErrors($errors) {

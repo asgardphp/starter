@@ -50,7 +50,7 @@ class ModelForm extends Form {
 		$model = $this->model;
 		$relation = $model::getDefinition()->relations[$name];
 
-		$ids = array();
+		$ids = array(''=>__('Choose'));
 		foreach($relation['model']::all() as $v)
 			$ids[$v->id] = (string)$v;
 				
@@ -58,7 +58,7 @@ class ModelForm extends Form {
 			$this->addField(new SelectField(array(
 				'type'	=>	'integer',
 				'choices'		=>	$ids,
-				'default'	=>	($this->model->isOld() ? $model->$name->id:null),
+				'default'	=>	($this->model->isOld() ? $this->model->id:null),
 			)), $name);
 		}
 		elseif($relation['has'] == 'many') {

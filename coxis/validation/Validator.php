@@ -14,7 +14,8 @@ class Validator {
 		foreach($constrains as $attribute=>$attr_constrains) {
 			if(!is_array($attr_constrains))
 				$attr_constrains = array($attr_constrains);
-			foreach($attr_constrains as $k=>$v)
+			$constrains[$attribute] = array();
+			foreach($attr_constrains as $k=>$v) {
 				if(is_int($k)) {
 					try {
 						list($rule, $params) = explode(':', $v);
@@ -22,9 +23,11 @@ class Validator {
 						$rule = $v;
 						$params = true;
 					}
-					$constrains[$attribute] = array();
 					$constrains[$attribute][$rule] = $params;
 				}
+				else
+					$constrains[$attribute][$k] = $v;
+			}
 		}
 		
 		$res = array();
@@ -35,9 +38,6 @@ class Validator {
 					$callback = $params;
 					$params = array();
 				}
-				// elseif(isset(static::$rules[$rule]))
-				// 	if(!is_array($params))
-				// 		$params = array($params);
 					
 				$res[$attribute][$rule] = array(
 					'rule'	=>	$rule, 
@@ -45,7 +45,8 @@ class Validator {
 					'callback'	=>	$callback,
 				);
 			}
-		}		$this->constrains = $res;
+		}
+		$this->constrains = $res;
 		
 		return $this;
 	}

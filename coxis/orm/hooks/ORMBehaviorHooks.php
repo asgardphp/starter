@@ -40,7 +40,7 @@ class ORMBehaviorHooks extends \Coxis\Hook\HooksContainer {
 			return $ormHandler->load($id);
 		});
 		#Article::destroyOne()
-		$modelDefinition->addStaticMethod('load', function($id) use($ormHandler) {
+		$modelDefinition->addStaticMethod('destroyOne', function($id) use($ormHandler) {
 			return $ormHandler->destroyOne($id);
 		});
 		$modelDefinition->hookOn('callStatic', function($chain, $name, $args) use($ormHandler) {

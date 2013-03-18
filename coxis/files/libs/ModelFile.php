@@ -72,6 +72,10 @@ class ModelFile {
 			return $default;
 	}
 	
+	public function url($default=null) {
+		return \URL::to($this->get($default, false));
+	}
+	
 	public function save() {
 		if(!is_array($file = $this->file))
 			return;
@@ -102,7 +106,7 @@ class ModelFile {
 	}
 	
 	public function __toString() {
-		return (string)$this->get();
+		return (string)$this->url();
 	}
 	
 	public function property() {

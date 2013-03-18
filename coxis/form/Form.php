@@ -106,22 +106,28 @@ class Form extends AbstractGroup {
 
 	protected function parseFiles($raw) {
 		if(isset($raw['name']) && isset($raw['type']) && isset($raw['tmp_name']) && isset($raw['error']) && isset($raw['size'])) {
-			$name = $this->convertTo('name', $raw['name']);
-			$type = $this->convertTo('type', $raw['type']);
-			$tmp_name = $this->convertTo('tmp_name', $raw['tmp_name']);
-			$error = $this->convertTo('error', $raw['error']);
-			$size = $this->convertTo('size', $raw['size']);
-			
-			$files = $this->merge_all($name, $type, $tmp_name, $error, $size);
-			return $files;
+			if(is_array($raw['name'])) {
+				$name = $this->convertTo('name', $raw['name']);
+				$type = $this->convertTo('type', $raw['type']);
+				$tmp_name = $this->convertTo('tmp_name', $raw['tmp_name']);
+				$error = $this->convertTo('error', $raw['error']);
+				$size = $this->convertTo('size', $raw['size']);
+				
+				$files = $this->merge_all($name, $type, $tmp_name, $error, $size);
+				return $files;
+			}
+			else
+				return $raw;
 		}
 		else {
 			foreach($raw as $k=>$v) {
-				$raw[$k] = $this->parseFiles($v);
-				return $raw;
+				if($v['error'] == 4)
+					continue;
+				else
+					$raw[$k] = $this->parseFiles($v);
 			}
+			return $raw;
 		}
-
 	}
 	
 	public function fetch() {
@@ -148,14 +154,14 @@ class Form extends AbstractGroup {
 		}
 		else
 			$this->setData(\POST::all(), $files);
-						
+
 		return $this;
 	}
 	
 	//todo should not pass this args here but when defining the form
 	public function open($options=array()) {
 		$options = $this->params+$options;
-		$action = isset($options['action']) ? $options['action']:'';
+		$action = isset($options['action']) && $options['action'] ? $options['action']:\URL::full();
 		$method = isset($options['method']) ? $options['method']:'post';
 		$enctype = isset($options['enctype']) ? $options['enctype']:($this->hasFile() ? ' enctype="multipart/form-data"':'');
 		echo '<form action="'.$action.'" method="'.$method.'"'.$enctype.'>'."\n";

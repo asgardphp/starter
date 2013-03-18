@@ -799,7 +799,7 @@ input.submit {
 	}
 	
 .block form input.submit:hover {
-	background: url(../img/btns_.gif) top center no-repeat;
+	/*background: url(../img/btns_.gif) top center no-repeat;*/
 	text-shadow: 1px 1px 0 #b55f10;
 	}
 
