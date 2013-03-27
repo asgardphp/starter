@@ -50,7 +50,11 @@ class CoxisController extends CLIController {
 				if($worked !== null)
 					echo 'Invalid command'."\n";
 			}
-			echo "\n".'Result: '.var_export($res);
+
+			ob_start();
+			var_dump($res);
+			$res_dump = ob_get_clean();
+			echo "\n".'Result: '.$res_dump;
 			echo "\n";
 			echo '>';
 			$cmd = fgets($fh, 1024);
