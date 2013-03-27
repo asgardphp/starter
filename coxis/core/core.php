@@ -24,6 +24,15 @@ function d() {
 	\Coxis\Core\Error::print_backtrace('', debug_backtrace());
 	exit();
 }
+if(!function_exists('getallheaders')) { 
+	function getallheaders() { 
+		$headers = ''; 
+		foreach($_SERVER as $name => $value)
+			if(substr($name, 0, 5) == 'HTTP_')
+				$headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
+		return $headers; 
+	} 
+} 
 function coxis_array_merge(&$a,$b){
     foreach($b as $child=>$value) {
         if(isset($a[$child])) {
