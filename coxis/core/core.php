@@ -2,8 +2,6 @@
 if(version_compare(PHP_VERSION, '5.3.0') < 0)
 	die('You need PHP ≥ 5.3');
 
-class Locale {}
-
 /* ENV */
 define('_START_', time()+microtime());
 ini_set('error_reporting', E_ALL);
