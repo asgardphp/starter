@@ -21,7 +21,7 @@ class ModelDefinition extends Hookable {
 		$this->meta = isset($modelClass::$meta) ? $modelClass::$meta:array();
 		$this->messages = isset($modelClass::$messages) ? $modelClass::$messages:array();
 
-		if(isset($modelClass::$behaviors))
+		if(isset($modelClass::$behaviors)) {
 			foreach($modelClass::$behaviors as $name=>$params) {
 				if(is_int($name)) {
 					$name = $params;
@@ -29,6 +29,9 @@ class ModelDefinition extends Hookable {
 				}
 				$this->behaviors[$name] = $params;
 			}
+		}
+
+		$this->loadBehaviors();
 
 		$properties = $modelClass::$properties;
 		$clone = $properties;
@@ -42,6 +45,8 @@ class ModelDefinition extends Hookable {
 		}
 		foreach($properties as $k=>$params)
 			$this->addProperty($k, $params);
+		
+		$modelClass::configure($this);
 	}
 
 	public function loadBehaviors() {
@@ -51,8 +56,6 @@ class ModelDefinition extends Hookable {
 		foreach($this->behaviors as $behavior => $params)
 			if($params)
 				\Hook::trigger('behaviors_load_'.$behavior, $this);
-
-		$modelClass::configure($this);
 	}
 
 	public function __call($name, $arguments) {
@@ -191,7 +194,6 @@ class ModelsManager {
 				if(\Config::get('phpcache'))
 					Cache::set('modelsmanager/'.$modelClass.'/definition', $this->models[$modelClass]);
 			}
-			$this->models[$modelClass]->loadBehaviors();
 		}
 		
 		return $this->models[$modelClass];
