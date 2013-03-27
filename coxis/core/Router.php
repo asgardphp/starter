@@ -99,7 +99,7 @@ class Router {
 		#todo complete key
 
 		$routes = $this->routes;
-		$results = Cache::get('Router/requests/'.$request_key, function() use($routes, $request) {
+		$results = \Coxis\Utils\Cache::get('Router/requests/'.$request_key, function() use($routes, $request) {
 			\Coxis\Core\Router::sortRoutes($routes);
 			/* PARSE ALL ROUTES */
 			foreach($routes as $params) {
