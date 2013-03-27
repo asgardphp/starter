@@ -30,7 +30,7 @@ namespace Coxis\Core {
 				$bundle_type = null;
 
 			if($bundle_type == 'mvc') {
-				\Locale::importLocales($bundle.'/locales');
+				\Context::get('locale')->importLocales($bundle.'/locales');
 
 				Autoloader::preloadDir($bundle.'/models');
 
@@ -107,7 +107,7 @@ namespace Coxis\Core {
 					'routes' => $routes,
 					'cliroutes' => $cliroutes,
 					'hooks' => $hooks,
-					'locales' => \Locale::getLocales(),
+					'locales' => \Context::get('locale')->getLocales(),
 					'preloaded' => Autoloader::$preloaded,
 				));
 			}

@@ -9,7 +9,7 @@ class i18nTest extends PHPUnit_Framework_TestCase {
 	public function setUp(){
 		\DB::import('tests/coxis.sql');
 				
-		\Locale::setLocale('fr');
+		\Context::get('locale')->setLocale('fr');
 	}
 
 	public function tearDown(){}
@@ -49,7 +49,7 @@ class i18nTest extends PHPUnit_Framework_TestCase {
     
 	#save english version
 	public function test5() {
-		\Locale::setLocale('en');
+		\Context::get('locale')->setLocale('en');
 		$actu = new \Tests\App\Actualite\Models\Actualite(2);
 		$actu->test = 'Hi';
 		// d($actu->data['properties']);
@@ -61,7 +61,7 @@ class i18nTest extends PHPUnit_Framework_TestCase {
 	
 	#translation
 	public function test6() {
-		\Locale::importLocales('tests/locales');
+		\Context::get('locale')->importLocales('tests/locales');
 		$this->assertEquals(__('Hello :name!', array('name' => 'Michel')), 'Bonjour Michel !');
 	}
 }

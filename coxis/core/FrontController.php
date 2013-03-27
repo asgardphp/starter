@@ -17,7 +17,7 @@ class FrontController extends Controller {
 				\Hook::trigger('start');
 				Profiler::checkpoint('Before dispatching');
 				\Request::inst()->isInitial = true;
-				Locale::importLocales('locales');
+				\Context::get('locale')->importLocales('locales');
 				$response = \Router::dispatch(\Request::inst(), \Response::inst());
 				Profiler::checkpoint('After dispatching');
 			} catch(\Coxis\Core\ControllerException $e) {
