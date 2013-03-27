@@ -77,6 +77,12 @@ class ORMHandler {
 		return $dal->where(array('id' => $model->id))->where(array('locale'=>$lang))->first();
 	}
 	
+	public function destroyAll() {
+		$modelName = $this->model->getClass();
+		foreach($modelName::all() as $one)
+			$model->destroy();
+	}
+	
 	public function destroyOne($id) {
 		$modelName = $this->model->getClass();
 		if($model = $modelName::load($id)) {

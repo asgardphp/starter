@@ -410,6 +410,11 @@ class Schema {
 		\DB::query($sql);
 	}
 	
+	public static function emptyTable($tableName) {
+		$sql = 'TRUNCATE TABLE  `'.$tableName.'`';
+		\DB::query($sql);
+	}
+	
 	public static function dropColumn($table, $col) {
 		$sql = 'alter table `'.$table.'` drop column `'.$col.'`';
 		\DB::query($sql);
