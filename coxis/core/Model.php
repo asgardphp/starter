@@ -85,6 +85,11 @@ abstract class Model {
 		if($values)
 			$this->set($values);
 		
+		#todo use model hooks
+		foreach(static::getDefinition()->behaviors() as $behavior => $params)
+			if($params)
+				\Hook::trigger('behaviors_presave_'.$behavior, $this);
+		
 		if(!$force) {
 			#validate params and files
 			if($errors = $this->errors()) {
@@ -138,10 +143,6 @@ abstract class Model {
 	
 	public function errors() {
 		#before validation
-		#todo use model hooks
-		foreach(static::getDefinition()->behaviors() as $behavior => $params)
-			if($params)
-				\Hook::trigger('behaviors_presave_'.$behavior, $this);
 				
 		$data = $this->toArrayRaw();
 
