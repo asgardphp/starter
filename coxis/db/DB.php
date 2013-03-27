@@ -13,7 +13,7 @@ class DB {
 			$this->db = new \PDO('mysql:host='.$config['host'].';dbname='.$config['database'], 
 				$config['user'],
 				$config['password'],
-				array(\PDO::MYSQL_ATTR_FOUND_ROWS => true)
+				array(\PDO::MYSQL_ATTR_FOUND_ROWS => true, \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8')
 			);
 		}
 		else

@@ -151,7 +151,7 @@ class BuildTable {
 			$sql .= ')';
 		}
 		
-		$sql .= "\n".')';
+		$sql .= "\n".') CHARSET=utf8';
 		
 		return $sql;
 	}

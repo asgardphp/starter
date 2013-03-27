@@ -19,7 +19,7 @@ class ActualiteAdminTest extends PHPUnit_Framework_TestCase {
 		$browser->get('admin/actualites/1/edit');
 		if($browser->last->getCode() == 404)
 			return;
-		// $res = $browser->submit(0, 'admin/actualites/1/edit', array('actualite'=>array('article'=>'')));
+		// $res = $browser->submit(0, 'admin/actualites/1/edit', array('actualite'=>array('content'=>'ééé')));
 		$res = $browser->submit(0, 'admin/actualites/1/edit');
 		$this->assertTrue($res->getCode() < 300);
 	}
