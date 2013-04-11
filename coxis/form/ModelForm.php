@@ -58,7 +58,7 @@ class ModelForm extends Form {
 			$this->addField(new SelectField(array(
 				'type'	=>	'integer',
 				'choices'		=>	$ids,
-				'default'	=>	($this->model->isOld() ? $this->model->id:null),
+				'default'	=>	($this->model->isOld() && $this->model->$name ? $this->model->$name->id:null),
 			)), $name);
 		}
 		elseif($relation['has'] == 'many') {

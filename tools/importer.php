@@ -1,6 +1,6 @@
 <?php
 define('_ENV_', 'test');
-require('coxis/core/core.php');
+require('../coxis/core/core.php');
 \Coxis::load();
 
 class CSVImporter {
@@ -16,8 +16,12 @@ class CSVImporter {
 
 	public function process($cb) {
 		$this->cb = $cb;
-		$this->keys = fgetcsv($this->handle, 1000, $this->separator);
+		$this->keys = fgetcsv($this->handle, 0, $this->separator);
 		while($line = $this->getLine()) {
+			foreach($this->keys as $k=>$v) {
+				if(!isset($line[$k]))
+					$line[$k] = '';
+			}
 			$line = array_combine($this->keys, $line);
 			call_user_func_array($cb, array($line));
 		}
@@ -25,7 +29,7 @@ class CSVImporter {
 	}
 
 	protected function getLine() {
-	    return fgetcsv($this->handle, 1000, $this->separator);
+	    return fgetcsv($this->handle, 0, $this->separator);
 	}
 }
 

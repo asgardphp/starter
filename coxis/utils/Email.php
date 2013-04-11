@@ -44,7 +44,7 @@ class Email {
 		$boundary = md5(uniqid(microtime(), TRUE));
 
 		// Headers
-		$headers = 'From: '.$this->from.''."\r\n";
+		$headers = 'From: '.$this->from."\r\n";
 		$headers .= 'Mime-Version: 1.0'."\r\n";
 		$headers .= 'Content-Type: multipart/alternative;boundary='.$boundary."\r\n";
 		$headers .= "This is a MIME encoded message.\r\n\r\n"; 
@@ -83,6 +83,6 @@ class Email {
 		
 		$headers .= '--'.$boundary."--";
 
-		return mail($this->to, $this->subject, '', $headers);
+		return mail($this->to, '=?utf-8?B?'.base64_encode($this->subject).'?=', '', $headers);
 	}
 }

@@ -99,7 +99,7 @@ class AdminModelForm extends \Coxis\Form\ModelForm {
 		if($submits === null)
 			echo '<p>
 				'.HTMLWidget::submit('stay', __('Save'), array('attrs'=>array('class'=>'submit long')))->render().'
-				'.HTMLWidget::submit('send', __('Save & Back'), array('attrs'=>array('class'=>'submit long')))->render().'
+				'.HTMLWidget::submit('send', __('Save & Leave'), array('attrs'=>array('class'=>'submit long')))->render().'
 			</p>';
 		else
 			echo $submits;

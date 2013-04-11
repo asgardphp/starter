@@ -26,6 +26,7 @@
 </style>
 
 <ul id="dash-menu">
+	<?php \Flash::showAll() ?>
 	<?php foreach(AdminMenu::$home as $link): ?>
 	<li>
 		<a href="<?php echo $link['link'] ?>"><img src="<?php echo $link['img'] ?>"></a>

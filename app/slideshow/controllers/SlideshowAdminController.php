@@ -47,6 +47,8 @@ class SlideshowAdminController extends \App\Admin\Libs\Controller\AdminParentCon
 			try {
 				$this->form->save();
 				Flash::addSuccess(__('The slideshow was saved with success.'));
+				if(\POST::get('send') !== null)
+					return \Response::redirect(\URL::url_for(array('App\Admin\Controllers\DefaultAdmin', 'index')));
 			} catch(\Coxis\Form\FormException $e) {
 				\Flash::addError($this->form->getGeneralErrors());
 				\Response::setCode(400);

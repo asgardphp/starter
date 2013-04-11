@@ -26,18 +26,21 @@ class WysiwygWidget extends \Coxis\Form\Widgets\HTMLWidget {
 		$this->value ? HTML::sanitize($this->value):'').
 		"<script>
 		//<![CDATA[
-			$(function(){
-				var CKEDITOR_BASEPATH = '".\URL::to('ckeditor/ckeditor/')."';
-				CKEDITOR.basePath = '".\URL::to('ckeditor/ckeditor/')."';
-				var editor = CKEDITOR.instances['".$id."'];
-				if (editor)
-					editor.destroy(true);
-				CKEDITOR.replace('".$id."'
-											, {
-								customConfig : '".$options['config']."'
-							}
-									);
-			});
+		var run_ckeditor = function() {
+			var CKEDITOR_BASEPATH = '".\URL::to('ckeditor/ckeditor/')."';
+			CKEDITOR.basePath = '".\URL::to('ckeditor/ckeditor/')."';
+			var editor = CKEDITOR.instances['".$id."'];
+			if (editor)
+				editor.destroy(true);
+			CKEDITOR.replace('".$id."'
+										, {
+							customConfig : '".$options['config']."'
+						}
+								);
+		};
+		$(function(){
+			run_ckeditor();
+		});
 		//]]>
 		</script>";
 	}

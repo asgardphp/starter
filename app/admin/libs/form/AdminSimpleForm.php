@@ -31,7 +31,7 @@ class AdminSimpleForm extends Form {
 			return HTMLWidget::text($field->getName(), $field->getValue(), $options);
 		});
 
-		$this->setRenderCallback('file', function($field, $options) {
+		$this->setRenderCallback('\Coxis\Form\Widgets\File', function($field, $options) {
 			return new \App\Admin\Libs\Form\Widgets\FileWidget($field->getName(), $field->getValue(), $options);
 		});
 
@@ -97,7 +97,7 @@ class AdminSimpleForm extends Form {
 		if($submits === null)
 			echo '<p>
 				'.HTMLWidget::submit('stay', __('Save'), array('attrs'=>array('class'=>'submit long')))->render().'
-				'.HTMLWidget::submit('send', __('Save & Back'), array('attrs'=>array('class'=>'submit long')))->render().'
+				'.HTMLWidget::submit('send', __('Save & Leave'), array('attrs'=>array('class'=>'submit long')))->render().'
 			</p>';
 		else
 			echo $submits;
