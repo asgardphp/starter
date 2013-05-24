@@ -122,9 +122,16 @@ class Router {
 	}
 
 	public static function sortRoutes(&$routes) {
-		usort($routes, function($route1, $route2) {
-			$route1 = $route1['route'];
-			$route2 = $route2['route'];
+		usort($routes, function($r1, $r2) {
+			$route1 = $r1['route'];
+			$route2 = $r2['route'];
+			
+			if($route1 == $route2) {
+				if(isset($r1['host']) && $r1['host'])
+					return -1;
+				else
+					return 1;
+			}
 			
 			while(true) {
 				if(!$route1)

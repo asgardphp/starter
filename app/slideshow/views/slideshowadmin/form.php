@@ -30,7 +30,7 @@
 						?>
 					</div>
 					<p>
-						<input type="button" name="send" value="Add" id="" class="submit long" onclick="add()">
+						<input type="button" name="send" value="<?php echo __('Add') ?>" id="" class="submit long" onclick="add()">
 					</p>
 					<?php
 					$form->close();

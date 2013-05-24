@@ -20,7 +20,13 @@ class ContactController extends \Coxis\Core\Controller {
 						continue;
 					$txt .= $field->label().': '.$field->getValue()."\n";
 				}
-				Email::create(Value::val('email'), $this->form->email->getValue(), 'Contact', $txt)->send();
+				$email = Email::create(Value::val('email'), $this->form->email->getValue(), 'Contact', $txt);
+				// if($this->form->photo->getValue()) {
+				// 	$name = Tools::get($this->form->photo->getValue(), 'name');
+				// 	$path = Tools::get($this->form->photo->getValue(), 'path');
+				// 	$email->addFile($path, $name);
+				// }
+				$email->send();
 
 				$this->form->reset();
 				\Flash::addSuccess('Merci pour votre message.');

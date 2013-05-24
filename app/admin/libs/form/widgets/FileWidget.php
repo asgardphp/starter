@@ -24,12 +24,12 @@ class FileWidget extends \Coxis\Form\Widgets\HTMLWidget {
 				return $str;
 			if($model->property($name)->filetype == 'image') {
 				$str .= '<p>
-					<a href="../'.$path.'" rel="facebox"><img src="'.\URL::to(ImageCache::src($path, 'admin_thumb')).'" alt=""/></a>
+					<a target="_blank" href="../'.$path.'" rel="facebox"><img src="'.\URL::to(ImageCache::src($path, 'admin_thumb')).'" alt=""/></a>
 				</p>';
 			}
 			else {
 				$str .= '<p>
-					<a href="../'.$path.'">'.__('Download').'</a>
+					<a target="_blank" href="../'.$path.'">'.__('Download').'</a>
 				</p>';
 			}
 			

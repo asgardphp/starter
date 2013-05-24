@@ -79,7 +79,7 @@ class DynamicGroup extends \Coxis\Form\AbstractGroup {
 		$randstr = Tools::randstr(10);
 		$jq = $this->renderNew('{{'.$randstr.'}}');
 		$jq = addcslashes($jq, "'");
-		$jq = str_replace("\r\n", "\\\r\n", $jq);
+		$jq = str_replace("\n", "\\\n", $jq);
 		$jq = str_replace('{{'.$randstr.'}}', $offset, $jq);
 		return $jq;
 	}

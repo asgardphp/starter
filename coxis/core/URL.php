@@ -52,6 +52,14 @@ class URL {
 		return $res;
 	}
 	
+	public function setBase($base) {
+		$parse = parse_url($base);
+		if(!isset($parse['path']))
+			$parse['path'] = '/';
+		$this->setServer($parse['host']);
+		$this->setRoot($parse['path']);
+	}
+	
 	public function to($url) {
 		return $this->base().$url;
 	}
@@ -67,8 +75,15 @@ class URL {
 	}
 	
 	public function server() {
+		if($this->host() !== null)
+			return 'http://'.$this->host();
+		else
+			return '';
+	}
+	
+	public function host() {
 		if($this->server !== null)
-			return 'http://'.$this->server;
+			return $this->server;
 		else
 			return '';
 	}
@@ -81,7 +96,9 @@ class URL {
 			foreach(\Router::getRoutes() as $route_params) {
 				$route = $route_params['route'];
 				if(strtolower($route_params['controller']) == $controller && strtolower($route_params['action']) == $action) {
-					if($relative)
+					if(isset($route_params['host']))
+						return 'http://'.$route_params['host'].'/'.\Router::buildRoute($route, $params);
+					elseif($relative)
 						return \Router::buildRoute($route, $params);
 					else
 						return $this->to(\Router::buildRoute($route, $params));
@@ -93,11 +110,14 @@ class URL {
 			$what = strtolower($what);
 			foreach(\Router::getRoutes() as $route_params) {
 				$route = $route_params['route'];
-				if($route_params['name'] != null && strtolower($route_params['name']) == $what)
-					if($relative)
+				if($route_params['name'] != null && strtolower($route_params['name']) == $what) {
+					if(isset($route_params['host']))
+						return 'http://'.$route_params['host'].'/'.\Router::buildRoute($route, $params);
+					elseif($relative)
 						return \Router::buildRoute($route, $params);
 					else
 						return $this->to(\Router::buildRoute($route, $params));
+				}
 			}
 		}
 					

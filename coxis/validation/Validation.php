@@ -48,6 +48,8 @@ class Validation {
 		});
 		
 		$this->register('exact_length', function($attribute, $value, $params, $validator) {
+			if(!$value)
+				return;
 			if(strlen($value) != $params[0]) {
 				$msg = $validator->getMessage('exact_length', $attribute, __('The field ":attribute" must be :length characters.'));
 				return Validation::format($msg, array(
@@ -94,6 +96,17 @@ class Validation {
 				return;
 			if(!preg_match('/[0-9]{2}\/[0-9]{2}\/[0-9]{4}/', $value)) {
 				$msg = $validator->getMessage('email', $attribute, __('The field ":attribute" must be a date (dd/mm/yyyy).'));
+				return Validation::format($msg, array(
+					'attribute'	=>	__(str_replace('_', ' ', $attribute)),
+				));
+			}
+		});
+		
+		$this->register('pattern', function($attribute, $value, $params, $validator) {
+			if(!$value)
+				return;
+			if(!preg_match($params[0], $value)) {
+				$msg = $validator->getMessage('pattern', $attribute, __('The field ":attribute" has a wrong format.'));
 				return Validation::format($msg, array(
 					'attribute'	=>	__(str_replace('_', ' ', $attribute)),
 				));
