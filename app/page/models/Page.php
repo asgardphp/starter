@@ -2,15 +2,19 @@
 class Page extends \Coxis\Core\Model {
 	public static $properties = array(
 		'title',
-		'content',
+		'content'	=>	array(
+			'type'	=>	'longtext',
+		),
 		'name',
-		'url',
+		'url'	=> array(
+			'required'	=>	false,
+		),
 	);
 
 	public static $relations = array(	
 		'menuitem' => array(
 			'as'	=>	'menuitemable',
-			'type'	=>	'hasOne',
+			'type'	=>	'hasMany',
 			'model'	=>	'menuitem',
 		),
 	);

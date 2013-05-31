@@ -1,5 +1,5 @@
 <?php
-namespace App\Intranet\Libs;
+namespace Coxis\App\Intranet\Libs;
 
 class Auth {
 	public static function isConnected() {

@@ -1,10 +1,10 @@
 <?php
-namespace App\General\Controllers;
+namespace Coxis\App\General\Controllers;
 
 class DefaultController extends \Coxis\Core\Controller {
 	public function configure($request) {
-		if($request->route['action'] == 'index')
-			$this->addFilter(new \Coxis\Core\Filters\PageCaching);
+		// if($request->route['action'] == 'index')
+		// 	$this->addFilter(new \Coxis\Core\Filters\PageCaching);
 	}
 
 	/**

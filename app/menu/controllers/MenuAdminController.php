@@ -34,7 +34,7 @@ class MenuAdminController extends \Coxis\Admin\Libs\Controller\ModelAdminControl
 			'custom_id'	=>	'pages',
 		));
 		foreach(Page::all() as $page) {
-			$pages[$page->__toString()] = array(
+			$pages[$page->__toString().' ('.$page->name.')'] = array(
 				'type'	=>	'item',
 				'model'	=>	'page',
 				'item_id'	=>	$page->id,
@@ -69,7 +69,7 @@ class MenuAdminController extends \Coxis\Admin\Libs\Controller\ModelAdminControl
 				<?php echo isset($menuitem['item_type']) ? 'data-item_type="'.$menuitem['item_type'].'"':'' ?>
 				<?php if(
 					$item->type == $menuitem['type']
-					&& (isset($menuitem['custom_id']) && $item->custom_id == $menuitem['custom_id'] || isset($menuitem['item']) && $item->item_id == $menuitem['item'])
+					&& (isset($menuitem['custom_id']) && $item->custom_id == $menuitem['custom_id'] || isset($menuitem['item_id']) && $item->item_id == $menuitem['item_id'])
 					): ?>
 				selected="selected"
 				<?php endif ?>

@@ -1,5 +1,5 @@
 <?php
-namespace App\Search\Controllers;
+namespace Coxis\App\Search\Controllers;
 
 class Search {
 	public static function searchModels($modelName, $term) {

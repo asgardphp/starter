@@ -2,7 +2,7 @@
 namespace Coxis\SEO;
 
 class SEO {
-	public static function canonical($controller, $canonical, $relative=false, $redirect=true) {
+	public static function canonical($controller, $canonical, $relative=true, $redirect=true) {
 		if(!$controller->request->isInitial)
 			return;
 		if($relative)

@@ -119,7 +119,10 @@
 							var _newItem = $(newItem);
 							$.get('menus/'+window.menu_id+'/newItem', function(id) {
 								_newItem.find('form').attr('data-id', id);
-								$('#items > ul').append(_newItem);
+								_newItem.find('form *').mousedown(function(event) {
+									event.stopPropagation();
+								})
+								$('#items > ol').append(_newItem);
 							});
 						});
 					});

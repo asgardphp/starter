@@ -1,5 +1,5 @@
 <?php
-namespace App\Admin\Libs\Form;
+namespace Coxis\App\Admin\Libs\Form;
 
 class AdminModelForm extends \Coxis\Form\ModelForm {
 	public $controller = null;
@@ -34,7 +34,7 @@ class AdminModelForm extends \Coxis\Form\ModelForm {
 		});
 
 		$this->setRenderCallback('file', function($field, $options) {
-			return new \App\Admin\Libs\Form\Widgets\FileWidget($field->getName(), $field->getValue(), $options);
+			return new \Coxis\App\Admin\Libs\Form\Widgets\FileWidget($field->getName(), $field->getValue(), $options);
 		});
 
 		$this->hook('render', function($hookchain, $form, $field, $widget, $options) {

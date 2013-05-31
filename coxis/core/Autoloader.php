@@ -8,6 +8,7 @@ class Autoloader {
 	public static $directories = array(
 		// 'foo\bar'	=>	'there',
 		// 'swift_'	=>	'swift',
+		'Coxis\App'	=>	'app',
 		'Coxis'	=>	'coxis',
 		'App'	=>	'app',
 		'Tests'	=>	'tests',

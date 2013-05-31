@@ -1,5 +1,5 @@
 <?php
-namespace App\Menu\Libs;
+namespace Coxis\App\Menu\Libs;
 
 class MenuLib {
 	protected static $menu = array();

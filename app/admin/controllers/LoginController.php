@@ -1,7 +1,7 @@
 <?php
-namespace App\Admin\Controllers;
+namespace Coxis\App\Admin\Controllers;
 
-class LoginController extends \App\Core\Controller {
+class LoginController extends \Coxis\App\Core\Controller {
 	public function configure() {
 		\Memory::set('layout', false);
 	}

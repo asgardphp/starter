@@ -106,6 +106,7 @@ class ORMManager {
 							}
 						}
 					}
+
 					if(!isset($prop->orm['default']))
 						$neworm['default'] = false;
 					if(!isset($prop->orm['nullable']))
@@ -114,6 +115,7 @@ class ORMManager {
 						$neworm['key'] = '';
 					if(!isset($prop->orm['auto_increment']))
 						$neworm['auto_increment'] = false;
+					$neworm['position'] = $prop->params['position'];
 
 					if($prop->i18n) {
 						if(!isset($newSchemas[$class::getTable().'_translation'])) {
@@ -175,12 +177,12 @@ class ORMManager {
 
 				uasort($schema, function($a, $b) {
 					if(!isset($a['position']))
-						return 1;
-					if(!isset($b['position']))
 						return -1;
-					if($a['position'] < $b['position'])
+					if(!isset($b['position']))
 						return 1;
-					return -1;
+					if($a['position'] < $b['position'])
+						return -1;
+					return 1;
 				});
 
 				$newSchemas[$class::getTable()] = $schema;

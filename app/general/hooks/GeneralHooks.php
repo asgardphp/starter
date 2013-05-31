@@ -1,5 +1,5 @@
 <?php
-namespace App\General\Hooks;
+namespace Coxis\App\General\Hooks;
 
 class GeneralHooks extends \Coxis\Hook\HooksContainer {
 	/**
@@ -7,7 +7,7 @@ class GeneralHooks extends \Coxis\Hook\HooksContainer {
 	*/
 	public function pagelayout($controller) {
 		HTML::setTitle('Coxis');
-		$controller->layout = array('\App\General\Controllers\DefaultController', 'layout');
+		$controller->layout = array('\Coxis\App\General\Controllers\DefaultController', 'layout');
 
 		$controller->addFilter(new \Coxis\Core\Filters\PageLayout);
 		$controller->addFilter(new \Coxis\Core\Filters\JSONModels);

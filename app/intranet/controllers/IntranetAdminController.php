@@ -2,7 +2,7 @@
 /**
 @Prefix('admin/users')
 */
-class IntranetAdminController extends \App\Admin\Libs\Controller\ModelAdminController {
+class IntranetAdminController extends \Coxis\App\Admin\Libs\Controller\ModelAdminController {
 	static $_model = 'user';
 	static $_models = 'users';
 
@@ -18,7 +18,7 @@ class IntranetAdminController extends \App\Admin\Libs\Controller\ModelAdminContr
 	}
 	
 	public function formConfigure($model) {
-		$form = new \App\Admin\Libs\Form\AdminModelForm($model, $this);
+		$form = new \Coxis\App\Admin\Libs\Form\AdminModelForm($model, $this);
 		
 		return $form;
 	}

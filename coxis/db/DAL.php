@@ -408,7 +408,9 @@ class DAL {
 		if($group_by) {
 			$this->select(array($this->table.'.`'.$group_by.'` as groupby', $fct.'('.$what.') as '.$fct))
 				->groupBy($this->table.'.`'.$group_by.'`')
-			     ->offset(null);
+				->offset(null)
+				->orderBy(null)
+				->limit(null);
 			$res = array();
 			foreach($this->get() as $v)
 				$res[$v['groupby']] = $v[$fct];
@@ -416,8 +418,10 @@ class DAL {
 		}
 		else {
 			$this->select(array($fct.'('.$what.') as '.$fct))
-			     ->groupBy(null)
-			     ->offset(null);
+				->groupBy(null)
+				->offset(null)
+				->orderBy(null)
+				->limit(null);
 			return \Coxis\Utils\Tools::get($this->first(), $fct);
 		}
 	}

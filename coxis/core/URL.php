@@ -34,15 +34,15 @@ class URL {
 		return $this->base().$this->get();
 	}
 	
-	public function full() {
-	if($this->request->get->size()) {
-		$r = $this->current().'?';
-		foreach($this->request->get->all() as $k=>$v)
-			$r .= $k.'='.$v.'&';
-		return $r;
-	}
-	else
-		return $this->current();
+	public function full($params=array()) {
+		if($this->request->get->size() || $params) {
+			$r = $this->current().'?';
+			foreach(array_merge($this->request->get->all(), $params) as $k=>$v)
+				$r .= $k.'='.$v.'&';
+			return $r;
+		}
+		else
+			return $this->current();
 	}
 	
 	public function base() {
@@ -88,7 +88,7 @@ class URL {
 			return '';
 	}
 
-	public function url_for($what, $params=array(), $relative=false) {
+	public function url_for($what, $params=array(), $relative=true) {
 		#controller/action
 		if(is_array($what)) {
 			$controller = strtolower($what[0]);

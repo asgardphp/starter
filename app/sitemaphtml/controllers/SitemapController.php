@@ -1,5 +1,5 @@
 <?php
-namespace App\Sitemaphtml\Controllers;
+namespace Coxis\App\Sitemaphtml\Controllers;
 
 class SitemapController extends \Coxis\Core\Controller {
 	/**

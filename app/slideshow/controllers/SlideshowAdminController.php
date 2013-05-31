@@ -2,10 +2,10 @@
 /**
 @Prefix('admin/slideshow')
 */
-class SlideshowAdminController extends \App\Admin\Libs\Controller\AdminParentController {
+class SlideshowAdminController extends \Coxis\App\Admin\Libs\Controller\AdminParentController {
 	public function formConfigure() {
 		$controller = $this;
-		$form = new \App\Admin\Libs\Form\AdminSimpleForm($this);
+		$form = new \Coxis\App\Admin\Libs\Form\AdminSimpleForm($this);
 		$form->images = new DynamicGroup(function($data) use($controller) {
 			if($data !== null)
 				if($data === '' || (is_array($data) && !array_filter(Tools::flateArray($data))))
@@ -13,7 +13,7 @@ class SlideshowAdminController extends \App\Admin\Libs\Controller\AdminParentCon
 			return new AdminModelForm(new Slide, $controller);
 		});
 		foreach(Slide::orderBy('id ASC')->get() as $k=>$a){
-			$form->images[$k] = new \App\Admin\Libs\Form\AdminModelForm($a, $this);
+			$form->images[$k] = new \Coxis\App\Admin\Libs\Form\AdminModelForm($a, $this);
 		}
 		$form->hasfile = true;
 

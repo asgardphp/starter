@@ -2,9 +2,10 @@
 /**
 @Prefix('admin/newsletter')
 */
-class NewsletterAdminController extends \App\Admin\Libs\Controller\ModelAdminController {
+class NewsletterAdminController extends \Coxis\App\Admin\Libs\Controller\ModelAdminController {
 	static $_model = 'mailing';
 	static $_models = 'mailings';
+	static $_index = 'newsletter';
 	
 	function __construct() {
 		$this->_messages = array(
@@ -18,7 +19,7 @@ class NewsletterAdminController extends \App\Admin\Libs\Controller\ModelAdminCon
 	}
 	
 	public function formConfigure($model) {
-		$form = new \App\Admin\Libs\Form\AdminModelForm($model, $this);
+		$form = new \Coxis\App\Admin\Libs\Form\AdminModelForm($model, $this);
 		return $form;
 	}
 	
@@ -56,7 +57,7 @@ class NewsletterAdminController extends \App\Admin\Libs\Controller\ModelAdminCon
 		if($this->form->isSent())
 			try {
 				$this->form->save();
-				
+
 				$subject = $this->form->title->getValue();
 				
 				if(\POST::has('tous')) {
@@ -75,7 +76,7 @@ class NewsletterAdminController extends \App\Admin\Libs\Controller\ModelAdminCon
 				else
 					return \Response::redirect($this->url_for('edit', array('id'=>$this->$_model->id)));
 			}
-			catch(\Coxis\Core\Form\FormException $e) {
+			catch(\Coxis\Form\FormException $e) {
 				Flash::addError($e->errors);
 			}
 		

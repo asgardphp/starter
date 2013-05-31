@@ -164,7 +164,11 @@ class Form extends AbstractGroup {
 		$action = isset($options['action']) && $options['action'] ? $options['action']:\URL::full();
 		$method = isset($options['method']) ? $options['method']:'post';
 		$enctype = isset($options['enctype']) ? $options['enctype']:($this->hasFile() ? ' enctype="multipart/form-data"':'');
-		echo '<form action="'.$action.'" method="'.$method.'"'.$enctype.'>'."\n";
+		$attrs = '';
+		if(isset($options['attrs']))
+			foreach($options['attrs'] as $k=>$v)
+				$attrs .= ' '.$k.'="'.$v.'"';
+		echo '<form action="'.$action.'" method="'.$method.'"'.$enctype.$attrs.'>'."\n";
 		
 		return $this;
 	}

@@ -1,5 +1,5 @@
 <?php
-namespace App\Admin\Libs;
+namespace Coxis\App\Admin\Libs;
 
 #todo not static
 class AdminMenu {

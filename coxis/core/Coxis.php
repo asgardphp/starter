@@ -6,7 +6,7 @@ class Coxis {
 
 	public static function setDefaultEnvironment() {
 		if(!defined('_ENV_'))
-			if(\Server::get('HTTP_HOST') == '127.0.0.1' || \Server::get('HTTP_HOST') == 'localhost')
+			if(PHP_SAPI == 'cli' || \Server::get('HTTP_HOST') == '127.0.0.1' || \Server::get('HTTP_HOST') == 'localhost')
 				define('_ENV_', 'dev');
 			else
 				define('_ENV_', 'prod');

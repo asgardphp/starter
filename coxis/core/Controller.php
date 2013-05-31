@@ -75,12 +75,20 @@ class Controller extends Viewable {
 		$controller->request = $request;
 		$controller->response = $response;
 
-		#todo move stuff in construct after having moved hooks out from controllers
 		\Hook::trigger('controller_configure', array($controller));
 
 		if(method_exists($controller, 'configure'))
 			if($res = $controller->doRun('configure', array($request), false))
 				return $res;
+
+		if(method_exists($controller, 'before'))
+			$controller->hook('before', function($chain, $controller) {
+				return call_user_func_array(array($controller, 'before'), array($chain));
+			});
+		if(method_exists($controller, 'after'))
+			$controller->hook('after', function($chain, $controller, &$result) {
+				return call_user_func_array(array($controller, 'after'), array($chain, &$result));
+			});
 
 		if(!$result = $controller->trigger('before', array($controller))) {
 			$result = $controller->doRun($actionName, array($request));

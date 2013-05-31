@@ -12,8 +12,7 @@ class CollectionORM extends ORM implements \Coxis\Core\Collection {
 
 		parent::__construct($this->relation['model']);
 
-		$reverse_relation_name = $this->relation->reverse()->name;
-		$this->joinToModel($reverse_relation_name, $model);
+		$this->joinToModel($this->relation->reverse(), $model);
 	}
 	
 	public function sync($ids) {

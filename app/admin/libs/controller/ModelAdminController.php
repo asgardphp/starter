@@ -1,5 +1,5 @@
 <?php
-namespace App\Admin\Libs\Controller;
+namespace Coxis\App\Admin\Libs\Controller;
 
 abstract class ModelAdminController extends AdminParentController {
 	static $_model = null;#todo model variable name or model name ?
@@ -82,17 +82,17 @@ abstract class ModelAdminController extends AdminParentController {
 		$conditions = array();
 		#todo with new orm
 		#Search
-		if(isset($request['search']) && $request['search']) {
+		if(GET::get('search')) {
 			$conditions['or'] = array();
 			foreach($_model::propertyNames() as $property) {
 				if($property != 'id')
-					$conditions['or']["`$property` LIKE ?"] = '%'.$request['search'].'%';
+					$conditions['or']["`$property` LIKE ?"] = '%'.GET::get('search').'%';
 			}
 		}
 		#Filters
-		elseif(isset($request['filter']) && $request['filter']) {
+		elseif(GET::get('filter')) {
 			$conditions['and'] = array();
-			foreach($request['filter'] as $key=>$value) {
+			foreach(GET::get('filter') as $key=>$value) {
 				if($value)
 					$conditions['and']["`$key` LIKE ?"] = '%'.$value.'%';
 			}
@@ -156,6 +156,7 @@ abstract class ModelAdminController extends AdminParentController {
 		$modelName = strtolower(basename($_model));#todo
 		
 		$this->$modelName = new $_model;
+		$this->original = clone $this->$modelName;
 	
 		$this->form = $this->formConfigure($this->$modelName);
 	

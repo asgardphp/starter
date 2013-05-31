@@ -81,8 +81,6 @@ class ModelDefinition extends Hookable {
 				$params[$v] = true;
 			}
 		}
-		if(!isset($params['required']))
-			$params['required'] = true;
 		#todo multiple values - not atomic.. ?
 		if(!isset($params['type']) || !$params['type']) {
 			if(isset($params['multiple']) && $params['multiple'])

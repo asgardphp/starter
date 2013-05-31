@@ -1,7 +1,12 @@
 <?php
 class PageController extends Controller {
 	/**
-	@Route(':url')
+	@Route(value = ':url', requirements = {
+		url = {
+			type = 'regex',
+			regex = '.+'
+		}	
+	})
 	*/
 	public function showAction($request) {
 		if(!($this->page = Page::loadByURL($request['url'])) || !$this->page->published)

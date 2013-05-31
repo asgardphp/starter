@@ -40,6 +40,6 @@ class SelectField extends \Coxis\Form\Fields\Field {
 		if($value == $default)
 			$options['attrs']['checked'] = 'checked';
 		$options['label'] = $name;
-		return HTMLWidget::radio($this->name, $value, $options);
+		return HTMLWidget::radio($this->getName(), $value, $options);
 	}
 }

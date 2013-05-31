@@ -2,7 +2,7 @@
 namespace Coxis\Core\Properties;
 
 class IntegerProperty extends BaseProperty {
-	public function getSQLType() {	
+	public function getSQLType() {
 		if($this->length)
 			return 'int('.$this->length.')';
 		else

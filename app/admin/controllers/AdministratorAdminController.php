@@ -1,10 +1,10 @@
 <?php
-namespace App\Admin\Controllers;
+namespace Coxis\App\Admin\Controllers;
 
 /**
 @Prefix('admin/administrators')
 */
-class AdministratorAdminController extends \App\Admin\Libs\Controller\ModelAdminController {
+class AdministratorAdminController extends \Coxis\App\Admin\Libs\Controller\ModelAdminController {
 	static $_model = 'administrator';
 	static $_models = 'administrators';
 	

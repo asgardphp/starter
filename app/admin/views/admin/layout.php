@@ -3,7 +3,7 @@
 <head>
 	<meta http-equiv="X-UA-Compatible" content="IE=7" />
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<title><?php echo \App\Value\Models\Value::val('name') ?> &#9679; <?php echo __('Administration') ?></title>
+	<title><?php echo \Coxis\App\Value\Models\Value::val('name') ?> &#9679; <?php echo __('Administration') ?></title>
 	<base href="<?php echo \URL::to('admin/') ?>" />
 	<style type="text/css" media="all">
 		@import url("../admin/css/admin.css");
@@ -31,7 +31,7 @@
 			<div id="header">
 				<div class="hdrl"></div>
 				<div class="hdrr"></div>
-				<h1><a href=".."><?php echo \App\Value\Models\Value::val('name') ?></a></h1>
+				<h1><a href=".."><?php echo \Coxis\App\Value\Models\Value::val('name') ?></a></h1>
 				
 				<!-- <img src="<?php echo URL::to('') ?>" style="height:80px; float:left; margin-left:-50px; margin-top:-10px;"> -->
 				<ul id="nav">
@@ -55,7 +55,7 @@
 						}
 					}
 					}
-					showMenu(\App\Admin\Libs\AdminMenu::$menu);
+					showMenu(\Coxis\App\Admin\Libs\AdminMenu::$menu);
 					?>
 				</ul>
 				<p class="user"><a href=".."><?php echo __('See website') ?></a> | <a href="logout"><?php echo __('Disconnect') ?></a></p>

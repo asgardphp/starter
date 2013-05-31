@@ -1,5 +1,5 @@
 <?php
-namespace App\Admin\Models;
+namespace Coxis\App\Admin\Models;
 
 class Administrator extends \Coxis\Core\Model {
 	public static $properties = array(

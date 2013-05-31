@@ -11,7 +11,9 @@ class Actualite extends \Coxis\Core\Model {
 			'required'    =>    false,
 		),
 		'introduction',
-		'contenu',
+		'contenu' => array(
+			'required' => true,
+		),
 		'test'	=>	array(
 			'i18n'	=>	true,
 			'required'	=>	false,

@@ -42,7 +42,7 @@ class ModelRelation implements \ArrayAccess {
 				}
 			}
 
-			if(!isset($this->params['type']['type']))
+			if(!isset($this->params['type']))
 				throw new \Exception('Problem with relation type');
 
 			if($this->params['type'] == 'hasMany') {

@@ -69,7 +69,7 @@ class Query {
 			else
 				$this->rsc = $db->query($sql);
 		} catch(\PDOException $e) {
-			throw new DBException($e->getMessage().'<br/>'."\n".'SQL: '.$sql);
+			throw new DBException($e->getMessage().'<br/>'."\n".'SQL: '.$sql.' ('.implode($args, ', ').')');
 		}
 	}
 	

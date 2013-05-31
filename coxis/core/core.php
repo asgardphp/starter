@@ -86,7 +86,7 @@ register_shutdown_function(function () {
 			if($e['type'] == 1) {
 				while(ob_get_level()){ ob_end_clean(); }
 				$response = \Coxis\Core\Error::report("($e[type]) $e[message]<br>
-					$e[file] ($e[line])".debug_backtrace(), array(array('file'=>$e['file'], 'line'=>$e['line'])));
+					$e[file] ($e[line])", array(array('file'=>$e['file'], 'line'=>$e['line'])));
 				$response->send(false);
 			}
 		}

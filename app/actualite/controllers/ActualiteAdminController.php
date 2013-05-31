@@ -2,7 +2,7 @@
 /**
 @Prefix('admin/actualites')
 */
-class ActualiteAdminController extends \App\Admin\Libs\Controller\ModelAdminController {
+class ActualiteAdminController extends \Coxis\App\Admin\Libs\Controller\ModelAdminController {
 	static $_model = 'actualite';
 	static $_models = 'actualites';
 
@@ -18,7 +18,7 @@ class ActualiteAdminController extends \App\Admin\Libs\Controller\ModelAdminCont
 	}
 	
 	public function formConfigure($model) {
-		$form = new \App\Admin\Libs\Form\AdminModelForm($model, $this);
+		$form = new \Coxis\App\Admin\Libs\Form\AdminModelForm($model, $this);
 		
 		return $form;
 	}

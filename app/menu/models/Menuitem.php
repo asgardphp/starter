@@ -18,9 +18,6 @@ class Menuitem extends \Coxis\Core\Model {
 		'custom_id' => array(
 			'required'	=>	false,
 		),
-		'position' => array(
-			'required'	=>	false,
-		),
 	);
 	
 	public static $relations = array(	
@@ -37,7 +34,7 @@ class Menuitem extends \Coxis\Core\Model {
 			'model'	=>	'MenuItem',
 		),
 		'item' => array(
-			'type'	=>	'hasOne',
+			'type'	=>	'belongsTo',
 			'polymorphic'	=>	true,
 			'model'	=>	'menuitemable',
 		),
@@ -57,7 +54,8 @@ class Menuitem extends \Coxis\Core\Model {
 	public function url() {
 		switch($this->type) {
 			case 'none':
-				return null;
+				return $this->childs()->first()->url();
+				// return null;
 			case 'fixed':
 				return $this->fixed_url;
 			case 'custom':

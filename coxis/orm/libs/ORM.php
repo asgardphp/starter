@@ -42,9 +42,14 @@ class ORM {
 	}
 
 	public function joinToModel($relation, $model) {
+		if($relation['polymorphic']) {
+			$this->where(array($relation['link_type'] => $model->getModelName()));
+			$relation['real_model'] = $model->getModelName();
+		}
 		$this->join($relation);
-		// $this->where(array($model::getTable().'.id' => $model->id));
-		$this->where(array($relation.'.id' => $model->id));
+
+		$this->where(array($relation->name.'.id' => $model->id));
+
 		return $this;
 	}
 
@@ -158,9 +163,13 @@ class ORM {
 	}
 
 	// todo replace alias $relationName by something else, in case of relations with the same name
-	public function jointure($dal, $relationName, $current_model, $ref_table) {
-		$relation = $current_model::getDefinition()->relations[$relationName];
-		$relation_model = $relation['model'];
+	public function jointure($dal, $relation, $current_model, $ref_table) {
+		if($relation['polymorphic'])
+			$relation_model = $relation['real_model'];
+		else
+			$relation_model = $relation['model'];
+		$relationName = $relation->name;
+
 		switch($relation['type']) {
 			case 'hasOne':
 			case 'belongsTo':
@@ -335,7 +344,8 @@ class ORM {
 			$table = $model::property($property)->i18n ? $i18nTable:$table;
 			$sql = preg_replace('/(?<![\.a-z0-9-_`\(\)])('.$property.')(?![\.a-z0-9-_`\(\)])/', $table.'.`$1`', $sql);
 		}
-		$sql = preg_replace('/([a-zA-Z0-9-_]+)\.([a-zA-Z0-9-_]+)/', '$1.`$2`', $sql);
+		// $sql = preg_replace('/([a-zA-Z0-9-_]+)\.([a-zA-Z0-9-_]+)/', '$1.`$2`', $sql);
+		#todo, was that really useful?
 
 		return $sql;
 	}
@@ -356,8 +366,11 @@ class ORM {
 		return $conditions;
 	}
 	
-	public function where($conditions) {
-		$this->where[] = $this->processConditions($conditions);
+	public function where($conditions, $val=null) {
+		if(is_array($conditions))
+			$this->where[] = $this->processConditions($conditions);
+		else
+			$this->where[] = $this->processConditions(array($conditions=>$val));
 		
 		return $this;
 	}

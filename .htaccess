@@ -3,20 +3,13 @@ SetEnv PHP_VER 5_3
 SetEnv MAGIC_QUOTES 0
 SetEnv SESSION_USE_TRANS_SID 0
 
-#HTPASSWD
-#AuthUserFile /homez.157/website/www/web/.htpasswd
-#AuthGroupFile /dev/null
-#AuthName "Veuillez vous identifier"
-#AuthType Basic
-#<Limit GET POST>
-#require valid-user
-#</Limit>
-
 Options +FollowSymLinks +ExecCGI
 
 <IfModule mod_rewrite.c>
   RewriteEngine On
   #RewriteBase /
+
+  Options -Indexes
 
   #RewriteRule ^(.*)$ http://www.google.fr/%{DOCUMENT_ROOT}coxis3/web/$1 [R=301,L]
 
