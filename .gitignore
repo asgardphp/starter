@@ -1,0 +1,12 @@
+lab
+todo.txt
+log
+*.txt
+_old
+backup
+cache
+reflection
+sql
+config/config.php
+config/database.php
+/web
