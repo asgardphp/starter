@@ -67,7 +67,6 @@ class CSV {
 
 	public function get() {
 		$csv = '';
-
 		if($this->header) {
 			$header = $this->header;
 			$data = $this->data;	
@@ -77,12 +76,11 @@ class CSV {
 			$data = array_slice($this->data, 1);
 		}
 		foreach($data as $k=>$row) {
-			ksort($row, function($a, $b) use ($header) {
-				return array_search($a, array_keys($header)) < array_search($b, array_keys($header));
+			uksort($row, function($a, $b) use ($header) {
+				return array_search($a, $header) > array_search($b, $header);
 			});
 			$data[$k] = $row;
 		}
-
 		$data = array_merge(array($header), $data);
 
 		foreach($data as $row)

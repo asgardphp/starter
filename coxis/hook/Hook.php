@@ -90,6 +90,9 @@ class Hook {
 	}
 
 	public function hook() {
+		#todo this function is called when Hook is invoked
+		if(!func_get_args())
+			return;
 		return call_user_func_array(array(get_called_class(), 'hookOn'), func_get_args());
 	}
 

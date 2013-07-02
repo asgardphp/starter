@@ -9,6 +9,10 @@ class Slide extends \Coxis\App\Core\Model {
 		'description'	=>	array(
 		),
 	);
+
+	public static $meta = array(
+		'order_by' => 'id ASC',
+	);
 	
 	public static function configure($definition) {
 		$validation = function($attribute, $value, $params, $validator) {
