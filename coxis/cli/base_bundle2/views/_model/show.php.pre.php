@@ -1,1 +1,0 @@
-<h1><% echo $<?php echo $bundle['model']['meta']['name'] ?> %></h1>

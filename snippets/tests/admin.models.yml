@@ -1,3 +1,0 @@
-Coxis\Bundles\Admin\Models\Administrator:
-    - username: admin
-      password: admin
