@@ -1,17 +1,9 @@
-#OVH
-SetEnv PHP_VER 5_3
-SetEnv MAGIC_QUOTES 0
-SetEnv SESSION_USE_TRANS_SID 0
-
 Options +FollowSymLinks +ExecCGI
 
 <IfModule mod_rewrite.c>
   RewriteEngine On
-  #RewriteBase /
 
   Options -Indexes
-
-  #RewriteRule ^(.*)$ http://www.google.fr/%{DOCUMENT_ROOT}coxis3/web/$1 [R=301,L]
 
   RewriteCond web/$1 -F
   RewriteRule ^(.*)$ web/$1 [QSA,L]

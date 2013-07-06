@@ -3,6 +3,6 @@
     "description": "Coxis PHP Framework",
     "license": "MIT",
     "require": {
-        "coxis/core": "dev-master",
+        "coxis/core": "dev-master"
     }
 }

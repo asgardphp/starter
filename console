@@ -3,7 +3,10 @@
 // define('_ENV_', '');
 set_time_limit(0);
 
-require_once('coxis/core/core.php');
+require 'paths.php';
+
+/* INIT */
+require(_CORE_DIR_.'core.php');
 
 /* RUN */
 \CLIRouter::run('Coxis\Cli\Front', 'main');
