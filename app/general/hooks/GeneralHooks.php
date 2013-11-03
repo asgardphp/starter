@@ -6,7 +6,7 @@ class GeneralHooks extends \Coxis\Hook\HooksContainer {
 	@Hook('controller_configure')
 	*/
 	public function pagelayout($controller) {
-		HTML::setTitle('Coxis');
+		\HTML::setTitle('Coxis');
 		$controller->layout = array('\App\General\Controllers\DefaultController', 'layout');
 
 		$controller->addFilter(new \Coxis\Core\Filters\PageLayout);

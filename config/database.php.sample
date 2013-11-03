@@ -14,7 +14,7 @@ $config = array(
 			'host'			=>	'localhost',
 			'user'	=>	'root',
 			'password'	=>	'',
-			'database'	=>	'coxis3_test',
+			'database'	=>	'',
 			'prefix'		=>	'',
 		),
 	),

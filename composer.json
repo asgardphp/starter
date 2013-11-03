@@ -1,8 +1,20 @@
 {
-    "name": "coxis/coxis",
-    "description": "Coxis PHP Framework",
-    "license": "MIT",
-    "require": {
-        "coxis/core": "dev-master"
-    }
+	"name": "coxis/starter",
+	"description": "Coxis PHP Framework starter",
+	"license": "MIT",
+	"authors": [{
+		"name": "Michel Hognerud",
+		"email": "michel@hognerud.net"
+	}],
+	"require": {
+		"symfony/yaml": "dev-master",
+		"coxis/addendum": "dev-master",
+		"coxis/core": "dev-master"
+	},
+	"repositories": [
+		{
+			"type": "vcs",
+			"url": "https://github.com/coxis/addendum"
+		}
+	]
 }

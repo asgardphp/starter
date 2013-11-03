@@ -9,4 +9,6 @@ require 'paths.php';
 require(_CORE_DIR_.'core.php');
 
 /* RUN */
-\CLIRouter::run('Coxis\Cli\Front', 'main');
+$router = new Coxis\Cli\Router;
+$router->run('Coxis\Cli\Front', 'main');
+// \CLIRouter::run('Coxis\Cli\Front', 'main');

@@ -4,7 +4,7 @@ if(!defined('_ENV_'))
 require_once(_CORE_DIR_.'core.php');
 \Coxis::load();
 
-require_once _VENDOR_DIR_.'phpQuery/phpQuery/phpQuery.php';
+require_once _VENDOR_DIR_.'duvanmonsa/php-query/src/phpQuery.php';
 
 if(!function_exists('_pq')) {
 	function _pq($html, $selector) {
