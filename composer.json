@@ -7,14 +7,6 @@
 		"email": "michel@hognerud.net"
 	}],
 	"require": {
-		"symfony/yaml": "dev-master",
-		"coxis/addendum": "dev-master",
 		"coxis/core": "dev-master"
-	},
-	"repositories": [
-		{
-			"type": "vcs",
-			"url": "https://github.com/coxis/addendum"
-		}
-	]
+	}
 }
