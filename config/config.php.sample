@@ -6,7 +6,7 @@ $config = array(
 			'footer'	=>	''
 		),
 		'salt'	=>	'FCT7f6ew%^',
-		'bundle_directories' => array('coxis', 'app'),
+		'bundles' => array('coxis', 'app'),
 		'imagecache'	=>	false,
 		'locale'	=>	'fr',
 		'locales'	=>	array(
