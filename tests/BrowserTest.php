@@ -27,12 +27,5 @@ class BrowserTest extends PHPUnit_Framework_TestCase {
 	public function test1() {
 		$browser = new Browser;
 		$this->assertEquals(_pq($browser->get('')->content, 'h1')->html(), 'Coxis');
-
-		$browser = new Browser;
-		$this->assertEquals($browser->get('admin')->getCode(), 401);
-
-		$browser = new Browser;
-		$browser->session['admin_id'] = 1;
-		$this->assertEquals($browser->get('admin')->getCode(), 200);
 	}
 }

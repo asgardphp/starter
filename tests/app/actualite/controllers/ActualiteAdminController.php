@@ -5,7 +5,6 @@ namespace Tests\App\Actualite\Controllers;
 @Prefix('admin/actualites')
 */
 class ActualiteAdminController extends \Coxis\Bundles\Admin\Libs\Controller\ModelAdminController {
-	//~ static $_model = 'actualite';#todo\Coxis\App\Actualite\Models\Actualite
 	static $_model = '\Coxis\App\Actualite\Models\Actualite';
 	static $_models = 'actualites';
 	

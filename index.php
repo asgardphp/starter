@@ -1,10 +1,10 @@
 <?php
-// define('_ENV_', 'prod');
-if(!defined('_ENV_'))
+if(!defined('_ENV_')) {
 	if(isset($_SERVER['HTTP_HOST']) && ($_SERVER['HTTP_HOST'] == '127.0.0.1' || $_SERVER['HTTP_HOST'] == 'localhost'))
 		define('_ENV_', 'dev');
 	else
 		define('_ENV_', 'prod');
+}
 
 require 'paths.php';
 
@@ -12,4 +12,4 @@ require 'paths.php';
 require(_CORE_DIR_.'core.php');
 
 /* RUN AND SEND */
-\Coxis\Core\Controller::run('Coxis\Core\Front', 'main')->send();
+\Coxis\Core\Controller::run('Coxis\Core\FrontController', 'main')->send();

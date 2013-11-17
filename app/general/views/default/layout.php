@@ -2,5 +2,4 @@
 <div>
 	<?php echo $content ?>
 </div>
-<br style="clear:both">
-<p>By Michel Hognerud - 2012</p>
+<p>by Michel Hognerud - 2013</p>

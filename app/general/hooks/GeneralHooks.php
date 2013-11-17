@@ -18,7 +18,7 @@ class GeneralHooks extends \Coxis\Hook\HooksContainer {
 	*/
 	public function hook404Exception($exception) {
 		$request = \Request::inst();
-		return \Coxis\Core\Controller::run('default', '_404', \Request::inst())->setCode(404);
+		return \Coxis\Core\Controller::run('DefaultController', '_404', \Request::inst())->setCode(404);
 	}
 
 	/**
