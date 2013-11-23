@@ -1,6 +1,16 @@
 <?php
-$config = array(
+return array(
 	'all' => array(
+		'log' => false,
+		'debug' => false,
+		'fatal_errors' => array(
+			\Psr\Log\LogLevel::NOTICE,
+			\Psr\Log\LogLevel::WARNING,
+			\Psr\Log\LogLevel::ERROR,
+			\Psr\Log\LogLevel::CRITICAL,
+			\Psr\Log\LogLevel::ALERT,
+			\Psr\Log\LogLevel::EMERGENCY
+		),
 		'key'	=>	'coxis',
 		'salt'	=>	'FCT7f6ew%^',
 		'bundles' => array(
@@ -36,6 +46,7 @@ $config = array(
 		'error_display' => true,
 	),
 	'dev'	=>	array(
+		'debug' => true,
 		'phpcache'	=>	false,
 		// 'phpcache'	=>	true,
 		'profiler'	=>	false,
