@@ -1,7 +1,7 @@
 <?php
 if(!function_exists('d')) {
 	function d() {
-		call_user_func_array(array('Coxis\Utils\Debug', 'd'), func_get_args());
+		call_user_func_array(array('Coxis\Utils\Debug', 'dWithTrace'), array_merge(array(debug_backtrace()), func_get_args()));
 	}
 }
 if(!function_exists('__')) {

@@ -12,7 +12,7 @@ class DefaultController extends \Coxis\Core\Controller {
 	*/
 	public function indexAction($request) {
 		// SEO::canonical($this, 'as');
-		Profiler::checkpoint('In default controller');
+		\Coxis\Utils\Profiler::checkpoint('In default controller');
 	}
 
 	public function _404Action() {

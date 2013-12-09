@@ -179,7 +179,7 @@ class SchemaTest extends PHPUnit_Framework_TestCase {
 //~ );
 	
 	public function test0() {
-		\Coxis\Core\DB\Schema::create('test', function($table) {
+		\Coxis\DB\Schema::create('test', function($table) {
 			$table->add('id', 'int', 11)
 				->autoincrement();
 			$table->add('title', 'varchar', 50)
@@ -192,56 +192,56 @@ class SchemaTest extends PHPUnit_Framework_TestCase {
 	}
 	
 	public function test1() {
-		\Coxis\Core\DB\Schema::create('test', function($table) {
+		\Coxis\DB\Schema::create('test', function($table) {
 			$table->add('id', 'int', 11);
 		});
 		
-		\Coxis\Core\DB\Schema::drop('test');
+		\Coxis\DB\Schema::drop('test');
 	}
 	
 	public function test2() {
-		\Coxis\Core\DB\Schema::create('test', function($table) {
+		\Coxis\DB\Schema::create('test', function($table) {
 			$table->add('id', 'int', 11);
 		});
 		
-		\Coxis\Core\DB\Schema::rename('test', 'test2');
+		\Coxis\DB\Schema::rename('test', 'test2');
 	}
 	
 	public function test3() {
-		\Coxis\Core\DB\Schema::create('test', function($table) {
+		\Coxis\DB\Schema::create('test', function($table) {
 			$table->add('id', 'int', 11);
 		});
 		
-		\Coxis\Core\DB\Schema::table('test', function($table) {
+		\Coxis\DB\Schema::table('test', function($table) {
 			$table->add('title', 'text');
 		});
 	}
 	
 	public function test4() {
-		\Coxis\Core\DB\Schema::create('test', function($table) {
+		\Coxis\DB\Schema::create('test', function($table) {
 			$table->add('id', 'int', 11);
 			$table->add('title', 'text');
 		});
 		
-		\Coxis\Core\DB\Schema::dropColumn('test', 'title');
+		\Coxis\DB\Schema::dropColumn('test', 'title');
 	}
 	
 	public function test5() {
-		\Coxis\Core\DB\Schema::create('test', function($table) {
+		\Coxis\DB\Schema::create('test', function($table) {
 			$table->add('id', 'int', 11);
 			$table->add('title', 'text');
 		});
 		
-		\Coxis\Core\DB\Schema::renameColumn('test', 'title', 'title2');
+		\Coxis\DB\Schema::renameColumn('test', 'title', 'title2');
 	}
 	
 	public function test6() {
-		\Coxis\Core\DB\Schema::create('test', function($table) {
+		\Coxis\DB\Schema::create('test', function($table) {
 			$table->add('id', 'int', 11);
 			$table->add('title', 'text');
 		});
 		
-		\Coxis\Core\DB\Schema::table('test', function($table) {
+		\Coxis\DB\Schema::table('test', function($table) {
 			$table->col('title')
 				->type('varchar', 50)
 				->rename('title2')
@@ -252,12 +252,12 @@ class SchemaTest extends PHPUnit_Framework_TestCase {
 	}
 	
 	public function test7() {
-		\Coxis\Core\DB\Schema::create('test', function($table) {
+		\Coxis\DB\Schema::create('test', function($table) {
 			$table->add('id', 'int', 11);
 			$table->add('title', 'varchar', 50);
 		});
 		
-		\Coxis\Core\DB\Schema::table('test', function($table) {
+		\Coxis\DB\Schema::table('test', function($table) {
 			$table->col('title')
 				->dropIndex()
 				->unique();
@@ -265,12 +265,12 @@ class SchemaTest extends PHPUnit_Framework_TestCase {
 	}
 	
 	public function test8() {
-		\Coxis\Core\DB\Schema::create('test', function($table) {
+		\Coxis\DB\Schema::create('test', function($table) {
 			$table->add('id', 'int', 11);
 			$table->add('title', 'varchar', 50);
 		});
 		
-		\Coxis\Core\DB\Schema::table('test', function($table) {
+		\Coxis\DB\Schema::table('test', function($table) {
 			$table->col('title')
 				->dropIndex()
 				->index();
@@ -278,12 +278,12 @@ class SchemaTest extends PHPUnit_Framework_TestCase {
 	}
 	
 	public function test9() {
-		\Coxis\Core\DB\Schema::create('test', function($table) {
+		\Coxis\DB\Schema::create('test', function($table) {
 			$table->add('id', 'int', 11);
 			$table->add('title', 'varchar', 50);
 		});
 		
-		\Coxis\Core\DB\Schema::table('test', function($table) {
+		\Coxis\DB\Schema::table('test', function($table) {
 			$table->primary(array('id', 'title'));
 		});
 	}

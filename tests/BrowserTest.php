@@ -2,7 +2,7 @@
 if(!defined('_ENV_'))
 	define('_ENV_', 'test');
 require_once(_CORE_DIR_.'core.php');
-\Coxis::load();
+\Coxis\Core\Coxis::load();
 
 require_once _VENDOR_DIR_.'duvanmonsa/php-query/src/phpQuery.php';
 
@@ -25,7 +25,7 @@ class BrowserTest extends PHPUnit_Framework_TestCase {
 	}
 
 	public function test1() {
-		$browser = new Browser;
+		$browser = new \Coxis\Utils\Browser;
 		$this->assertEquals(_pq($browser->get('')->content, 'h1')->html(), 'Coxis');
 	}
 }

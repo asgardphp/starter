@@ -9,7 +9,7 @@ if(!defined('_ENV_')) {
 require 'paths.php';
 
 /* INIT */
-require(_CORE_DIR_.'core.php');
+require _CORE_DIR_.'core.php';
 
 /* RUN AND SEND */
-\Coxis\Core\Controller::run('Coxis\Core\FrontController', 'main')->send();
+Coxis\Core\HttpKernel::run();

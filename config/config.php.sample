@@ -1,6 +1,7 @@
 <?php
 return array(
 	'all' => array(
+		'preload' => false,
 		'log' => false,
 		'debug' => false,
 		'fatal_errors' => array(
