@@ -45,9 +45,9 @@ return array(
 		),
 		'profiler'	=>	false,
 		'error_display' => true,
+		'debug' => true,
 	),
 	'dev'	=>	array(
-		'debug' => true,
 		'phpcache'	=>	false,
 		// 'phpcache'	=>	true,
 		'profiler'	=>	false,
@@ -57,6 +57,7 @@ return array(
 		'phpcache'	=>	false,
 	),
 	'prod'	=>	array(
+		'debug' => false,
 		'error_display' => false,
 	),
 );
