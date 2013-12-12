@@ -19,3 +19,9 @@ if(!function_exists('import')) {
 		return from()->import($what, $into);
 	}
 }
+
+\Coxis\Core\Autoloader::$directories['Coxis'] = 'bundles';
+\Coxis\Core\Autoloader::$directories['Psr\Log'] = 'log/Psr/Log';
+\Coxis\Core\Context::set('logger', function() {
+	return new \App\Logger;
+});
