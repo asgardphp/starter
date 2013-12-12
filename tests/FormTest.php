@@ -6,7 +6,7 @@ require_once(_CORE_DIR_.'core.php');
 
 class FormTest extends PHPUnit_Framework_TestCase {
 	/*public function setUp(){
-		Context::newDefault();
+		App::newDefault();
 
 		POST::set('publish_date', '20/09/1988');
 

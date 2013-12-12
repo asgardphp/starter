@@ -6,7 +6,7 @@ if(!function_exists('d')) {
 }
 if(!function_exists('__')) {
 	function __($key, $params=array()) {
-		return \Coxis\Core\Context::get('locale')->translate($key, $params);
+		return \Coxis\Core\App::get('locale')->translate($key, $params);
 	}
 }
 if(!function_exists('from')) {
@@ -22,6 +22,6 @@ if(!function_exists('import')) {
 
 \Coxis\Core\Autoloader::$directories['Coxis'] = 'bundles';
 \Coxis\Core\Autoloader::$directories['Psr\Log'] = 'log/Psr/Log';
-\Coxis\Core\Context::set('logger', function() {
+\Coxis\Core\App::set('logger', function() {
 	return new \App\Logger;
 });
