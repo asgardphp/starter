@@ -2,7 +2,7 @@
 				<div class="block_head">
 					<div class="bheadl"></div>
 					<div class="bheadr"></div>
-					<h2><a href="<?php echo $this->url_for('index') ?>"><?php echo ucfirst(static::$_models) ?></a></h2>
+					<h2><a href="<?php echo $this->url_for('index') ?>"><?php echo ucfirst(static::$_entities) ?></a></h2>
 					<ul>
 						<li><a href="<?php echo $this->url_for('new') ?>">Ajouter</a></li>
 					</ul>

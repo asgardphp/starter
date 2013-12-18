@@ -4,9 +4,9 @@ namespace Tests\App\Actualite\Controllers;
 /**
 @Prefix('admin/actualites')
 */
-class ActualiteAdminController extends \Coxis\Bundles\Admin\Libs\Controller\ModelAdminController {
-	static $_model = '\Coxis\App\Actualite\Models\Actualite';
-	static $_models = 'actualites';
+class ActualiteAdminController extends \Coxis\Bundles\Admin\Libs\Controller\EntityAdminController {
+	static $_entity = '\Coxis\App\Actualite\Entities\Actualite';
+	static $_entities = 'actualites';
 	
 	static $_messages = array(
 			'modified'			=>	'Actualité modifiée avec succès.',
@@ -16,8 +16,8 @@ class ActualiteAdminController extends \Coxis\Bundles\Admin\Libs\Controller\Mode
 			'unexisting'			=>	'Cette actualité n\'existe pas.',
 		);
 	
-	public function formConfigure($model) {
-		$form = new \Coxis\Bundles\Admin\Libs\Form\AdminModelForm($model, $this);
+	public function formConfigure($entity) {
+		$form = new \Coxis\Bundles\Admin\Libs\Form\AdminEntityForm($entity, $this);
 		
 		return $form;
 	}

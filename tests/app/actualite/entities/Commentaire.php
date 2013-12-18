@@ -1,7 +1,7 @@
 <?php
-namespace Tests\App\Actualite\Models;
+namespace Tests\App\Actualite\Entities;
 
-class Commentaire extends \Coxis\Core\Model {
+class Commentaire extends \Coxis\Core\Entity {
 	public static $properties = array(
 		'titre',
 	);
@@ -17,7 +17,7 @@ class Commentaire extends \Coxis\Core\Model {
 	
 	public static $relations = array(
 		'actualite'	=>	array(
-			'model'	=>	'\Tests\App\Actualite\Models\Actualite',
+			'entity'	=>	'\Tests\App\Actualite\Entities\Actualite',
 			'has'	=>	'one',
 		),
 	);

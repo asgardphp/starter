@@ -9,7 +9,7 @@ class ActualiteController extends \Coxis\Core\Controller {
 	*/
 	public function indexAction($request) {
 		$page = isset($request['page']) ? $request['page']:1;
-		list($this->actualites, $this->paginator) = Coxis\App\Actualite\Models\Actualite::paginate($page, 10);
+		list($this->actualites, $this->paginator) = Coxis\App\Actualite\Entities\Actualite::paginate($page, 10);
 	}
 
 	/**

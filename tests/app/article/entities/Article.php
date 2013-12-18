@@ -1,8 +1,8 @@
 <?php
-namespace Tests\App\Article\Models;
+namespace Tests\App\Article\Entities;
 
-// class Article extends \Coxis\Core\ORM\ModelORM {
-class Article extends \Coxis\Core\Model {
+// class Article extends \Coxis\Core\ORM\EntityORM {
+class Article extends \Coxis\Core\Entity {
 	public static $properties = array(
 		'title',
 	);
@@ -12,7 +12,7 @@ class Article extends \Coxis\Core\Model {
 	
 	public static $relations = array(
 		'authors'	=>	array(
-			'model'	=>	'\Tests\App\Article\Models\Author',
+			'entity'	=>	'\Tests\App\Article\Entities\Author',
 			'has'		=>	'many',
 		),
 	);

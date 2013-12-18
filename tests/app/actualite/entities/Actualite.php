@@ -1,7 +1,7 @@
 <?php
-namespace Tests\App\Actualite\Models;
+namespace Tests\App\Actualite\Entities;
 
-class Actualite extends \Coxis\Core\Model {
+class Actualite extends \Coxis\Core\Entity {
 	public static $properties = array(
 		'titre',
 		'date'    =>    array(
@@ -29,7 +29,7 @@ class Actualite extends \Coxis\Core\Model {
 	
 	public static $relations = array(
 		'commentaires'	=>	array(
-			'model'	=>	'\Tests\App\Actualite\Models\Commentaire',
+			'entity'	=>	'\Tests\App\Actualite\Entities\Commentaire',
 			//~ 'type'		=>	'HMABT',
 			//~ 'type'		=>	'hasOne',
 			'has'		=>	'many',
@@ -39,8 +39,8 @@ class Actualite extends \Coxis\Core\Model {
 	);
 	
 	public static $behaviors = array(
-		'slugify' => true,
-		'sortable' => true,
+		'Coxis\Behaviors\SlugifyBehavior' => true,
+		'Coxis\Behaviors\SortableBehavior' => true,
 	);
 		
 	#General

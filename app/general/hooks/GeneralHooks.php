@@ -5,19 +5,18 @@ class GeneralHooks extends \Coxis\Hook\HooksContainer {
 	/**
 	@Hook('controller_configure')
 	*/
-	public function pagelayout($controller) {
+	public static function pagelayout($chain, $controller) {
 		\HTML::setTitle('Coxis');
 		$controller->layout = array('\App\General\Controllers\DefaultController', 'layout');
 
 		$controller->addFilter(new \Coxis\Core\Filters\PageLayout);
-		$controller->addFilter(new \Coxis\Core\Filters\JSONModels);
+		$controller->addFilter(new \Coxis\Core\Filters\JSONEntities);
 	}
 
 	/**
 	@Hook('exception_Coxis\Core\Exceptions\NotFoundException')
 	*/
-	public function hook404Exception($exception) {
-		$request = \Request::inst();
+	public static function hook404Exception($chain, $exception) {
 		return \Coxis\Core\Controller::run('DefaultController', '_404', \Request::inst())->setCode(404);
 	}
 
@@ -25,7 +24,7 @@ class GeneralHooks extends \Coxis\Hook\HooksContainer {
 	@Hook('output')
 	@Priority(1000)
 	*/
-	public function gzip() {
+	public static function gzip($chain) {
 		if(!isset($_SERVER['HTTP_ACCEPT_ENCODING']) || !strstr($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip'))
 			return;
 		if(!\Response::getContent())

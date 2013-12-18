@@ -2,7 +2,7 @@
 if(!defined('_ENV_'))
 	define('_ENV_', 'test');
 require_once(_CORE_DIR_.'core.php');
-\Coxis::load();
+\App::load();
 
 class FormTest extends PHPUnit_Framework_TestCase {
 	/*public function setUp(){
