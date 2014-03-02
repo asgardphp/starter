@@ -1,26 +1,24 @@
 <?php
-if(!defined('_ENV_'))
-	define('_ENV_', 'test');
-require_once(_CORE_DIR_.'core.php');
-\App::load();
-
 class i18nTest extends PHPUnit_Framework_TestCase {
-	public function setUp(){
-		\DB::import('tests/coxis.sql');
-				
-		\App::get('locale')->setLocale('fr');
-	}
+	public static function setUpBeforeClass() {
+		if(!defined('_ENV_'))
+			define('_ENV_', 'test');
+		require_once(_CORE_DIR_.'core.php');
+		\Coxis\Core\App::instance(true)->config->set('bundles', array(
+			_COXIS_DIR_.'core',
+			_COXIS_DIR_.'files',
+			_COXIS_DIR_.'orm',
+		));
+		\Coxis\Core\App::loadDefaultApp();
 
-	public function tearDown(){}
-	
-	public function test0() {
+		\Coxis\Core\App::get('db')->import('tests/coxis.sql');
 	}
 
 	#get default
 	public function test1() {
 		$com = new \Tests\App\Actualite\Entities\Commentaire(2);
 		$actu = $com->actualite;
-		$this->assertEquals('Bonjour', $actu->test);
+		$this->assertEquals('Hello', $actu->test); #default language is english
 	}
     
 	#save french text
@@ -48,19 +46,20 @@ class i18nTest extends PHPUnit_Framework_TestCase {
     
 	#save english version
 	public function test5() {
-		\App::get('locale')->setLocale('en');
+		\Coxis\Core\App::get('locale')->setLocale('en');
 		$actu = new \Tests\App\Actualite\Entities\Actualite(2);
 		$actu->test = 'Hi';
 		// d($actu->data['properties']);
 		$actu->save(null, true);
-		$dal = new \Coxis\Core\DB\DAL(Config::get('database/prefix').'actualite_translation');
+		$dal = new \Coxis\DB\DAL(\Coxis\Core\App::get('db'), \Coxis\Core\App::get('config')->get('database/prefix').'actualite_translation');
 		$r = $dal->where(array('locale'=>'en', 'id'=>2))->first();
 		$this->assertEquals('Hi', $r['test']);
 	}
 	
 	#translation
 	public function test6() {
-		\App::get('locale')->importLocales('tests/locales');
+		\Coxis\Core\App::get('locale')->setLocale('fr');
+		\Coxis\Core\App::get('locale')->importLocales('tests/locales');
 		$this->assertEquals(__('Hello :name!', array('name' => 'Michel')), 'Bonjour Michel !');
 	}
 }

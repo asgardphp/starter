@@ -6,7 +6,7 @@ class GeneralHooks extends \Coxis\Hook\HooksContainer {
 	@Hook('controller_configure')
 	*/
 	public static function pagelayout($chain, $controller) {
-		\HTML::setTitle('Coxis');
+		\Coxis\Core\App::get('html')->setTitle('Coxis');
 		$controller->layout = array('\App\General\Controllers\DefaultController', 'layout');
 
 		$controller->addFilter(new \Coxis\Core\Filters\PageLayout);
@@ -27,15 +27,15 @@ class GeneralHooks extends \Coxis\Hook\HooksContainer {
 	public static function gzip($chain) {
 		if(!isset($_SERVER['HTTP_ACCEPT_ENCODING']) || !strstr($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip'))
 			return;
-		if(!\Response::getContent())
+		if(!\Coxis\Core\App::get('response')->getContent())
 			return;
 
-		$r = \Response::getContent();
+		$r = \Coxis\Core\App::get('response')->getContent();
 		$output = gzencode($r);
-		\Response::setContent($output);
-		\Response::setHeader('Content-Encoding', 'gzip');
-		\Response::setHeader('Content-Length', strlen($output));
-		\Response::setHeader('Cache-Control', 'no-cache, no-store, max-age=0, must-revalidate');
-		\Response::setHeader('Pragma', 'no-cache');
+		\Coxis\Core\App::get('response')->setContent($output);
+		\Coxis\Core\App::get('response')->setHeader('Content-Encoding', 'gzip');
+		\Coxis\Core\App::get('response')->setHeader('Content-Length', strlen($output));
+		\Coxis\Core\App::get('response')->setHeader('Cache-Control', 'no-cache, no-store, max-age=0, must-revalidate');
+		\Coxis\Core\App::get('response')->setHeader('Pragma', 'no-cache');
 	}
 }

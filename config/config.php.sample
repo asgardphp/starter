@@ -2,6 +2,7 @@
 return array(
 	'all' => array(
 		'log_php_errors' => false,
+		'global_namespace' => false,
 		'preload' => false,
 		'log' => false,
 		'debug' => false,

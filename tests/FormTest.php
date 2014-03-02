@@ -1,10 +1,16 @@
 <?php
-if(!defined('_ENV_'))
-	define('_ENV_', 'test');
-require_once(_CORE_DIR_.'core.php');
-\App::load();
-
 class FormTest extends PHPUnit_Framework_TestCase {
+	public static function setUpBeforeClass() {
+		if(!defined('_ENV_'))
+			define('_ENV_', 'test');
+		require_once(_CORE_DIR_.'core.php');
+		\Coxis\Core\App::instance(true)->config->set('bundles', array(
+			_COXIS_DIR_.'core',
+			_COXIS_DIR_.'form',
+		));
+		\Coxis\Core\App::loadDefaultApp();
+	}
+	
 	/*public function setUp(){
 		App::newDefault();
 
