@@ -4,14 +4,14 @@ class i18nTest extends PHPUnit_Framework_TestCase {
 		if(!defined('_ENV_'))
 			define('_ENV_', 'test');
 		require_once(_CORE_DIR_.'core.php');
-		\Coxis\Core\App::instance(true)->config->set('bundles', array(
-			_COXIS_DIR_.'core',
-			_COXIS_DIR_.'files',
-			_COXIS_DIR_.'orm',
+		\Asgard\Core\App::instance(true)->config->set('bundles', array(
+			_ASGARD_DIR_.'core',
+			_ASGARD_DIR_.'files',
+			_ASGARD_DIR_.'orm',
 		));
-		\Coxis\Core\App::loadDefaultApp();
+		\Asgard\Core\App::loadDefaultApp();
 
-		\Coxis\Core\App::get('db')->import('tests/coxis.sql');
+		\Asgard\Core\App::get('db')->import('tests/asgard.sql');
 	}
 
 	#get default
@@ -46,20 +46,20 @@ class i18nTest extends PHPUnit_Framework_TestCase {
     
 	#save english version
 	public function test5() {
-		\Coxis\Core\App::get('locale')->setLocale('en');
+		\Asgard\Core\App::get('locale')->setLocale('en');
 		$actu = new \Tests\App\Actualite\Entities\Actualite(2);
 		$actu->test = 'Hi';
 		// d($actu->data['properties']);
 		$actu->save(null, true);
-		$dal = new \Coxis\DB\DAL(\Coxis\Core\App::get('db'), \Coxis\Core\App::get('config')->get('database/prefix').'actualite_translation');
+		$dal = new \Asgard\DB\DAL(\Asgard\Core\App::get('db'), \Asgard\Core\App::get('config')->get('database/prefix').'actualite_translation');
 		$r = $dal->where(array('locale'=>'en', 'id'=>2))->first();
 		$this->assertEquals('Hi', $r['test']);
 	}
 	
 	#translation
 	public function test6() {
-		\Coxis\Core\App::get('locale')->setLocale('fr');
-		\Coxis\Core\App::get('locale')->importLocales('tests/locales');
+		\Asgard\Core\App::get('locale')->setLocale('fr');
+		\Asgard\Core\App::get('locale')->importLocales('tests/locales');
 		$this->assertEquals(__('Hello :name!', array('name' => 'Michel')), 'Bonjour Michel !');
 	}
 }

@@ -25,7 +25,7 @@
 						</div>	
 						<div class="block_content"> -->
 						
-							<?php \Coxis\Core\Coxis\Core\App::get('flash')->showAll() ?>
+							<?php \Asgard\Core\Asgard\Core\App::get('flash')->showAll() ?>
 						
 							<form action="" method="post">
 								<table cellpadding="0" cellspacing="0" width="100%" class="sortable">
@@ -46,7 +46,7 @@
 												<td><?php echo $actualite->created_at ?></td>
 												<td><a href="<?php echo $this->url_for('edit', array('id'=>$actualite->id)) ?>"><?php echo $actualite ?></a></td>
 												<td class="actions">
-													<?php \Hook::trigger('coxis_actualite_actions', $actualite) ?>
+													<?php \Hook::trigger('asgard_actualite_actions', $actualite) ?>
 													<a class="delete" href="<?php echo $this->url_for('delete', array('id'=>$actualite->id)) ?>">Supprimer</a>
 												</td>
 											</tr>

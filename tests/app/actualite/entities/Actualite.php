@@ -1,7 +1,7 @@
 <?php
 namespace Tests\App\Actualite\Entities;
 
-class Actualite extends \Coxis\Core\Entity {
+class Actualite extends \Asgard\Core\Entity {
 	public static $properties = array(
 		'titre',
 		'date'    =>    array(
@@ -49,8 +49,8 @@ class Actualite extends \Coxis\Core\Entity {
 	);
 	
 	public static $behaviors = array(
-		// 'Coxis\Behaviors\SlugifyBehavior' => true,
-		// 'Coxis\Behaviors\SortableBehavior' => true,
+		// 'Asgard\Behaviors\SlugifyBehavior' => true,
+		// 'Asgard\Behaviors\SortableBehavior' => true,
 	);
 		
 	#General

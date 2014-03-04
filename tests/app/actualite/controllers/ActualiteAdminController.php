@@ -4,8 +4,8 @@ namespace Tests\App\Actualite\Controllers;
 /**
 @Prefix('admin/actualites')
 */
-class ActualiteAdminController extends \Coxis\Bundles\Admin\Libs\Controller\EntityAdminController {
-	static $_entity = '\Coxis\App\Actualite\Entities\Actualite';
+class ActualiteAdminController extends \Asgard\Bundles\Admin\Libs\Controller\EntityAdminController {
+	static $_entity = '\Asgard\App\Actualite\Entities\Actualite';
 	static $_entities = 'actualites';
 	
 	static $_messages = array(
@@ -17,7 +17,7 @@ class ActualiteAdminController extends \Coxis\Bundles\Admin\Libs\Controller\Enti
 		);
 	
 	public function formConfigure($entity) {
-		$form = new \Coxis\Bundles\Admin\Libs\Form\AdminEntityForm($entity, $this);
+		$form = new \Asgard\Bundles\Admin\Libs\Form\AdminEntityForm($entity, $this);
 		
 		return $form;
 	}

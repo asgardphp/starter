@@ -4,11 +4,11 @@ class FormTest extends PHPUnit_Framework_TestCase {
 		if(!defined('_ENV_'))
 			define('_ENV_', 'test');
 		require_once(_CORE_DIR_.'core.php');
-		\Coxis\Core\App::instance(true)->config->set('bundles', array(
-			_COXIS_DIR_.'core',
-			_COXIS_DIR_.'form',
+		\Asgard\Core\App::instance(true)->config->set('bundles', array(
+			_ASGARD_DIR_.'core',
+			_ASGARD_DIR_.'form',
 		));
-		\Coxis\Core\App::loadDefaultApp();
+		\Asgard\Core\App::loadDefaultApp();
 	}
 	
 	/*public function setUp(){

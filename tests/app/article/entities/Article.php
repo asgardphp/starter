@@ -1,8 +1,8 @@
 <?php
 namespace Tests\App\Article\Entities;
 
-// class Article extends \Coxis\Core\ORM\EntityORM {
-class Article extends \Coxis\Core\Entity {
+// class Article extends \Asgard\Core\ORM\EntityORM {
+class Article extends \Asgard\Core\Entity {
 	public static $properties = array(
 		'title',
 	);

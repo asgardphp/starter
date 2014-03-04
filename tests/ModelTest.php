@@ -4,14 +4,14 @@ class EntityTest extends PHPUnit_Framework_TestCase {
 		if(!defined('_ENV_'))
 			define('_ENV_', 'test');
 		require_once(_CORE_DIR_.'core.php');
-		\Coxis\Core\App::instance(true)->config->set('bundles', array(
-			_COXIS_DIR_.'core',
-			_COXIS_DIR_.'orm',
-			_COXIS_DIR_.'files',
+		\Asgard\Core\App::instance(true)->config->set('bundles', array(
+			_ASGARD_DIR_.'core',
+			_ASGARD_DIR_.'orm',
+			_ASGARD_DIR_.'files',
 		));
-		\Coxis\Core\App::loadDefaultApp();
+		\Asgard\Core\App::loadDefaultApp();
 
-		\Coxis\Core\App::get('db')->import('tests/coxis.sql');
+		\Asgard\Core\App::get('db')->import('tests/asgard.sql');
 	}
 	
 	#hasMany
@@ -50,7 +50,7 @@ class EntityTest extends PHPUnit_Framework_TestCase {
 
 	#Entity errors
 	public function test6() {
-		$this->setExpectedException('Coxis\Core\EntityException');
+		$this->setExpectedException('Asgard\Core\EntityException');
 		
 		$actu = new \Tests\App\Actualite\Entities\Actualite(array(
 			'titre'=>'le titre',

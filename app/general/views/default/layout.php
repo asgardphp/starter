@@ -1,4 +1,4 @@
-<h1>Coxis</h1>
+<h1>Asgard</h1>
 <div>
 	<?php echo $content ?>
 </div>

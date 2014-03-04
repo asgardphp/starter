@@ -1,6 +1,6 @@
 <p>Welcome! / <?php echo __('Welcome!') ?></p>
 
-<p>Coxis is successfully running. Below are the steps you should go through now:</p>
+<p>Asgard is successfully running. Below are the steps you should go through now:</p>
 
 <ul>
 	<li>
@@ -14,7 +14,7 @@
 		Development
 		<ul>
 			<li>Import bundles</li>
-			<li>Build new bundles with coxis build build.yml</li>
+			<li>Build new bundles with asgard build build.yml</li>
 			<li>Tweak controllers &amp; views</li>
 			<li>..</li>
 		</ul>

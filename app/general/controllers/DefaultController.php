@@ -1,10 +1,10 @@
 <?php
 namespace App\General\Controllers;
 
-class DefaultController extends \Coxis\Core\Controller {
+class DefaultController extends \Asgard\Core\Controller {
 	public function configure($request) {
 		// if($request->route['action'] == 'index')
-		// 	$this->addFilter(new \Coxis\Core\Filters\PageCaching);
+		// 	$this->addFilter(new \Asgard\Core\Filters\PageCaching);
 	}
 
 	/**
@@ -12,7 +12,7 @@ class DefaultController extends \Coxis\Core\Controller {
 	*/
 	public function indexAction($request) {
 		// SEO::canonical($this, 'as');
-		\Coxis\Utils\Profiler::checkpoint('In default controller');
+		\Asgard\Utils\Profiler::checkpoint('In default controller');
 	}
 
 	public function _404Action() {

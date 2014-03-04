@@ -12,4 +12,4 @@ require 'paths.php';
 require _CORE_DIR_.'core.php';
 
 /* RUN AND SEND */
-Coxis\Core\HttpKernel::run();
+Asgard\Core\HttpKernel::run();

@@ -1,8 +1,8 @@
 <?php
 namespace Tests\App\Article\Entities;
 
-// class Author extends \Coxis\Core\ORM\EntityORM {
-class Author extends \Coxis\Core\Entity {
+// class Author extends \Asgard\Core\ORM\EntityORM {
+class Author extends \Asgard\Core\Entity {
 	public static $properties = array(
 		'name',
 	);

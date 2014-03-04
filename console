@@ -9,5 +9,5 @@ require 'paths.php';
 require(_CORE_DIR_.'core.php');
 
 /* RUN */
-$router = new Coxis\Cli\Router;
-$router->run('Coxis\Cli\Front', 'main');
+$router = new Asgard\Cli\Router;
+$router->run('Asgard\Cli\Front', 'main');

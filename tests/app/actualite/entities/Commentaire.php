@@ -1,7 +1,7 @@
 <?php
 namespace Tests\App\Actualite\Entities;
 
-class Commentaire extends \Coxis\Core\Entity {
+class Commentaire extends \Asgard\Core\Entity {
 	public static $properties = array(
 		'titre',
 	);
