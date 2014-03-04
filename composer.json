@@ -1,16 +1,16 @@
 {
-	"name": "coxis/starter",
-	"description": "Coxis PHP Framework starter",
+	"name": "asgard/starter",
+	"description": "Asgard PHP Framework starter",
 	"license": "MIT",
 	"authors": [{
 		"name": "Michel Hognerud",
 		"email": "michel@hognerud.net"
 	}],
 	"require": {
-		"coxis/core": "dev-master"
+		"asgard/core": "dev-master"
 	},
 	"require-dev": {
-		"coxis/xpath": "dev-master"
+		"asgard/xpath": "dev-master"
 	},
     "minimum-stability" : "dev"
 }
