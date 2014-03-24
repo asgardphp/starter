@@ -10,4 +10,4 @@ require(_CORE_DIR_.'core.php');
 
 /* RUN */
 $router = new Asgard\Cli\Router;
-$router->run('Asgard\Cli\Front', 'main');
+$router->run('Asgard\Cli\FrontController', 'main');

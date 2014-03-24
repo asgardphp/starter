@@ -1,20 +1,19 @@
-Starter
-=======
+### Asgard PHP Framework
 
-Coxis is a modular PHP Framework. Its goal is to be simple to use and efficient.  
-Simple to use because it believes in "convention over configuration".  
-Efficient because you can build a website or an application in a matter of minutes.
+Asgard is a web application framework trying to make development pleasant and easy for developers.
 
-#Requirements
-git  
-composer  
-php 5.3
+### Installation
 
-#Install
-Run: git clone git@github.com:coxis/starter.git myapp/  
-Run: composer install  
-Remove ".sample" from config/config.php.sample and config/database.php.sample filenames.  
-Then check 127.0.0.1/myapp/ for further instructions.
+composer create-project asgard/starter newproject/ --stability dev
 
-#License
-MIT
+### Official Documentation
+
+Documentation for the entire framework can be found on the [Asgard website](http://asgard.com/docs).
+
+### Contributing To Laravel
+
+Please submit all issues and pull requests to the [asgard/startup](http://github.com/asgard/startup) repository.**
+
+### License
+
+The Asgard framework is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT)

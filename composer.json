@@ -9,8 +9,5 @@
 	"require": {
 		"asgard/core": "dev-master"
 	},
-	"require-dev": {
-		"asgard/xpath": "dev-master"
-	},
     "minimum-stability" : "dev"
 }
