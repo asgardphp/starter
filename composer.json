@@ -1,6 +1,6 @@
 {
 	"name": "asgard/starter",
-	"description": "Asgard PHP Framework starter",
+	"description": "Asgard PHP Framework Starter",
 	"license": "MIT",
 	"authors": [{
 		"name": "Michel Hognerud",
@@ -8,6 +8,15 @@
 	}],
 	"require": {
 		"asgard/core": "dev-master"
+	},
+	"scripts": {
+		"post-create-project-cmd": [
+			"php console key:generate",
+			"php console db:config",
+		]
+	},
+	"config": {
+		"preferred-install": "dist"
 	},
     "minimum-stability" : "dev"
 }
