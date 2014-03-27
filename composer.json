@@ -11,8 +11,8 @@
 	},
 	"scripts": {
 		"post-create-project-cmd": [
-			"php console key:generate",
-			"php console db:config"
+			"php console config:init",
+			"php console db:init"
 		]
 	},
 	"config": {
