@@ -12,7 +12,7 @@
 	"scripts": {
 		"post-create-project-cmd": [
 			"php console key:generate",
-			"php console db:config",
+			"php console db:config"
 		]
 	},
 	"config": {
