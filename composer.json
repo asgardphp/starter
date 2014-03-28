@@ -11,8 +11,8 @@
 	},
 	"scripts": {
 		"post-create-project-cmd": [
-			"php console config:init",
-			"php console db:init"
+			"Asgard\\Core\\Bundle::install",
+			"Asgard\\Db\\Bundle::install"
 		]
 	},
 	"config": {
