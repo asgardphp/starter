@@ -9,5 +9,5 @@ require 'paths.php';
 require(_CORE_DIR_.'core.php');
 
 /* RUN */
-$router = new Asgard\Cli\Router;
-$router->run('Asgard\Cli\FrontController', 'main');
+$router = new Asgard\Core\Cli\Router;
+$router->run('Asgard\Core\Cli\FrontController', 'main');

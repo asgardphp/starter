@@ -8,13 +8,10 @@
 		"email": "michel@hognerud.net"
 	}],
 	"require": {
-		"asgard/core": "dev-master"
-	},
-	"scripts": {
-		"post-create-project-cmd": [
-			"Asgard\\Core\\Bundle::install",
-			"Asgard\\Db\\Bundle::install"
-		]
+		"asgard/core": "dev-master",
+		"asgard/composer": "dev-master",
+		"asgard/faq": "dev-master",
+		"asgard/cache": "dev-master"
 	},
 	"config": {
 		"preferred-install": "dist"
