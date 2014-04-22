@@ -9,9 +9,7 @@
 	}],
 	"require": {
 		"asgard/core": "dev-master",
-		"asgard/composer": "dev-master",
-		"asgard/faq": "dev-master",
-		"asgard/cache": "dev-master"
+		"asgard/composer": "dev-master"
 	},
 	"config": {
 		"preferred-install": "dist"
