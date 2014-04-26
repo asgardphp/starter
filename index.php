@@ -9,7 +9,7 @@ if(!defined('_ENV_')) {
 require 'paths.php';
 
 /* INIT */
-require _CORE_DIR_.'core.php';
+require_once _VENDOR_DIR_.'autoload.php'; #composer autoloader
 
 /* RUN AND SEND */
 Asgard\Core\HttpKernel::run();

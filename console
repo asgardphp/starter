@@ -6,7 +6,7 @@ set_time_limit(0);
 require 'paths.php';
 
 /* INIT */
-require(_CORE_DIR_.'core.php');
+require_once _VENDOR_DIR_.'autoload.php'; #composer autoloader
 
 /* RUN */
 $router = new Asgard\Core\Cli\Router;
