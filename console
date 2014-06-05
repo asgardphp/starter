@@ -3,11 +3,10 @@
 set_time_limit(0);
 
 /* INIT */
-if(file_exists('storage/compiled.php'))
-	include_once 'storage/compiled.php';
 require_once 'vendor/autoload.php'; #composer autoloader
+require_once 'app/Kernel.php';
 
-$kernel = new App\Kernel();
+$kernel = new Kernel();
 $kernel['consoleMode'] = true;
 $app = $kernel->getApp();
 $app['console'] = new \Asgard\Console\Application('Asgard Framework', $kernel::VERSION, $app);

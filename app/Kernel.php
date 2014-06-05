@@ -10,7 +10,6 @@ class Kernel extends \Asgard\Core\Kernel {
 	public function getBundles() {
 		return array_merge(
 			array(
-				// new \Asgard\Cache\Bundle,
 				new \Asgard\Core\Bundle,
 				new \Asgard\Orm\Bundle,
 				new \Asgard\Behaviors\Bundle,
