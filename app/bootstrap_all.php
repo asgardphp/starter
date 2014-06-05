@@ -1,42 +1,65 @@
 <?php
 if(!defined('_ASGARD_START_'))
 	define('_ASGARD_START_', time()+microtime());
-set_include_path(get_include_path() . PATH_SEPARATOR . _DIR_);
+set_include_path(get_include_path() . PATH_SEPARATOR . $app['kernel']['root']);
 
 #Utils
 if(!function_exists('d')) {
 	function d() {
-		call_user_func_array(array('Asgard\Utils\Debug', 'dWithTrace'), array_merge(array(debug_backtrace()), func_get_args()));
+		if(\Asgard\Core\App::instance()['config']['debug'] === false)
+			return;
+		$app = \Asgard\Core\App::instance();
+		$request = $app->has('request') ? $app['request']:new \Asgard\Http\Request();
+		call_user_func_array(array('Asgard\Debug\Debug', 'dWithTrace'), array_merge(array($request, debug_backtrace()), func_get_args()));
 	}
 }
 if(!function_exists('__')) {
 	function __($key, $params=array()) {
-		return \Asgard\Core\App::get('translator')->trans($key, $params);
+		return \Asgard\Core\App::instance()->get('translator')->trans($key, $params);
 	}
 }
 
 #Error handler
-\Asgard\Core\ErrorHandler::initialize();
+\Asgard\Debug\ErrorHandler::initialize($app)
+	->ignoreDir(__DIR__.'/../vendor/nikic/php-parser/')
+	->ignoreDir(__DIR__.'/../vendor/jeremeamia/SuperClosure/');
 
-#Asgard autoloader
-\Asgard\Core\App::register('autoloader', function() {
+#Autoloader
+foreach(spl_autoload_functions() as $function) {
+	if(is_array($function) && $function[0] instanceof \Composer\Autoload\ClassLoader)
+		$function[0]->setUseIncludePath(true);
+}
+set_include_path(get_include_path() . PATH_SEPARATOR . 'app');
+$app->register('autoloader', function($app) {
 	$autoloader = new \Asgard\Core\Autoloader;
-	$autoloader->globalNamespace(\Asgard\Core\App::get('config')->get('global_namespace'));
-	$autoloader->preload(\Asgard\Core\App::get('config')->get('preload'));
+	$autoloader->goUp($app['config']['global_namespace']);
+	$autoloader->preload($app['config']['preload']);
 	return $autoloader;
 });
-spl_autoload_register(array(\Asgard\Core\App::get('autoloader'), 'autoload')); #asgard autoloader
-\Asgard\Core\App::get('autoloader')->namespaceMap('Asgard', 'bundles');
-\Asgard\Core\App::get('autoloader')->namespaceMap('Psr\Log', 'log/Psr/Log');
-\Asgard\Core\App::set('logger', function() {
-	return new \App\Logger;
+spl_autoload_register(array($app['autoloader'], 'autoload')); #asgard autoloader
+$app['autoloader']->namespaceMap('Psr\Log', 'log/Psr/Log');
+
+#Logger
+$app->register('logger', function() {
+	return new Logger;
 });
 
-#Loading ORM and Timestamps behavior for all entities
-\Asgard\Core\App::get('hook')->hook('behaviors_pre_load', function($chain, $entityDefinition) {
-	if(!isset($entityDefinition->behaviors['Asgard\Behaviors\TimestampsBehavior']))
-		$entityDefinition->behaviors['Asgard\Behaviors\TimestampsBehavior'] = true;
+#Translator
+$app['translator'] = new \Symfony\Component\Translation\Translator($app['config']['locale'], new \Symfony\Component\Translation\MessageSelector());
+$app['translator']->addLoader('yaml', new \Symfony\Component\Translation\Loader\YamlFileLoader());
+foreach(glob($app['kernel']['root'].'/locales/'.$app['translator']->getLocale().'/*') as $file) {
+	$app['translator']->addResource('yaml', $file, $app['translator']->getLocale());
+}
 
-	if(!isset($entityDefinition->behaviors['orm']))
-		$entityDefinition->behaviors['Asgard\Orm\ORMBehavior'] = true;
+#Cache
+if($app['config']['cache'])
+	$driver = new \Doctrine\Common\Cache\FilesystemCache(__DIR__.'/../storage/cache/');
+else
+	$driver = new \Asgard\Cache\NullCache();
+$app['cache'] = new \Asgard\Cache\Cache($driver);
+
+#Loading ORM and Timestamps behavior for all entities
+$app['hooks']->hook('Asgard.Entity.LoadBehaviors', function($chain, &$behaviors) {
+	$behaviors[] = new \Asgard\Behaviors\TimestampsBehavior;
+	$behaviors[] = new \Asgard\Orm\ORMBehavior;
 });

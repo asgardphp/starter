@@ -1,18 +1,38 @@
 {
-	"name": "asgard/starter",
-	"type": "project",
-	"description": "Asgard PHP Framework Starter",
-	"license": "MIT",
-	"authors": [{
-		"name": "Michel Hognerud",
-		"email": "michel@hognerud.net"
-	}],
-	"require": {
-		"asgard/core": "dev-master",
-		"asgard/composer": "dev-master"
-	},
-	"config": {
-		"preferred-install": "dist"
-	},
-    "minimum-stability" : "dev"
+    "name": "asgard\/starter",
+    "type": "project",
+    "description": "Asgard PHP Framework Starter",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Michel Hognerud",
+            "email": "michel@hognerud.net"
+        }
+    ],
+    "require": {
+        "asgard\/asgard": "dev-master",
+        "asgard\/behaviors": "dev-master",
+        "asgard\/data": "dev-master",
+        "psr\/log": "dev-master",
+        "symfony\/translation": "2.3.*",
+        "symfony\/console": "2.3.*",
+        "symfony\/config": "2.3.*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "4.1.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app"
+        }
+    },
+    "config": {
+        "preferred-install": "dist"
+    },
+    "minimum-stability": "dev",
+    "scripts": {
+        "post-create-project-cmd": [
+            "php console init-config"
+        ]
+    }
 }

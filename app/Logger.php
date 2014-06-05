@@ -1,6 +1,4 @@
 <?php
-namespace App;
-
 class Logger implements \Psr\Log\LoggerInterface {
 	public function emergency($message, array $context = array()) {
 	}

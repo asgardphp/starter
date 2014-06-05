@@ -1,13 +1,16 @@
 #!/usr/bin/env php
 <?php
-// define('_ENV_', '');
 set_time_limit(0);
 
-require 'paths.php';
-
 /* INIT */
-require_once _VENDOR_DIR_.'autoload.php'; #composer autoloader
+if(file_exists('storage/compiled.php'))
+	include_once 'storage/compiled.php';
+require_once 'vendor/autoload.php'; #composer autoloader
 
-/* RUN */
-$router = new Asgard\Core\Cli\Router;
-$router->run('Asgard\Core\Cli\FrontController', 'main');
+$kernel = new App\Kernel();
+$kernel['consoleMode'] = true;
+$app = $kernel->getApp();
+$app['console'] = new \Asgard\Console\Application('Asgard Framework', $kernel::VERSION, $app);
+$kernel->load();
+
+$app['console']->run()->send();
