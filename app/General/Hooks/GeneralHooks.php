@@ -3,8 +3,8 @@ namespace General\Hooks;
 
 class GeneralHooks extends \Asgard\Hook\HooksContainer {
 	/**
-	@Hook("Asgard.Http.Start")
-	*/
+	 * @Hook("Asgard.Http.Start")
+	 */
 	public static function maintenance(\Asgard\Hook\HookChain $chain, \Asgard\Http\Request $request) {
 		if($chain->app['kernel']['env'] == 'prod' && file_exists($chain->app['kernel']['root'].'/storage/maintenance')) {
 			$controller = new \General\Controllers\DefaultController($chain->app);
@@ -13,28 +13,29 @@ class GeneralHooks extends \Asgard\Hook\HooksContainer {
 	}
 
 	/**
-	@Hook("Asgard.Http.Controller")
-	*/
+	 * @Hook("Asgard.Http.Controller")
+	 */
 	public static function pagelayout(\Asgard\Hook\HookChain $chain, \Asgard\Http\Controller $controller) {
-		$chain->app['html']->setTitle('Asgard');
-		$controller->layout = array('\General\Controllers\DefaultController', 'layout');
+		if(!$chain->app['html']->getTitle())
+			$chain->app['html']->setTitle('Asgard PHP Framework');
+		$controller->layout = ['\General\Controllers\DefaultController', 'layout'];
 
 		$controller->addFilter(new \Asgard\Http\Filters\PageLayout(null, $chain->app['kernel']['root'].'/app/general/views/html.php'));
 		$controller->addFilter(new \Asgard\Http\Filters\JSONEntities);
 	}
 
 	/**
-	@Hook("Asgard.Http.Exception.Asgard\Http\Exceptions\NotFoundException")
-	*/
-	public static function hook404Exception(\Asgard\Hook\HookChain $chain, \Exception $exception, \Asgard\Http\Response $response, \Asgard\Http\Request $request) {
+	 * @Hook("Asgard.Http.Exception.Asgard\Http\Exceptions\NotFoundException")
+	 */
+	public static function hook404Exception(\Asgard\Hook\HookChain $chain, \Exception $exception, \Asgard\Http\Response &$response, \Asgard\Http\Request $request) {
 		$controller = new \General\Controllers\DefaultController($chain->app);
-		return $controller->run('_404', $chain->app, $request)->setCode(404);
+		$response = $controller->run('_404', $chain->app, $request)->setCode(404);
 	}
 
 	/**
-	@Hook("Asgard.Http.Output")
-	@Priority(1000)
-	*/
+	 * @Hook("Asgard.Http.Output")
+	 * @Priority(1000)
+	 */
 	public static function gzip(\Asgard\Hook\HookChain $chain, \Asgard\Http\Response $response, \Asgard\Http\Request $request) {
 		if(!strstr($request->server['HTTP_ACCEPT_ENCODING'], 'gzip') || !$response->getContent())
 			return;

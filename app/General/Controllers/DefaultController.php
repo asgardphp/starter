@@ -3,8 +3,8 @@ namespace General\Controllers;
 
 class DefaultController extends \Asgard\Http\Controller {
 	/**
-	@Route("")
-	*/
+	 * @Route("")
+	 */
 	public function indexAction(\Asgard\Http\Request $request) {
 	}
 
@@ -15,6 +15,6 @@ class DefaultController extends \Asgard\Http\Controller {
 	}
 	
 	public static function layout($content) {
-		return \Asgard\Http\View::renderTemplate(dirname(__DIR__).'/views/default/layout.php', array('content'=>$content));
+		return \Asgard\Http\View::renderTemplate(dirname(__DIR__).'/views/default/layout.php', ['content'=>$content]);
 	}
 }

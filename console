@@ -3,8 +3,7 @@
 set_time_limit(0);
 
 /* INIT */
-require_once 'vendor/autoload.php'; #composer autoloader
-require_once 'app/Kernel.php';
+require_once 'autoload.php'; #composer autoloader
 
 $kernel = new Kernel();
 $kernel['consoleMode'] = true;
