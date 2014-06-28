@@ -3,25 +3,14 @@ if(!defined('_ASGARD_START_'))
 	define('_ASGARD_START_', time()+microtime());
 set_include_path(get_include_path() . PATH_SEPARATOR . $app['kernel']['root']);
 
-#Utils
-if(!function_exists('d')) {
-	function d() {
-		if(\Asgard\Container\Container::instance()['config']['debug'] === false)
-			return;
-		call_user_func_array(['Asgard\Debug\Debug', 'dWithTrace'], array_merge([debug_backtrace()], func_get_args()));
-	}
-}
-if(!function_exists('__')) {
-	function __($key, $params=[]) {
-		return \Asgard\Container\Container::instance()->get('translator')->trans($key, $params);
-	}
-}
+if(file_exists(__DIR__.'/helpers.php'))
+	require_once __DIR__.'/helpers.php';
 
 #Working dir
 chdir(__DIR__.'/..');
 
 #Error handler
-$app['errorHandler'] = \Asgard\Debug\ErrorHandler::initialize()
+$app['errorHandler'] = \Asgard\Debug\ErrorHandler::register()
 	->ignoreDir(__DIR__.'/../vendor/nikic/php-parser/')
 	->ignoreDir(__DIR__.'/../vendor/jeremeamia/SuperClosure/')
 	->setLogPHPErrors($app['config']['log_php_errors']);
@@ -53,3 +42,12 @@ $app['hooks']->hook('Asgard.Entity.LoadBehaviors', function($chain, &$behaviors)
 	$behaviors[] = new \Asgard\Behaviors\TimestampsBehavior;
 	$behaviors[] = new \Asgard\Orm\ORMBehavior;
 });
+
+#Call start
+$app['httpKernel']->start($app['kernel']['root'].'/app/start.php');
+
+#Layout
+$app['httpKernel']->filterAll('Asgard\Http\Filters\PageLayout', [
+	['\General\Controllers\DefaultController', 'layout'],
+	$app['kernel']['root'].'/app/general/html/html.php'
+]);

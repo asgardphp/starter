@@ -11,9 +11,8 @@ if(!defined('_ENV_')) {
 }
 
 require_once '../autoload.php'; #composer autoloader
-require_once '../app/Kernel.php';
 
 /* RUN & SEND */
 $kernel = new Kernel();
 $kernel->load();
-$kernel->getApp()['httpKernel']->run()->send();
+$kernel->getContainer()['httpKernel']->run()->send();

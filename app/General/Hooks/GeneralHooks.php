@@ -13,23 +13,10 @@ class GeneralHooks extends \Asgard\Hook\HooksContainer {
 	}
 
 	/**
-	 * @Hook("Asgard.Http.Controller")
-	 */
-	public static function pagelayout(\Asgard\Hook\HookChain $chain, \Asgard\Http\Controller $controller) {
-		if(!$chain->app['html']->getTitle())
-			$chain->app['html']->setTitle('Asgard PHP Framework');
-		$controller->layout = ['\General\Controllers\DefaultController', 'layout'];
-
-		$controller->addFilter(new \Asgard\Http\Filters\PageLayout(null, $chain->app['kernel']['root'].'/app/general/views/html.php'));
-		$controller->addFilter(new \Asgard\Http\Filters\JSONEntities);
-	}
-
-	/**
 	 * @Hook("Asgard.Http.Exception.Asgard\Http\Exceptions\NotFoundException")
 	 */
 	public static function hook404Exception(\Asgard\Hook\HookChain $chain, \Exception $exception, \Asgard\Http\Response &$response, \Asgard\Http\Request $request) {
-		$controller = new \General\Controllers\DefaultController($chain->app);
-		$response = $controller->run('_404', $chain->app, $request)->setCode(404);
+		$response = $chain->app['httpKernel']->runController('General\Controllers\DefaultController', '_404', $request)->setCode(404);
 	}
 
 	/**

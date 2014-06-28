@@ -7,7 +7,7 @@ require_once 'autoload.php'; #composer autoloader
 
 $kernel = new Kernel();
 $kernel['consoleMode'] = true;
-$app = $kernel->getApp();
+$app = $kernel->getContainer();
 $app['console'] = new \Asgard\Console\Application('Asgard Framework', $kernel::VERSION, $app);
 $kernel->load();
 
