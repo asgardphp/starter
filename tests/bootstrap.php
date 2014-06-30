@@ -9,10 +9,10 @@ $kernel->load();
 $app = $kernel->getContainer();
 
 $app['schema']->dropAll();
-$mm = new \Asgard\Migration\MigrationsManager($app['kernel']['root'].'/Migrations/', $app);
+$mm = new \Asgard\Migration\MigrationsManager($app['kernel']['root'].'/migrations/', $app);
 $mm->migrateAll(false);
 
 if(!defined('_TESTING_')) {
-	define('_TESTING_', $app['kernel']['root'].'/Tests/tested.txt');
+	define('_TESTING_', $app['kernel']['root'].'/tests/tested.txt');
 	\Asgard\File\FileSystem::delete(_TESTING_);
 }

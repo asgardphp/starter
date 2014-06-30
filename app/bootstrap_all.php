@@ -26,9 +26,8 @@ $app->register('logger', function() {
 #Translator
 $app['translator'] = new \Symfony\Component\Translation\Translator($app['config']['locale'], new \Symfony\Component\Translation\MessageSelector());
 $app['translator']->addLoader('yaml', new \Symfony\Component\Translation\Loader\YamlFileLoader());
-foreach(glob($app['kernel']['root'].'/locales/'.$app['translator']->getLocale().'/*') as $file) {
+foreach(glob($app['kernel']['root'].'/translations/'.$app['translator']->getLocale().'/*') as $file)
 	$app['translator']->addResource('yaml', $file, $app['translator']->getLocale());
-}
 
 #Cache
 if($app['config']['cache'])
@@ -49,5 +48,19 @@ $app['httpKernel']->start($app['kernel']['root'].'/app/start.php');
 #Layout
 $app['httpKernel']->filterAll('Asgard\Http\Filters\PageLayout', [
 	['\General\Controllers\DefaultController', 'layout'],
-	$app['kernel']['root'].'/app/general/html/html.php'
+	$app['kernel']['root'].'/app/General/html/html.php'
 ]);
+
+#Remove trailing / and www.
+$app['hooks']->hook('Asgard.Http.Start', function($chain, $request) {
+	$oldUrl = $request->url;
+	$newUrl = clone $oldUrl;
+
+	if(preg_match('/^www./', $oldUrl->get()))
+		$newUrl->setHost(preg_replace('/^www./', '', $oldUrl->get()));
+	if(($url=rtrim($oldUrl->get(), '/')) !== $oldUrl->get())
+		$newUrl->setURL($url);
+
+	if($newUrl->full() !== $oldUrl->full())
+		return (new \Asgard\Http\Response())->redirect($newUrl->full());
+});
