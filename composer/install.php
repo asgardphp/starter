@@ -4,11 +4,14 @@ parent::install($repo, $package);
 if($package->getType() !== 'asgard-bundle')
 	return;
 
-require_once dirname(__DIR__).'/autoload.php';
+$root = dirname(__DIR__);
+
+#Add Bundle to Kernel.php
+require_once $root.'/autoload.php';
 
 $path = $this->getInstallPath($package);
 
-$kernelPath = dirname(__DIR__).'/app/Kernel.php';
+$kernelPath = $root.'/app/Kernel.php';
 $kernelCode = file_get_contents($kernelPath);
 
 $class = '';
@@ -23,4 +26,13 @@ else
 
 $kernelCode = preg_replace('/(#Composer Bundles.*?)/', $line."\n\t\t\t\t".'\1', $kernelCode);
 
-file_put_contents($kernelPath, $kernelCode);
+if(file_put_contents($kernelPath, $kernelCode))
+	echo 'Bundle added to app/Kernel.php'."\n";
+else
+	echo 'Bundle could not be added to app/Kernel.php'."\n";
+
+#Publish files
+$cmd = 'php console publish "'.$path.'" --all --migrate';
+exec($cmd, $output, $returnVar);
+if($returnVar !== 0)
+	echo 'Could not publish the bundle. Please try manually using: '.$cmd."\n";
