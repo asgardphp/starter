@@ -1,5 +1,5 @@
 {
-    "name": "asgard\/starter",
+    "name": "asgard/starter",
     "type": "project",
     "description": "Asgard PHP Framework Starter",
     "license": "MIT",
@@ -10,9 +10,10 @@
         }
     ],
     "require": {
-        "asgard\/asgard": "dev-master",
-        "asgard\/behaviors": "dev-master",
-        "asgard\/data": "dev-master"
+        "asgard/asgard": "dev-master",
+        "asgard/behaviors": "dev-master",
+        "asgard/data": "dev-master",
+        "asgard/composer": "dev-master"
     },
     "require-dev": {
         "phpunit/phpunit": "4.1.*"
