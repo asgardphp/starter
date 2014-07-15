@@ -56,8 +56,8 @@ $app['hooks']->hook('Asgard.Http.Start', function($chain, $request) {
 	$oldUrl = $request->url;
 	$newUrl = clone $oldUrl;
 
-	if(preg_match('/^www./', $oldUrl->get()))
-		$newUrl->setHost(preg_replace('/^www./', '', $oldUrl->get()));
+	if(preg_match('/^www./', $oldUrl->host()))
+		$newUrl->setHost(preg_replace('/^www./', '', $oldUrl->host()));
 	if(($url=rtrim($oldUrl->get(), '/')) !== $oldUrl->get())
 		$newUrl->setURL($url);
 
