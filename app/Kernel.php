@@ -12,8 +12,7 @@ class Kernel extends \Asgard\Core\Kernel {
 			[
 				new \Asgard\Core\Bundle,
 				new \Asgard\Behaviors\Bundle,
-				new \Asgard\Imagecache\Bundle,
-				new \Asgard\Data\Bundle
+				#Composer Bundles - do not remove
 			],
 			glob(__DIR__.'/*', GLOB_ONLYDIR)
 		);

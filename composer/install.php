@@ -24,9 +24,9 @@ if(file_exists($path.'\\Bundle.php') && $class = \Asgard\Common\Tools::loadClass
 else
 	$line = "'$path',";
 
-$kernelCode = preg_replace('/(#Composer Bundles.*?)/', $line."\n\t\t\t\t".'\1', $kernelCode);
+$kernelCode = preg_replace('/(#Composer Bundles.*?)/', $line."\n\t\t\t\t".'\1', $kernelCode, -1, $count);
 
-if(file_put_contents($kernelPath, $kernelCode))
+if($count && file_put_contents($kernelPath, $kernelCode))
 	echo 'Bundle added to app/Kernel.php'."\n";
 else
 	echo 'Bundle could not be added to app/Kernel.php'."\n";
