@@ -24,7 +24,7 @@
     "minimum-stability": "dev",
     "scripts": {
         "post-create-project-cmd": [
-            "php console init-config"
+            "php console config:init"
         ]
     }
 }

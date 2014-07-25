@@ -6,8 +6,8 @@ class GeneralHooks extends \Asgard\Hook\HooksContainer {
 	 * @Hook("Asgard.Http.Start")
 	 */
 	public static function maintenance(\Asgard\Hook\HookChain $chain, \Asgard\Http\Request $request) {
-		if($chain->app['kernel']['env'] == 'prod' && file_exists($chain->app['kernel']['root'].'/storage/maintenance')) {
-			$controller = new \General\Controllers\DefaultController($chain->app);
+		if($chain->container['kernel']['env'] == 'prod' && file_exists($chain->container['kernel']['root'].'/storage/maintenance')) {
+			$controller = new \General\Controllers\DefaultController($chain->container);
 			return $controller->run('maintenance', $request);
 		}
 	}
@@ -16,7 +16,7 @@ class GeneralHooks extends \Asgard\Hook\HooksContainer {
 	 * @Hook("Asgard.Http.Exception.Asgard\Http\Exceptions\NotFoundException")
 	 */
 	public static function hook404Exception(\Asgard\Hook\HookChain $chain, \Exception $exception, \Asgard\Http\Response &$response, \Asgard\Http\Request $request) {
-		$response = $chain->app['httpKernel']->runController('General\Controllers\DefaultController', '_404', $request)->setCode(404);
+		$response = $chain->container['httpKernel']->runController('General\Controllers\DefaultController', '_404', $request)->setCode(404);
 	}
 
 	/**

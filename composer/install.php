@@ -20,7 +20,7 @@ foreach(explode('/', $package->getPrettyName()) as $piece)
 $class .= '\\Bundle';
 
 if(file_exists($path.'\\Bundle.php') && $class = \Asgard\Common\Tools::loadClassFile($path.'\\Bundle.php'))
-	$line = "new $class,";
+	$line = "class_exists('$class') ? new $class:null,";
 else
 	$line = "'$path',";
 

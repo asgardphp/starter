@@ -1,2 +1,2 @@
 <?php
-$app['html']->setTitle('Asgard PHP Framework');
+$container['html']->setTitle('Asgard PHP Framework');
