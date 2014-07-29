@@ -2,7 +2,6 @@
 class Kernel extends \Asgard\Core\Kernel {
 	public function __construct() {
 		$root = realpath(dirname(__DIR__));
-		$this['webdir'] = dirname(__DIR__).'/web';
 		
 		parent::__construct($root);
 	}
@@ -12,6 +11,7 @@ class Kernel extends \Asgard\Core\Kernel {
 			[
 				new \Asgard\Core\Bundle,
 				new \Asgard\Behaviors\Bundle,
+				new \Asgard\Jsonentities\Bundle,
 				#Composer Bundles - do not remove
 			],
 			glob(__DIR__.'/*', GLOB_ONLYDIR)

@@ -13,6 +13,7 @@
         "asgard/asgard": "dev-master",
         "asgard/behaviors": "dev-master",
         "asgard/data": "dev-master",
+        "asgard/jsonentities": "dev-master",
         "asgard/composer": "dev-master"
     },
     "require-dev": {
