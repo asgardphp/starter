@@ -9,9 +9,6 @@ if(file_exists(__DIR__.'/helpers.php'))
 #Working dir
 chdir(__DIR__.'/..');
 
-#Webdir
-$container['config']['webdir'] = dirname(__DIR__).'/web';
-
 #Error handler
 $container['errorHandler'] = \Asgard\Debug\ErrorHandler::register()
 	->ignoreDir(__DIR__.'/../vendor/nikic/php-parser/')
