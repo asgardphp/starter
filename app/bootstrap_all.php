@@ -64,3 +64,6 @@ $container['hooks']->hook('Asgard.Http.Start', function($chain, $request) {
 	if($newUrl->full() !== $oldUrl->full())
 		return (new \Asgard\Http\Response())->redirect($newUrl->full());
 });
+
+#set the EntitiesManager static instance for activerecord-like entities (e.g. new Article or Article::find())
+\Asgard\Entity\EntitiesManager::setInstance($container['entitiesManager']);
