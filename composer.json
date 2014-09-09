@@ -10,10 +10,10 @@
         }
     ],
     "require": {
-        "asgard/asgard": "v0.*",
-        "asgard/behaviors": "v0.*",
-        "asgard/jsonentities": "v0.*",
-        "asgard/composer": "v0.*"
+        "asgard/asgard": "0.*",
+        "asgard/behaviors": "0.*",
+        "asgard/jsonentities": "0.*",
+        "asgard/composer": "0.*"
     },
     "require-dev": {
         "phpunit/phpunit": "4.1.*"
@@ -21,7 +21,6 @@
     "config": {
         "preferred-install": "dist"
     },
-    "minimum-stability": "dev",
     "scripts": {
         "post-create-project-cmd": [
             "php console config:init"
