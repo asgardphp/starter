@@ -38,8 +38,10 @@ $container['cache'] = new \Asgard\Cache\Cache($driver);
 
 #Loading ORM and Timestamps behavior for all entities
 $container['hooks']->hook('Asgard.Entity.LoadBehaviors', function($chain, &$behaviors) {
-	$behaviors[] = new \Asgard\Behaviors\TimestampsBehavior;
-	$behaviors[] = new \Asgard\Orm\ORMBehavior;
+	if(!isset($behaviors['timestamps']))
+		$behaviors[] = new \Asgard\Behaviors\TimestampsBehavior;
+	if(!isset($behaviors['orm']))
+		$behaviors[] = new \Asgard\Orm\ORMBehavior;
 });
 
 #Call start
