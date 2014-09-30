@@ -44,6 +44,11 @@ $container['hooks']->hook('Asgard.Entity.LoadBehaviors', function($chain, &$beha
 		$behaviors[] = new \Asgard\Orm\ORMBehavior;
 });
 
+#Add all entities to orm migration
+$container['hooks']->hook('Asgard.Entity.Definition', function($chain, $definition) {
+	$definition->set('ormMigrate', true);
+});
+
 #Call start
 $container['httpKernel']->start($container['kernel']['root'].'/app/start.php');
 
