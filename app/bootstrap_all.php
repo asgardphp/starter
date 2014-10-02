@@ -1,7 +1,7 @@
 <?php
 if(!defined('_ASGARD_START_'))
 	define('_ASGARD_START_', time()+microtime());
-set_include_path(get_include_path() . PATH_SEPARATOR . $container['kernel']['root']);
+set_include_path(get_include_path() . PATH_SEPARATOR . $container['kernel']->get('root'));
 
 if(file_exists(__DIR__.'/helpers.php'))
 	require_once __DIR__.'/helpers.php';
@@ -26,7 +26,7 @@ $container->register('logger', function() {
 #Translator
 $container['translator'] = new \Symfony\Component\Translation\Translator($container['config']['locale'], new \Symfony\Component\Translation\MessageSelector());
 $container['translator']->addLoader('yaml', new \Symfony\Component\Translation\Loader\YamlFileLoader());
-foreach(glob($container['kernel']['root'].'/translations/'.$container['translator']->getLocale().'/*') as $file)
+foreach(glob($container['kernel']->get('root').'/translations/'.$container['translator']->getLocale().'/*') as $file)
 	$container['translator']->addResource('yaml', $file, $container['translator']->getLocale());
 
 #Cache
@@ -50,12 +50,12 @@ $container['hooks']->hook('Asgard.Entity.Definition', function($chain, $definiti
 });
 
 #Call start
-$container['httpKernel']->start($container['kernel']['root'].'/app/start.php');
+$container['httpKernel']->start($container['kernel']->get('root').'/app/start.php');
 
 #Layout
 $container['httpKernel']->filterAll('Asgard\Http\Filters\PageLayout', [
 	['\General\Controllers\DefaultController', 'layout'],
-	$container['kernel']['root'].'/app/General/html/html.php'
+	$container['kernel']->get('root').'/app/General/html/html.php'
 ]);
 
 #Remove trailing / and www.
