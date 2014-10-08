@@ -1,1 +1,6 @@
-config/*.locale.*
+/config/*.locale.*
+/storage
+/vendor
+composer.phar
+.DS_Store
+Thumbs.db
