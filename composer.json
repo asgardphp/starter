@@ -25,5 +25,11 @@
         "post-create-project-cmd": [
             "php console config:init"
         ]
+    },
+    "minimum-stability": "dev",
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.2-dev"
+        }
     }
 }
