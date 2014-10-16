@@ -73,4 +73,4 @@ $container['hooks']->hook('Asgard.Http.Start', function($chain, $request) {
 });
 
 #set the EntitiesManager static instance for activerecord-like entities (e.g. new Article or Article::find())
-\Asgard\Entity\EntitiesManager::setInstance($container['entitiesManager']);
+\Asgard\Entity\EntityManager::setInstance($container['entityManager']);
