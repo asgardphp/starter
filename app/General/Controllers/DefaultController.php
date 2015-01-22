@@ -14,7 +14,7 @@ class DefaultController extends \Asgard\Http\Controller {
 	public function maintenanceAction() {
 	}
 	
-	public static function layout($content) {
-		return \Asgard\Templating\PHPTemplate::renderFile(dirname(__DIR__).'/html/default/layout.php', ['content'=>$content]);
+	public static function layout($controller, $content) {
+		return \Asgard\Templating\PHPTemplate::renderFile(dirname(__DIR__).'/html/default/layout.php', ['controller'=>$controller, 'content'=>$content]);
 	}
 }
