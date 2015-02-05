@@ -35,7 +35,7 @@ else
 	echo 'Bundle could not be added to app/Kernel.php'."\n";
 
 #Publish files
-$cmd = 'php console publish "'.$path.'" --all --migrate';
+$cmd = 'php console publish "'.$path.'" --config --web --migrations --migrate';
 exec($cmd, $output, $returnVar);
 if($returnVar !== 0)
 	echo 'Could not publish the bundle. Please try manually using: '.$cmd."\n";
