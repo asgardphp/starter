@@ -1,0 +1,8 @@
+debug_url: sblm://open/?f=%file%:%line%
+locale: en
+locales: [en]
+cache: false
+email:
+  driver: Asgard\Email\SwiftEmail
+debug: true
+log: false
