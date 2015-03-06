@@ -74,5 +74,8 @@ $container['hooks']->hook('Asgard.Http.Start', function($chain, $request) {
 		return (new \Asgard\Http\Response())->redirect($newUrl->full());
 });
 
+\Asgard\File\FileSystem::mkdir('storage/sessions', '');
+session_save_path(realpath('storage/sessions'));
+
 #set the EntitiesManager static instance for activerecord-like entities (e.g. new Article or Article::find())
 \Asgard\Entity\EntityManager::setInstance($container['entityManager']);
