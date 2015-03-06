@@ -9,19 +9,21 @@ if(file_exists(__DIR__.'/helpers.php'))
 #Working dir
 chdir(__DIR__.'/..');
 
-#Error handler
-$container['errorHandler'] = \Asgard\Debug\ErrorHandler::register()
-	->ignoreDir(__DIR__.'/../vendor/nikic/php-parser/')
-	->ignoreDir(__DIR__.'/../vendor/jeremeamia/SuperClosure/')
-	->setLogPHPErrors($container['config']['log_php_errors']);
-if($this->container['config']['log'] && $container->has('logger'))
-	$container['errorHandler']->setLogger($container['logger']);
-\Asgard\Debug\Debug::setURL($container['config']['debug_url']);
-
 #Logger
 $container->register('logger', function() {
 	return new Logger;
 });
+
+#Error handler
+$container['errorHandler'] = \Asgard\Debug\ErrorHandler::register()
+	->ignoreDir(__DIR__.'/../vendor/nikic/php-parser/')
+	->ignoreDir(__DIR__.'/../vendor/jeremeamia/SuperClosure/')
+	->setLogPHPErrors($container['config']['log_php_errors'])
+	->setDebug($container['config']['debug']);
+$container['errorHandler']->setDebug($container['config']['debug']);
+if($this->container['config']['log'] && $container->has('logger'))
+	$container['errorHandler']->setLogger($container['logger']);
+\Asgard\Debug\Debug::setURL($container['config']['debug_url']);
 
 #Translator
 $container['translator'] = new \Symfony\Component\Translation\Translator($container['config']['locale'], new \Symfony\Component\Translation\MessageSelector());

@@ -13,6 +13,8 @@ class Kernel extends \Asgard\Core\Kernel {
 				new \Asgard\Behaviors\Bundle,
 				new \Asgard\Jsonentities\Bundle,
 				#Composer Bundles - do not remove
+				new \Asgard\Imagecache\Bundle,
+				new \Asgard\Data\Bundle,
 			],
 			array_map(function($dir) {return realpath($dir);}, glob(__DIR__.'/*', GLOB_ONLYDIR))
 		);
