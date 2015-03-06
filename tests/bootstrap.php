@@ -1,6 +1,5 @@
 <?php
-if(!defined('_ENV_'))
-	define('_ENV_', 'test');
+define('_ENV_', 'test');
 
 require_once __DIR__.'/../autoload.php';
 set_include_path(get_include_path() . PATH_SEPARATOR . __DIR__);
