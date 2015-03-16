@@ -79,3 +79,7 @@ session_save_path(realpath('storage/sessions'));
 
 #set the EntitiesManager static instance for activerecord-like entities (e.g. new Article or Article::find())
 \Asgard\Entity\EntityManager::setInstance($container['entityManager']);
+
+#intl
+setlocale(LC_ALL, $container['config']['locale']);
+\Asgard\Common\Intl::singleton()->setTranslator($container['translator']);
