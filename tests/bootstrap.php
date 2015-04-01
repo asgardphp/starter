@@ -12,8 +12,3 @@ $container = $kernel->getContainer();
 // $container['schema']->dropAll();
 // $mm = new \Asgard\Migration\MigrationManager($container['kernel']['root'].'/migrations/', $container['db'], $container['schema'], $container);
 // $mm->migrateAll();
-
-if(!defined('_TESTING_')) {
-	define('_TESTING_', $container['kernel']['root'].'/tests/tested.txt');
-	\Asgard\File\FileSystem::delete(_TESTING_);
-}
