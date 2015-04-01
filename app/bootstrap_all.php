@@ -10,8 +10,8 @@ if(file_exists(__DIR__.'/helpers.php'))
 chdir(__DIR__.'/..');
 
 #Logger
-$container->register('logger', function() {
-	return new Logger;
+$container->register('logger', function($container) {
+	return new Logger($container['config']['log']);
 });
 
 #Error handler
