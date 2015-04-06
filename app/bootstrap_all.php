@@ -83,3 +83,6 @@ session_save_path(realpath('storage/sessions'));
 #intl
 setlocale(LC_ALL, $container['config']['locale']);
 \Asgard\Common\Intl::singleton()->setTranslator($container['translator']);
+
+#Libxml warnings
+libxml_use_internal_errors(true);
