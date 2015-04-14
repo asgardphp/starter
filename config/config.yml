@@ -3,6 +3,7 @@ locale: en
 locales: [en]
 cache: false
 email:
-  driver: Asgard\Email\SwiftEmail
+  driver: Asgard\Email\FakeEmail
+  file: storage/email.txt
 debug: true
 log: false
