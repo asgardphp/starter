@@ -24,6 +24,8 @@ $container['errorHandler']->setDebug($container['config']['debug']);
 if($this->container['config']['log'] && $container->has('logger'))
 	$container['errorHandler']->setLogger($container['logger']);
 \Asgard\Debug\Debug::setURL($container['config']['debug_url']);
+if(php_sapi_name() !== 'cli')
+	\Asgard\Debub\Debug::setFormat('html');
 
 #Translator
 $container['translator'] = new \Symfony\Component\Translation\Translator($container['config']['locale'], new \Symfony\Component\Translation\MessageSelector());
