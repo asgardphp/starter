@@ -27,18 +27,9 @@ if($this->container['config']['log'] && $container->has('logger'))
 if(php_sapi_name() !== 'cli')
 	\Asgard\Debub\Debug::setFormat('html');
 
-#Translator
-$container['translator'] = new \Symfony\Component\Translation\Translator($container['config']['locale'], new \Symfony\Component\Translation\MessageSelector());
-$container['translator']->addLoader('yaml', new \Symfony\Component\Translation\Loader\YamlFileLoader());
-foreach(glob($container['kernel']->get('root').'/translations/'.$container['translator']->getLocale().'/*') as $file)
-	$container['translator']->addResource('yaml', $file, $container['translator']->getLocale());
-
-#Cache
-if($container['config']['cache'])
-	$driver = new \Doctrine\Common\Cache\FilesystemCache(__DIR__.'/../storage/cache/');
-else
-	$driver = new \Asgard\Cache\NullCache();
-$container['cache'] = new \Asgard\Cache\Cache($driver);
+#Translations
+foreach(glob($container['kernel']->get('root').'/translations/*') as $dir)
+	$container['translationResources']->add(basename($dir), $dir);
 
 #Loading ORM and Timestamps behavior for all entities
 $container['hooks']->hook('Asgard.Entity.LoadBehaviors', function($chain, \Asgard\Entity\Definition $definition, array &$behaviors) {
