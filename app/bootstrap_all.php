@@ -25,7 +25,7 @@ if($this->container['config']['log'] && $container->has('logger'))
 	$container['errorHandler']->setLogger($container['logger']);
 \Asgard\Debug\Debug::setURL($container['config']['debug_url']);
 if(php_sapi_name() !== 'cli')
-	\Asgard\Debub\Debug::setFormat('html');
+	\Asgard\Debug\Debug::setFormat('html');
 
 #Translations
 foreach(glob($container['kernel']->get('root').'/translations/*') as $dir)
