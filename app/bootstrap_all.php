@@ -17,7 +17,6 @@ $container->register('logger', function($container) {
 #Error handler
 $container['errorHandler'] = \Asgard\Debug\ErrorHandler::register()
 	->ignoreDir(__DIR__.'/../vendor/nikic/php-parser/')
-	->ignoreDir(__DIR__.'/../vendor/jeremeamia/SuperClosure/')
 	->setLogPHPErrors($container['config']['log_php_errors'])
 	->setDebug($container['config']['debug']);
 $container['errorHandler']->setDebug($container['config']['debug']);
