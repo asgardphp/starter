@@ -7,3 +7,15 @@ email:
   file: storage/email.txt
 debug: true
 log: false
+tester:
+  coverage:
+    include:
+      - 'app'
+    exclude:
+      - 'app/Kernel.php'
+      - 'app/helpers.php'
+      - 'app/bootstrap_all.php'
+      - 'app/bootstrap_prod.php'
+      - 'app/bootstrap_dev.php'
+      - 'app/bootstrap_test.php'
+      - 'app/Logger.php'
