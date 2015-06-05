@@ -15,7 +15,7 @@ $container->register('logger', function($container) {
 });
 
 #Error handler
-$container['errorHandler'] = \Asgard\Debug\ErrorHandler::register()
+$container['errorHandler']
 	->ignoreDir(__DIR__.'/../vendor/nikic/php-parser/')
 	->setLogPHPErrors($container['config']['log_php_errors'])
 	->setDebug($container['config']['debug']);
@@ -23,8 +23,6 @@ $container['errorHandler']->setDebug($container['config']['debug']);
 if($this->container['config']['log'] && $container->has('logger'))
 	$container['errorHandler']->setLogger($container['logger']);
 \Asgard\Debug\Debug::setURL($container['config']['debug_url']);
-if(php_sapi_name() !== 'cli')
-	\Asgard\Debug\Debug::setFormat('html');
 
 #Translator
 foreach(glob($container['kernel']->get('root').'/translations/'.$container['translator']->getLocale().'/*') as $file)
