@@ -78,3 +78,8 @@ setlocale(LC_ALL, $container['config']['locale']);
 
 #Libxml warnings
 libxml_use_internal_errors(true);
+
+if(php_sapi_name() === 'cli') {
+	$url = new \Asgard\Http\URL(new \Asgard\Http\Request, 'localhost', '', '');
+	$container['resolver']->setUrl($url);
+}
