@@ -6,6 +6,12 @@ class Kernel extends \Asgard\Core\Kernel {
 		parent::__construct($root);
 	}
 
+	public function load() {
+		if($this->getEnv() === 'prod')
+			$this->setCache(new Doctrine\Common\Cache\FilesystemCache('../storage/cache'));
+		return parent::load();
+	}
+
 	public function getBundles() {
 		return array_merge(
 			[
