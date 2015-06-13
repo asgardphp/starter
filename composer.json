@@ -13,7 +13,8 @@
         "asgard/asgard": "0.*",
         "asgard/behaviors": "0.*",
         "asgard/jsonentities": "0.*",
-        "asgard/composer": "0.*"
+        "asgard/composer": "0.*",
+        "composer/composer": "1.0.0-alpha10@dev"
     },
     "require-dev": {
         "phpunit/phpunit": "4.1.*"
