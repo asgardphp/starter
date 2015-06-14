@@ -81,3 +81,10 @@ if(php_sapi_name() === 'cli') {
 	$url = new \Asgard\Http\URL(new \Asgard\Http\Request, 'localhost', '', '');
 	$container['resolver']->setUrl($url);
 }
+
+#set default timezone
+try {
+	date_default_timezone_get();
+} catch(\Exception $e) {
+	date_default_timezone_set('Europe/London');
+}
