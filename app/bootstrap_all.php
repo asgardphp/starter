@@ -88,3 +88,9 @@ try {
 } catch(\Exception $e) {
 	date_default_timezone_set('Europe/London');
 }
+
+#user cache
+if($container['kernel']->getEnv() === 'prod')
+	$container['cache'] = new \Asgard\Cache\Cache(new Doctrine\Common\Cache\FilesystemCache('../storage/cache'));
+else
+	$container['cache'] = new \Asgard\Cache\Cache;

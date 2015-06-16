@@ -8,7 +8,7 @@ class Kernel extends \Asgard\Core\Kernel {
 
 	public function load() {
 		if($this->getEnv() === 'prod')
-			$this->setCache(new Doctrine\Common\Cache\FilesystemCache('../storage/cache'));
+			$this->setCache(new \Asgard\Cache\Cache(new Doctrine\Common\Cache\FilesystemCache('../storage/cache')));
 		return parent::load();
 	}
 
