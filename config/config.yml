@@ -1,4 +1,4 @@
-debug_url: sblm://open/?f=%file%:%line%
+debug_url: subl://open?url=&quot;file://%file%&quot;&line=%line%
 locale: en
 locales: [en]
 cache: false
