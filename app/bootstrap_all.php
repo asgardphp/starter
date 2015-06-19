@@ -30,8 +30,6 @@ foreach(glob($container['kernel']->get('root').'/translations/'.$container['tran
 
 #Loading ORM and Timestamps behavior for all entities
 $container['hooks']->hook('Asgard.Entity.LoadBehaviors', function($chain, \Asgard\Entity\Definition $definition, array &$behaviors) {
-	if(!isset($behaviors['timestamps']))
-		$behaviors[] = new \Asgard\Behaviors\TimestampsBehavior;
 	if(!isset($behaviors['orm']))
 		$behaviors[] = new \Asgard\Orm\ORMBehavior;
 });
