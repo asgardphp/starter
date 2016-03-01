@@ -8,5 +8,8 @@ $kernel = new \Kernel(dirname(__DIR__));
 $kernel->load();
 $container = $kernel->getContainer();
 
+$container['errorhandler']->setDebug(false);
+$container['errorhandler']->setDisplay(false);
+
 $mm = new \Asgard\Migration\MigrationManager($container['kernel']['root'].'/migrations/', $container['db'], $container['schema'], $container);
 $mm->migrateAll();
