@@ -11,8 +11,9 @@ $env = $input->getParameterOption(['--env', '-e'], 'dev');
 $kernel = new Kernel();
 $kernel->setEnv($env);
 $kernel['consoleMode'] = true;
+$kernel->setup();
 $app = $kernel->getContainer();
 $app['console'] = new \Asgard\Console\Application('Asgard Framework', $kernel::VERSION, $app);
-$kernel->load();
+$kernel->loadBundles();
 
 $app['console']->run()->send();
