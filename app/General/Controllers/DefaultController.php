@@ -12,6 +12,8 @@ class DefaultController extends \Asgard\Http\Controller {
 	}
 
 	public function maintenanceAction() {
+		$this->set('htmlLayout', false);
+		$this->set('layout', false);
 		$this->response->setCode(503);
 	}
 	
