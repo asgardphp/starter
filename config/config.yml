@@ -7,6 +7,7 @@ email:
   file: storage/email.txt
 debug: true
 log: false
+compile: false
 tester:
   coverage:
     include:
