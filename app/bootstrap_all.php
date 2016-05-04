@@ -44,7 +44,7 @@ $container['httpKernel']->start($container['kernel']->get('root').'/app/start.ph
 
 #Layout
 $container['httpKernel']->filterAll('Asgard\Http\Filter\PageLayout', [
-	['\General\Controllers\DefaultController', 'layout'],
+	['\General\Controller\DefaultController', 'layout'],
 	$container['kernel']->get('root').'/app/General/html/html.php'
 ]);
 

@@ -1,5 +1,5 @@
 <?php
-namespace General\Controllers;
+namespace General\Controller;
 
 class DefaultController extends \Asgard\Http\Controller {
 	/**
