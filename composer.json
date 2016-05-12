@@ -10,10 +10,10 @@
         }
     ],
     "require": {
-        "asgard/asgard": "0.*",
-        "asgard/behaviors": "0.*",
-        "asgard/jsonentities": "0.*",
-        "asgard/composer": "0.*",
+        "asgard/asgard": "~0.3.0",
+        "asgard/behaviors": "~0.3.0",
+        "asgard/jsonentities": "~0.3.0",
+        "asgard/composer": "~0.3.0",
         "composer/composer": "^1.0"
     },
     "require-dev": {
@@ -26,10 +26,9 @@
         "post-create-project-cmd": "php console config:init",
         "post-autoload-dump": "php console compile"
     },
-    "minimum-stability": "dev",
     "extra": {
         "branch-alias": {
-            "dev-master": "0.2-dev"
+            "dev-master": "0.3-dev"
         }
     }
 }
