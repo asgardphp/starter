@@ -14,7 +14,7 @@ class General extends \Asgard\Hook\HookContainer {
 	}
 
 	/**
-	 * @Hook("Asgard.Http.Exception.Asgard\Http\Exceptions\NotFoundException")
+	 * @Hook("Asgard.Http.Exception.Asgard\Http\Exception\NotFoundException")
 	 */
 	public static function hook404Exception(\Asgard\Hook\Chain $chain, \Exception $exception, \Asgard\Http\Response &$response, \Asgard\Http\Request $request) {
 		$response = $chain->getContainer()['httpKernel']->runController('General\Controller\DefaultController', '_404', $request)->setCode(404);
